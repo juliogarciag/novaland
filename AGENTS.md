@@ -18,6 +18,7 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
     - 3 independent code reviews (sub-agents) have run and passed.
     - A security pass has been completed.
   - When the work is done, it should create a PR. Tickets should aim for a 1-to-1 relationship with PRs.
+  - When the PR is ready, the result must be ready to try, without being asked: leave a dev server running from the worktree on a pinned port (`PORT=<n> pnpm dev`, see "Worktrees and ports"), open it in the browser pane, and put the URL and the proof screenshots in the final message. The human should be able to play the change the moment they read the message. Keep the server running until the PR is merged or the human stops it.
   - The session then stays open for regular feedback loop with the human in charge.
   - Once the PR has been approved by a human, you merge it.
 
@@ -105,6 +106,7 @@ Example: a `coins` feature where players pick up coins.
 - Every ticket is worked on in its own git worktree under `.worktrees/` (gitignored) on a branch with the same name. Each worktree needs its own `pnpm install`.
 - Nothing hardcodes a port. `PORT=<n> pnpm dev` pins the dev server (and fails if `<n>` is busy); unset, Vite picks a free one starting at 5173. Only the shell environment counts: `.env` files are not read for this.
 - `.claude/launch.json` lets the desktop app preview the client from the main checkout; it lists 5173 as the port to open. Worktrees are previewed by starting `PORT=<n> pnpm dev` and opening that URL.
+- Pick a port for the ticket that no other session is likely to use (for example `5100 + ticketNumber`), start the server in the background so it outlives the command, and mention the exact `PORT=<n> pnpm dev` line in the final message so the human can restart it in their own terminal. If they do, stop yours first: a pinned port refuses to start twice.
 
 **Decisions**
 
