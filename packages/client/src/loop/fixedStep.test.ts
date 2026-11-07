@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { advanceFixedStep } from './fixedStep';
 
-const DT = 1 / 60;
-const MAX = 0.25;
-
 describe('advanceFixedStep', () => {
   it('runs zero ticks and keeps the time when a frame is shorter than a tick', () => {
     const r = advanceFixedStep(0, 0.01, DT, MAX);
@@ -35,3 +32,8 @@ describe('advanceFixedStep', () => {
     expect(advanceFixedStep(0.005, -1, DT, MAX)).toEqual({ ticks: 0, accumulator: 0.005 });
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const DT = 1 / 60;
+const MAX = 0.25;

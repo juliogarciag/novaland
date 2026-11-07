@@ -2,8 +2,6 @@ import { FIXED_DT, getDef, DefId } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { runHeadless, SCRIPT } from './headless';
 
-const SPEED = getDef(DefId.Player).speed ?? 0;
-
 describe('server headless run', () => {
   it('drives the sim without a browser and is reproducible', async () => {
     const a = await runHeadless({ ticks: 300, seed: 7 });
@@ -27,3 +25,7 @@ describe('server headless run', () => {
     expect((await runHeadless({ ticks: 1 })).ticks).toBe(1);
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const SPEED = getDef(DefId.Player).speed ?? 0;

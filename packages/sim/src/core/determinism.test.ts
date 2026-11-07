@@ -3,35 +3,6 @@ import type { Command } from './commands';
 import { createSimInternal } from './create';
 import { hashSnapshot } from './snapshot';
 
-/** A scripted session: joins, moves around, bumps into walls, uses the rng. */
-function script(tick: number): Command[] {
-  switch (tick) {
-    case 0:
-      return [{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }];
-    case 1:
-      return [{ type: 'player/move', slot: 0, x: 1, y: 0 }, { type: 'player/move', slot: 1, x: -0.3, y: 0.7 }];
-    case 90:
-      return [{ type: 'player/move', slot: 0, x: 0.5, y: -1 }];
-    case 200:
-      return [{ type: 'player/leave', slot: 1 }, { type: 'player/move', slot: 0, x: -1, y: -1 }];
-    case 260:
-      return [{ type: 'player/join', slot: 2 }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
-    default:
-      return [];
-  }
-}
-
-async function run(seed: number, ticks: number, commandsFor = script) {
-  const sim = await createSimInternal({ seed });
-  for (let tick = 0; tick < ticks; tick += 1) {
-    if (tick % 7 === 0) sim.rng.next();
-    sim.step(commandsFor(tick));
-  }
-  const snapshot = sim.snapshot();
-  sim.destroy();
-  return snapshot;
-}
-
 describe('determinism', () => {
   it('same seed + same commands = identical state, including physics bytes', async () => {
     const a = await run(42, 400);
@@ -73,3 +44,34 @@ describe('determinism', () => {
     expect(a.seed).not.toBe(b.seed);
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+/** A scripted session: joins, moves around, bumps into walls, uses the rng. */
+function script(tick: number): Command[] {
+  switch (tick) {
+    case 0:
+      return [{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }];
+    case 1:
+      return [{ type: 'player/move', slot: 0, x: 1, y: 0 }, { type: 'player/move', slot: 1, x: -0.3, y: 0.7 }];
+    case 90:
+      return [{ type: 'player/move', slot: 0, x: 0.5, y: -1 }];
+    case 200:
+      return [{ type: 'player/leave', slot: 1 }, { type: 'player/move', slot: 0, x: -1, y: -1 }];
+    case 260:
+      return [{ type: 'player/join', slot: 2 }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
+    default:
+      return [];
+  }
+}
+
+async function run(seed: number, ticks: number, commandsFor = script) {
+  const sim = await createSimInternal({ seed });
+  for (let tick = 0; tick < ticks; tick += 1) {
+    if (tick % 7 === 0) sim.rng.next();
+    sim.step(commandsFor(tick));
+  }
+  const snapshot = sim.snapshot();
+  sim.destroy();
+  return snapshot;
+}

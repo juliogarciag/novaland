@@ -2,32 +2,6 @@ import type Phaser from 'phaser';
 import { describe, expect, it } from 'vitest';
 import { createKeyboardInput } from './keyboard';
 
-type KeyName = 'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
-const KEY_NAMES: readonly KeyName[] = ['W', 'A', 'S', 'D', 'UP', 'DOWN', 'LEFT', 'RIGHT'];
-
-/**
- * The smallest stand-in for a Phaser scene that `createKeyboardInput` touches:
- * `scene.input.keyboard.addKeys(...)` returning objects with an `isDown` flag.
- * Phaser itself is never loaded (the module imports it as a type only).
- */
-function fakeScene() {
-  const keys = Object.fromEntries(KEY_NAMES.map((name) => [name, { isDown: false }])) as Record<KeyName, { isDown: boolean }>;
-  const requested: string[] = [];
-  const scene = {
-    input: {
-      keyboard: {
-        addKeys(spec: string) {
-          requested.push(spec);
-          return keys;
-        },
-      },
-    },
-  } as unknown as Phaser.Scene;
-  const press = (...names: KeyName[]) => names.forEach((name) => (keys[name].isDown = true));
-  const release = (...names: KeyName[]) => names.forEach((name) => (keys[name].isDown = false));
-  return { scene, press, release, requested };
-}
-
 describe('createKeyboardInput', () => {
   it('registers WASD and the arrow keys with the scene', () => {
     const { scene, requested } = fakeScene();
@@ -102,3 +76,31 @@ describe('createKeyboardInput', () => {
     expect(input.drain()).toEqual([]);
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+type KeyName = 'W' | 'A' | 'S' | 'D' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
+const KEY_NAMES: readonly KeyName[] = ['W', 'A', 'S', 'D', 'UP', 'DOWN', 'LEFT', 'RIGHT'];
+
+/**
+ * The smallest stand-in for a Phaser scene that `createKeyboardInput` touches:
+ * `scene.input.keyboard.addKeys(...)` returning objects with an `isDown` flag.
+ * Phaser itself is never loaded (the module imports it as a type only).
+ */
+function fakeScene() {
+  const keys = Object.fromEntries(KEY_NAMES.map((name) => [name, { isDown: false }])) as Record<KeyName, { isDown: boolean }>;
+  const requested: string[] = [];
+  const scene = {
+    input: {
+      keyboard: {
+        addKeys(spec: string) {
+          requested.push(spec);
+          return keys;
+        },
+      },
+    },
+  } as unknown as Phaser.Scene;
+  const press = (...names: KeyName[]) => names.forEach((name) => (keys[name].isDown = true));
+  const release = (...names: KeyName[]) => names.forEach((name) => (keys[name].isDown = false));
+  return { scene, press, release, requested };
+}

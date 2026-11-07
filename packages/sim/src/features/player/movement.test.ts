@@ -7,25 +7,6 @@ import { createSimInternal } from '../../core/create';
 import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from './queries';
 
-const playerDef = getDef(DefId.Player);
-const SPEED = playerDef.speed ?? 0;
-const RADIUS = playerDef.radius ?? 0;
-const BORDER = 1; // thickness used by starterLevel's borderWalls
-
-beforeAll(() => {
-  if (!(SPEED > 0) || !(RADIUS > 0)) throw new Error('the player def must define a positive speed and radius');
-});
-
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
-const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
-
-function playerPosition(sim: Awaited<ReturnType<typeof createSimInternal>>, slot = 0) {
-  const eid = findPlayerEntity(sim, slot);
-  const r = getRenderables(sim).find((x) => x.eid === eid);
-  if (!r) throw new Error('player not rendered');
-  return { x: r.x, y: r.y };
-}
-
 describe('player movement (headless)', () => {
   it('spawns a player at the level spawn point on join', async () => {
     const sim = await createSimInternal({ seed: 1 });
@@ -161,3 +142,24 @@ describe('player movement (headless)', () => {
     sim.destroy();
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const playerDef = getDef(DefId.Player);
+const SPEED = playerDef.speed ?? 0;
+const RADIUS = playerDef.radius ?? 0;
+const BORDER = 1; // thickness used by starterLevel's borderWalls
+
+beforeAll(() => {
+  if (!(SPEED > 0) || !(RADIUS > 0)) throw new Error('the player def must define a positive speed and radius');
+});
+
+const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
+
+function playerPosition(sim: Awaited<ReturnType<typeof createSimInternal>>, slot = 0) {
+  const eid = findPlayerEntity(sim, slot);
+  const r = getRenderables(sim).find((x) => x.eid === eid);
+  if (!r) throw new Error('player not rendered');
+  return { x: r.x, y: r.y };
+}

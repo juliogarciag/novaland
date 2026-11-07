@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { directionFromKeys, sameDirection } from './direction';
 
-const none = { up: false, down: false, left: false, right: false };
-
 describe('directionFromKeys', () => {
   it('is zero with nothing pressed', () => {
     expect(directionFromKeys(none)).toEqual({ x: 0, y: 0 });
@@ -29,3 +27,7 @@ describe('directionFromKeys', () => {
     expect(sameDirection({ x: 1, y: 0 }, { x: 0, y: 1 })).toBe(false);
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const none = { up: false, down: false, left: false, right: false };

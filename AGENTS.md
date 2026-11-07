@@ -97,6 +97,7 @@ Example: a `coins` feature where players pick up coins.
 **Verifying work**
 
 - Agents verify headlessly: sim tests are the proof that a feature works. The browser is for humans.
+- Test files read top-down: imports, then the `describe` blocks, then fixtures, fakes and helper functions at the bottom under a `// ---- Helpers ----` comment. A reader should see what is being asserted before how it is set up. Function declarations hoist, so this is always safe for them; `const` helpers and fixtures are fine too as long as they are only used inside `it`, `beforeAll` and similar callbacks, never in a `describe` body.
 - For user-facing changes, the ticket's `verifications/<ticket>/` folder holds scripts that exercise the real app (for example Playwright against `pnpm dev`) and the proof they produced (screenshots, logs, JSON reports). See `verifications/1-bootstrap-monorepo/` for the template.
 - Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`, `level`, `defs`, `pixelsPerMetre`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. It is stripped from production builds.
 - Units: the sim works in metres, origin at the level centre, y pointing down. The client converts with `PIXELS_PER_METRE` in `client/src/render/units.ts`.
