@@ -65,6 +65,13 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 10. Feature-oriented folders. New behaviour goes in `sim/src/features/<feature>/`; parallel agents should rarely touch the same files. The shared files a feature may touch, one line each: `features/index.ts` (register), `content/defs.ts` (spread in the feature's defs and claim an id block), `core/commands.ts` (add the command union), `src/index.ts` (expose something to views), `content/levels/*` (place content in a level).
 11. Command handlers are the validation boundary. Commands will come from the network: validate every field, ignore what is malformed, never throw. `Sim.step` already drops values that are not objects with a string `type`.
 
+**Naming**
+
+- Name things by what the caller gets, not by how it works inside. The test: the call site must read as a plain sentence without opening the function. `const { ticks, leftover } = takeWholeTicks(...)` passes. `const { ticks, accumulator } = advanceFixedStep(...)` failed, because "advance" and "accumulator" describe the technique and you had to read the body to learn it returns a count.
+- The same rule applies to result fields and to state. Store the leftover frame time as `leftover`, not under the name of the pattern it belongs to.
+- If you cannot name a function by its result, it is probably doing two things. Split it, then name each half.
+- Commands are named `'<feature>/<verb>'` and features by their domain noun (`player`, `walls`), never by the ticket or the agent that made them.
+
 **Commands**
 
 ```
