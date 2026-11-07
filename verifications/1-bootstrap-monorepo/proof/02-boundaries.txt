@@ -1,0 +1,19 @@
+PASS  lint fails on the violation files  (exit 1)
+PASS  packages/sim/src/__violation__.ts: no-restricted-imports /phaser/
+PASS  packages/sim/src/__violation__.ts: no-restricted-imports /client/
+PASS  packages/sim/src/__violation__.ts: no-restricted-imports /@novaland\/server/
+PASS  packages/sim/src/__violation__.ts: no-restricted-imports /colyseus/
+PASS  packages/sim/src/__violation__.ts: no-restricted-globals /window/
+PASS  packages/sim/src/__violation__.ts: no-restricted-properties /Math\.random/
+PASS  packages/sim/src/__violation__.ts: no-restricted-properties /Date\.now/
+PASS  packages/sim/src/__violation__.ts: no-restricted-syntax /Non-deterministic/
+PASS  packages/client/src/__violation__.ts: no-restricted-imports /@dimforge/
+PASS  packages/client/src/__violation__.ts: no-restricted-imports /bitecs/
+PASS  packages/client/src/__violation__.ts: no-restricted-imports /@novaland\/sim\/src/
+PASS  packages/client/src/__violation__.ts: no-restricted-imports /\.\.\/\.\.\/sim/
+PASS  packages/client/src/__violation__.ts: no-restricted-imports /@novaland\/server/
+PASS  packages/server/src/__violation__.ts: no-restricted-imports /phaser/
+PASS  packages/server/src/__violation__.ts: no-restricted-imports /\.\.\/\.\.\/sim/
+PASS  violation files removed again
+
+ALL 17 CHECKS PASSED

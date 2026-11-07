@@ -1,0 +1,24 @@
+{
+  "name": "@novaland/client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Phaser view of the sim. Renders state and turns input into commands. No game rules.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "dependencies": {
+    "@novaland/sim": "workspace:*",
+    "phaser": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

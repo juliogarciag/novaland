@@ -1,6 +1,6 @@
 **The project**
 
-This is a 2d open world that we're gonna expand with time.
+This is a 2d open world that we're gonna expand with time. It is a playground: features will grow without a clear limit, mostly through AI agents working in parallel. The architecture below exists so that many agents can add things at once without breaking each other.
 
 **Development process**
 
@@ -20,3 +20,91 @@ This is a 2d open world that we're gonna expand with time.
   - When the work is done, it should create a PR. Tickets should aim for a 1-to-1 relationship with PRs.
   - The session then stays open for regular feedback loop with the human in charge.
   - Once the PR has been approved by a human, you merge it.
+
+**Stack**
+
+- TypeScript (strict), pnpm workspaces, Vite.
+- Phaser 4: rendering and input only, in `packages/client`.
+- Rapier 2D (`@dimforge/rapier2d-deterministic-compat`): all physics, in `packages/sim`. Phaser Arcade/Matter physics are never used.
+- bitECS: entities and components, in `packages/sim`.
+- Vitest: all tests. They run headless in Node.
+- Colyseus: future multiplayer server in `packages/server`. Not implemented yet; the package exists so the sim already runs there.
+
+**Repository layout**
+
+```
+packages/
+  sim/        All game logic and state. Plain TS. No Phaser, no DOM, no Node APIs.
+    src/
+      index.ts            Public API. The ONLY file client/server may import from.
+      core/               Sim class, fixed-step loop, components, physics, rng, snapshot, view.
+      content/            Data: entity defs, levels, tuning values.
+      features/<name>/    One folder per feature: components, commands, systems, tests.
+      features/index.ts   The list of features the sim runs (one line per feature).
+  client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
+    src/main.ts, src/scenes/, src/input/, src/render/, src/debug.ts
+  server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
+docs/decisions/   Architecture decision records (ADRs). Read 0001 and 0002 before touching core.
+verifications/    One folder per ticket with its verification scripts and proof.
+```
+
+Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. Packages reference them as `"catalog:"`.
+
+**Architecture rules (non-negotiable)**
+
+1. The sim is the single source of truth. The client is a view; it never decides anything about the game.
+2. Input reaches the sim only as serializable commands (`Command` in `sim/src/core/commands.ts`). No callbacks, no direct mutation of sim state from outside the sim.
+3. State is serializable. `sim.snapshot()` must keep capturing everything: never keep game state outside components, the physics world and the rng.
+4. The sim advances only through `sim.step(commands)`, one fixed tick of `FIXED_DT` at a time. The client owns an accumulator that turns real time into whole ticks.
+5. Determinism: same seed + same commands = identical state. In `packages/sim` there is no `Math.random`, `Date`, timers or I/O. Randomness goes through `sim.rng`. Lint enforces this.
+6. Components hold numeric, mutable, per-entity state only (typed arrays). Static or rich data (names, sprites, stats, effects, speeds) lives in definition files keyed by a numeric `defId`; entities reference it through the `DefRef` component. See `docs/decisions/0001-ecs.md`.
+7. Content is data: entities, levels and tuning values live in `sim/src/content/` as TS data files, not in logic.
+8. Physics lives in the sim. The client never imports Rapier or bitECS. The client reads the sim through `getRenderables(sim)` and other exports of `@novaland/sim`.
+9. Package boundaries are enforced by lint (`eslint.config.js`) and by the sim's `tsconfig` (no DOM lib, no Node types). `sim` imports nothing from `client` or `server`; `client` and `server` import `@novaland/sim` through its package entry only, never deep paths.
+10. Feature-oriented folders. New behaviour goes in `sim/src/features/<feature>/`; parallel agents should rarely touch the same files. Shared files you will touch when adding a feature are exactly: `features/index.ts` (register), `core/commands.ts` (if it adds commands) and `src/index.ts` (if it exposes something to views).
+
+**Commands**
+
+```
+pnpm install
+pnpm dev          # client dev server. PORT=5180 pnpm dev to pin a port (needed when several worktrees run at once)
+pnpm test         # all tests in all packages, headless
+pnpm typecheck    # tsc for every package
+pnpm lint         # eslint, including the boundary rules
+pnpm check        # test + typecheck + lint, what CI runs
+pnpm sim:headless # runs the sim in the server package for 5 simulated seconds and prints a state hash
+```
+
+Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` must pass.
+
+**How to add a feature without breaking the rules**
+
+Example: a `coins` feature where players pick up coins.
+
+1. Create `packages/sim/src/features/coins/`.
+2. `components.ts`: declare components with `defineComponent(name, capacity => ({ field: f64(capacity) }))`. Numbers only. Read them in systems through `sim.store(Component)`.
+3. Add any rich data to `sim/src/content/defs.ts` as a new `EntityDef` entry with a new, never-reused id (add it to `DefId`). A coin that is just "another kind of pickup" is only a data entry.
+4. `commands.ts` (only if players can do something new): declare command interfaces with a `type` literal and plain JSON fields. Add the union to `Command` in `core/commands.ts`. Validate every field in the handler; commands will come from the network one day.
+5. `index.ts`: export a `Feature` object (`core/feature.ts`) with `init` (spawn from level data), `handleCommand`, `update` (before the physics step) and/or `postStep`. Spawn entities with `sim.createEntity()`; attach bodies with the helpers in `core/physics.ts`; remove entities with `sim.destroyEntity(eid)`.
+6. Register it in `features/index.ts`. Order matters only if your feature depends on another feature's work within the same tick.
+7. Tests next to the code (`*.test.ts`): create a sim with `createSim`, drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
+8. If a view needs something new, export it from `sim/src/index.ts` and consume it in `packages/client`. The client only draws; if you are tempted to put an `if` about game rules in the client, it belongs in the sim.
+9. Level content goes in `sim/src/content/levels/`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's defs.
+10. Run `pnpm check`. Lint will tell you if you crossed a boundary.
+
+**Verifying work**
+
+- Agents verify headlessly: sim tests are the proof that a feature works. The browser is for humans.
+- For user-facing changes, the ticket's `verifications/<ticket>/` folder holds scripts that exercise the real app (for example Playwright against `pnpm dev`) and the proof they produced (screenshots, logs, JSON reports). See `verifications/1-bootstrap-monorepo/` for the template.
+- Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`) so browser checks can read sim state instead of guessing from pixels.
+- Units: the sim works in metres, origin at the level centre, y pointing down. The client converts with `PIXELS_PER_METRE` in `client/src/render/units.ts`.
+
+**Worktrees and ports**
+
+- Every ticket is worked on in its own git worktree under `.worktrees/` (gitignored) on a branch with the same name.
+- Nothing hardcodes a port. `PORT=<n> pnpm dev` pins the dev server; unset, Vite picks a free one starting at 5173. Each worktree needs its own `pnpm install`.
+- `.claude/launch.json` describes the dev server for the desktop app's preview; it inherits `PORT` from the environment.
+
+**Decisions**
+
+Significant architectural choices are recorded in `docs/decisions/` as numbered ADRs. Add a new one when you make a choice the next agent would otherwise have to rediscover; never edit an accepted one, supersede it.

@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // No DOM, no Node: the sim must compile against the plain ECMAScript library only.
+    "lib": ["ES2022"],
+    "types": []
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,9 @@
+PASS  pnpm install --frozen-lockfile exits 0  (exit 0)
+PASS  pnpm test exits 0  (exit 0)
+PASS  headless N-tick movement test ran
+PASS  determinism test ran
+PASS  all tests passed  (21/21)
+PASS  pnpm typecheck exits 0  (exit 0)
+PASS  pnpm lint exits 0  (exit 0)
+
+ALL 7 CHECKS PASSED

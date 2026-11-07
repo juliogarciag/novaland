@@ -1,0 +1,9 @@
+PASS  keeps the development process section
+PASS  documents the package layout
+PASS  states the architecture rules
+PASS  lists the four commands
+PASS  explains how to add a feature step by step
+PASS  explains ports and worktrees
+PASS  points to the ECS decision record
+
+ALL 7 CHECKS PASSED

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "keeps the development process section",
+    "pass": true
+  },
+  {
+    "name": "documents the package layout",
+    "pass": true
+  },
+  {
+    "name": "states the architecture rules",
+    "pass": true
+  },
+  {
+    "name": "lists the four commands",
+    "pass": true
+  },
+  {
+    "name": "explains how to add a feature step by step",
+    "pass": true
+  },
+  {
+    "name": "explains ports and worktrees",
+    "pass": true
+  },
+  {
+    "name": "points to the ECS decision record",
+    "pass": true
+  }
+]

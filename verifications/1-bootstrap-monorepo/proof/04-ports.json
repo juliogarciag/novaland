@@ -1,0 +1,12 @@
+{
+  "pinned": [
+    5301,
+    5302
+  ],
+  "unpinned": 5173,
+  "logs": [
+    "\n> novaland@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo\n> pnpm --filter @novaland/client dev\n\n(node:37546) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\n> @novaland/client@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo/packages/client\n> vite\n\n\n  VITE v8.3.6  ready in 95 ms\n\n  ➜  Local:   http://localhost:5301/\n  ➜  Network: use --host to expose\n",
+    "\n> novaland@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo\n> pnpm --filter @novaland/client dev\n\n(node:37539) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\n> @novaland/client@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo/packages/client\n> vite\n\n\n  VITE v8.3.6  ready in 95 ms\n\n  ➜  Local:   http://localhost:5302/\n  ➜  Network: use --host to expose\n",
+    "\n> novaland@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo\n> pnpm --filter @novaland/client dev\n\n(node:37618) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n\n> @novaland/client@0.0.0 dev /Users/julio/dev/projects/novaland/.worktrees/1-bootstrap-monorepo/packages/client\n> vite\n\n\n  VITE v8.3.6  ready in 94 ms\n\n  ➜  Local:   http://localhost:5173/\n  ➜  Network: use --host to expose\n"
+  ]
+}
