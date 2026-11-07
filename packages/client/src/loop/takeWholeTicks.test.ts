@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { takeWholeTicks } from './fixedStep';
+import { takeWholeTicks } from './takeWholeTicks';
 
 describe('takeWholeTicks', () => {
   it('runs zero ticks and keeps the time when a frame is shorter than a tick', () => {

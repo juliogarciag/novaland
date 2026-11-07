@@ -1,7 +1,7 @@
 import type { Command, SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
-import { takeWholeTicks } from '../loop/fixedStep';
+import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { EntityRenderer } from '../render/entities';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
