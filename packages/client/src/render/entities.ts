@@ -1,32 +1,45 @@
-import { getDef, getRenderables, type Sim } from '@novaland/sim';
+import { getDef, getRenderables, type SimHandle } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { toPixels } from './units';
+
+interface EntityView {
+  readonly shape: Phaser.GameObjects.Shape;
+  readonly defId: number;
+  readonly hw: number;
+  readonly hh: number;
+}
 
 /**
  * Keeps one Phaser shape per sim entity and moves it to the entity's
  * position every frame. Shapes are created lazily and removed when the entity
- * disappears, so the view never owns state the sim does not have.
+ * disappears, so the view never owns state the sim does not have. Entity ids
+ * are recycled by the sim, so a cached shape is reused only while its def and
+ * size still match.
  */
 export class EntityRenderer {
-  private readonly shapes = new Map<number, Phaser.GameObjects.Shape>();
+  private readonly views = new Map<number, EntityView>();
 
   constructor(private readonly scene: Phaser.Scene) {}
 
-  sync(sim: Sim): void {
+  sync(sim: SimHandle): void {
     const seen = new Set<number>();
     for (const r of getRenderables(sim)) {
       seen.add(r.eid);
-      let shape = this.shapes.get(r.eid);
-      if (!shape) {
-        shape = this.createShape(r.defId, r.hw, r.hh);
-        this.shapes.set(r.eid, shape);
+      let view = this.views.get(r.eid);
+      if (view && (view.defId !== r.defId || view.hw !== r.hw || view.hh !== r.hh)) {
+        view.shape.destroy();
+        view = undefined;
       }
-      shape.setPosition(toPixels(r.x), toPixels(r.y));
+      if (!view) {
+        view = { shape: this.createShape(r.defId, r.hw, r.hh), defId: r.defId, hw: r.hw, hh: r.hh };
+        this.views.set(r.eid, view);
+      }
+      view.shape.setPosition(toPixels(r.x), toPixels(r.y));
     }
-    for (const [eid, shape] of this.shapes) {
+    for (const [eid, view] of this.views) {
       if (!seen.has(eid)) {
-        shape.destroy();
-        this.shapes.delete(eid);
+        view.shape.destroy();
+        this.views.delete(eid);
       }
     }
   }

@@ -1,6 +1,7 @@
 import { hasComponent, query } from 'bitecs';
 import { getDef } from '../content/defs';
-import type { Sim } from './sim';
+import { DEFAULT_RADIUS } from '../content/tuning';
+import { asSim, type SimHandle } from './sim';
 import { DefRef, Extents, Position } from './transform';
 
 /**
@@ -17,7 +18,8 @@ export interface Renderable {
   readonly hh: number;
 }
 
-export function getRenderables(sim: Sim): Renderable[] {
+export function getRenderables(handle: SimHandle): Renderable[] {
+  const sim = asSim(handle);
   const position = sim.store(Position);
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);
@@ -30,7 +32,7 @@ export function getRenderables(sim: Sim): Renderable[] {
       hw = extents.hw[eid] as number;
       hh = extents.hh[eid] as number;
     } else {
-      const radius = getDef(defId).radius ?? 0.5;
+      const radius = getDef(defId).radius ?? DEFAULT_RADIUS;
       hw = radius;
       hh = radius;
     }

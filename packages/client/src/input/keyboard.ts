@@ -3,8 +3,8 @@ import type Phaser from 'phaser';
 import { directionFromKeys, sameDirection, type Direction } from './direction';
 
 /**
- * Turns keyboard state into sim commands. Emits a `move` only when the
- * direction changes, which is all the sim needs (it keeps the last intent).
+ * Turns keyboard state into sim commands. Emits a `player/move` only when
+ * the direction changes, which is all the sim needs (it keeps the last intent).
  */
 export interface KeyboardInput {
   /** Commands produced since the last call. Call once per frame. */
@@ -30,7 +30,7 @@ export function createKeyboardInput(scene: Phaser.Scene, slot: number): Keyboard
       });
       if (sameDirection(next, last)) return [];
       last = next;
-      const move: MoveCommand = { type: 'move', slot, x: next.x, y: next.y };
+      const move: MoveCommand = { type: 'player/move', slot, x: next.x, y: next.y };
       return [move];
     },
   };

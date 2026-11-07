@@ -3,6 +3,7 @@ import { rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { ROOT, check, run, summarize, writeProof } from './lib.mjs';
 
+// __violation__.ts is gitignored, so an interrupted run never pollutes a commit.
 const violations = {
   'packages/sim/src/__violation__.ts': {
     source: [
@@ -10,14 +11,17 @@ const violations = {
       "import { boot } from '../../client/src/main';",
       "import { runHeadless } from '@novaland/server';",
       "import { Room } from 'colyseus';",
-      'export const v = [Phaser, boot, runHeadless, Room, window, Math.random(), Date.now(), new Date()];',
+      "import { readFileSync } from 'node:fs';",
+      'export const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date()];',
     ],
     expect: [
       ['no-restricted-imports', /phaser/],
       ['no-restricted-imports', /client/],
       ['no-restricted-imports', /@novaland\/server/],
       ['no-restricted-imports', /colyseus/],
+      ['no-restricted-imports', /node:fs/],
       ['no-restricted-globals', /window/],
+      ['no-restricted-globals', /crypto/],
       ['no-restricted-properties', /Math\.random/],
       ['no-restricted-properties', /Date\.now/],
       ['no-restricted-syntax', /Non-deterministic/],
@@ -52,12 +56,15 @@ const violations = {
 const files = Object.keys(violations);
 const results = [];
 let report;
+const cleanup = () => {
+  for (const file of files) rmSync(path.join(ROOT, file), { force: true });
+};
+process.on('exit', cleanup);
 try {
   for (const file of files) writeFileSync(path.join(ROOT, file), violations[file].source.join('\n') + '\n');
-  const { code, output } = await run('pnpm', ['exec', 'eslint', '--format', 'json', ...files]);
+  const { code, stdout } = await run('pnpm', ['exec', 'eslint', '--format', 'json', ...files]);
   results.push(check('lint fails on the violation files', code !== 0, `exit ${code}`));
-  const jsonStart = output.indexOf('[');
-  report = JSON.parse(output.slice(jsonStart));
+  report = JSON.parse(stdout);
   for (const file of files) {
     const entry = report.find((r) => r.filePath.endsWith(file));
     const messages = entry ? entry.messages : [];
@@ -67,9 +74,9 @@ try {
     }
   }
 } finally {
-  for (const file of files) rmSync(path.join(ROOT, file), { force: true });
+  cleanup();
 }
-const clean = await run('git', ['status', '--porcelain', '--', ...files]);
-results.push(check('violation files removed again', clean.output.trim() === ''));
+const clean = await run('git', ['status', '--porcelain', '--ignored', '--', ...files]);
+results.push(check('violation files removed again', clean.stdout.trim() === ''));
 writeProof('02-boundaries.json', { results, lint: report });
 process.exit(summarize(results) ? 0 : 1);

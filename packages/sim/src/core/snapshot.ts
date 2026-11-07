@@ -5,6 +5,9 @@ import type { Sim } from './sim';
  * A snapshot is the complete, JSON-safe state of a sim: every entity with
  * every component field, plus the physics world and the rng. Two sims with
  * equal snapshots will evolve identically given the same commands.
+ *
+ * Entities, components and fields are sorted so that the hash does not depend
+ * on the order things were attached in.
  */
 export interface EntitySnapshot {
   readonly id: number;
@@ -14,6 +17,9 @@ export interface EntitySnapshot {
 export interface SimSnapshot {
   readonly version: 1;
   readonly seed: number;
+  /** Name of the level the sim was built from. */
+  readonly level: string;
+  readonly capacity: number;
   readonly tick: number;
   readonly rng: number;
   readonly entities: EntitySnapshot[];
@@ -24,13 +30,17 @@ export interface SimSnapshot {
 export function takeSnapshot(sim: Sim): SimSnapshot {
   const ids = [...getAllEntities(sim.world)].sort((a, b) => a - b);
   const entities: EntitySnapshot[] = ids.map((id) => {
-    const components: Record<string, Record<string, number>> = {};
+    const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
     for (const store of getEntityComponents(sim.world, id)) {
       const name = sim.componentName(store);
-      if (!name) continue;
+      if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
+    }
+    named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    const components: Record<string, Record<string, number>> = {};
+    for (const [name, store] of named) {
       const fields: Record<string, number> = {};
-      for (const [field, values] of Object.entries(store as Record<string, ArrayLike<number>>)) {
-        fields[field] = values[id] as number;
+      for (const field of Object.keys(store).sort()) {
+        fields[field] = store[field]![id] as number;
       }
       components[name] = fields;
     }
@@ -39,6 +49,8 @@ export function takeSnapshot(sim: Sim): SimSnapshot {
   return {
     version: 1,
     seed: sim.seed,
+    level: sim.level.name,
+    capacity: sim.capacity,
     tick: sim.tick,
     rng: sim.rng.state(),
     entities,

@@ -1,12 +1,16 @@
+import { addComponent } from 'bitecs';
 import { describe, expect, it } from 'vitest';
-import { createSim } from './create';
-import { hashSnapshot, toBase64 } from './snapshot';
+import { createSimInternal } from './create';
+import { initPhysics } from './physics';
+import { Sim } from './sim';
+import { hashSnapshot, toBase64, type SimSnapshot } from './snapshot';
+import { DefRef, Extents } from './transform';
 
 describe('snapshot', () => {
   it('is plain JSON that survives a round trip', async () => {
-    const sim = await createSim({ seed: 3 });
-    sim.step([{ type: 'join', slot: 0 }]);
-    sim.step([{ type: 'move', slot: 0, x: 1, y: 0 }]);
+    const sim = await createSimInternal({ seed: 3 });
+    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     const snapshot = sim.snapshot();
     const roundTripped = JSON.parse(JSON.stringify(snapshot));
     expect(roundTripped).toEqual(snapshot);
@@ -14,21 +18,51 @@ describe('snapshot', () => {
     sim.destroy();
   });
 
-  it('records every component field of every entity', async () => {
-    const sim = await createSim({ seed: 3 });
-    sim.step([{ type: 'join', slot: 0 }]);
+  it('records every component field of every entity plus level, capacity, tick and rng', async () => {
+    const sim = await createSimInternal({ seed: 3 });
+    sim.step([{ type: 'player/join', slot: 0 }]);
     const snapshot = sim.snapshot();
+    expect(snapshot.level).toBe(sim.level.name);
+    expect(snapshot.capacity).toBe(sim.capacity);
+    expect(snapshot.tick).toBe(1);
     const player = snapshot.entities.find((e) => e.components['Player'] !== undefined);
-    expect(player).toBeDefined();
-    expect(Object.keys(player?.components ?? {}).sort()).toEqual(
-      ['Body', 'DefRef', 'Extents', 'MoveIntent', 'Player', 'Position'],
-    );
-    expect(player?.components['Position']).toEqual({ x: sim.level.spawn.x, y: sim.level.spawn.y });
+    expect(player?.components).toEqual({
+      Body: { handle: expect.any(Number) },
+      DefRef: { id: expect.any(Number) },
+      Extents: { hh: 0.4, hw: 0.4 },
+      MoveIntent: { x: 0, y: 0 },
+      Player: { slot: 0 },
+      Position: { x: sim.level.spawn.x, y: sim.level.spawn.y },
+    });
     expect(snapshot.entities.filter((e) => e.components['Extents'] && !e.components['Player'])).toHaveLength(
       sim.level.walls.length,
     );
     expect(snapshot.physics.length).toBeGreaterThan(100);
     sim.destroy();
+  });
+
+  it('hashes the same regardless of the order components were attached in', async () => {
+    await initPhysics();
+    const level = { name: 'empty', width: 4, height: 4, spawn: { x: 0, y: 0 }, walls: [] };
+    const a = new Sim({ seed: 0, level, capacity: 8 }, []);
+    const b = new Sim({ seed: 0, level, capacity: 8 }, []);
+    const ea = a.createEntity();
+    addComponent(a.world, ea, a.store(Extents));
+    addComponent(a.world, ea, a.store(DefRef));
+    const eb = b.createEntity();
+    addComponent(b.world, eb, b.store(DefRef));
+    addComponent(b.world, eb, b.store(Extents));
+    expect(a.snapshot()).toEqual(b.snapshot());
+    expect(hashSnapshot(a.snapshot())).toBe(hashSnapshot(b.snapshot()));
+    a.destroy();
+    b.destroy();
+  });
+
+  it('has a stable hash (known answer)', () => {
+    const fixed: SimSnapshot = { version: 1, seed: 7, level: 'x', capacity: 2, tick: 3, rng: 9, entities: [{ id: 1, components: { A: { v: 1.5 } } }], physics: 'AAAA' };
+    expect(hashSnapshot(fixed)).toBe(hashSnapshot(JSON.parse(JSON.stringify(fixed))));
+    expect(hashSnapshot(fixed)).toMatch(/^[0-9a-f]{8}$/);
+    expect(hashSnapshot(fixed)).toBe('e146e1b7');
   });
 
   it('encodes base64 like the standard', () => {

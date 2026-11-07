@@ -4,15 +4,25 @@
  * Entities reference a definition through the numeric `DefRef.id` component.
  * Components only hold numbers; everything else (names, colours, speeds,
  * shapes) lives here. Adding a new kind of thing that behaves like an existing
- * one is a new entry in `entityDefs` and nothing else.
+ * one is a new entry in that feature's `defs.ts` and nothing else.
  *
+ * Each feature owns its defs in `features/<feature>/defs.ts` and a block of
+ * ids, so parallel work never collides on this file:
+ *
+ *   player  1-99
+ *   walls   100-199
+ *   (next feature: claim the next block of 100 here)
+ *
+ * Ids are stable forever: they end up in save files. Never reuse or renumber.
  * See docs/decisions/0001-ecs.md.
  */
+import { PlayerDefId, playerDefs } from '../features/player/defs';
+import { WallDefId, wallDefs } from '../features/walls/defs';
 
 export type DefShape = 'circle' | 'box';
 
 export interface EntityDef {
-  /** Stable numeric id. Never reuse or renumber: ids end up in save files. */
+  /** Stable numeric id from the feature's block. */
   readonly id: number;
   readonly name: string;
   readonly shape: DefShape;
@@ -24,15 +34,9 @@ export interface EntityDef {
   readonly speed?: number;
 }
 
-export const DefId = {
-  Player: 1,
-  Wall: 2,
-} as const;
+export const DefId = { ...PlayerDefId, ...WallDefId } as const;
 
-export const entityDefs: readonly EntityDef[] = [
-  { id: DefId.Player, name: 'player', shape: 'circle', radius: 0.4, speed: 5, color: 0x4ade80 },
-  { id: DefId.Wall, name: 'wall', shape: 'box', color: 0x475569 },
-];
+export const entityDefs: readonly EntityDef[] = [...playerDefs, ...wallDefs];
 
 const byId: ReadonlyMap<number, EntityDef> = new Map(entityDefs.map((def) => [def.id, def]));
 

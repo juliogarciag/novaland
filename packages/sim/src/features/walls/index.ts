@@ -1,19 +1,19 @@
 import { addComponent } from 'bitecs';
-import { DefId } from '../../content/defs';
 import type { Feature } from '../../core/feature';
 import { attachStaticBox } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents } from '../../core/transform';
+import { WallDefId } from './defs';
 
 /** Static walls from level data. Nothing moves them; they only exist to be collided with. */
 export const wallsFeature: Feature = {
   name: 'walls',
   init(sim) {
-    for (const wall of sim.level.walls) spawnWall(sim, wall.x, wall.y, wall.w, wall.h, wall.defId ?? DefId.Wall);
+    for (const wall of sim.level.walls) spawnWall(sim, wall.x, wall.y, wall.w, wall.h, wall.defId ?? WallDefId.Wall);
   },
 };
 
-export function spawnWall(sim: Sim, x: number, y: number, w: number, h: number, defId: number): number {
+function spawnWall(sim: Sim, x: number, y: number, w: number, h: number, defId: number): number {
   const eid = sim.createEntity();
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);

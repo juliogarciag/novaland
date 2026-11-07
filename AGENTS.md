@@ -38,11 +38,11 @@ packages/
     src/
       index.ts            Public API. The ONLY file client/server may import from.
       core/               Sim class, fixed-step loop, components, physics, rng, snapshot, view.
-      content/            Data: entity defs, levels, tuning values.
-      features/<name>/    One folder per feature: components, commands, systems, tests.
+      content/            Data: the defs registry, levels, tuning values.
+      features/<name>/    One folder per feature: components, defs, commands, systems, tests.
       features/index.ts   The list of features the sim runs (one line per feature).
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
-    src/main.ts, src/scenes/, src/input/, src/render/, src/debug.ts
+    src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
   server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
 docs/decisions/   Architecture decision records (ADRs). Read 0001 and 0002 before touching core.
 verifications/    One folder per ticket with its verification scripts and proof.
@@ -53,15 +53,16 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 **Architecture rules (non-negotiable)**
 
 1. The sim is the single source of truth. The client is a view; it never decides anything about the game.
-2. Input reaches the sim only as serializable commands (`Command` in `sim/src/core/commands.ts`). No callbacks, no direct mutation of sim state from outside the sim.
+2. Input reaches the sim only as serializable commands (`Command` in `sim/src/core/commands.ts`). No callbacks, no direct mutation of sim state from outside the sim. Views and servers only ever hold a `SimHandle` (`step`, `snapshot`, read-only fields); the `Sim` class with components, physics and rng is internal to `packages/sim`.
 3. State is serializable. `sim.snapshot()` must keep capturing everything: never keep game state outside components, the physics world and the rng.
-4. The sim advances only through `sim.step(commands)`, one fixed tick of `FIXED_DT` at a time. The client owns an accumulator that turns real time into whole ticks.
-5. Determinism: same seed + same commands = identical state. In `packages/sim` there is no `Math.random`, `Date`, timers or I/O. Randomness goes through `sim.rng`. Lint enforces this.
+4. The sim advances only through `step(commands)`, one fixed tick of `FIXED_DT` at a time. The client owns an accumulator (`client/src/loop/fixedStep.ts`) that turns real time into whole ticks; commands wait in a buffer until the next earned tick. Nothing else may call `step`.
+5. Determinism: same seed + same commands = identical state. In `packages/sim` there is no `Math.random`, `Date`, `crypto`, timers, Node modules or I/O. Randomness goes through `sim.rng`. Lint enforces this.
 6. Components hold numeric, mutable, per-entity state only (typed arrays). Static or rich data (names, sprites, stats, effects, speeds) lives in definition files keyed by a numeric `defId`; entities reference it through the `DefRef` component. See `docs/decisions/0001-ecs.md`.
-7. Content is data: entities, levels and tuning values live in `sim/src/content/` as TS data files, not in logic.
+7. Content is data: entities, levels and tuning values live in data files (`sim/src/content/`, `features/<feature>/defs.ts`), not in logic.
 8. Physics lives in the sim. The client never imports Rapier or bitECS. The client reads the sim through `getRenderables(sim)` and other exports of `@novaland/sim`.
 9. Package boundaries are enforced by lint (`eslint.config.js`) and by the sim's `tsconfig` (no DOM lib, no Node types). `sim` imports nothing from `client` or `server`; `client` and `server` import `@novaland/sim` through its package entry only, never deep paths.
-10. Feature-oriented folders. New behaviour goes in `sim/src/features/<feature>/`; parallel agents should rarely touch the same files. Shared files you will touch when adding a feature are exactly: `features/index.ts` (register), `core/commands.ts` (if it adds commands) and `src/index.ts` (if it exposes something to views).
+10. Feature-oriented folders. New behaviour goes in `sim/src/features/<feature>/`; parallel agents should rarely touch the same files. The shared files a feature may touch, one line each: `features/index.ts` (register), `content/defs.ts` (spread in the feature's defs and claim an id block), `core/commands.ts` (add the command union), `src/index.ts` (expose something to views), `content/levels/*` (place content in a level).
+11. Command handlers are the validation boundary. Commands will come from the network: validate every field, ignore what is malformed, never throw. `Sim.step` already drops values that are not objects with a string `type`.
 
 **Commands**
 
@@ -82,28 +83,28 @@ Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` 
 Example: a `coins` feature where players pick up coins.
 
 1. Create `packages/sim/src/features/coins/`.
-2. `components.ts`: declare components with `defineComponent(name, capacity => ({ field: f64(capacity) }))`. Numbers only. Read them in systems through `sim.store(Component)`.
-3. Add any rich data to `sim/src/content/defs.ts` as a new `EntityDef` entry with a new, never-reused id (add it to `DefId`). A coin that is just "another kind of pickup" is only a data entry.
-4. `commands.ts` (only if players can do something new): declare command interfaces with a `type` literal and plain JSON fields. Add the union to `Command` in `core/commands.ts`. Validate every field in the handler; commands will come from the network one day.
-5. `index.ts`: export a `Feature` object (`core/feature.ts`) with `init` (spawn from level data), `handleCommand`, `update` (before the physics step) and/or `postStep`. Spawn entities with `sim.createEntity()`; attach bodies with the helpers in `core/physics.ts`; remove entities with `sim.destroyEntity(eid)`.
+2. `components.ts`: declare components with `defineComponent(name, capacity => ({ field: f64(capacity) }))`. Numbers only. Names are unique across the whole sim (they key the snapshot; a duplicate throws). Read them in systems through `sim.store(Component)`.
+3. `defs.ts`: export `CoinDefId` and `coinDefs: readonly EntityDef[]`. Claim the next free block of 100 ids in the comment at the top of `content/defs.ts` and spread your list into `entityDefs` and `DefId` there. A coin that is just "another kind of pickup" is only a new entry in `coinDefs`. Ids are forever: never reuse or renumber.
+4. `commands.ts` (only if players can do something new): declare command interfaces with a `type` literal named `'<feature>/<verb>'` (for example `'coins/drop'`) and plain JSON fields. Add the union to `Command` in `core/commands.ts`. Validate every field in the handler and ignore bad input.
+5. `index.ts`: export a `Feature` object (`core/feature.ts`) with `init` (spawn from level data), `handleCommand`, `update` (before the physics step) and/or `postStep`. Spawn entities with `sim.createEntity()` after checking `sim.isFull`; attach bodies with the helpers in `core/physics.ts`; remove entities with `sim.destroyEntity(eid)`.
 6. Register it in `features/index.ts`. Order matters only if your feature depends on another feature's work within the same tick.
-7. Tests next to the code (`*.test.ts`): create a sim with `createSim`, drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
+7. Tests next to the code (`*.test.ts`): create a sim with `createSimInternal` (full access) or `createSim` (handle only), drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
 8. If a view needs something new, export it from `sim/src/index.ts` and consume it in `packages/client`. The client only draws; if you are tempted to put an `if` about game rules in the client, it belongs in the sim.
-9. Level content goes in `sim/src/content/levels/`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's defs.
+9. Level content goes in `sim/src/content/levels/`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's `defs.ts`.
 10. Run `pnpm check`. Lint will tell you if you crossed a boundary.
 
 **Verifying work**
 
 - Agents verify headlessly: sim tests are the proof that a feature works. The browser is for humans.
 - For user-facing changes, the ticket's `verifications/<ticket>/` folder holds scripts that exercise the real app (for example Playwright against `pnpm dev`) and the proof they produced (screenshots, logs, JSON reports). See `verifications/1-bootstrap-monorepo/` for the template.
-- Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`) so browser checks can read sim state instead of guessing from pixels.
+- Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`, `level`, `defs`, `pixelsPerMetre`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. It is stripped from production builds.
 - Units: the sim works in metres, origin at the level centre, y pointing down. The client converts with `PIXELS_PER_METRE` in `client/src/render/units.ts`.
 
 **Worktrees and ports**
 
-- Every ticket is worked on in its own git worktree under `.worktrees/` (gitignored) on a branch with the same name.
-- Nothing hardcodes a port. `PORT=<n> pnpm dev` pins the dev server; unset, Vite picks a free one starting at 5173. Each worktree needs its own `pnpm install`.
-- `.claude/launch.json` describes the dev server for the desktop app's preview; it inherits `PORT` from the environment.
+- Every ticket is worked on in its own git worktree under `.worktrees/` (gitignored) on a branch with the same name. Each worktree needs its own `pnpm install`.
+- Nothing hardcodes a port. `PORT=<n> pnpm dev` pins the dev server (and fails if `<n>` is busy); unset, Vite picks a free one starting at 5173. Only the shell environment counts: `.env` files are not read for this.
+- `.claude/launch.json` lets the desktop app preview the client from the main checkout; it lists 5173 as the port to open. Worktrees are previewed by starting `PORT=<n> pnpm dev` and opening that URL.
 
 **Decisions**
 

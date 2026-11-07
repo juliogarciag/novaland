@@ -6,6 +6,13 @@ import type { PlayerCommand } from '../features/player/commands';
  * recorded for replays.
  *
  * Each feature declares its own command types in features/<feature>/commands.ts
- * and handles them in its Feature.handleCommand. Add the feature's union here.
+ * and handles them in its Feature.handleCommand. The `type` literal is
+ * namespaced as '<feature>/<verb>' so two features can never claim the same
+ * one. Add the feature's union here.
  */
 export type Command = PlayerCommand;
+
+/** True when `value` has the minimal shape of a command. Anything else is dropped by Sim.step. */
+export function isCommandShaped(value: unknown): value is Command {
+  return typeof value === 'object' && value !== null && typeof (value as { type?: unknown }).type === 'string';
+}

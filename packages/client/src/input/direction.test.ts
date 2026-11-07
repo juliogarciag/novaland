@@ -17,13 +17,11 @@ describe('directionFromKeys', () => {
 
   it('cancels opposite keys', () => {
     expect(directionFromKeys({ ...none, left: true, right: true })).toEqual({ x: 0, y: 0 });
+    expect(directionFromKeys({ ...none, up: true, down: true })).toEqual({ x: 0, y: 0 });
   });
 
-  it('normalises diagonals', () => {
-    const d = directionFromKeys({ ...none, right: true, down: true });
-    expect(Math.hypot(d.x, d.y)).toBeCloseTo(1);
-    expect(d.x).toBeGreaterThan(0);
-    expect(d.y).toBeGreaterThan(0);
+  it('reports diagonals raw; the sim normalises them', () => {
+    expect(directionFromKeys({ ...none, right: true, down: true })).toEqual({ x: 1, y: 1 });
   });
 
   it('compares directions by value', () => {

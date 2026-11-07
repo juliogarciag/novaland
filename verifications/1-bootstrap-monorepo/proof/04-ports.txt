@@ -2,6 +2,8 @@ PASS  dev server on PORT=5301
 PASS  dev server on PORT=5302
 PASS  port 5301 serves the client page
 PASS  port 5302 serves the client page
-PASS  unpinned server picks its own free port  (port 5173)
+PASS  unpinned server picks a free port when 5173 is busy  (port 5174)
+PASS  the unpinned server really serves
+PASS  PORT pinned to a busy port fails instead of moving
 
-ALL 5 CHECKS PASSED
+ALL 7 CHECKS PASSED

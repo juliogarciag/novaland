@@ -4,7 +4,7 @@
 set -u
 cd "$(dirname "$0")"
 if [ ! -d node_modules ]; then
-  pnpm install --ignore-workspace
+  pnpm install --ignore-workspace --frozen-lockfile
   npx playwright install chromium
 fi
 status=0

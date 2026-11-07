@@ -20,6 +20,14 @@
     "pass": true
   },
   {
+    "name": "names the command literal convention",
+    "pass": true
+  },
+  {
+    "name": "explains per-feature defs and id blocks",
+    "pass": true
+  },
+  {
     "name": "explains ports and worktrees",
     "pass": true
   },

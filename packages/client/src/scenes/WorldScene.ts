@@ -1,6 +1,7 @@
-import type { Command, Sim } from '@novaland/sim';
+import type { Command, SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
+import { advanceFixedStep } from '../loop/fixedStep';
 import { EntityRenderer } from '../render/entities';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
@@ -11,15 +12,18 @@ const MAX_FRAME_SECONDS = 0.25;
 
 /**
  * The one scene for now. Owns the fixed-step accumulator: real time comes in
- * from Phaser, whole sim ticks go out. The scene never touches game rules.
+ * from Phaser, whole sim ticks go out. Commands wait in `pending` until the
+ * accumulator earns a tick, so the sim only ever advances with real time.
+ * The scene never touches game rules.
  */
 export class WorldScene extends Phaser.Scene {
   private accumulator = 0;
+  private pending: Command[] = [];
   private keyboard!: KeyboardInput;
   private entities!: EntityRenderer;
   private hud!: Phaser.GameObjects.Text;
 
-  constructor(private readonly sim: Sim) {
+  constructor(private readonly sim: SimHandle) {
     super('world');
   }
 
@@ -30,20 +34,18 @@ export class WorldScene extends Phaser.Scene {
     this.hud = this.add
       .text(12, 12, '', { fontFamily: 'monospace', fontSize: '14px', color: '#94a3b8' })
       .setScrollFactor(0);
-    this.sim.step([{ type: 'join', slot: LOCAL_SLOT }]);
+    this.pending.push({ type: 'player/join', slot: LOCAL_SLOT });
     this.entities.sync(this.sim);
   }
 
   override update(_time: number, deltaMs: number): void {
-    this.accumulator += Math.min(deltaMs / 1000, MAX_FRAME_SECONDS);
-    let commands: Command[] = this.keyboard.drain();
-    while (this.accumulator >= this.sim.dt) {
-      this.sim.step(commands);
-      commands = [];
-      this.accumulator -= this.sim.dt;
+    this.pending.push(...this.keyboard.drain());
+    const { ticks, accumulator } = advanceFixedStep(this.accumulator, deltaMs / 1000, this.sim.dt, MAX_FRAME_SECONDS);
+    this.accumulator = accumulator;
+    for (let i = 0; i < ticks; i += 1) {
+      this.sim.step(this.pending);
+      this.pending = [];
     }
-    // Input that arrived on a frame without a tick still has to reach the sim.
-    if (commands.length > 0) this.sim.step(commands);
     this.entities.sync(this.sim);
     this.hud.setText(`WASD / arrows to move   tick ${this.sim.tick}`);
   }

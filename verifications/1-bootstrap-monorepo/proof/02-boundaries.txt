@@ -3,7 +3,9 @@ PASS  packages/sim/src/__violation__.ts: no-restricted-imports /phaser/
 PASS  packages/sim/src/__violation__.ts: no-restricted-imports /client/
 PASS  packages/sim/src/__violation__.ts: no-restricted-imports /@novaland\/server/
 PASS  packages/sim/src/__violation__.ts: no-restricted-imports /colyseus/
+PASS  packages/sim/src/__violation__.ts: no-restricted-imports /node:fs/
 PASS  packages/sim/src/__violation__.ts: no-restricted-globals /window/
+PASS  packages/sim/src/__violation__.ts: no-restricted-globals /crypto/
 PASS  packages/sim/src/__violation__.ts: no-restricted-properties /Math\.random/
 PASS  packages/sim/src/__violation__.ts: no-restricted-properties /Date\.now/
 PASS  packages/sim/src/__violation__.ts: no-restricted-syntax /Non-deterministic/
@@ -16,4 +18,4 @@ PASS  packages/server/src/__violation__.ts: no-restricted-imports /phaser/
 PASS  packages/server/src/__violation__.ts: no-restricted-imports /\.\.\/\.\.\/sim/
 PASS  violation files removed again
 
-ALL 17 CHECKS PASSED
+ALL 19 CHECKS PASSED

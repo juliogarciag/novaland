@@ -1,22 +1,22 @@
-/** A player joins the world in the given slot (0-based seat number). Ignored if the slot is taken. */
+/** A player joins the world in the given slot (0-based seat number). Ignored if the slot is taken or the sim is full. */
 export interface JoinCommand {
-  readonly type: 'join';
+  readonly type: 'player/join';
   readonly slot: number;
 }
 
 /** A player leaves; their entity is removed. */
 export interface LeaveCommand {
-  readonly type: 'leave';
+  readonly type: 'player/leave';
   readonly slot: number;
 }
 
 /**
- * Desired movement direction. Components in [-1, 1]; longer vectors are
- * normalised by the sim. Send it when the direction changes, not every tick:
- * the sim keeps moving until it gets a new one.
+ * Desired movement direction. Components are clamped to [-1, 1] and the
+ * vector is normalised if longer than 1. Send it when the direction changes,
+ * not every tick: the sim keeps moving until it gets a new one.
  */
 export interface MoveCommand {
-  readonly type: 'move';
+  readonly type: 'player/move';
   readonly slot: number;
   readonly x: number;
   readonly y: number;

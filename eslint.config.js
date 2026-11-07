@@ -20,6 +20,7 @@ const BITECS = group(['bitecs', 'bitecs/*'], 'The ECS lives in packages/sim. Use
 const COLYSEUS = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'Networking belongs to packages/server (and later a client adapter), not here.');
 const CLIENT_PKG = group(['@novaland/client', '@novaland/client/*', '**/packages/client/**', '../**/client/**'], 'Nothing may depend on the client. It is a view.');
 const SERVER_PKG = group(['@novaland/server', '@novaland/server/*', '**/packages/server/**', '../**/server/**'], 'Nothing may depend on the server.');
+const NODE_BUILTINS = group(['node:*', 'fs', 'fs/*', 'path', 'os', 'crypto', 'child_process', 'worker_threads', 'http', 'https', 'net', 'events', 'stream', 'util', 'url'], 'The sim is headless and pure: no Node APIs in packages/sim.');
 const SIM_DEEP = group(['@novaland/sim/*', '**/packages/sim/**', '../**/sim/**'], 'Import the sim through its package entry (@novaland/sim) so its public API stays explicit.');
 
 const restrictImports = (...groups) => ({
@@ -27,10 +28,11 @@ const restrictImports = (...groups) => ({
 });
 
 const BROWSER_AND_NODE_GLOBALS = [
-  'window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'indexedDB',
+  'window', 'document', 'navigator', 'self', 'localStorage', 'sessionStorage', 'indexedDB',
   'requestAnimationFrame', 'cancelAnimationFrame', 'setTimeout', 'setInterval', 'setImmediate',
   'queueMicrotask', 'fetch', 'XMLHttpRequest', 'WebSocket', 'Worker', 'Image', 'Audio',
-  'HTMLElement', 'CanvasRenderingContext2D', 'process', 'require', 'Buffer', 'globalThis',
+  'HTMLElement', 'CanvasRenderingContext2D', 'btoa', 'atob', 'crypto', 'console',
+  'process', 'require', 'Buffer', 'globalThis',
 ].map((name) => ({ name, message: `The sim is headless and pure: "${name}" is not allowed in packages/sim.` }));
 
 export default defineConfig([
@@ -56,7 +58,7 @@ export default defineConfig([
   {
     files: ['packages/sim/**/*.ts'],
     rules: {
-      ...restrictImports(PHASER, COLYSEUS, CLIENT_PKG, SERVER_PKG),
+      ...restrictImports(PHASER, COLYSEUS, CLIENT_PKG, SERVER_PKG, NODE_BUILTINS),
       'no-restricted-globals': ['error', ...BROWSER_AND_NODE_GLOBALS],
       'no-restricted-properties': [
         'error',

@@ -5,10 +5,9 @@
  * packages/sim/src is internal. Add an export here when a feature needs to
  * expose something to a view or a server.
  */
-export { createSim } from './core/create';
-export { Sim, type SimOptions } from './core/sim';
+export { createSim, type SimOptions } from './core/create';
+export type { SimHandle } from './core/sim';
 export type { Command } from './core/commands';
-export type { Feature } from './core/feature';
 export { FIXED_DT, TICK_RATE } from './content/tuning';
 export { hashSnapshot, type EntitySnapshot, type SimSnapshot } from './core/snapshot';
 export { getRenderables, type Renderable } from './core/view';

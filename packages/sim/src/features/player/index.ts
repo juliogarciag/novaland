@@ -1,36 +1,39 @@
 import { addComponent, query } from 'bitecs';
-import { DefId, getDef } from '../../content/defs';
+import { getDef } from '../../content/defs';
+import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
 import { attachDynamicBall, Body } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents } from '../../core/transform';
 import { MoveIntent, Player } from './components';
+import { PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
 
-const MAX_SLOTS = 64;
-
 /**
- * Player-controlled bodies. A `join` spawns one at the level spawn point,
- * `move` sets its intended direction and every tick the intent becomes a
- * velocity. Walls stop it through physics, not through code here.
+ * Player-controlled bodies. A `player/join` spawns one at the level spawn
+ * point, `player/move` sets its intended direction and every tick the intent
+ * becomes a velocity. Walls stop it through physics, not through code here.
+ *
+ * Handlers are the validation boundary: commands will arrive from the
+ * network one day, so anything malformed is ignored, never thrown on.
  */
 export const playerFeature: Feature = {
   name: 'player',
 
   handleCommand(sim, command: Command) {
     switch (command.type) {
-      case 'join':
-        if (isValidSlot(command.slot) && findPlayerEntity(sim, command.slot) === undefined) {
+      case 'player/join':
+        if (isValidSlot(command.slot) && !sim.isFull && findPlayerEntity(sim, command.slot) === undefined) {
           spawnPlayer(sim, command.slot);
         }
         return;
-      case 'leave': {
+      case 'player/leave': {
         const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
         if (eid !== undefined) sim.destroyEntity(eid);
         return;
       }
-      case 'move': {
+      case 'player/move': {
         const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
         if (eid === undefined) return;
         const intent = sim.store(MoveIntent);
@@ -56,9 +59,9 @@ export const playerFeature: Feature = {
   },
 };
 
-export function spawnPlayer(sim: Sim, slot: number): number {
-  const def = getDef(DefId.Player);
-  const radius = def.radius ?? 0.5;
+function spawnPlayer(sim: Sim, slot: number): number {
+  const def = getDef(PlayerDefId.Player);
+  const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
   const player = sim.store(Player);
   const intent = sim.store(MoveIntent);
@@ -79,13 +82,15 @@ export function spawnPlayer(sim: Sim, slot: number): number {
 }
 
 function isValidSlot(slot: unknown): slot is number {
-  return typeof slot === 'number' && Number.isInteger(slot) && slot >= 0 && slot < MAX_SLOTS;
+  return typeof slot === 'number' && Number.isInteger(slot) && slot >= 0 && slot < MAX_PLAYER_SLOTS;
 }
 
-/** Rejects NaN/Infinity and scales anything longer than 1 down to unit length. */
-function clampToUnit(x: number, y: number): { x: number; y: number } {
-  if (!Number.isFinite(x) || !Number.isFinite(y)) return { x: 0, y: 0 };
-  const length = Math.hypot(x, y);
-  if (length <= 1) return { x, y };
-  return { x: x / length, y: y / length };
+/** Rejects non-finite input, clamps each component to [-1, 1], then scales anything longer than 1 down to unit length. */
+function clampToUnit(x: unknown, y: unknown): { x: number; y: number } {
+  if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return { x: 0, y: 0 };
+  const cx = Math.min(1, Math.max(-1, x));
+  const cy = Math.min(1, Math.max(-1, y));
+  const length = Math.hypot(cx, cy);
+  if (length <= 1) return { x: cx, y: cy };
+  return { x: cx / length, y: cy / length };
 }

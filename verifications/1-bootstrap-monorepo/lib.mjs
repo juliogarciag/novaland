@@ -9,35 +9,69 @@ export const ROOT = path.resolve(HERE, '../..');
 export const PROOF = path.join(HERE, 'proof');
 mkdirSync(PROOF, { recursive: true });
 
+/** Writes a proof file. Absolute paths under the repo are relativised so proof is machine-independent. */
 export function writeProof(name, data) {
   const file = path.join(PROOF, name);
-  writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n');
+  const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n';
+  writeFileSync(file, text.split(ROOT).join('<repo>'));
   return file;
 }
 
-/** Runs a command to completion, capturing output. Never throws; returns { code, output }. */
+/** Child env: `undefined` values remove the variable instead of passing the string "undefined". */
+function childEnv(env) {
+  const merged = { ...process.env };
+  for (const [key, value] of Object.entries(env)) {
+    if (value === undefined) delete merged[key];
+    else merged[key] = value;
+  }
+  return merged;
+}
+
+/** Runs a command to completion. Never throws; returns { code, stdout, stderr, output }. */
 export function run(cmd, args, { cwd = ROOT, env = {} } = {}) {
   return new Promise((resolve) => {
-    const child = spawn(cmd, args, { cwd, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
-    let output = '';
-    child.stdout.on('data', (d) => (output += d));
-    child.stderr.on('data', (d) => (output += d));
-    child.on('close', (code) => resolve({ code, output }));
+    const child = spawn(cmd, args, { cwd, env: childEnv(env), stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (d) => (stdout += d));
+    child.stderr.on('data', (d) => (stderr += d));
+    child.on('close', (code) => resolve({ code, stdout, stderr, output: stdout + stderr }));
   });
 }
 
-/** Starts a long-running command in its own process group so it can be killed with its children. */
+const running = new Set();
+let cleanupInstalled = false;
+
+function installCleanup() {
+  if (cleanupInstalled) return;
+  cleanupInstalled = true;
+  const stopAll = () => {
+    for (const server of running) server.stop();
+  };
+  process.on('exit', stopAll);
+  for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+    process.on(signal, () => {
+      stopAll();
+      process.exit(1);
+    });
+  }
+}
+
+/** Starts a long-running command in its own process group so it can be killed with its children, also on abnormal exit. */
 export function start(cmd, args, { cwd = ROOT, env = {} } = {}) {
-  const child = spawn(cmd, args, { cwd, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+  installCleanup();
+  const child = spawn(cmd, args, { cwd, env: childEnv(env), stdio: ['ignore', 'pipe', 'pipe'], detached: true });
   let output = '';
   child.stdout.on('data', (d) => (output += d));
   child.stderr.on('data', (d) => (output += d));
-  return {
+  const handle = {
     child,
     get output() {
       return output;
     },
     stop() {
+      running.delete(handle);
+      if (!child.pid) return;
       try {
         process.kill(-child.pid, 'SIGTERM');
       } catch {
@@ -45,6 +79,8 @@ export function start(cmd, args, { cwd = ROOT, env = {} } = {}) {
       }
     },
   };
+  running.add(handle);
+  return handle;
 }
 
 export function isPortOpen(port) {
@@ -65,6 +101,15 @@ export async function waitForPort(port, timeoutMs = 20000) {
     await new Promise((r) => setTimeout(r, 200));
   }
   return false;
+}
+
+/** Holds a TCP port open (to prove something else avoids it). Returns a function that releases it. */
+export function occupyPort(port) {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', reject);
+    server.listen(port, 'localhost', () => resolve(() => new Promise((r) => server.close(r))));
+  });
 }
 
 export function check(name, pass, details) {
