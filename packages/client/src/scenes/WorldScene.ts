@@ -1,7 +1,7 @@
 import type { Command, SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
-import { advanceFixedStep } from '../loop/fixedStep';
+import { takeWholeTicks } from '../loop/fixedStep';
 import { EntityRenderer } from '../render/entities';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
@@ -11,13 +11,13 @@ const LOCAL_SLOT = 0;
 const MAX_FRAME_SECONDS = 0.25;
 
 /**
- * The one scene for now. Owns the fixed-step accumulator: real time comes in
+ * The one scene for now. Owns the leftover frame time: real time comes in
  * from Phaser, whole sim ticks go out. Commands wait in `pending` until the
- * accumulator earns a tick, so the sim only ever advances with real time.
+ * leftover earns a tick, so the sim only ever advances with real time.
  * The scene never touches game rules.
  */
 export class WorldScene extends Phaser.Scene {
-  private accumulator = 0;
+  private leftover = 0;
   private pending: Command[] = [];
   private keyboard!: KeyboardInput;
   private entities!: EntityRenderer;
@@ -40,8 +40,8 @@ export class WorldScene extends Phaser.Scene {
 
   override update(_time: number, deltaMs: number): void {
     this.pending.push(...this.keyboard.drain());
-    const { ticks, accumulator } = advanceFixedStep(this.accumulator, deltaMs / 1000, this.sim.dt, MAX_FRAME_SECONDS);
-    this.accumulator = accumulator;
+    const { ticks, leftover } = takeWholeTicks(this.leftover, deltaMs / 1000, this.sim.dt, MAX_FRAME_SECONDS);
+    this.leftover = leftover;
     for (let i = 0; i < ticks; i += 1) {
       this.sim.step(this.pending);
       this.pending = [];

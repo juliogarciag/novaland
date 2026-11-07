@@ -1,22 +1,27 @@
 /**
- * Pure fixed-timestep accumulator. Real time goes in, whole sim ticks come
- * out; whatever is left waits for the next frame. Nothing else in the client
- * may decide when the sim advances.
+ * Pure fixed-timestep maths. Real time goes in, whole sim ticks come out;
+ * whatever does not fill a tick is handed back as `leftover` for the next
+ * frame. Nothing else in the client may decide when the sim advances.
  */
-export interface FixedStepResult {
+export interface WholeTicks {
   /** Ticks to run this frame. */
   readonly ticks: number;
-  /** Leftover time to carry into the next frame, always in [0, dt). */
-  readonly accumulator: number;
+  /** Time that did not fill a whole tick, always in [0, dt). Carry it into the next call. */
+  readonly leftover: number;
 }
 
-export function advanceFixedStep(accumulator: number, deltaSeconds: number, dt: number, maxFrameSeconds: number): FixedStepResult {
+/**
+ * Takes as many whole ticks of `dt` as fit in `leftover + deltaSeconds`.
+ * `deltaSeconds` is clamped to [0, maxFrameSeconds] so a long hitch or a tab
+ * switch drops time instead of running hundreds of ticks in one frame.
+ */
+export function takeWholeTicks(leftover: number, deltaSeconds: number, dt: number, maxFrameSeconds: number): WholeTicks {
   const delta = Math.min(Math.max(deltaSeconds, 0), maxFrameSeconds);
-  let remaining = accumulator + delta;
+  let remaining = leftover + delta;
   let ticks = 0;
   while (remaining >= dt) {
     remaining -= dt;
     ticks += 1;
   }
-  return { ticks, accumulator: remaining };
+  return { ticks, leftover: remaining };
 }
