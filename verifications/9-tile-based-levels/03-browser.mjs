@@ -121,6 +121,7 @@ try {
   const canvasCount = await page.locator('canvas').count();
   results.push(check('Phaser canvas is on the page', canvasCount === 1));
   const initial = await state();
+  const cameraAtSpawn = await page.evaluate(() => window.__novaland.camera());
   await page.screenshot({ path: path.join(PROOF, '03-browser-1-spawn-on-path.png') });
   const spawnTile = await tileOf(initial.x, initial.y);
   results.push(check('the player spawned on the level spawn tile', spawnTile.column === level.spawn.column && spawnTile.row === level.spawn.row, JSON.stringify(spawnTile)));
@@ -167,14 +168,21 @@ try {
   const matches = samples.every((s) => s.drawn && Math.abs(s.drawn.x - s.x * PPM) < 1e-6 && Math.abs(s.drawn.y - s.y * PPM) < 1e-6);
   results.push(check(`the rendered player matches the sim position (${PPM} px/m) in ${samples.length} samples`, matches, JSON.stringify(north.after.drawn)));
 
-  // --- A view of the forest border: the camera is a view concern, so moving it changes nothing in the sim.
-  const beforeCamera = await state();
-  await page.evaluate(({ x, y }) => window.__novaland.game.scene.getScene('world').cameras.main.centerOn(x, y), { x: (-grid.width / 2 + 15) * PPM, y: (-grid.height / 2 + 11.25) * PPM });
-  await page.waitForTimeout(150);
-  await page.screenshot({ path: path.join(PROOF, '03-browser-4-forest-border.png') });
-  await page.evaluate(() => window.__novaland.game.scene.getScene('world').cameras.main.centerOn(0, 0));
-  const afterCamera = await state();
-  results.push(check('moving the camera for the screenshot changed nothing in the sim (the idle player did not move)', Math.abs(afterCamera.x - beforeCamera.x) < 1e-3 && Math.abs(afterCamera.y - beforeCamera.y) < 1e-3 && afterCamera.tick > beforeCamera.tick));
+  // --- The camera (#8) follows the player across the tiled level and never looks past the forest border.
+  const camera = await page.evaluate(() => window.__novaland.camera());
+  const drawn = north.after.drawn;
+  const bounds = camera?.bounds;
+  const view = camera?.worldView;
+  results.push(check('the camera is bounded by the tile grid, so it never shows past the forest border', bounds && bounds.x === -(grid.width / 2) * PPM && bounds.y === -(grid.height / 2) * PPM && bounds.width === grid.width * PPM && bounds.height === grid.height * PPM, JSON.stringify(bounds)));
+  results.push(check('the camera zoom is a whole number, so the 16 px tiles stay crisp', camera && Number.isInteger(camera.zoom) && camera.zoom >= 1, `zoom ${camera?.zoom}`));
+  results.push(check('the level is bigger than the screen, so the camera has to travel', camera && grid.width > camera.visibleMetres.width && grid.height > camera.visibleMetres.height, `${grid.width}x${grid.height} m level, ${camera?.visibleMetres.width}x${camera?.visibleMetres.height} m visible`));
+  results.push(check('the camera keeps the player on screen after the walk', view && drawn && drawn.x >= view.x && drawn.x <= view.x + view.width && drawn.y >= view.y && drawn.y <= view.y + view.height, `player at (${drawn?.x}, ${drawn?.y}), view ${JSON.stringify(view)}`));
+  const spawnView = cameraAtSpawn?.worldView;
+  const touchesEdge = spawnView && bounds && (spawnView.x <= bounds.x + 1e-6 || spawnView.y <= bounds.y + 1e-6 || spawnView.x + spawnView.width >= bounds.x + bounds.width - 1e-6 || spawnView.y + spawnView.height >= bounds.y + bounds.height - 1e-6);
+  results.push(check('at the spawn the view is clamped against an edge of the level, so the forest border is on screen (screenshot 1)', touchesEdge, JSON.stringify(spawnView)));
+  results.push(check('the camera travelled with the player during the walk', view && spawnView && (Math.abs(view.x - spawnView.x) > 1 || Math.abs(view.y - spawnView.y) > 1), `view moved from (${spawnView?.x}, ${spawnView?.y}) to (${view?.x}, ${view?.y})`));
+  await page.screenshot({ path: path.join(PROOF, '03-browser-4-camera-followed.png') });
+  report.camera = { atSpawn: cameraAtSpawn, afterWalk: camera };
   results.push(check('no page or console errors', errors.length === 0, errors.join(' | ').slice(0, 200)));
   report.errors = errors;
 } finally {

@@ -110,18 +110,43 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is 1 for a width that makes no sense",
     "status": "passed"
   },
   {
@@ -167,6 +192,71 @@
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot encodes base64 like the standard",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) spawns a player at the level spawn point on join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) moves at the def speed for N ticks in open space",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
     "status": "passed"
   },
   {
@@ -237,56 +327,6 @@
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) spawns a player at the level spawn point on join",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) moves at the def speed for N ticks in open space",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
     "status": "passed"
   }
 ]

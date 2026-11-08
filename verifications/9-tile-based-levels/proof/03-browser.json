@@ -2,13 +2,13 @@
   "steps": [
     {
       "step": "spawn",
-      "tick": 15,
+      "tick": 14,
       "x": -13.5,
       "y": -0.5,
       "entities": 45,
       "drawn": {
-        "x": -432,
-        "y": -16
+        "x": -216,
+        "y": -8
       },
       "drawnTileIndex": 1,
       "spawnTile": {
@@ -18,18 +18,18 @@
     },
     {
       "step": "east",
-      "tick": 131,
+      "tick": 128,
       "x": -4.916727066040039,
       "y": -0.5,
       "entities": 45,
       "drawn": {
-        "x": -157.33526611328125,
-        "y": -16
+        "x": -78.66763305664062,
+        "y": -8
       },
       "drawnTileIndex": 1,
-      "travelled": 1.5000114440917969,
-      "expected": 1.5,
-      "heldTicks": 18,
+      "travelled": 1.5833454132080078,
+      "expected": 1.5833333333333333,
+      "heldTicks": 19,
       "eastTile": {
         "column": 15,
         "row": 14
@@ -37,13 +37,13 @@
     },
     {
       "step": "north",
-      "tick": 369,
+      "tick": 365,
       "x": -4.916727066040039,
-      "y": -2.6002416610717773,
+      "y": -2.6003239154815674,
       "entities": 45,
       "drawn": {
-        "x": -157.33526611328125,
-        "y": -83.20773315429688
+        "x": -78.66763305664062,
+        "y": -41.60518264770508
       },
       "drawnTileIndex": 0,
       "blocker": "tree",
@@ -73,19 +73,67 @@
     },
     "SPEED": 5,
     "RADIUS": 0.4,
-    "PPM": 32
+    "PPM": 16
   },
   "map": {
     "columns": 40,
     "rows": 30,
     "tileWidth": 16,
-    "scale": 2,
-    "x": -640,
-    "y": -480,
+    "scale": 1,
+    "x": -320,
+    "y": -240,
     "depth": -1,
     "playerDepth": 0,
     "textureWidth": 64,
     "textureHeight": 16
+  },
+  "camera": {
+    "atSpawn": {
+      "zoom": 3,
+      "scrollX": -640,
+      "scrollY": -368,
+      "width": 960,
+      "height": 720,
+      "bounds": {
+        "x": -320,
+        "y": -240,
+        "width": 640,
+        "height": 480
+      },
+      "worldView": {
+        "x": -320,
+        "y": -128,
+        "width": 320,
+        "height": 240
+      },
+      "visibleMetres": {
+        "width": 20,
+        "height": 15
+      }
+    },
+    "afterWalk": {
+      "zoom": 3,
+      "scrollX": -558.6666666666666,
+      "scrollY": -401.66666666666663,
+      "width": 960,
+      "height": 720,
+      "bounds": {
+        "x": -320,
+        "y": -240,
+        "width": 640,
+        "height": 480
+      },
+      "worldView": {
+        "x": -238.66666666666663,
+        "y": -161.66666666666663,
+        "width": 320,
+        "height": 240
+      },
+      "visibleMetres": {
+        "width": 20,
+        "height": 15
+      }
+    }
   },
   "errors": []
 }

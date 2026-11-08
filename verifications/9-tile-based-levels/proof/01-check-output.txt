@@ -3,8 +3,8 @@ Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
 Already up to date
 
-Done in 500ms using pnpm v10.9.0
-(node:81711) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 612ms using pnpm v10.9.0
+(node:96462) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -16,11 +16,11 @@ $ pnpm typecheck
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/server typecheck$ tsc -p tsconfig.json
 packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:81735) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:96486) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -35,19 +35,27 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
- ✓ |client| src/input/keyboard.test.ts (9 tests) 7ms
- ✓ |client| src/input/direction.test.ts (5 tests) 11ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 63ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 122ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 287ms
- ✓ |server| src/headless.test.ts (3 tests) 319ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 338ms
- ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 348ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 7ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 10ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 25ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 7ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 9ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 252ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 580ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 451ms
+   ✓ snapshot (5)
+     ✓ is plain JSON that survives a round trip 408ms
+ ✓ |server| src/headless.test.ts (3 tests) 580ms
+   ✓ server headless run (3)
+     ✓ drives the sim without a browser and is reproducible 411ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 635ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 488ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 702ms
 
- Test Files  9 passed (9)
-      Tests  58 passed (58)
-   Start at  23:57:36
-   Duration  625ms (tests 71%, import 14%, transform 14%, worker 2%)
+ Test Files  11 passed (11)
+      Tests  66 passed (66)
+   Start at  01:23:02
+   Duration  1.08s (tests 73%, import 14%, transform 11%, worker 2%)
 
 JSON report written to <repo>/verifications/9-tile-based-levels/proof/01-tests-report.json

@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (58 of 58)
+PASS  every test passed, none skipped  (66 of 66)
 PASS  tests ran in sim, client and server  (server, client, sim)
 PASS  collider merging tests exist and pass  (4 tests)
 PASS  trees block the player (headless)
