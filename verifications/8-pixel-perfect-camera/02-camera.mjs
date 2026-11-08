@@ -58,6 +58,31 @@ try {
     await page.context().close();
   }
 
+  // ---- The pixel ratio changes while the page is open (window dragged to another screen) ----
+  {
+    const page = await openPage(browser, { width: 960, height: 720, dpr: 2 });
+    const cdp = await page.context().newCDPSession(page);
+    const show = async (width, height, dpr) => {
+      await cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: false });
+      // Emulation does not fire the matchMedia change a real screen move does, so nudge the page the way a real move also does.
+      await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+      await page.waitForTimeout(300);
+      return readView(page);
+    };
+    const at2x = await readView(page);
+    const at1x = await show(960, 720, 1);
+    const resizedAt1x = await show(1000, 700, 1);
+    const backAt2x = await show(1000, 700, 2);
+    report.pixelRatioChange = { at2x, at1x, resizedAt1x, backAt2x };
+    results.push(check('dropping to 1x halves the backing store and keeps the canvas the size of the window', at1x.dpr === 1 && at1x.canvas.width === 960 && at1x.canvas.height === 720 && at1x.css.width === 960 && at1x.css.height === 720, `${at2x.canvas.width}x${at2x.canvas.height} -> ${at1x.canvas.width}x${at1x.canvas.height} backing, css ${at1x.css.width}x${at1x.css.height}`));
+    results.push(check('resizing the window at 1x keeps the canvas the size of the window', resizedAt1x.canvas.width === 1000 && resizedAt1x.canvas.height === 700 && resizedAt1x.css.width === 1000 && resizedAt1x.css.height === 700, `backing ${resizedAt1x.canvas.width}x${resizedAt1x.canvas.height}, css ${resizedAt1x.css.width}x${resizedAt1x.css.height}`));
+    results.push(check('going back to 2x doubles the backing store again', backAt2x.dpr === 2 && backAt2x.canvas.width === 2000 && backAt2x.canvas.height === 1400 && backAt2x.css.width === 1000 && backAt2x.css.height === 700, `backing ${backAt2x.canvas.width}x${backAt2x.canvas.height}, css ${backAt2x.css.width}x${backAt2x.css.height}`));
+    results.push(check('the zoom follows the pixel ratio and stays a whole number', at2x.camera.zoom === 6 && at1x.camera.zoom === 3 && resizedAt1x.camera.zoom === 3 && backAt2x.camera.zoom === 6, `${at2x.camera.zoom} -> ${at1x.camera.zoom} -> ${resizedAt1x.camera.zoom} -> ${backAt2x.camera.zoom}`));
+    results.push(check('the player stays in the middle through pixel-ratio changes', [at1x, resizedAt1x, backAt2x].every((v) => centred(v) && insideBounds(v.camera))));
+    await page.screenshot({ path: path.join(PROOF, '02-camera-pixel-ratio-back-to-2x.png') });
+    await page.context().close();
+  }
+
   // ---- The camera follows the player and stops at the bounds ----
   {
     const page = await openPage(browser, { width: 960, height: 720, dpr: 1 });

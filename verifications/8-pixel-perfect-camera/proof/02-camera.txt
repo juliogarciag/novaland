@@ -22,12 +22,17 @@ PASS  1600x900 @2x: nothing outside the level is shown
 PASS  resizing the window resizes the canvas backing store  (960x720 -> 1600x900)
 PASS  resizing the window recomputes the whole-number zoom  (zoom 3 -> 5)
 PASS  after the resize the player is still in the middle and the level still fills the screen
+PASS  dropping to 1x halves the backing store and keeps the canvas the size of the window  (1920x1440 -> 960x720 backing, css 960x720)
+PASS  resizing the window at 1x keeps the canvas the size of the window  (backing 1000x700, css 1000x700)
+PASS  going back to 2x doubles the backing store again  (backing 2000x1400, css 1000x700)
+PASS  the zoom follows the pixel ratio and stays a whole number  (6 -> 3 -> 3 -> 6)
+PASS  the player stays in the middle through pixel-ratio changes
 PASS  the camera bounds are the level  ({"x":-512,"y":-320,"width":1024,"height":640})
 PASS  the level is bigger than the screen, so the camera has to move  (64x40 m level, 20x15 m visible)
 PASS  walking east scrolls the camera east  (scrollX -480 -> -400)
 PASS  the camera keeps the player in the middle while walking  (player (80.00, 0.00) view centre (80.00, 0.00))
 PASS  the camera stops at the east edge of the level  (view right 512, level right 512)
-PASS  the player keeps walking past the middle once the camera has stopped  (player (404.00, 0.00) view centre (352.00, 0.00))
+PASS  the player keeps walking past the middle once the camera has stopped  (player (402.67, 0.00) view centre (352.00, 0.00))
 PASS  the camera no longer moves while the player walks on
 PASS  the east border wall still stops the player  (player x 489.61 px, wall face 489.6)
 PASS  walking north scrolls the camera north  (scrollY -360 -> -560)
@@ -40,4 +45,4 @@ PASS  pixelArt and roundPixels are on
 PASS  the HUD is drawn by its own scene, untouched by the world zoom
 PASS  no page or console errors
 
-ALL 41 CHECKS PASSED
+ALL 46 CHECKS PASSED
