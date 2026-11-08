@@ -4,7 +4,7 @@ import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
-import { findPlayerEntity, getPlayerHeading } from './queries';
+import { findPlayerEntity, getHeading } from './queries';
 
 describe('player facing (headless)', () => {
   it('spawns facing down with no move intent', async () => {
@@ -41,11 +41,15 @@ describe('player facing (headless)', () => {
     sim.destroy();
   });
 
-  it('ignores malformed move vectors without changing the facing', async () => {
+  it('treats a malformed or negligible move as a stop and leaves the facing alone', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
     sim.step([move(1, 0)]);
     sim.step([move(Number.NaN, 1), move(Number.POSITIVE_INFINITY, 0), { type: 'player/move', slot: 0, x: '1', y: 0 } as unknown as Command]);
+    expect(heading(sim)).toEqual({ moveIntent: { x: 0, y: 0 }, facing: { x: 1, y: 0 } });
+    sim.step([move(5e-324, 5e-324)]);
+    expect(heading(sim)).toEqual({ moveIntent: { x: 0, y: 0 }, facing: { x: 1, y: 0 } });
+    sim.step([move(1e-310, -1e-310), move(0, -0)]);
     expect(heading(sim)).toEqual({ moveIntent: { x: 0, y: 0 }, facing: { x: 1, y: 0 } });
     sim.destroy();
   });
@@ -71,17 +75,17 @@ describe('player facing (headless)', () => {
     sim.destroy();
   });
 
-  it('has no heading for entities that are not players or do not exist', async () => {
+  it('has no heading for entities that do not move and face, or do not exist', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
     const wall = getRenderables(sim).find((renderable) => renderable.defId === DefId.Wall);
     expect(wall).toBeDefined();
-    expect(getPlayerHeading(sim, wall!.eid)).toBeUndefined();
-    expect(getPlayerHeading(sim, 0)).toBeUndefined();
-    expect(getPlayerHeading(sim, -1)).toBeUndefined();
-    expect(getPlayerHeading(sim, 1.5)).toBeUndefined();
-    expect(getPlayerHeading(sim, sim.capacity + 10)).toBeUndefined();
-    expect(getPlayerHeading(sim, Number.NaN)).toBeUndefined();
+    expect(getHeading(sim, wall!.eid)).toBeUndefined();
+    expect(getHeading(sim, 0)).toBeUndefined();
+    expect(getHeading(sim, -1)).toBeUndefined();
+    expect(getHeading(sim, 1.5)).toBeUndefined();
+    expect(getHeading(sim, sim.capacity + 10)).toBeUndefined();
+    expect(getHeading(sim, Number.NaN)).toBeUndefined();
     sim.destroy();
   });
 });
@@ -96,7 +100,7 @@ const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move'
 function heading(sim: Sim, slot = 0) {
   const eid = findPlayerEntity(sim, slot);
   if (eid === undefined) throw new Error('no player in slot');
-  const playerHeading = getPlayerHeading(sim, eid);
+  const playerHeading = getHeading(sim, eid);
   if (!playerHeading) throw new Error('player has no heading');
   return playerHeading;
 }

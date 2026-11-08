@@ -1,4 +1,4 @@
-import { getDef, getPlayerHeading, getRenderables, type SimHandle, type SpriteDef } from '@novaland/sim';
+import { getDef, getHeading, getRenderables, type SimHandle, type SpriteDef } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { IDLE_DOWN, poseFromHeading } from './pose';
 import { walkAnimationKey } from './sprites';
@@ -6,8 +6,8 @@ import { PIXELS_PER_METRE, toPixels } from './units';
 
 interface EntityView {
   readonly gameObject: Phaser.GameObjects.Shape | Phaser.GameObjects.Sprite;
-  /** Set when the entity is drawn from a sheet; the renderer then animates it every frame. */
-  readonly animated?: { readonly sprite: Phaser.GameObjects.Sprite; readonly sheet: SpriteDef };
+  /** The same object as `gameObject` when the entity is drawn from a sheet, with the sheet that animates it. */
+  readonly sheetSprite?: { readonly sprite: Phaser.GameObjects.Sprite; readonly sheet: SpriteDef };
   readonly defId: number;
   readonly halfWidth: number;
   readonly halfHeight: number;
@@ -43,8 +43,9 @@ export class EntityRenderer {
         this.views.set(renderable.eid, view);
       }
       view.gameObject.setPosition(toPixels(renderable.x), toPixels(renderable.y));
-      view.gameObject.setDepth(toPixels(renderable.y + renderable.halfHeight));
-      if (view.animated) this.animate(view.animated, sim, renderable.eid);
+      const depth = toPixels(renderable.y + renderable.halfHeight);
+      if (view.gameObject.depth !== depth) view.gameObject.setDepth(depth); // setDepth queues a display-list sort even when unchanged
+      if (view.sheetSprite) this.animate(view.sheetSprite, sim, renderable.eid);
     }
     for (const [eid, view] of this.views) {
       if (!liveEntityIds.has(eid)) {
@@ -61,7 +62,7 @@ export class EntityRenderer {
       const sprite = this.scene.add.sprite(0, 0, sheet.key, sheet.directions[IDLE_DOWN.direction].idle);
       sprite.setOrigin(sheet.origin.x, sheet.origin.y);
       sprite.setScale(PIXELS_PER_METRE / sheet.pixelsPerMetre);
-      return { gameObject: sprite, animated: { sprite, sheet }, defId, halfWidth, halfHeight };
+      return { gameObject: sprite, sheetSprite: { sprite, sheet }, defId, halfWidth, halfHeight };
     }
     const shape =
       def.shape === 'circle'
@@ -71,8 +72,8 @@ export class EntityRenderer {
   }
 
   /** Plays the walk cycle of the direction the entity moves in, or shows the idle frame of the direction it faces. */
-  private animate({ sprite, sheet }: NonNullable<EntityView['animated']>, sim: SimHandle, eid: number): void {
-    const heading = getPlayerHeading(sim, eid);
+  private animate({ sprite, sheet }: NonNullable<EntityView['sheetSprite']>, sim: SimHandle, eid: number): void {
+    const heading = getHeading(sim, eid);
     const pose = heading ? poseFromHeading(heading) : IDLE_DOWN;
     if (pose.walking) {
       sprite.play(walkAnimationKey(sheet.key, pose.direction), true);

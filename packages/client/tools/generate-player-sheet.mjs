@@ -62,8 +62,8 @@ function paintFrame(direction, pose) {
   const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   const top = 3 + pose.bob; // first hair row; the rows above hold the outline and a clear margin
   const torsoTop = top + 9; // the neck sits on the row between head and torso
-  paintLegs(frame, direction, pose, torsoTop + 5);
-  paintTorsoAndArms(frame, direction, pose, torsoTop);
+  paintLegs(frame, { direction, pose, top: torsoTop + 5 });
+  paintTorsoAndArms(frame, { direction, pose, top: torsoTop });
   paintHead(frame, direction, top);
   outline(frame, PALETTE.outline);
   return frame;
@@ -99,7 +99,7 @@ function paintHead(frame, direction, top) {
   }
 }
 
-function paintTorsoAndArms(frame, direction, pose, top) {
+function paintTorsoAndArms(frame, { direction, pose, top }) {
   rect(frame, 7, top - 1, 2, 1, PALETTE.skin); // neck
   rect(frame, 5, top, 6, 5, direction === 'up' ? PALETTE.shirtShade : PALETTE.shirt);
   const swing = pose.forwardLeg === 'left' ? 1 : pose.forwardLeg === 'right' ? -1 : 0;
@@ -120,23 +120,23 @@ function paintArm(frame, column, top) {
   rect(frame, column, top + 3, 1, 2, PALETTE.skin);
 }
 
-function paintLegs(frame, direction, pose, top) {
+function paintLegs(frame, { direction, pose, top }) {
   if (direction === 'down' || direction === 'up') {
     // Front and back view: the lifted leg is one pixel shorter, the planted one keeps its length.
     const [leftColumn, rightColumn] = direction === 'down' ? [8, 5] : [5, 8];
-    paintLeg(frame, leftColumn, top, pose.forwardLeg === 'right' ? 1 : 0, PALETTE.pants);
-    paintLeg(frame, rightColumn, top, pose.forwardLeg === 'left' ? 1 : 0, PALETTE.pants);
+    paintLeg(frame, { column: leftColumn, top, lift: pose.forwardLeg === 'right' ? 1 : 0, pantsColor: PALETTE.pants });
+    paintLeg(frame, { column: rightColumn, top, lift: pose.forwardLeg === 'left' ? 1 : 0, pantsColor: PALETTE.pants });
     return;
   }
   // Profile: the legs spread apart along the walk. The far leg is drawn first and darker.
   const ahead = direction === 'left' ? -1 : 1;
   const spread = pose.forwardLeg === null ? 0 : pose.forwardLeg === 'left' ? ahead : -ahead;
-  paintLeg(frame, 7 - spread, top, 0, PALETTE.pantsShade);
-  paintLeg(frame, 6 + spread, top, 0, PALETTE.pants);
+  paintLeg(frame, { column: 7 - spread, top, lift: 0, pantsColor: PALETTE.pantsShade });
+  paintLeg(frame, { column: 6 + spread, top, lift: 0, pantsColor: PALETTE.pants });
 }
 
 /** A 3-wide leg from `top` down to the feet row: pants then a 2-row shoe, `lift` pixels off the ground. */
-function paintLeg(frame, column, top, lift, pantsColor) {
+function paintLeg(frame, { column, top, lift, pantsColor }) {
   const bottom = FEET_ROW - lift;
   rect(frame, column, top, 3, bottom - 1 - top, pantsColor);
   rect(frame, column, bottom - 1, 3, 2, PALETTE.shoe);

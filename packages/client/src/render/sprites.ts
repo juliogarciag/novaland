@@ -15,7 +15,7 @@ export function walkAnimationKey(spriteKey: string, direction: SpriteDirection):
 
 /** Queues every sheet the defs reference. Call from a scene's `preload`. */
 export function loadSpriteSheets(scene: Phaser.Scene): void {
-  for (const sprite of spriteDefs()) {
+  for (const sprite of distinctSpriteSheets()) {
     scene.load.spritesheet(sprite.key, spriteSheetUrl(sprite.key), { frameWidth: sprite.frameWidth, frameHeight: sprite.frameHeight });
   }
 }
@@ -26,7 +26,7 @@ export function loadSpriteSheets(scene: Phaser.Scene): void {
  * is skipped: the renderer then falls back to the def's flat shape.
  */
 export function createSpriteAnimations(scene: Phaser.Scene): void {
-  for (const sprite of spriteDefs()) {
+  for (const sprite of distinctSpriteSheets()) {
     if (!scene.textures.exists(sprite.key)) continue;
     scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
     for (const direction of SPRITE_DIRECTIONS) {
@@ -44,7 +44,7 @@ export function createSpriteAnimations(scene: Phaser.Scene): void {
 }
 
 /** Every distinct sheet the defs reference, in def order. */
-function spriteDefs(): SpriteDef[] {
+function distinctSpriteSheets(): SpriteDef[] {
   const byKey = new Map<string, SpriteDef>();
   for (const def of entityDefs) {
     if (def.sprite && !byKey.has(def.sprite.key)) byKey.set(def.sprite.key, def.sprite);

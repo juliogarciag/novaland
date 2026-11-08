@@ -1,4 +1,4 @@
-import type { PlayerHeading, SpriteDirection } from '@novaland/sim';
+import type { Heading, SpriteDirection } from '@novaland/sim';
 
 /** Which sheet direction to show and whether the walk cycle plays. */
 export interface SpritePose {
@@ -10,10 +10,10 @@ export interface SpritePose {
 export const IDLE_DOWN: SpritePose = { direction: 'down', walking: false };
 
 /**
- * A moving player faces its move intent and walks; a stopped one stands
+ * A moving entity faces its move intent and walks; a stopped one stands
  * looking where it last moved. Pure, so it is unit-testable without Phaser.
  */
-export function poseFromHeading(heading: PlayerHeading): SpritePose {
+export function poseFromHeading(heading: Heading): SpritePose {
   const walking = heading.moveIntent.x !== 0 || heading.moveIntent.y !== 0;
   const vector = walking ? heading.moveIntent : heading.facing;
   return { direction: directionFromVector(vector.x, vector.y), walking };

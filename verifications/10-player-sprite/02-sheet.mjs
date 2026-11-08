@@ -17,7 +17,9 @@ const GENERATOR = path.join(CLIENT, 'tools/generate-player-sheet.mjs');
 const results = [];
 const report = {};
 
-// The def the sheet must match, read from the sim's own source through tsx-free means: the client bundle is not needed, the defs file is plain data.
+// The def the sheet must match, scraped from the sim's own source: the defs file is plain data and this
+// avoids building the client. It assumes the player sprite is the only SpriteDef in that file (first match wins)
+// and that each direction entry sits on one line; the check below fails loudly if either stops being true.
 const defsSource = readFileSync(path.join(ROOT, 'packages/sim/src/features/player/defs.ts'), 'utf8');
 const number = (field) => Number(new RegExp(`${field}:\\s*(\\d+)`).exec(defsSource)?.[1]);
 const def = { frameWidth: number('frameWidth'), frameHeight: number('frameHeight'), pixelsPerMetre: number('pixelsPerMetre') };
@@ -26,6 +28,8 @@ for (const [, name, idle, start, end] of defsSource.matchAll(/(down|up|left|righ
   directions[name] = { idle: Number(idle), walk: { start: Number(start), end: Number(end) } };
 }
 report.def = { ...def, directions };
+const parsed = Object.values(def).every(Number.isFinite) && (defsSource.match(/key: '/g) || []).length === 1;
+results.push(check('the player def is the only sprite def in its file and parses', parsed, JSON.stringify(def)));
 results.push(check('the player def declares 16x24 frames at 16 px/m with four directions', def.frameWidth === 16 && def.frameHeight === 24 && def.pixelsPerMetre === 16 && Object.keys(directions).length === 4));
 
 const committed = decodePng(readFileSync(COMMITTED));
@@ -34,9 +38,9 @@ const columns = committed.width / def.frameWidth;
 const rows = committed.height / def.frameHeight;
 results.push(check('the sheet is a whole number of 16x24 frames: 4 columns x 4 rows', columns === 4 && rows === 4, `${committed.width}x${committed.height}`));
 const frameCount = columns * rows;
-const everyFrameInRange = Object.values(directions).every((d) => d.idle >= 0 && d.idle < frameCount && d.walk.start <= d.walk.end && d.walk.end < frameCount);
+const everyFrameInRange = Object.values(directions).every((frames) => frames.idle >= 0 && frames.idle < frameCount && frames.walk.start <= frames.walk.end && frames.walk.end < frameCount);
 results.push(check('every idle frame and walk range of the def exists on the sheet', everyFrameInRange));
-const distinctRows = new Set(Object.values(directions).map((d) => Math.floor(d.idle / columns))).size === 4;
+const distinctRows = new Set(Object.values(directions).map((frames) => Math.floor(frames.idle / columns))).size === 4;
 results.push(check('each direction uses its own row of the sheet', distinctRows));
 
 // Regenerate into a temp dir and compare pixels, not bytes, so a different zlib still passes.
@@ -53,7 +57,7 @@ try {
 
 const frames = [];
 for (let row = 0; row < rows; row += 1) {
-  for (let column = 0; column < columns; column += 1) frames.push(frameKey(committed, column, row, def.frameWidth, def.frameHeight));
+  for (let column = 0; column < columns; column += 1) frames.push(describeFrame(committed, { column, row, frameWidth: def.frameWidth, frameHeight: def.frameHeight }));
 }
 const opaque = frames.map((frame) => frame.opaque);
 results.push(check('every frame has a drawn figure (at least 100 opaque pixels)', opaque.every((count) => count >= 100), `min ${Math.min(...opaque)}`));
@@ -99,7 +103,8 @@ function equalBytes(a, b) {
   return a.length === b.length && a.every((value, index) => value === b[index]);
 }
 
-function frameKey(image, column, row, frameWidth, frameHeight) {
+/** Opaque pixel count, content hash and whether the frame keeps a transparent edge. */
+function describeFrame(image, { column, row, frameWidth, frameHeight }) {
   let opaque = 0;
   let hash = 0x811c9dc5;
   let transparentBorder = true;

@@ -1,6 +1,9 @@
 import type { EntityDef } from '../../content/defs';
 import type { SpriteDef } from '../../content/sprites';
 
+/** Move intents shorter than this count as a stop: too small to move the body or to define a facing. */
+export const MIN_MOVE_INTENT = 1e-3;
+
 /** Player feature owns def ids 1-99. */
 export const PlayerDefId = {
   Player: 1,

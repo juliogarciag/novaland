@@ -16,4 +16,4 @@ export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from '
 export { starterLevel } from './content/levels/starter';
 export type { LevelData, WallData } from './content/levels/types';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
-export { findPlayerEntity, getPlayerHeading, type PlayerHeading } from './features/player/queries';
+export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';
