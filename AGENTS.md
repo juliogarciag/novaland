@@ -7,16 +7,20 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
 - This is the repository: https://github.com/juliogarciag/novaland.
 - We're gonna use a GitHub project to manage tickets: https://github.com/users/juliogarciag/projects/1.
 - You can create tickets on your own.
-- When you take over a ticket, you assign it to yourself.
-  - Then, you define a short title for the ticket (let's call it `ticketTitle`) and its kebab-case version (`ticketKebabTitle`).
-  - Create a new agent session named `[ticketNumber] - {ticketTitle}`.
+- The session where a request arrives never does the work itself, even when the human is in the middle of a conversation there. It creates the ticket, defines a short title for it (let's call it `ticketTitle`) and its kebab-case version (`ticketKebabTitle`), starts a new agent session named `[ticketNumber] - {ticketTitle}`, and stays in the conversation with the human. Questions and discussion go on there as before.
+- The new session takes over the ticket: it assigns the ticket to itself and does everything below.
+  - Size the ticket before any work starts. State Small, Medium or Large with a one-line reason as the first thing you do, then proceed; nobody has to confirm. A `size:S`, `size:M` or `size:L` label on the ticket overrides what you state. When a ticket fits no tier, pick the next one up.
+    - Small is docs, config, a copied skill, or a data-only entry such as a new def or level. It gets 1 independent review (a sub-agent). It gets a security pass only if the change reads untrusted input (a command handler does) or deletes or sends anything. Its verification is running the change once with proof: a screenshot, a command transcript or a test run.
+    - Medium is a feature built the way "How to add a feature" describes: its own folder under `features/`, the one-line edits to the shared files that rule 10 lists, the export a view needs from `sim/src/index.ts`, and the client code that draws it. None of that counts as cross-package or core. It gets 2 independent reviews, a security pass, and the end-to-end verification the verifications bullet below describes.
+    - Large is any other change under `packages/sim/src/core`, a change to how the packages talk to each other, new architecture, or a choice that needs an ADR. It gets 3 independent reviews, a security pass, an ADR, and the same end-to-end verification.
+  - Review rounds are capped for every tier: apply must-fix findings and re-review once. If the second round still finds a must-fix, fix it and say so in the PR; there is no third round, the human's PR review is the last check. Should-fix findings go into one follow-up commit, which is not reviewed, or into a ticket.
   - When you start to work, create a git worktree named `{ticketNumber}-{ticketKebabTitle}` with a branch of the same name.
-  - Then, think of the verifications you need to run to be sure your work is complete, and store them in a folder called `verifications/{ticketNumber}-{ticketKebabTitle}`. You can use any code you want in these verifications. The verifications are very important and have to validate your work in its entirety, from the perspective of the highest-level user of the ticket, which means user-facing features need verifications that are equal in scope to end-to-end tests.
+  - Then, think of the verifications you need to run to be sure your work is complete, and store them in a folder called `verifications/{ticketNumber}-{ticketKebabTitle}`. You can use any code you want in these verifications. The verifications are very important and have to validate your work in its entirety, from the perspective of the highest-level user of the ticket, which means user-facing features need verifications that are equal in scope to end-to-end tests. A Small ticket's folder holds only the proof of running the change once.
   - Then, they should work until the work is done. The work is only done when:
     - The verifications are true.
     - There's proof for the verifications. Proof consists of screen captures, reports, or any asset that verifies that the verification passed.
-    - 3 independent code reviews (sub-agents) have run and passed.
-    - A security pass has been completed.
+    - The independent code reviews (sub-agents) the ticket's size calls for have run and passed.
+    - A security pass has been completed, when the ticket's size calls for one.
   - When the work is done, it should create a PR. Tickets should aim for a 1-to-1 relationship with PRs.
   - When the PR is ready, the result must be ready to try, without being asked: leave a dev server running from the worktree on a pinned port (`PORT=<n> pnpm dev`, see "Worktrees and ports"), open it in the browser pane, and put the URL and the proof screenshots in the final message. The human should be able to play the change the moment they read the message. Keep the server running until the PR is merged or the human stops it.
   - The session then stays open for regular feedback loop with the human in charge.
