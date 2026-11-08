@@ -3,6 +3,7 @@ import { entityDefs, hashSnapshot } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { cameraView, type CameraView } from './render/camera';
 import { PIXELS_PER_METRE } from './render/units';
+import { MIN_VISIBLE_METRES } from './render/zoom';
 
 /** What dev tooling and end-to-end checks can reach from the page. Dev builds only. */
 export interface NovalandDebugApi {
@@ -11,10 +12,12 @@ export interface NovalandDebugApi {
   readonly level: LevelData;
   readonly defs: readonly EntityDef[];
   readonly pixelsPerMetre: number;
+  /** Metres the camera always keeps visible across the window; its zoom follows from this. */
+  readonly minVisibleMetres: number;
   snapshot(): SimSnapshot;
   hash(): string;
-  /** The world camera right now: zoom, scroll, bounds and what is on screen. */
-  camera(): CameraView;
+  /** The world camera right now: zoom, scroll, bounds and what is on screen. Undefined until the world scene runs. */
+  camera(): CameraView | undefined;
 }
 
 declare global {
@@ -30,8 +33,9 @@ export function exposeDebugApi(sim: SimHandle, game: Phaser.Game): void {
     level: sim.level,
     defs: entityDefs,
     pixelsPerMetre: PIXELS_PER_METRE,
+    minVisibleMetres: MIN_VISIBLE_METRES,
     snapshot: () => sim.snapshot(),
     hash: () => hashSnapshot(sim.snapshot()),
-    camera: () => cameraView(game.scene.getScene('world').cameras.main),
+    camera: () => (game.scene.isActive('world') ? cameraView(game.scene.getScene('world').cameras.main) : undefined),
   };
 }

@@ -3,7 +3,7 @@ import type Phaser from 'phaser';
 import { PIXELS_PER_METRE, toPixels } from './units';
 import { wholeZoomFor } from './zoom';
 
-interface PixelRect {
+export interface PixelRect {
   readonly x: number;
   readonly y: number;
   readonly width: number;
@@ -27,8 +27,8 @@ export interface CameraView {
 
 /**
  * A camera that keeps one target in the middle of the screen, never looks
- * past the level and draws texture pixels as whole screen pixels: Stardew
- * Valley's camera. The zoom is a whole number picked from the canvas width.
+ * past the level and draws texture pixels as whole screen pixels. The zoom
+ * is a whole number picked from the canvas width.
  */
 export class LevelCamera {
   constructor(
@@ -36,7 +36,6 @@ export class LevelCamera {
     level: LevelData,
   ) {
     camera.setBounds(toPixels(-level.width / 2), toPixels(-level.height / 2), toPixels(level.width), toPixels(level.height));
-    camera.setRoundPixels(true);
   }
 
   /** Picks the zoom for a canvas this many device pixels wide. Call again whenever the canvas changes size. */

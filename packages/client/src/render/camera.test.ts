@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { __testing__ } from './camera';
 
-const { snapViewToDevicePixels } = __testing__;
-
 describe('snapViewToDevicePixels', () => {
   it('puts the top-left corner of the view on a whole device pixel', () => {
+    // Phaser zooms around the canvas centre, so this is where the view's top-left corner sits.
     for (const [scroll, size, zoom] of [
       [10.37, 960, 3],
       [-512.49, 1280, 4],
@@ -42,3 +41,7 @@ describe('snapViewToDevicePixels', () => {
     expect(snapViewToDevicePixels(maxScroll, size, zoom)).toBeCloseTo(maxScroll, 9);
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const { snapViewToDevicePixels } = __testing__;

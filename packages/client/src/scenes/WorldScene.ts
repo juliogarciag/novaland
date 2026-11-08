@@ -37,7 +37,6 @@ export class WorldScene extends Phaser.Scene {
     this.pendingCommands.push({ type: 'player/join', slot: LOCAL_SLOT });
     this.entityRenderer.sync(this.sim);
     this.followLocalPlayer();
-    this.scene.launch('hud');
   }
 
   override update(_time: number, deltaMs: number): void {

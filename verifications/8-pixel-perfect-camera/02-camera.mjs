@@ -6,14 +6,13 @@
  * the zoom is a whole number that shows at least the minimum metres, the camera
  * follows the player as it walks, stops at the level bounds and never shows
  * anything past them. Screenshots are the proof. Expected numbers come from the
- * level and defs through the debug API, never from this file.
+ * level, the defs and the client's tuning through the debug API, never from this file.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
 import { PROOF, check, start, summarize, waitForPort, writeProof } from './lib.mjs';
 
 const PORT = 5308;
-const MIN_VISIBLE_METRES = 20;
 const EPSILON = 1e-6;
 const results = [];
 const report = { viewports: [], walk: [] };
@@ -34,6 +33,7 @@ try {
     const page = await openPage(browser, { width, height, dpr });
     const view = await readView(page);
     report.viewports.push({ label, ...view });
+    const MIN_VISIBLE_METRES = view.minVisibleMetres;
     const expectedZoom = Math.max(1, Math.floor(view.canvas.width / (view.pixelsPerMetre * MIN_VISIBLE_METRES)));
     results.push(check(`${label}: canvas backing store is CSS size x devicePixelRatio`, view.canvas.width === width * dpr && view.canvas.height === height * dpr && view.css.width === width && view.css.height === height, `${view.canvas.width}x${view.canvas.height} backing, ${view.css.width}x${view.css.height} css`));
     results.push(check(`${label}: zoom is a whole number`, Number.isInteger(view.camera.zoom) && view.camera.zoom >= 1, `zoom ${view.camera.zoom}`));
@@ -53,7 +53,7 @@ try {
     const after = await readView(page);
     report.resize = { before, after };
     results.push(check('resizing the window resizes the canvas backing store', after.canvas.width === 1600 && after.canvas.height === 900, `${before.canvas.width}x${before.canvas.height} -> ${after.canvas.width}x${after.canvas.height}`));
-    results.push(check('resizing the window recomputes the whole-number zoom', Number.isInteger(after.camera.zoom) && after.camera.zoom === Math.floor(1600 / (after.pixelsPerMetre * MIN_VISIBLE_METRES)) && after.camera.zoom !== before.camera.zoom, `zoom ${before.camera.zoom} -> ${after.camera.zoom}`));
+    results.push(check('resizing the window recomputes the whole-number zoom', Number.isInteger(after.camera.zoom) && after.camera.zoom === Math.floor(1600 / (after.pixelsPerMetre * after.minVisibleMetres)) && after.camera.zoom !== before.camera.zoom, `zoom ${before.camera.zoom} -> ${after.camera.zoom}`));
     results.push(check('after the resize the player is still in the middle and the level still fills the screen', centred(after) && insideBounds(after.camera)));
     await page.context().close();
   }
@@ -91,9 +91,12 @@ try {
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     const content = await page.evaluate(() => {
       const api = window.__novaland;
-      return { level: api.level, speed: api.defs.find((d) => d.name === 'player').speed, pixelsPerMetre: api.pixelsPerMetre };
+      const player = api.defs.find((d) => d.name === 'player');
+      return { level: api.level, speed: player.speed, radius: player.radius, pixelsPerMetre: api.pixelsPerMetre };
     });
-    const { level, speed, pixelsPerMetre } = content;
+    const { level, speed, radius, pixelsPerMetre } = content;
+    const eastWall = level.walls.find((wall) => wall.height === level.height - 2 * wall.width && wall.x > 0);
+    const northWall = level.walls.find((wall) => wall.width === level.width && wall.y < 0);
     const bounds = { x: (-level.width / 2) * pixelsPerMetre, y: (-level.height / 2) * pixelsPerMetre, width: level.width * pixelsPerMetre, height: level.height * pixelsPerMetre };
     const initial = await readView(page);
     results.push(check('the camera bounds are the level', sameRect(initial.camera.bounds, bounds), JSON.stringify(initial.camera.bounds)));
@@ -112,7 +115,7 @@ try {
 
     // Keep walking until the player is past the point where the camera must stop, but still short of the border wall.
     const cameraStopX = bounds.x + bounds.width - initial.camera.worldView.width / 2;
-    const wallStopX = (level.width / 2 - 1 - 0.4) * pixelsPerMetre;
+    const wallStopX = (eastWall.x - eastWall.width / 2 - radius) * pixelsPerMetre;
     const toCameraStopSeconds = (cameraStopX - walking.player.x) / pixelsPerMetre / speed;
     await page.waitForTimeout(Math.ceil(toCameraStopSeconds * 1000) + 600);
     const atEdge = await readView(page);
@@ -132,7 +135,8 @@ try {
 
     // North to the corner: the camera stops at the top edge too.
     await page.keyboard.down('KeyW');
-    const toTopSeconds = (blocked.player.y - (bounds.y + 1.4 * pixelsPerMetre)) / pixelsPerMetre / speed;
+    const wallStopY = (northWall.y + northWall.height / 2 + radius) * pixelsPerMetre;
+    const toTopSeconds = (blocked.player.y - wallStopY) / pixelsPerMetre / speed;
     await page.waitForTimeout(Math.ceil(toTopSeconds * 1000) + 600);
     await page.keyboard.up('KeyW');
     await page.waitForTimeout(100);
@@ -185,6 +189,7 @@ function readView(page) {
       canvas: { width: canvas.width, height: canvas.height },
       css: { width: rect.width, height: rect.height },
       pixelsPerMetre: api.pixelsPerMetre,
+      minVisibleMetres: api.minVisibleMetres,
       camera: api.camera(),
       player: circle ? { x: circle.x, y: circle.y } : null,
       pixelArt: api.game.config.pixelArt,
@@ -194,7 +199,6 @@ function readView(page) {
   });
 }
 
-// Function declarations: they hoist, so the checks above may use them.
 function nearly(a, b) {
   return Math.abs(a - b) < EPSILON;
 }

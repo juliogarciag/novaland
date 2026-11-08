@@ -18,7 +18,8 @@ interface DevicePixelWindow {
 
 /** The window measured in device pixels, as the canvas backing store must be. */
 function windowInDevicePixels(): DevicePixelWindow {
-  const pixelRatio = window.devicePixelRatio || 1;
+  const reported = window.devicePixelRatio;
+  const pixelRatio = Number.isFinite(reported) && reported > 0 ? reported : 1;
   return {
     width: Math.max(1, Math.round(window.innerWidth * pixelRatio)),
     height: Math.max(1, Math.round(window.innerHeight * pixelRatio)),
@@ -32,11 +33,17 @@ export function windowViewportConfig(): Phaser.Types.Core.ScaleConfig {
   return { mode: Phaser.Scale.NONE, width, height, zoom: 1 / pixelRatio };
 }
 
-/** Resizes the canvas with the window, and re-scales it when the pixel ratio changes (window dragged to another screen). */
-export function keepCanvasAtWindowSize(game: Phaser.Game): void {
+/**
+ * Resizes the canvas with the window, and re-scales it when the pixel ratio
+ * changes (window dragged to another screen). Returns a function that stops.
+ */
+export function keepCanvasAtWindowSize(game: Phaser.Game): () => void {
+  let stopWatchingPixelRatio: (() => void) | undefined;
+
   const fit = (): void => {
     const { width, height, pixelRatio } = windowInDevicePixels();
-    watchPixelRatio(pixelRatio, fit);
+    stopWatchingPixelRatio?.();
+    stopWatchingPixelRatio = watchPixelRatio(pixelRatio, fit);
     const zoom = 1 / pixelRatio;
     const sizeChanged = game.scale.width !== width || game.scale.height !== height;
     if (!sizeChanged && game.scale.zoom === zoom) return;
@@ -45,16 +52,29 @@ export function keepCanvasAtWindowSize(game: Phaser.Game): void {
     // game size; `resize` alone leaves it stale once the zoom is 1.
     game.scale.setZoom(zoom);
   };
-  window.addEventListener('resize', fit);
-  fit();
+
+  // The window event covers resizes and screen moves; watching the parent as
+  // well catches a page laid out at 0x0 (hidden tab) that only gets its size later.
+  const parent = game.scale.parent instanceof HTMLElement ? game.scale.parent : undefined;
+  const observer = parent && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : undefined;
+  const start = (): void => {
+    window.addEventListener('resize', fit);
+    if (observer && parent) observer.observe(parent);
+    fit();
+  };
+  if (game.isBooted) start();
+  else game.events.once(Phaser.Core.Events.READY, start);
+
+  return () => {
+    observer?.disconnect();
+    window.removeEventListener('resize', fit);
+    stopWatchingPixelRatio?.();
+  };
 }
 
-let stopWatchingPixelRatio: (() => void) | undefined;
-
-/** Calls `onChange` once the pixel ratio stops being `pixelRatio`; the browser fires no resize event for that. */
-function watchPixelRatio(pixelRatio: number, onChange: () => void): void {
-  stopWatchingPixelRatio?.();
+/** Calls `onChange` once the pixel ratio stops being `pixelRatio`; the browser fires no resize event for that. Returns a function that stops. */
+function watchPixelRatio(pixelRatio: number, onChange: () => void): () => void {
   const query = window.matchMedia(`(resolution: ${pixelRatio}dppx)`);
   query.addEventListener('change', onChange, { once: true });
-  stopWatchingPixelRatio = () => query.removeEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
 }

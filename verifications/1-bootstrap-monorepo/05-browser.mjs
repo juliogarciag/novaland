@@ -35,7 +35,7 @@ try {
   const inner = level.walls.filter(
     (wall) => Math.abs(wall.x) + wall.width / 2 < level.width / 2 - 0.5 && Math.abs(wall.y) + wall.height / 2 < level.height / 2 - 0.5,
   );
-  const tallWall = inner.find((wall) => wall.height > wall.width);
+  const tallWall = inner.filter((wall) => wall.height > wall.width).sort((a, b) => Math.hypot(a.x, a.y) - Math.hypot(b.x, b.y))[0];
   const northWall = level.walls.find((wall) => wall.width === level.width && wall.y < 0);
   const stopX = tallWall.x - tallWall.width / 2 - RADIUS;
   const northStopY = northWall.y + northWall.height / 2 + RADIUS;
