@@ -1,0 +1,43 @@
+PASS  dev server up
+PASS  960x720 @1x: canvas backing store is CSS size x devicePixelRatio  (960x720 backing, 960x720 css)
+PASS  960x720 @1x: zoom is a whole number  (zoom 3)
+PASS  960x720 @1x: zoom is the largest that still shows 20 metres  (20.00 m visible, expected zoom 3)
+PASS  960x720 @1x: the player is in the middle of the screen  (player (0.00, 0.00) view centre (0.00, 0.00))
+PASS  960x720 @1x: nothing outside the level is shown
+PASS  1600x900 @1x: canvas backing store is CSS size x devicePixelRatio  (1600x900 backing, 1600x900 css)
+PASS  1600x900 @1x: zoom is a whole number  (zoom 5)
+PASS  1600x900 @1x: zoom is the largest that still shows 20 metres  (20.00 m visible, expected zoom 5)
+PASS  1600x900 @1x: the player is in the middle of the screen  (player (0.00, 0.00) view centre (0.00, 0.00))
+PASS  1600x900 @1x: nothing outside the level is shown
+PASS  960x720 @2x: canvas backing store is CSS size x devicePixelRatio  (1920x1440 backing, 960x720 css)
+PASS  960x720 @2x: zoom is a whole number  (zoom 6)
+PASS  960x720 @2x: zoom is the largest that still shows 20 metres  (20.00 m visible, expected zoom 6)
+PASS  960x720 @2x: the player is in the middle of the screen  (player (0.00, 0.00) view centre (0.00, 0.00))
+PASS  960x720 @2x: nothing outside the level is shown
+PASS  1600x900 @2x: canvas backing store is CSS size x devicePixelRatio  (3200x1800 backing, 1600x900 css)
+PASS  1600x900 @2x: zoom is a whole number  (zoom 10)
+PASS  1600x900 @2x: zoom is the largest that still shows 20 metres  (20.00 m visible, expected zoom 10)
+PASS  1600x900 @2x: the player is in the middle of the screen  (player (0.00, 0.00) view centre (0.00, 0.00))
+PASS  1600x900 @2x: nothing outside the level is shown
+PASS  resizing the window resizes the canvas backing store  (960x720 -> 1600x900)
+PASS  resizing the window recomputes the whole-number zoom  (zoom 3 -> 5)
+PASS  after the resize the player is still in the middle and the level still fills the screen
+PASS  the camera bounds are the level  ({"x":-512,"y":-320,"width":1024,"height":640})
+PASS  the level is bigger than the screen, so the camera has to move  (64x40 m level, 20x15 m visible)
+PASS  walking east scrolls the camera east  (scrollX -480 -> -400)
+PASS  the camera keeps the player in the middle while walking  (player (80.00, 0.00) view centre (80.00, 0.00))
+PASS  the camera stops at the east edge of the level  (view right 512, level right 512)
+PASS  the player keeps walking past the middle once the camera has stopped  (player (404.00, 0.00) view centre (352.00, 0.00))
+PASS  the camera no longer moves while the player walks on
+PASS  the east border wall still stops the player  (player x 489.61 px, wall face 489.6)
+PASS  walking north scrolls the camera north  (scrollY -360 -> -560)
+PASS  the camera stops at the north edge of the level  (view top -320, level top -320)
+PASS  in the corner the camera is pinned on both axes
+PASS  nothing outside the level was shown in any of 6 samples
+PASS  the view always starts on a whole device pixel (texture pixels never straddle screen pixels)
+PASS  the zoom stayed a whole number throughout
+PASS  pixelArt and roundPixels are on
+PASS  the HUD is drawn by its own scene, untouched by the world zoom
+PASS  no page or console errors
+
+ALL 41 CHECKS PASSED

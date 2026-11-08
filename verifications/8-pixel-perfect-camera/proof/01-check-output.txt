@@ -1,0 +1,60 @@
+
+$ pnpm install --frozen-lockfile
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 524ms using pnpm v10.9.0
+(node:54998) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+(exit 0)
+
+$ pnpm exec vitest run --reporter=default --reporter=json --outputFile.json=<repo>/verifications/8-pixel-perfect-camera/proof/01-tests.json
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/render/camera.test.ts (4 tests) 2ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 10ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 14ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 6ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 82ms
+ ✓ |sim| src/content/defs.test.ts (2 tests) 78ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 217ms
+ ✓ |server| src/headless.test.ts (3 tests) 249ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 257ms
+
+ Test Files  10 passed (10)
+      Tests  51 passed (51)
+   Start at  23:44:34
+   Duration  532ms (tests 63%, import 19%, transform 16%, worker 3%)
+
+JSON report written to <repo>/verifications/8-pixel-perfect-camera/proof/01-tests.json
+
+(exit 0)
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:55053) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+(exit 0)
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+(exit 0)

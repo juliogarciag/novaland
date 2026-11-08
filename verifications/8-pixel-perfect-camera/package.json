@@ -1,0 +1,12 @@
+{
+  "name": "verification-8-pixel-perfect-camera",
+  "private": true,
+  "type": "module",
+  "description": "Verification scripts for ticket #8. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}
