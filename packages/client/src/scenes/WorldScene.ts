@@ -3,12 +3,16 @@ import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { EntityRenderer } from '../render/entities';
+import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
 const LOCAL_SLOT = 0;
 
 /** Never simulate more than this much real time per frame (tab switches, hitches). */
 const MAX_FRAME_SECONDS = 0.25;
+
+/** Above every depth-sorted entity, so the HUD is never covered. */
+const HUD_DEPTH = Number.MAX_SAFE_INTEGER;
 
 /**
  * The one scene for now. Owns the leftover frame time: real time comes in
@@ -27,13 +31,19 @@ export class WorldScene extends Phaser.Scene {
     super('world');
   }
 
+  preload(): void {
+    loadSpriteSheets(this);
+  }
+
   create(): void {
     this.cameras.main.centerOn(0, 0);
+    createSpriteAnimations(this);
     this.entityRenderer = new EntityRenderer(this);
     this.keyboard = createKeyboardInput(this, LOCAL_SLOT);
     this.hud = this.add
       .text(12, 12, '', { fontFamily: 'monospace', fontSize: '14px', color: '#94a3b8' })
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(HUD_DEPTH);
     this.pendingCommands.push({ type: 'player/join', slot: LOCAL_SLOT });
     this.entityRenderer.sync(this.sim);
   }

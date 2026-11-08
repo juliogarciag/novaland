@@ -30,6 +30,7 @@ describe('snapshot', () => {
       Body: { handle: expect.any(Number) },
       DefRef: { id: expect.any(Number) },
       Extents: { halfHeight: 0.4, halfWidth: 0.4 },
+      Facing: { x: 0, y: 1 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
       Position: { x: sim.level.spawn.x, y: sim.level.spawn.y },

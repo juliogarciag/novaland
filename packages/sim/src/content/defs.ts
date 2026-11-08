@@ -18,6 +18,7 @@
  */
 import { PlayerDefId, playerDefs } from '../features/player/defs';
 import { WallDefId, wallDefs } from '../features/walls/defs';
+import type { SpriteDef } from './sprites';
 
 export type DefShape = 'circle' | 'box';
 
@@ -32,6 +33,8 @@ export interface EntityDef {
   readonly radius?: number;
   /** Movement speed in metres per second, for things that move on their own. */
   readonly speed?: number;
+  /** Sprite sheet to draw instead of the flat shape. Views fall back to `shape` and `color` when absent. */
+  readonly sprite?: SpriteDef;
 }
 
 export const DefId = { ...PlayerDefId, ...WallDefId } as const;

@@ -1,0 +1,124 @@
+{
+  "def": {
+    "frameWidth": 16,
+    "frameHeight": 24,
+    "pixelsPerMetre": 16,
+    "directions": {
+      "down": {
+        "idle": 0,
+        "walk": {
+          "start": 0,
+          "end": 3
+        }
+      },
+      "up": {
+        "idle": 4,
+        "walk": {
+          "start": 4,
+          "end": 7
+        }
+      },
+      "left": {
+        "idle": 8,
+        "walk": {
+          "start": 8,
+          "end": 11
+        }
+      },
+      "right": {
+        "idle": 12,
+        "walk": {
+          "start": 12,
+          "end": 15
+        }
+      }
+    }
+  },
+  "committed": {
+    "width": 64,
+    "height": 96,
+    "bytes": 707
+  },
+  "frames": [
+    {
+      "index": 0,
+      "opaque": 186,
+      "hash": "1eed2881"
+    },
+    {
+      "index": 1,
+      "opaque": 181,
+      "hash": "e5ce7ea9"
+    },
+    {
+      "index": 2,
+      "opaque": 194,
+      "hash": "55339b51"
+    },
+    {
+      "index": 3,
+      "opaque": 181,
+      "hash": "efaa9d9d"
+    },
+    {
+      "index": 4,
+      "opaque": 186,
+      "hash": "026e0f95"
+    },
+    {
+      "index": 5,
+      "opaque": 181,
+      "hash": "65fc2349"
+    },
+    {
+      "index": 6,
+      "opaque": 194,
+      "hash": "2bf187a5"
+    },
+    {
+      "index": 7,
+      "opaque": 181,
+      "hash": "1a4b2ef5"
+    },
+    {
+      "index": 8,
+      "opaque": 162,
+      "hash": "66a60421"
+    },
+    {
+      "index": 9,
+      "opaque": 174,
+      "hash": "e4aa44d5"
+    },
+    {
+      "index": 10,
+      "opaque": 168,
+      "hash": "14843763"
+    },
+    {
+      "index": 11,
+      "opaque": 162,
+      "hash": "75b58935"
+    },
+    {
+      "index": 12,
+      "opaque": 162,
+      "hash": "ce7f4e39"
+    },
+    {
+      "index": 13,
+      "opaque": 162,
+      "hash": "df0833f5"
+    },
+    {
+      "index": 14,
+      "opaque": 168,
+      "hash": "7ec1fabb"
+    },
+    {
+      "index": 15,
+      "opaque": 174,
+      "hash": "e72af0d5"
+    }
+  ]
+}

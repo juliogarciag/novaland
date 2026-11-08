@@ -1,0 +1,1058 @@
+{
+  "steps": [
+    {
+      "step": "initial",
+      "tick": 12,
+      "x": 0,
+      "y": 0,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": 1
+      },
+      "spriteCount": 1,
+      "sprite": {
+        "x": 0,
+        "y": 0,
+        "depth": 12.8,
+        "texture": "player",
+        "frame": 0,
+        "animation": null,
+        "playing": false,
+        "scaleX": 2,
+        "scaleY": 2,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 32,
+        "displayHeight": 48
+      },
+      "rectangles": [
+        {
+          "x": 0,
+          "y": -240,
+          "width": 768,
+          "height": 32,
+          "depth": -224
+        },
+        {
+          "x": 96,
+          "y": -128,
+          "width": 64,
+          "height": 64,
+          "depth": -96
+        },
+        {
+          "x": -192,
+          "y": -96,
+          "width": 96,
+          "height": 32,
+          "depth": -80
+        },
+        {
+          "x": 192,
+          "y": 96,
+          "width": 32,
+          "height": 128,
+          "depth": 160
+        },
+        {
+          "x": -368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 0,
+          "y": 240,
+          "width": 768,
+          "height": 32,
+          "depth": 256
+        }
+      ],
+      "hudDepth": 9007199254740991
+    },
+    {
+      "step": "walk-right",
+      "seenFrames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "after": {
+        "tick": 68,
+        "x": 3.5833287239074707,
+        "y": 0,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": 114.66651916503906,
+          "y": 0,
+          "depth": 12.8,
+          "texture": "player",
+          "frame": 12,
+          "animation": "player/walk/right",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      },
+      "later": {
+        "tick": 100,
+        "x": 3.5833287239074707,
+        "y": 0,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": 114.66651916503906,
+          "y": 0,
+          "depth": 12.8,
+          "texture": "player",
+          "frame": 12,
+          "animation": "player/walk/right",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      }
+    },
+    {
+      "step": "walk-down",
+      "seenFrames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "after": {
+        "tick": 153,
+        "x": 3.5833287239074707,
+        "y": 3.6666617393493652,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": 1
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": 114.66651916503906,
+          "y": 117.33317565917969,
+          "depth": 130.1331756591797,
+          "texture": "player",
+          "frame": 0,
+          "animation": "player/walk/down",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      },
+      "later": {
+        "tick": 184,
+        "x": 3.5833287239074707,
+        "y": 3.6666617393493652,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": 1
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": 114.66651916503906,
+          "y": 117.33317565917969,
+          "depth": 130.1331756591797,
+          "texture": "player",
+          "frame": 0,
+          "animation": "player/walk/down",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      }
+    },
+    {
+      "step": "walk-left",
+      "seenFrames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "after": {
+        "tick": 237,
+        "x": -0.08333337306976318,
+        "y": 3.6666617393493652,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": -1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": -2.666667938232422,
+          "y": 117.33317565917969,
+          "depth": 130.1331756591797,
+          "texture": "player",
+          "frame": 8,
+          "animation": "player/walk/left",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      },
+      "later": {
+        "tick": 267,
+        "x": -0.08333337306976318,
+        "y": 3.6666617393493652,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": -1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": -2.666667938232422,
+          "y": 117.33317565917969,
+          "depth": 130.1331756591797,
+          "texture": "player",
+          "frame": 8,
+          "animation": "player/walk/left",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      }
+    },
+    {
+      "step": "walk-up",
+      "seenFrames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "after": {
+        "tick": 320,
+        "x": -0.08333337306976318,
+        "y": -3.3527612686157227e-8,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": -1
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": -2.666667938232422,
+          "y": -0.0000010728836059570312,
+          "depth": 12.799998927116395,
+          "texture": "player",
+          "frame": 4,
+          "animation": "player/walk/up",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      },
+      "later": {
+        "tick": 350,
+        "x": -0.08333337306976318,
+        "y": -3.3527612686157227e-8,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": -1
+        },
+        "spriteCount": 1,
+        "sprite": {
+          "x": -2.666667938232422,
+          "y": -0.0000010728836059570312,
+          "depth": 12.799998927116395,
+          "texture": "player",
+          "frame": 4,
+          "animation": "player/walk/up",
+          "playing": false,
+          "scaleX": 2,
+          "scaleY": 2,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 32,
+          "displayHeight": 48
+        },
+        "rectangles": [
+          {
+            "x": 0,
+            "y": -240,
+            "width": 768,
+            "height": 32,
+            "depth": -224
+          },
+          {
+            "x": 96,
+            "y": -128,
+            "width": 64,
+            "height": 64,
+            "depth": -96
+          },
+          {
+            "x": -192,
+            "y": -96,
+            "width": 96,
+            "height": 32,
+            "depth": -80
+          },
+          {
+            "x": 192,
+            "y": 96,
+            "width": 32,
+            "height": 128,
+            "depth": 160
+          },
+          {
+            "x": -368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 368,
+            "y": 0,
+            "width": 32,
+            "height": 448,
+            "depth": 224
+          },
+          {
+            "x": 0,
+            "y": 240,
+            "width": 768,
+            "height": 32,
+            "depth": 256
+          }
+        ],
+        "hudDepth": 9007199254740991
+      }
+    },
+    {
+      "step": "in-front",
+      "tick": 499,
+      "x": 2.999997615814209,
+      "y": -2.6001341342926025,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": -1
+      },
+      "spriteCount": 1,
+      "sprite": {
+        "x": 95.99992370605469,
+        "y": -83.20429229736328,
+        "depth": -70.40429229736328,
+        "texture": "player",
+        "frame": 4,
+        "animation": "player/walk/up",
+        "playing": false,
+        "scaleX": 2,
+        "scaleY": 2,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 32,
+        "displayHeight": 48
+      },
+      "rectangles": [
+        {
+          "x": 0,
+          "y": -240,
+          "width": 768,
+          "height": 32,
+          "depth": -224
+        },
+        {
+          "x": 96,
+          "y": -128,
+          "width": 64,
+          "height": 64,
+          "depth": -96
+        },
+        {
+          "x": -192,
+          "y": -96,
+          "width": 96,
+          "height": 32,
+          "depth": -80
+        },
+        {
+          "x": 192,
+          "y": 96,
+          "width": 32,
+          "height": 128,
+          "depth": 160
+        },
+        {
+          "x": -368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 0,
+          "y": 240,
+          "width": 768,
+          "height": 32,
+          "depth": 256
+        }
+      ],
+      "hudDepth": 9007199254740991,
+      "blockRectangle": {
+        "x": 96,
+        "y": -128,
+        "width": 64,
+        "height": 64,
+        "depth": -96
+      },
+      "spriteTop": -119.20429229736328
+    },
+    {
+      "step": "behind",
+      "tick": 738,
+      "x": 2.9166646003723145,
+      "y": -5.399866104125977,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": 1
+      },
+      "spriteCount": 1,
+      "sprite": {
+        "x": 93.33326721191406,
+        "y": -172.79571533203125,
+        "depth": -159.99571533203124,
+        "texture": "player",
+        "frame": 0,
+        "animation": "player/walk/down",
+        "playing": false,
+        "scaleX": 2,
+        "scaleY": 2,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 32,
+        "displayHeight": 48
+      },
+      "rectangles": [
+        {
+          "x": 0,
+          "y": -240,
+          "width": 768,
+          "height": 32,
+          "depth": -224
+        },
+        {
+          "x": 96,
+          "y": -128,
+          "width": 64,
+          "height": 64,
+          "depth": -96
+        },
+        {
+          "x": -192,
+          "y": -96,
+          "width": 96,
+          "height": 32,
+          "depth": -80
+        },
+        {
+          "x": 192,
+          "y": 96,
+          "width": 32,
+          "height": 128,
+          "depth": 160
+        },
+        {
+          "x": -368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 368,
+          "y": 0,
+          "width": 32,
+          "height": 448,
+          "depth": 224
+        },
+        {
+          "x": 0,
+          "y": 240,
+          "width": 768,
+          "height": 32,
+          "depth": 256
+        }
+      ],
+      "hudDepth": 9007199254740991
+    }
+  ],
+  "content": {
+    "level": {
+      "name": "starter",
+      "width": 24,
+      "height": 16,
+      "spawn": {
+        "x": 0,
+        "y": 0
+      },
+      "walls": [
+        {
+          "x": 0,
+          "y": -7.5,
+          "width": 24,
+          "height": 1
+        },
+        {
+          "x": 0,
+          "y": 7.5,
+          "width": 24,
+          "height": 1
+        },
+        {
+          "x": -11.5,
+          "y": 0,
+          "width": 1,
+          "height": 14
+        },
+        {
+          "x": 11.5,
+          "y": 0,
+          "width": 1,
+          "height": 14
+        },
+        {
+          "x": -6,
+          "y": -3,
+          "width": 3,
+          "height": 1
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "width": 1,
+          "height": 4
+        },
+        {
+          "x": 3,
+          "y": -4,
+          "width": 2,
+          "height": 2
+        }
+      ]
+    },
+    "radius": 0.4,
+    "sprite": {
+      "key": "player",
+      "frameWidth": 16,
+      "frameHeight": 24,
+      "pixelsPerMetre": 16,
+      "origin": {
+        "x": 0.5,
+        "y": 0.75
+      },
+      "frameRate": 8,
+      "directions": {
+        "down": {
+          "idle": 0,
+          "walk": {
+            "start": 0,
+            "end": 3
+          }
+        },
+        "up": {
+          "idle": 4,
+          "walk": {
+            "start": 4,
+            "end": 7
+          }
+        },
+        "left": {
+          "idle": 8,
+          "walk": {
+            "start": 8,
+            "end": 11
+          }
+        },
+        "right": {
+          "idle": 12,
+          "walk": {
+            "start": 12,
+            "end": 15
+          }
+        }
+      }
+    },
+    "ppm": 32,
+    "block": {
+      "x": 3,
+      "y": -4,
+      "width": 2,
+      "height": 2
+    },
+    "scale": 2
+  },
+  "loaded": {
+    "texture": true,
+    "frames": 17,
+    "animations": [
+      "player/walk/down",
+      "player/walk/up",
+      "player/walk/left",
+      "player/walk/right"
+    ]
+  },
+  "errors": []
+}
