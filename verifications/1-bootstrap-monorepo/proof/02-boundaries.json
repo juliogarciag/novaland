@@ -1,0 +1,320 @@
+{
+  "results": [
+    {
+      "name": "lint fails on the violation files",
+      "pass": true,
+      "details": "exit 1"
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-imports /phaser/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-imports /client/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-imports /@novaland\\/server/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-imports /colyseus/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-imports /node:fs/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-globals /window/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-globals /crypto/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-properties /Math\\.random/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-properties /Date\\.now/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-syntax /Non-deterministic/",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-syntax /__testing__/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-imports /@dimforge/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-imports /bitecs/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-imports /@novaland\\/sim\\/src/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-imports /\\.\\.\\/\\.\\.\\/sim/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-imports /@novaland\\/server/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-syntax /__testing__/",
+      "pass": true
+    },
+    {
+      "name": "packages/server/src/__violation__.ts: no-restricted-imports /phaser/",
+      "pass": true
+    },
+    {
+      "name": "packages/server/src/__violation__.ts: no-restricted-imports /\\.\\.\\/\\.\\.\\/sim/",
+      "pass": true
+    },
+    {
+      "name": "violation files removed again",
+      "pass": true
+    }
+  ],
+  "lint": [
+    {
+      "filePath": "<repo>/packages/client/src/__violation__.ts",
+      "messages": [
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'@dimforge/rapier2d-deterministic-compat' import is restricted from being used by a pattern. Physics lives in packages/sim. The client only reads sim state.",
+          "line": 1,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 1,
+          "endColumn": 62
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'bitecs' import is restricted from being used by a pattern. The ECS lives in packages/sim. Use the sim public API.",
+          "line": 2,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 2,
+          "endColumn": 38
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'@novaland/sim/src/core/transform' import is restricted from being used by a pattern. Import the sim through its package entry (@novaland/sim) so its public API stays explicit.",
+          "line": 3,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 3,
+          "endColumn": 61
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'../../sim/src/core/physics' import is restricted from being used by a pattern. Import the sim through its package entry (@novaland/sim) so its public API stays explicit.",
+          "line": 4,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 4,
+          "endColumn": 51
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'@novaland/server' import is restricted from being used by a pattern. Nothing may depend on the server.",
+          "line": 5,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 5,
+          "endColumn": 48
+        },
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "`__testing__` exports are for *.test.ts files only.",
+          "line": 6,
+          "column": 10,
+          "messageId": "restrictedSyntax",
+          "endLine": 6,
+          "endColumn": 21
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 6,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import RAPIER from '@dimforge/rapier2d-deterministic-compat';\nimport { createWorld } from 'bitecs';\nimport { Position } from '@novaland/sim/src/core/transform';\nimport { Body } from '../../sim/src/core/physics';\nimport { runHeadless } from '@novaland/server';\nimport { __testing__ } from './debug';\nexport const v = [RAPIER, createWorld, Position, Body, runHeadless, __testing__];\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "<repo>/packages/server/src/__violation__.ts",
+      "messages": [
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'phaser' import is restricted from being used by a pattern. Phaser is rendering/input only and lives in packages/client.",
+          "line": 1,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 1,
+          "endColumn": 29
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'../../sim/src/core/sim' import is restricted from being used by a pattern. Import the sim through its package entry (@novaland/sim) so its public API stays explicit.",
+          "line": 2,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 2,
+          "endColumn": 46
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 2,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import Phaser from 'phaser';\nimport { Sim } from '../../sim/src/core/sim';\nexport const v = [Phaser, Sim];\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "<repo>/packages/sim/src/__violation__.ts",
+      "messages": [
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'phaser' import is restricted from being used by a pattern. Phaser is rendering/input only and lives in packages/client.",
+          "line": 1,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 1,
+          "endColumn": 29
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'../../client/src/main' import is restricted from being used by a pattern. Nothing may depend on the client. It is a view.",
+          "line": 2,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 2,
+          "endColumn": 46
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'@novaland/server' import is restricted from being used by a pattern. Nothing may depend on the server.",
+          "line": 3,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 3,
+          "endColumn": 48
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'colyseus' import is restricted from being used by a pattern. Networking belongs to packages/server (and later a client adapter), not here.",
+          "line": 4,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 4,
+          "endColumn": 33
+        },
+        {
+          "ruleId": "no-restricted-imports",
+          "severity": 2,
+          "message": "'node:fs' import is restricted from being used by a pattern. The sim is headless and pure: no Node APIs in packages/sim.",
+          "line": 5,
+          "column": 1,
+          "messageId": "patternWithCustomMessage",
+          "endLine": 5,
+          "endColumn": 40
+        },
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "`__testing__` exports are for *.test.ts files only.",
+          "line": 6,
+          "column": 10,
+          "messageId": "restrictedSyntax",
+          "endLine": 6,
+          "endColumn": 21
+        },
+        {
+          "ruleId": "no-restricted-globals",
+          "severity": 2,
+          "message": "Unexpected use of 'window'. The sim is headless and pure: \"window\" is not allowed in packages/sim.",
+          "line": 7,
+          "column": 66,
+          "messageId": "customMessage",
+          "endLine": 7,
+          "endColumn": 72
+        },
+        {
+          "ruleId": "no-restricted-globals",
+          "severity": 2,
+          "message": "Unexpected use of 'crypto'. The sim is headless and pure: \"crypto\" is not allowed in packages/sim.",
+          "line": 7,
+          "column": 74,
+          "messageId": "customMessage",
+          "endLine": 7,
+          "endColumn": 80
+        },
+        {
+          "ruleId": "no-restricted-properties",
+          "severity": 2,
+          "message": "'Math.random' is restricted from being used. Non-deterministic. Use sim.rng instead.",
+          "line": 7,
+          "column": 82,
+          "messageId": "restrictedObjectProperty",
+          "endLine": 7,
+          "endColumn": 93
+        },
+        {
+          "ruleId": "no-restricted-properties",
+          "severity": 2,
+          "message": "'Date.now' is restricted from being used. Non-deterministic. Use sim.tick instead.",
+          "line": 7,
+          "column": 97,
+          "messageId": "restrictedObjectProperty",
+          "endLine": 7,
+          "endColumn": 105
+        },
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "Non-deterministic. Use sim.tick instead.",
+          "line": 7,
+          "column": 109,
+          "messageId": "restrictedSyntax",
+          "endLine": 7,
+          "endColumn": 119
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 11,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import Phaser from 'phaser';\nimport { boot } from '../../client/src/main';\nimport { runHeadless } from '@novaland/server';\nimport { Room } from 'colyseus';\nimport { readFileSync } from 'node:fs';\nimport { __testing__ } from './core/create';\nexport const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date(), __testing__];\n",
+      "usedDeprecatedRules": []
+    }
+  ]
+}

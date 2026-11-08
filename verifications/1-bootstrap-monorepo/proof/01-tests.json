@@ -1,0 +1,662 @@
+{
+  "numTotalTestSuites": 16,
+  "numPassedTestSuites": 16,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 43,
+  "numPassedTests": 43,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1794107835262,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run drives the sim without a browser and is reproducible",
+          "status": "passed",
+          "title": "drives the sim without a browser and is reproducible",
+          "duration": 116.097666,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run the stop command really stops the player",
+          "status": "passed",
+          "title": "the stop command really stops the player",
+          "duration": 32.897333,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run runs exactly the requested number of ticks",
+          "status": "passed",
+          "title": "runs exactly the requested number of ticks",
+          "duration": 2.2994170000000054,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835471,
+      "endTime": 1794107835622.2993,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/server/src/headless.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys is zero with nothing pressed",
+          "status": "passed",
+          "title": "is zero with nothing pressed",
+          "duration": 1.179666999999995,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys maps single keys to unit axes, y pointing down",
+          "status": "passed",
+          "title": "maps single keys to unit axes, y pointing down",
+          "duration": 0.36650000000000205,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys cancels opposite keys",
+          "status": "passed",
+          "title": "cancels opposite keys",
+          "duration": 0.11775000000000091,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys reports diagonals raw; the sim normalises them",
+          "status": "passed",
+          "title": "reports diagonals raw; the sim normalises them",
+          "duration": 0.19258299999998485,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys compares directions by value",
+          "status": "passed",
+          "title": "compares directions by value",
+          "duration": 1.5870419999999967,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835413,
+      "endTime": 1794107835416.5872,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/input/direction.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput registers WASD and the arrow keys with the scene",
+          "status": "passed",
+          "title": "registers WASD and the arrow keys with the scene",
+          "duration": 1.2571670000000097,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits nothing while no key is held",
+          "status": "passed",
+          "title": "emits nothing while no key is held",
+          "duration": 0.2654579999999953,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+          "status": "passed",
+          "title": "emits one player/move for the given slot when a key goes down",
+          "duration": 0.2030420000000106,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits only on change: holding a key produces no repeats",
+          "status": "passed",
+          "title": "emits only on change: holding a key produces no repeats",
+          "duration": 0.6554590000000076,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+          "status": "passed",
+          "title": "emits a stop (0, 0) when the last key is released",
+          "duration": 0.18687499999998636,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+          "status": "passed",
+          "title": "treats arrows and WASD as the same direction, so switching between them is silent",
+          "duration": 0.7807500000000118,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+          "status": "passed",
+          "title": "reports diagonals and opposite-key cancellation as the direction mapping does",
+          "duration": 0.28541699999999537,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput collapses a press and release between drains into nothing",
+          "status": "passed",
+          "title": "collapses a press and release between drains into nothing",
+          "duration": 0.10595899999998437,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+          "status": "passed",
+          "title": "produces no commands when the scene has no keyboard plugin",
+          "duration": 0.47487499999999727,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835412,
+      "endTime": 1794107835416.4749,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/input/keyboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "status": "passed",
+          "title": "runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "duration": 1.1953749999999843,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks carries the remainder across frames so no time is lost",
+          "status": "passed",
+          "title": "carries the remainder across frames so no time is lost",
+          "duration": 0.35070799999999736,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs several ticks for a long frame",
+          "status": "passed",
+          "title": "runs several ticks for a long frame",
+          "duration": 0.09595900000002189,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+          "status": "passed",
+          "title": "clamps huge frames (tab switch) instead of spiralling",
+          "duration": 0.20199999999999818,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks ignores negative deltas",
+          "status": "passed",
+          "title": "ignores negative deltas",
+          "duration": 0.3605829999999912,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835417,
+      "endTime": 1794107835419.3606,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/loop/takeWholeTicks.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "entity definitions"
+          ],
+          "fullName": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+          "status": "passed",
+          "title": "have unique, stable ids inside their feature block and resolve by id",
+          "duration": 1.9197090000000117,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "entity definitions"
+          ],
+          "fullName": "entity definitions walls are spawned from level data, so a new wall is only a data entry",
+          "status": "passed",
+          "title": "walls are spawned from level data, so a new wall is only a data entry",
+          "duration": 41.99912499999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835455,
+      "endTime": 1794107835498.999,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/content/defs.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism same seed + same commands = identical state, including physics bytes",
+          "status": "passed",
+          "title": "same seed + same commands = identical state, including physics bytes",
+          "duration": 167.97195799999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism two live sims never share component data",
+          "status": "passed",
+          "title": "two live sims never share component data",
+          "duration": 3.0386669999999754,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism different commands diverge",
+          "status": "passed",
+          "title": "different commands diverge",
+          "duration": 6.380499999999984,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism different seeds diverge in the rng state",
+          "status": "passed",
+          "title": "different seeds diverge in the rng state",
+          "duration": 2.7255830000000287,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835454,
+      "endTime": 1794107835634.7256,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/core/determinism.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot is plain JSON that survives a round trip",
+          "status": "passed",
+          "title": "is plain JSON that survives a round trip",
+          "duration": 71.50633399999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot records every component field of every entity plus level, capacity, tick and rng",
+          "status": "passed",
+          "title": "records every component field of every entity plus level, capacity, tick and rng",
+          "duration": 2.368499999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot hashes the same regardless of the order components were attached in",
+          "status": "passed",
+          "title": "hashes the same regardless of the order components were attached in",
+          "duration": 0.8222500000000252,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot has a stable hash (known answer)",
+          "status": "passed",
+          "title": "has a stable hash (known answer)",
+          "duration": 0.30133299999999963,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot encodes base64 like the standard",
+          "status": "passed",
+          "title": "encodes base64 like the standard",
+          "duration": 0.21199999999998909,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835452,
+      "endTime": 1794107835528.212,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/core/snapshot.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) spawns a player at the level spawn point on join",
+          "status": "passed",
+          "title": "spawns a player at the level spawn point on join",
+          "duration": 69.124584,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) moves at the def speed for N ticks in open space",
+          "status": "passed",
+          "title": "moves at the def speed for N ticks in open space",
+          "duration": 9.454000000000008,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) keeps moving with the last intent and stops on a zero move",
+          "status": "passed",
+          "title": "keeps moving with the last intent and stops on a zero move",
+          "duration": 8.020915999999971,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
+          "status": "passed",
+          "title": "normalises diagonal and oversized move vectors to the def speed",
+          "duration": 2.586958999999979,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) treats absurdly large components as full input, not as a stop",
+          "status": "passed",
+          "title": "treats absurdly large components as full input, not as a stop",
+          "duration": 0.9162910000000011,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) is stopped by the east border wall (Rapier collision), then slides along it",
+          "status": "passed",
+          "title": "is stopped by the east border wall (Rapier collision), then slides along it",
+          "duration": 42.20354199999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
+          "status": "passed",
+          "title": "ignores commands for empty or invalid slots and duplicate joins",
+          "duration": 8.435292000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
+          "status": "passed",
+          "title": "drops malformed command values instead of throwing (the network will send garbage)",
+          "duration": 6.226416000000029,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
+          "status": "passed",
+          "title": "removes the player and its body on leave, and a re-join starts fresh at spawn",
+          "duration": 6.497957999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) ignores a join when the sim is full instead of throwing",
+          "status": "passed",
+          "title": "ignores a join when the sim is full instead of throwing",
+          "duration": 0.9684579999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794107835456,
+      "endTime": 1794107835609.9685,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/features/player/movement.test.ts"
+    }
+  ]
+}

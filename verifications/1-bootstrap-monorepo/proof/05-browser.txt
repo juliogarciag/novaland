@@ -1,0 +1,17 @@
+PASS  dev server up
+PASS  Phaser canvas is on the page
+PASS  player spawned at the level spawn point
+PASS  every wall and the player exist in the sim  (8 entities)
+PASS  S moves the player down only  (y=2.58)
+PASS  the player is level with the tall inner wall
+PASS  ArrowRight moves the player right at the def speed  (3.00m over 36 ticks, expected 3.00m)
+PASS  the player moves only on the x axis
+PASS  releasing the key stops the player
+PASS  a wall stops the player (Rapier collision)  (x=5.102, stop at 5.10)
+PASS  the player stays put while still pushing into the wall
+PASS  pushing diagonally slides along the wall  (y 2.58 -> 4.76)
+PASS  the north border wall holds  (y=-6.600, stop at -6.60)
+PASS  the rendered player matches the sim position (32 px/m) in 6 samples  ({"x":35.207244873046875,"y":-211.21035766601562})
+PASS  no page or console errors
+
+ALL 15 CHECKS PASSED

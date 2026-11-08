@@ -1,0 +1,17 @@
+packages:
+  - packages/*
+
+# Single place for shared dependency versions. Packages reference them as "catalog:".
+catalog:
+  "@dimforge/rapier2d-deterministic-compat": 0.21.0
+  "@eslint/js": ^10.0.0
+  "@types/node": ^24.0.0
+  bitecs: 0.4.0
+  eslint: ^10.14.0
+  globals: ^16.0.0
+  phaser: 4.2.1
+  tsx: ^4.19.0
+  typescript: 6.0.3
+  typescript-eslint: ^8.72.1
+  vite: ^8.3.6
+  vitest: ^5.1.0

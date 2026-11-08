@@ -6,3 +6,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# scratch files written by verifications/*/02-boundaries.mjs
+**/__violation__.ts
