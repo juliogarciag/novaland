@@ -35,7 +35,7 @@ try {
   const inner = level.walls.filter(
     (wall) => Math.abs(wall.x) + wall.width / 2 < level.width / 2 - 0.5 && Math.abs(wall.y) + wall.height / 2 < level.height / 2 - 0.5,
   );
-  const tallWall = inner.find((wall) => wall.height > wall.width);
+  const tallWall = inner.filter((wall) => wall.height > wall.width).sort((a, b) => Math.hypot(a.x, a.y) - Math.hypot(b.x, b.y))[0];
   const northWall = level.walls.find((wall) => wall.width === level.width && wall.y < 0);
   const stopX = tallWall.x - tallWall.width / 2 - RADIUS;
   const northStopY = northWall.y + northWall.height / 2 + RADIUS;
@@ -103,9 +103,10 @@ try {
   results.push(check('pushing diagonally slides along the wall', slide.after.y > push.after.y + 1 && slide.after.x <= stopX + 0.01, `y ${push.after.y.toFixed(2)} -> ${slide.after.y.toFixed(2)}`));
   report.steps.push({ step: 'slide', ...slide.after });
 
-  // Walk back to open space and far up: the border wall must hold.
+  // Walk back to open space and up to the border, however far it is: the border wall must hold.
   await hold(['KeyA'], 800);
-  const north = await hold(['KeyW'], 3000);
+  const beforeNorth = await state();
+  const north = await hold(['KeyW'], Math.ceil(((beforeNorth.y - northStopY) / SPEED) * 1000) + 500);
   await page.screenshot({ path: path.join(PROOF, '05-browser-3-at-north-border.png') });
   results.push(check('the north border wall holds', north.after.y > northStopY - 0.01 && north.after.y < northStopY + 0.2, `y=${north.after.y.toFixed(3)}, stop at ${northStopY.toFixed(2)}`));
   report.steps.push({ step: 'north', ...north.after, northStopY });

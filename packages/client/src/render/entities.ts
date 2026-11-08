@@ -45,6 +45,12 @@ export class EntityRenderer {
     }
   }
 
+  /** Where an entity is drawn, in pixels, or undefined when it has no shape (yet). */
+  pixelPositionOf(eid: number): { x: number; y: number } | undefined {
+    const view = this.views.get(eid);
+    return view ? { x: view.shape.x, y: view.shape.y } : undefined;
+  }
+
   private createShape(defId: number, halfWidth: number, halfHeight: number): Phaser.GameObjects.Shape {
     const def = getDef(defId);
     if (def.shape === 'circle') {
