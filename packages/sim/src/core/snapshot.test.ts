@@ -1,5 +1,8 @@
 import { addComponent } from 'bitecs';
 import { describe, expect, it } from 'vitest';
+import { readTileGrid, spawnPoint } from '../content/levels/grid';
+import { TerrainDefId } from '../features/terrain/defs';
+import { solidRectangles } from '../features/terrain/rectangles';
 import { __testing__ } from './create';
 import { initPhysics } from './physics';
 import { Sim } from './sim';
@@ -32,10 +35,10 @@ describe('snapshot', () => {
       Extents: { halfHeight: 0.4, halfWidth: 0.4 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
-      Position: { x: sim.level.spawn.x, y: sim.level.spawn.y },
+      Position: spawnPoint(sim.level),
     });
-    expect(snapshot.entities.filter((e) => e.components['Extents'] && !e.components['Player'])).toHaveLength(
-      sim.level.walls.length,
+    expect(snapshot.entities.filter((e) => e.components['TerrainCollider'])).toHaveLength(
+      solidRectangles(readTileGrid(sim.level)).length,
     );
     expect(snapshot.physics.length).toBeGreaterThan(100);
     sim.destroy();
@@ -43,7 +46,7 @@ describe('snapshot', () => {
 
   it('hashes the same regardless of the order components were attached in', async () => {
     await initPhysics();
-    const level = { name: 'empty', width: 4, height: 4, spawn: { x: 0, y: 0 }, walls: [] };
+    const level = { name: 'empty', legend: { '.': TerrainDefId.Grass }, rows: ['....', '....'], spawn: { column: 0, row: 0 } };
     const a = new Sim({ seed: 0, level, capacity: 8 }, []);
     const b = new Sim({ seed: 0, level, capacity: 8 }, []);
     const ea = a.createEntity();
