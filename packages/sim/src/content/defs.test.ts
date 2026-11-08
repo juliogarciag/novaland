@@ -23,7 +23,7 @@ describe('entity definitions', () => {
     const sim = await createSimInternal({ seed: 1, level });
     const walls = getRenderables(sim).filter((r) => r.defId === DefId.Wall);
     expect(walls).toHaveLength(level.walls.length);
-    expect(walls.at(-1)).toMatchObject({ x: 2, y: 2, hw: 0.5, hh: 0.5 });
+    expect(walls.at(-1)).toMatchObject({ x: 2, y: 2, halfWidth: 0.5, halfHeight: 0.5 });
     sim.destroy();
   });
 });

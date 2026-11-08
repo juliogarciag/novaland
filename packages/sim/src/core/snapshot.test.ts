@@ -29,7 +29,7 @@ describe('snapshot', () => {
     expect(player?.components).toEqual({
       Body: { handle: expect.any(Number) },
       DefRef: { id: expect.any(Number) },
-      Extents: { hh: 0.4, hw: 0.4 },
+      Extents: { halfHeight: 0.4, halfWidth: 0.4 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
       Position: { x: sim.level.spawn.x, y: sim.level.spawn.y },

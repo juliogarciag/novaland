@@ -14,8 +14,8 @@ export interface Renderable {
   readonly x: number;
   readonly y: number;
   /** Half extents in metres. For circles both equal the radius. */
-  readonly hw: number;
-  readonly hh: number;
+  readonly halfWidth: number;
+  readonly halfHeight: number;
 }
 
 export function getRenderables(handle: SimHandle): Renderable[] {
@@ -26,17 +26,17 @@ export function getRenderables(handle: SimHandle): Renderable[] {
   const out: Renderable[] = [];
   for (const eid of query(sim.world, [position, defRef])) {
     const defId = defRef.id[eid] as number;
-    let hw: number;
-    let hh: number;
+    let halfWidth: number;
+    let halfHeight: number;
     if (hasComponent(sim.world, eid, extents)) {
-      hw = extents.hw[eid] as number;
-      hh = extents.hh[eid] as number;
+      halfWidth = extents.halfWidth[eid] as number;
+      halfHeight = extents.halfHeight[eid] as number;
     } else {
       const radius = getDef(defId).radius ?? DEFAULT_RADIUS;
-      hw = radius;
-      hh = radius;
+      halfWidth = radius;
+      halfHeight = radius;
     }
-    out.push({ eid, defId, x: position.x[eid] as number, y: position.y[eid] as number, hw, hh });
+    out.push({ eid, defId, x: position.x[eid] as number, y: position.y[eid] as number, halfWidth, halfHeight });
   }
   return out;
 }

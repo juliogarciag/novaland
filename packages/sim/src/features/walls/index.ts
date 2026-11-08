@@ -20,8 +20,8 @@ function spawnWall(sim: Sim, x: number, y: number, w: number, h: number, defId: 
   addComponent(sim.world, eid, defRef);
   addComponent(sim.world, eid, extents);
   defRef.id[eid] = defId;
-  extents.hw[eid] = w / 2;
-  extents.hh[eid] = h / 2;
+  extents.halfWidth[eid] = w / 2;
+  extents.halfHeight[eid] = h / 2;
   attachStaticBox(sim, eid, x, y, w / 2, h / 2);
   return eid;
 }

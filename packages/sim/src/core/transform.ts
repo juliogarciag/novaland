@@ -8,8 +8,8 @@ export const Position = defineComponent('Position', (capacity) => ({
 
 /** Half extents in metres, for anything box-shaped or that needs a size per entity. */
 export const Extents = defineComponent('Extents', (capacity) => ({
-  hw: f64(capacity),
-  hh: f64(capacity),
+  halfWidth: f64(capacity),
+  halfHeight: f64(capacity),
 }));
 
 /** Reference to an entity definition (content/defs.ts). */

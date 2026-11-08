@@ -47,10 +47,10 @@ export function attachDynamicBall(sim: Sim, eid: number, x: number, y: number, r
   return rigidBody;
 }
 
-export function attachStaticBox(sim: Sim, eid: number, x: number, y: number, hw: number, hh: number): RigidBody {
+export function attachStaticBox(sim: Sim, eid: number, x: number, y: number, halfWidth: number, halfHeight: number): RigidBody {
   const desc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y);
   const rigidBody = sim.physics.createRigidBody(desc);
-  sim.physics.createCollider(RAPIER.ColliderDesc.cuboid(hw, hh).setFriction(0), rigidBody);
+  sim.physics.createCollider(RAPIER.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
   register(sim, eid, rigidBody);
   return rigidBody;
 }

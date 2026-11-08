@@ -75,8 +75,8 @@ function spawnPlayer(sim: Sim, slot: number): number {
   intent.x[eid] = 0;
   intent.y[eid] = 0;
   defRef.id[eid] = def.id;
-  extents.hw[eid] = radius;
-  extents.hh[eid] = radius;
+  extents.halfWidth[eid] = radius;
+  extents.halfHeight[eid] = radius;
   attachDynamicBall(sim, eid, sim.level.spawn.x, sim.level.spawn.y, radius);
   return eid;
 }
