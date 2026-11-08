@@ -1,0 +1,14 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed  (56 passed)
+PASS  collider merging tests exist and pass  (4 tests)
+PASS  trees block the player (headless)
+PASS  the player walks on paths (headless)
+PASS  rocks block the player (headless)
+PASS  the starter spawn is on a dirt path (headless)
+PASS  the determinism test still passes
+PASS  terrain colliders are not drawn through getRenderables
+
+ALL 12 CHECKS PASSED

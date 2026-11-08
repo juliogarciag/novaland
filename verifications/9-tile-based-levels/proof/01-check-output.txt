@@ -1,0 +1,53 @@
+$ pnpm install
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 495ms using pnpm v10.9.0
+(node:57184) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:57216) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+
+$ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 3ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 51ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 88ms
+ ✓ |server| src/headless.test.ts (3 tests) 224ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (12 tests) 251ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 253ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 258ms
+
+ Test Files  9 passed (9)
+      Tests  56 passed (56)
+   Start at  23:45:28
+   Duration  475ms (tests 67%, transform 16%, import 15%, worker 2%)
+
+JSON report written to <repo>/verifications/9-tile-based-levels/proof/01-tests-report.json

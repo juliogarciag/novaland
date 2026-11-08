@@ -1,0 +1,282 @@
+[
+  {
+    "file": "packages/server/src/headless.test.ts",
+    "name": "server headless run drives the sim without a browser and is reproducible",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/headless.test.ts",
+    "name": "server headless run the stop command really stops the player",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/headless.test.ts",
+    "name": "server headless run runs exactly the requested number of ticks",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys is zero with nothing pressed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys cancels opposite keys",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys compares directions by value",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits nothing while no key is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput collapses a press and release between drains into nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/determinism.test.ts",
+    "name": "determinism same seed + same commands = identical state, including physics bytes",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/determinism.test.ts",
+    "name": "determinism two live sims never share component data",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/determinism.test.ts",
+    "name": "determinism different commands diverge",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/determinism.test.ts",
+    "name": "determinism different seeds diverge in the rng state",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/snapshot.test.ts",
+    "name": "snapshot is plain JSON that survives a round trip",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/snapshot.test.ts",
+    "name": "snapshot records every component field of every entity plus level, capacity, tick and rng",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/snapshot.test.ts",
+    "name": "snapshot hashes the same regardless of the order components were attached in",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/snapshot.test.ts",
+    "name": "snapshot has a stable hash (known answer)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/snapshot.test.ts",
+    "name": "snapshot encodes base64 like the standard",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns outside the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile exactly once",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each collider box over its tiles in metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) spawns a player at the level spawn point on join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) moves at the def speed for N ticks in open space",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
+    "status": "passed"
+  }
+]

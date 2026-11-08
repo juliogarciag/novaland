@@ -1,0 +1,91 @@
+{
+  "steps": [
+    {
+      "step": "spawn",
+      "tick": 16,
+      "x": -13.5,
+      "y": -0.5,
+      "entities": 46,
+      "drawn": {
+        "x": -432,
+        "y": -16
+      },
+      "drawnTileIndex": 1,
+      "spawnTile": {
+        "column": 6,
+        "row": 14
+      }
+    },
+    {
+      "step": "east",
+      "tick": 123,
+      "x": -5.750066757202148,
+      "y": -0.5,
+      "entities": 46,
+      "drawn": {
+        "x": -184.00213623046875,
+        "y": -16
+      },
+      "drawnTileIndex": 1,
+      "travelled": 7.666601181030273,
+      "expected": 7.583333333333333,
+      "heldTicks": 91,
+      "eastTile": {
+        "column": 14,
+        "row": 14
+      }
+    },
+    {
+      "step": "north",
+      "tick": 253,
+      "x": -5.750066757202148,
+      "y": -2.6003239154815674,
+      "entities": 46,
+      "drawn": {
+        "x": -184.00213623046875,
+        "y": -83.21036529541016
+      },
+      "drawnTileIndex": 0,
+      "blocker": "tree",
+      "solidRow": 11,
+      "stopY": -2.6,
+      "columnsTouched": [
+        13,
+        14
+      ]
+    }
+  ],
+  "content": {
+    "grid": {
+      "columns": 40,
+      "rows": 30,
+      "tileSize": 1
+    },
+    "tiles": [
+      "grass",
+      "dirt",
+      "tree",
+      "rock"
+    ],
+    "spawn": {
+      "column": 6,
+      "row": 14
+    },
+    "SPEED": 5,
+    "RADIUS": 0.4,
+    "PPM": 32
+  },
+  "map": {
+    "columns": 40,
+    "rows": 30,
+    "tileWidth": 16,
+    "scale": 2,
+    "x": -640,
+    "y": -480,
+    "depth": -1,
+    "playerDepth": 0,
+    "textureWidth": 64,
+    "textureHeight": 16
+  },
+  "errors": []
+}
