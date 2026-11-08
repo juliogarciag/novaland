@@ -12,8 +12,8 @@ export interface HeadlessRunResult {
   readonly player: { readonly x: number; readonly y: number } | null;
 }
 
-/** Ticks at which the scripted player changes course. Exported so tests can reason about them. */
-export const SCRIPT = { right: 1, down: 120, stop: 180 } as const;
+/** Ticks at which the scripted player changes course. */
+const SCRIPT = { right: 1, down: 120, stop: 180 } as const;
 
 /**
  * Drives a sim with a scripted player for `ticks` ticks. This is the shape of
@@ -26,7 +26,7 @@ export async function runHeadless({ ticks, seed = 0 }: HeadlessRunOptions): Prom
       sim.step(scriptedCommands(tick));
     }
     const eid = findPlayerEntity(sim, 0);
-    const renderable = eid === undefined ? undefined : getRenderables(sim).find((r) => r.eid === eid);
+    const renderable = eid === undefined ? undefined : getRenderables(sim).find((renderable) => renderable.eid === eid);
     return {
       ticks: sim.tick,
       hash: hashSnapshot(sim.snapshot()),
@@ -45,3 +45,6 @@ function scriptedCommands(tick: number): Command[] {
   if (tick === SCRIPT.stop) return [{ type: 'player/move', slot: 0, x: 0, y: 0 }];
   return [];
 }
+
+/** Test-only: lets tests derive expected positions from the script. */
+export const __testing__ = { SCRIPT };

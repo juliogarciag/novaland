@@ -14,8 +14,8 @@ export interface SimOptions {
   readonly capacity?: number;
 }
 
-/** Creates a sim with every registered feature. Loads the physics engine on first call. Internal: returns the full Sim. */
-export async function createSimInternal(options: SimOptions = {}): Promise<Sim> {
+/** Creates a sim with every registered feature. Loads the physics engine on first call. Returns the full Sim, so it stays internal. */
+async function createSimInternal(options: SimOptions = {}): Promise<Sim> {
   await initPhysics();
   return new Sim(
     { seed: options.seed ?? 0, level: options.level ?? starterLevel, capacity: options.capacity ?? DEFAULT_CAPACITY },
@@ -25,3 +25,6 @@ export async function createSimInternal(options: SimOptions = {}): Promise<Sim> 
 
 /** Creates a sim with every registered feature and hands back its public handle. */
 export const createSim: (options?: SimOptions) => Promise<SimHandle> = createSimInternal;
+
+/** Test-only access to the full Sim. Lint forbids importing this outside *.test.ts. */
+export const __testing__ = { createSimInternal };

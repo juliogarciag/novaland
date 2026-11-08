@@ -7,8 +7,8 @@ export interface WallData {
   readonly x: number;
   readonly y: number;
   /** Full size. */
-  readonly w: number;
-  readonly h: number;
+  readonly width: number;
+  readonly height: number;
   /** Defaults to DefId.Wall. */
   readonly defId?: number;
 }

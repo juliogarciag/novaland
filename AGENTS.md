@@ -70,7 +70,13 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 - Name things by what the caller gets, not by how it works inside. The test: the call site must read as a plain sentence without opening the function. `const { ticks, leftover } = takeWholeTicks(...)` passes. `const { ticks, accumulator } = advanceFixedStep(...)` failed, because "advance" and "accumulator" describe the technique and you had to read the body to learn it returns a count.
 - The same rule applies to result fields and to state. Store the leftover frame time as `leftover`, not under the name of the pattern it belongs to.
 - If you cannot name a function by its result, it is probably doing two things. Split it, then name each half.
+- Spell names out: `pendingCommands`, not `pending`; `renderable`, not `r`; `translation`, not `t`. A name must say what the value is without the reader looking at where it came from. The domain terms this file defines are the only short forms: `sim`, `eid` (entity id), `dt` (tick length in seconds), `rng`, `def`.
 - Commands are named `'<feature>/<verb>'` and features by their domain noun (`player`, `walls`), never by the ticket or the agent that made them.
+
+**Functions and exports**
+
+- A function with four or more arguments takes an options object with named fields instead: `takeWholeTicks({ leftover, deltaSeconds, dt, maxFrameSeconds })`, `attachStaticBox(sim, eid, { x, y, halfWidth, halfHeight })`. A leading subject such as `sim` or `eid` may stay positional.
+- Anything exported only so tests can reach it goes through a single `export const __testing__ = { ... }` at the bottom of the module, never as a loose export. Lint rejects `import { __testing__ }` outside `*.test.ts`. The public surface of a module is what remains.
 
 **Commands**
 
@@ -96,7 +102,7 @@ Example: a `coins` feature where players pick up coins.
 4. `commands.ts` (only if players can do something new): declare command interfaces with a `type` literal named `'<feature>/<verb>'` (for example `'coins/drop'`) and plain JSON fields. Add the union to `Command` in `core/commands.ts`. Validate every field in the handler and ignore bad input.
 5. `index.ts`: export a `Feature` object (`core/feature.ts`) with `init` (spawn from level data), `handleCommand`, `update` (before the physics step) and/or `postStep`. Spawn entities with `sim.createEntity()` after checking `sim.isFull`; attach bodies with the helpers in `core/physics.ts`; remove entities with `sim.destroyEntity(eid)`.
 6. Register it in `features/index.ts`. Order matters only if your feature depends on another feature's work within the same tick.
-7. Tests next to the code (`*.test.ts`): create a sim with `createSimInternal` (full access) or `createSim` (handle only), drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
+7. Tests next to the code (`*.test.ts`): create a sim with `__testing__.createSimInternal` from `core/create.ts` (full access) or `createSim` (handle only), drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
 8. If a view needs something new, export it from `sim/src/index.ts` and consume it in `packages/client`. The client only draws; if you are tempted to put an `if` about game rules in the client, it belongs in the sim.
 9. Level content goes in `sim/src/content/levels/`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's `defs.ts`.
 10. Run `pnpm check`. Lint will tell you if you crossed a boundary.

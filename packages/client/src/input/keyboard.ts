@@ -19,18 +19,18 @@ export function createKeyboardInput(scene: Phaser.Scene, slot: number): Keyboard
     return { drain: () => [] };
   }
   const keys = keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT') as KeyMap;
-  let last: Direction = { x: 0, y: 0 };
+  let lastDirection: Direction = { x: 0, y: 0 };
   return {
     drain() {
-      const next = directionFromKeys({
+      const direction = directionFromKeys({
         up: keys.W.isDown || keys.UP.isDown,
         down: keys.S.isDown || keys.DOWN.isDown,
         left: keys.A.isDown || keys.LEFT.isDown,
         right: keys.D.isDown || keys.RIGHT.isDown,
       });
-      if (sameDirection(next, last)) return [];
-      last = next;
-      const move: MoveCommand = { type: 'player/move', slot, x: next.x, y: next.y };
+      if (sameDirection(direction, lastDirection)) return [];
+      lastDirection = direction;
+      const move: MoveCommand = { type: 'player/move', slot, x: direction.x, y: direction.y };
       return [move];
     },
   };

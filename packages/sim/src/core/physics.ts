@@ -39,17 +39,32 @@ export function getBody(sim: Sim, eid: number): RigidBody | null {
   return sim.physics.getRigidBody(body.handle[eid] as number);
 }
 
-export function attachDynamicBall(sim: Sim, eid: number, x: number, y: number, radius: number): RigidBody {
-  const desc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y).lockRotations().setCcdEnabled(true);
-  const rigidBody = sim.physics.createRigidBody(desc);
+export interface BallBodyOptions {
+  readonly x: number;
+  readonly y: number;
+  readonly radius: number;
+}
+
+/** A moving body that never rotates and never tunnels through thin walls. */
+export function attachDynamicBall(sim: Sim, eid: number, { x, y, radius }: BallBodyOptions): RigidBody {
+  const bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y).lockRotations().setCcdEnabled(true);
+  const rigidBody = sim.physics.createRigidBody(bodyDesc);
   sim.physics.createCollider(RAPIER.ColliderDesc.ball(radius).setFriction(0).setRestitution(0), rigidBody);
   register(sim, eid, rigidBody);
   return rigidBody;
 }
 
-export function attachStaticBox(sim: Sim, eid: number, x: number, y: number, halfWidth: number, halfHeight: number): RigidBody {
-  const desc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y);
-  const rigidBody = sim.physics.createRigidBody(desc);
+export interface BoxBodyOptions {
+  readonly x: number;
+  readonly y: number;
+  readonly halfWidth: number;
+  readonly halfHeight: number;
+}
+
+/** An immovable body: walls and other obstacles. */
+export function attachStaticBox(sim: Sim, eid: number, { x, y, halfWidth, halfHeight }: BoxBodyOptions): RigidBody {
+  const bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y);
+  const rigidBody = sim.physics.createRigidBody(bodyDesc);
   sim.physics.createCollider(RAPIER.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
   register(sim, eid, rigidBody);
   return rigidBody;
@@ -67,9 +82,9 @@ function register(sim: Sim, eid: number, rigidBody: RigidBody): void {
   addComponent(sim.world, eid, body);
   addComponent(sim.world, eid, position);
   body.handle[eid] = rigidBody.handle;
-  const t = rigidBody.translation();
-  position.x[eid] = t.x;
-  position.y[eid] = t.y;
+  const translation = rigidBody.translation();
+  position.x[eid] = translation.x;
+  position.y[eid] = translation.y;
 }
 
 /** Copies every body's translation into its Position component. Runs after each physics step. */
@@ -79,8 +94,8 @@ export function syncBodiesToPositions(sim: Sim): void {
   for (const eid of query(sim.world, [body, position])) {
     const rigidBody = sim.physics.getRigidBody(body.handle[eid] as number);
     if (!rigidBody) continue;
-    const t = rigidBody.translation();
-    position.x[eid] = t.x;
-    position.y[eid] = t.y;
+    const translation = rigidBody.translation();
+    position.x[eid] = translation.x;
+    position.y[eid] = translation.y;
   }
 }

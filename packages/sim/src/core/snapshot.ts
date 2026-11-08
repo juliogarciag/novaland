@@ -73,16 +73,16 @@ const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
 
 /** Pure base64 encoder: the sim cannot rely on btoa (DOM) or Buffer (Node). */
 export function toBase64(bytes: Uint8Array): string {
-  let out = '';
+  let encoded = '';
   for (let i = 0; i < bytes.length; i += 3) {
-    const a = bytes[i] as number;
-    const b = bytes[i + 1];
-    const c = bytes[i + 2];
-    const triple = (a << 16) | ((b ?? 0) << 8) | (c ?? 0);
-    out += BASE64[(triple >> 18) & 63] as string;
-    out += BASE64[(triple >> 12) & 63] as string;
-    out += b === undefined ? '=' : (BASE64[(triple >> 6) & 63] as string);
-    out += c === undefined ? '=' : (BASE64[triple & 63] as string);
+    const first = bytes[i] as number;
+    const second = bytes[i + 1];
+    const third = bytes[i + 2];
+    const triple = (first << 16) | ((second ?? 0) << 8) | (third ?? 0);
+    encoded += BASE64[(triple >> 18) & 63] as string;
+    encoded += BASE64[(triple >> 12) & 63] as string;
+    encoded += second === undefined ? '=' : (BASE64[(triple >> 6) & 63] as string);
+    encoded += third === undefined ? '=' : (BASE64[triple & 63] as string);
   }
-  return out;
+  return encoded;
 }

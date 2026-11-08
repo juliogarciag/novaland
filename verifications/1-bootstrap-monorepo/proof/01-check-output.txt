@@ -12,8 +12,17 @@ Already up to date
 │                                                                              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
-Done in 295ms using pnpm v10.9.0
-(node:48531) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 350ms using pnpm v10.9.0
+
+   ╭───────────────────────────────────────────────╮
+   │                                               │
+   │      Update available! 10.9.0 → 12.18.0.      │
+   │     Changelog: https://pnpm.io/v/12.18.0      │
+   │   To update, run: corepack use pnpm@12.18.0   │
+   │                                               │
+   ╰───────────────────────────────────────────────╯
+
+(node:78735) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 (exit 0)
@@ -22,18 +31,19 @@ $ pnpm exec vitest run --reporter=default --reporter=json --outputFile.json=<rep
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/input/direction.test.ts (5 tests) 3ms
- ✓ |client| src/loop/fixedStep.test.ts (5 tests) 3ms
- ✓ |sim| src/content/defs.test.ts (2 tests) 43ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 74ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 165ms
- ✓ |server| src/headless.test.ts (3 tests) 159ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 175ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 4ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 5ms
+ ✓ |sim| src/content/defs.test.ts (2 tests) 45ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 76ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 156ms
+ ✓ |server| src/headless.test.ts (3 tests) 153ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 181ms
 
- Test Files  7 passed (7)
-      Tests  34 passed (34)
-   Start at  22:01:10
-   Duration  331ms (tests 65%, import 20%, transform 13%, worker 2%)
+ Test Files  8 passed (8)
+      Tests  43 passed (43)
+   Start at  22:17:15
+   Duration  374ms (tests 59%, import 21%, transform 16%, worker 3%)
 
 JSON report written to <repo>/verifications/1-bootstrap-monorepo/proof/01-tests.json
 
@@ -51,7 +61,7 @@ packages/server typecheck$ tsc -p tsconfig.json
 packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:48566) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:78788) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 (exit 0)

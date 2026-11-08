@@ -10,12 +10,23 @@ export interface WholeTicks {
   readonly leftover: number;
 }
 
+export interface TakeWholeTicksInput {
+  /** Time left over from the previous call. */
+  readonly leftover: number;
+  /** Real time since the previous call. */
+  readonly deltaSeconds: number;
+  /** Length of one sim tick. */
+  readonly dt: number;
+  /** Most real time one call may absorb; anything beyond is dropped. */
+  readonly maxFrameSeconds: number;
+}
+
 /**
  * Takes as many whole ticks of `dt` as fit in `leftover + deltaSeconds`.
  * `deltaSeconds` is clamped to [0, maxFrameSeconds] so a long hitch or a tab
  * switch drops time instead of running hundreds of ticks in one frame.
  */
-export function takeWholeTicks(leftover: number, deltaSeconds: number, dt: number, maxFrameSeconds: number): WholeTicks {
+export function takeWholeTicks({ leftover, deltaSeconds, dt, maxFrameSeconds }: TakeWholeTicksInput): WholeTicks {
   const delta = Math.min(Math.max(deltaSeconds, 0), maxFrameSeconds);
   let remaining = leftover + delta;
   let ticks = 0;

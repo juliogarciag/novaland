@@ -1,6 +1,6 @@
 import { FIXED_DT, getDef, DefId } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { runHeadless, SCRIPT } from './headless';
+import { __testing__, runHeadless } from './headless';
 
 describe('server headless run', () => {
   it('drives the sim without a browser and is reproducible', async () => {
@@ -28,4 +28,5 @@ describe('server headless run', () => {
 
 // ---- Helpers (below the tests so the behaviour reads first) ----
 
+const { SCRIPT } = __testing__;
 const SPEED = getDef(DefId.Player).speed ?? 0;

@@ -77,7 +77,7 @@ function spawnPlayer(sim: Sim, slot: number): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  attachDynamicBall(sim, eid, sim.level.spawn.x, sim.level.spawn.y, radius);
+  attachDynamicBall(sim, eid, { x: sim.level.spawn.x, y: sim.level.spawn.y, radius });
   return eid;
 }
 
@@ -88,9 +88,9 @@ function isValidSlot(slot: unknown): slot is number {
 /** Rejects non-finite input, clamps each component to [-1, 1], then scales anything longer than 1 down to unit length. */
 function clampToUnit(x: unknown, y: unknown): { x: number; y: number } {
   if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return { x: 0, y: 0 };
-  const cx = Math.min(1, Math.max(-1, x));
-  const cy = Math.min(1, Math.max(-1, y));
-  const length = Math.hypot(cx, cy);
-  if (length <= 1) return { x: cx, y: cy };
-  return { x: cx / length, y: cy / length };
+  const clampedX = Math.min(1, Math.max(-1, x));
+  const clampedY = Math.min(1, Math.max(-1, y));
+  const length = Math.hypot(clampedX, clampedY);
+  if (length <= 1) return { x: clampedX, y: clampedY };
+  return { x: clampedX / length, y: clampedY / length };
 }

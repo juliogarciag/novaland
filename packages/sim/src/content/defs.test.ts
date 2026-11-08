@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createSimInternal } from '../core/create';
+import { __testing__ } from '../core/create';
 import { getRenderables } from '../core/view';
 import { DefId, entityDefs, getDef } from './defs';
 import { starterLevel } from './levels/starter';
@@ -18,7 +18,7 @@ describe('entity definitions', () => {
   it('walls are spawned from level data, so a new wall is only a data entry', async () => {
     const level = {
       ...starterLevel,
-      walls: [...starterLevel.walls, { x: 2, y: 2, w: 1, h: 1, defId: DefId.Wall }],
+      walls: [...starterLevel.walls, { x: 2, y: 2, width: 1, height: 1, defId: DefId.Wall }],
     };
     const sim = await createSimInternal({ seed: 1, level });
     const walls = getRenderables(sim).filter((r) => r.defId === DefId.Wall);
@@ -27,3 +27,7 @@ describe('entity definitions', () => {
     sim.destroy();
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const { createSimInternal } = __testing__;

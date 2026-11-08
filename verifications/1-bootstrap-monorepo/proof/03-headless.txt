@@ -2,6 +2,6 @@ PASS  pnpm sim:headless exits 0
 PASS  prints a JSON result with a hash and player position
 PASS  simulated 300 ticks (5s at 60Hz)
 PASS  player walked right then down (x ≈ 9.92, y = 5)  ({"x":9.916661262512207,"y":5.000001430511475})
-PASS  two separate processes produce the same hash  (81db65df)
+PASS  two separate processes produce the same hash  (41e08fbb)
 
 ALL 5 CHECKS PASSED

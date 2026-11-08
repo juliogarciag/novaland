@@ -12,7 +12,8 @@ const violations = {
       "import { runHeadless } from '@novaland/server';",
       "import { Room } from 'colyseus';",
       "import { readFileSync } from 'node:fs';",
-      'export const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date()];',
+      "import { __testing__ } from './core/create';",
+      'export const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date(), __testing__];',
     ],
     expect: [
       ['no-restricted-imports', /phaser/],
@@ -25,6 +26,7 @@ const violations = {
       ['no-restricted-properties', /Math\.random/],
       ['no-restricted-properties', /Date\.now/],
       ['no-restricted-syntax', /Non-deterministic/],
+      ['no-restricted-syntax', /__testing__/],
     ],
   },
   'packages/client/src/__violation__.ts': {
@@ -34,7 +36,8 @@ const violations = {
       "import { Position } from '@novaland/sim/src/core/transform';",
       "import { Body } from '../../sim/src/core/physics';",
       "import { runHeadless } from '@novaland/server';",
-      'export const v = [RAPIER, createWorld, Position, Body, runHeadless];',
+      "import { __testing__ } from './debug';",
+      'export const v = [RAPIER, createWorld, Position, Body, runHeadless, __testing__];',
     ],
     expect: [
       ['no-restricted-imports', /@dimforge/],
@@ -42,6 +45,7 @@ const violations = {
       ['no-restricted-imports', /@novaland\/sim\/src/],
       ['no-restricted-imports', /\.\.\/\.\.\/sim/],
       ['no-restricted-imports', /@novaland\/server/],
+      ['no-restricted-syntax', /__testing__/],
     ],
   },
   'packages/server/src/__violation__.ts': {

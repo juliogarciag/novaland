@@ -1,6 +1,6 @@
 import { addComponent } from 'bitecs';
 import { describe, expect, it } from 'vitest';
-import { createSimInternal } from './create';
+import { __testing__ } from './create';
 import { initPhysics } from './physics';
 import { Sim } from './sim';
 import { hashSnapshot, toBase64, type SimSnapshot } from './snapshot';
@@ -74,3 +74,7 @@ describe('snapshot', () => {
     expect(toBase64(bytes('foobar'))).toBe('Zm9vYmFy');
   });
 });
+
+// ---- Helpers (below the tests so the behaviour reads first) ----
+
+const { createSimInternal } = __testing__;

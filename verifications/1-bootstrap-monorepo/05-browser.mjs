@@ -32,11 +32,13 @@ try {
     return { level: api.level, speed: player.speed, radius: player.radius, ppm: api.pixelsPerMetre };
   });
   const { level, speed: SPEED, radius: RADIUS, ppm: PPM } = content;
-  const inner = level.walls.filter((w) => Math.abs(w.x) + w.w / 2 < level.width / 2 - 0.5 && Math.abs(w.y) + w.h / 2 < level.height / 2 - 0.5);
-  const tallWall = inner.find((w) => w.h > w.w);
-  const northWall = level.walls.find((w) => w.w === level.width && w.y < 0);
-  const stopX = tallWall.x - tallWall.w / 2 - RADIUS;
-  const northStopY = northWall.y + northWall.h / 2 + RADIUS;
+  const inner = level.walls.filter(
+    (wall) => Math.abs(wall.x) + wall.width / 2 < level.width / 2 - 0.5 && Math.abs(wall.y) + wall.height / 2 < level.height / 2 - 0.5,
+  );
+  const tallWall = inner.find((wall) => wall.height > wall.width);
+  const northWall = level.walls.find((wall) => wall.width === level.width && wall.y < 0);
+  const stopX = tallWall.x - tallWall.width / 2 - RADIUS;
+  const northStopY = northWall.y + northWall.height / 2 + RADIUS;
   report.content = { ...content, tallWall, northWall, stopX, northStopY };
 
   /** Sim state and the drawn player, read in the same frame. */
@@ -75,7 +77,7 @@ try {
   // Hold S for half a second: moves down, into the row of the tall inner wall, nowhere near anything.
   const down = await hold(['KeyS'], 500);
   results.push(check('S moves the player down only', down.after.y > down.from.y + 1 && down.after.x === down.from.x, `y=${down.after.y.toFixed(2)}`));
-  results.push(check('the player is level with the tall inner wall', down.after.y > tallWall.y - tallWall.h / 2 + RADIUS && down.after.y < tallWall.y + tallWall.h / 2 - RADIUS));
+  results.push(check('the player is level with the tall inner wall', down.after.y > tallWall.y - tallWall.height / 2 + RADIUS && down.after.y < tallWall.y + tallWall.height / 2 - RADIUS));
 
   // Hold ArrowRight for 600 ms: travels SPEED * held ticks / 60 metres (plus or minus a frame of input latency), ending well short of the wall.
   const right = await hold(['ArrowRight'], 600);

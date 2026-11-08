@@ -22,22 +22,23 @@ export class EntityRenderer {
   constructor(private readonly scene: Phaser.Scene) {}
 
   sync(sim: SimHandle): void {
-    const seen = new Set<number>();
-    for (const r of getRenderables(sim)) {
-      seen.add(r.eid);
-      let view = this.views.get(r.eid);
-      if (view && (view.defId !== r.defId || view.halfWidth !== r.halfWidth || view.halfHeight !== r.halfHeight)) {
+    const liveEntityIds = new Set<number>();
+    for (const renderable of getRenderables(sim)) {
+      liveEntityIds.add(renderable.eid);
+      let view = this.views.get(renderable.eid);
+      if (view && (view.defId !== renderable.defId || view.halfWidth !== renderable.halfWidth || view.halfHeight !== renderable.halfHeight)) {
         view.shape.destroy();
         view = undefined;
       }
       if (!view) {
-        view = { shape: this.createShape(r.defId, r.halfWidth, r.halfHeight), defId: r.defId, halfWidth: r.halfWidth, halfHeight: r.halfHeight };
-        this.views.set(r.eid, view);
+        const { defId, halfWidth, halfHeight } = renderable;
+        view = { shape: this.createShape(defId, halfWidth, halfHeight), defId, halfWidth, halfHeight };
+        this.views.set(renderable.eid, view);
       }
-      view.shape.setPosition(toPixels(r.x), toPixels(r.y));
+      view.shape.setPosition(toPixels(renderable.x), toPixels(renderable.y));
     }
     for (const [eid, view] of this.views) {
-      if (!seen.has(eid)) {
+      if (!liveEntityIds.has(eid)) {
         view.shape.destroy();
         this.views.delete(eid);
       }

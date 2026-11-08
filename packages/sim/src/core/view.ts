@@ -23,7 +23,7 @@ export function getRenderables(handle: SimHandle): Renderable[] {
   const position = sim.store(Position);
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);
-  const out: Renderable[] = [];
+  const renderables: Renderable[] = [];
   for (const eid of query(sim.world, [position, defRef])) {
     const defId = defRef.id[eid] as number;
     let halfWidth: number;
@@ -36,7 +36,7 @@ export function getRenderables(handle: SimHandle): Renderable[] {
       halfWidth = radius;
       halfHeight = radius;
     }
-    out.push({ eid, defId, x: position.x[eid] as number, y: position.y[eid] as number, halfWidth, halfHeight });
+    renderables.push({ eid, defId, x: position.x[eid] as number, y: position.y[eid] as number, halfWidth, halfHeight });
   }
-  return out;
+  return renderables;
 }

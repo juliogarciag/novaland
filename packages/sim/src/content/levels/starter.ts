@@ -9,8 +9,8 @@ export const starterLevel: LevelData = {
   spawn: { x: 0, y: 0 },
   walls: [
     ...borderWalls(24, 16, 1),
-    { x: -6, y: -3, w: 3, h: 1 },
-    { x: 6, y: 3, w: 1, h: 4 },
-    { x: 3, y: -4, w: 2, h: 2 },
+    { x: -6, y: -3, width: 3, height: 1 },
+    { x: 6, y: 3, width: 1, height: 4 },
+    { x: 3, y: -4, width: 2, height: 2 },
   ],
 };

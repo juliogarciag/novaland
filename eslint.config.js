@@ -35,6 +35,12 @@ const BROWSER_AND_NODE_GLOBALS = [
   'process', 'require', 'Buffer', 'globalThis',
 ].map((name) => ({ name, message: `The sim is headless and pure: "${name}" is not allowed in packages/sim.` }));
 
+const NEW_DATE = { selector: 'NewExpression[callee.name="Date"]', message: 'Non-deterministic. Use sim.tick instead.' };
+const TESTING_IMPORT = {
+  selector: 'ImportSpecifier[imported.name="__testing__"]',
+  message: '`__testing__` exports are for *.test.ts files only.',
+};
+
 export default defineConfig([
   {
     ignores: [
@@ -66,10 +72,7 @@ export default defineConfig([
         { object: 'Date', property: 'now', message: 'Non-deterministic. Use sim.tick instead.' },
         { object: 'performance', property: 'now', message: 'Non-deterministic. Use sim.tick instead.' },
       ],
-      'no-restricted-syntax': [
-        'error',
-        { selector: 'NewExpression[callee.name="Date"]', message: 'Non-deterministic. Use sim.tick instead.' },
-      ],
+      'no-restricted-syntax': ['error', NEW_DATE],
     },
   },
   {
@@ -79,5 +82,17 @@ export default defineConfig([
   {
     files: ['packages/server/**/*.ts'],
     rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP),
+  },
+  // `__testing__` exports exist for tests only. Later blocks replace a rule's
+  // whole setting, so the sim block repeats NEW_DATE here.
+  {
+    files: ['packages/sim/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    rules: { 'no-restricted-syntax': ['error', NEW_DATE, TESTING_IMPORT] },
+  },
+  {
+    files: ['packages/client/**/*.ts', 'packages/server/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    rules: { 'no-restricted-syntax': ['error', TESTING_IMPORT] },
   },
 ]);

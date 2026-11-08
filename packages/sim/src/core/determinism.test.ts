@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Command } from './commands';
-import { createSimInternal } from './create';
+import { __testing__ } from './create';
 import { hashSnapshot } from './snapshot';
 
 describe('determinism', () => {
@@ -46,6 +46,8 @@ describe('determinism', () => {
 });
 
 // ---- Helpers (below the tests so the behaviour reads first) ----
+
+const { createSimInternal } = __testing__;
 
 /** A scripted session: joins, moves around, bumps into walls, uses the rng. */
 function script(tick: number): Command[] {

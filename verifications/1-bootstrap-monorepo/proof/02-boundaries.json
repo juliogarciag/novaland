@@ -46,6 +46,10 @@
       "pass": true
     },
     {
+      "name": "packages/sim/src/__violation__.ts: no-restricted-syntax /__testing__/",
+      "pass": true
+    },
+    {
       "name": "packages/client/src/__violation__.ts: no-restricted-imports /@dimforge/",
       "pass": true
     },
@@ -63,6 +67,10 @@
     },
     {
       "name": "packages/client/src/__violation__.ts: no-restricted-imports /@novaland\\/server/",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/__violation__.ts: no-restricted-syntax /__testing__/",
       "pass": true
     },
     {
@@ -131,15 +139,25 @@
           "messageId": "patternWithCustomMessage",
           "endLine": 5,
           "endColumn": 48
+        },
+        {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "`__testing__` exports are for *.test.ts files only.",
+          "line": 6,
+          "column": 10,
+          "messageId": "restrictedSyntax",
+          "endLine": 6,
+          "endColumn": 21
         }
       ],
       "suppressedMessages": [],
-      "errorCount": 5,
+      "errorCount": 6,
       "fatalErrorCount": 0,
       "warningCount": 0,
       "fixableErrorCount": 0,
       "fixableWarningCount": 0,
-      "source": "import RAPIER from '@dimforge/rapier2d-deterministic-compat';\nimport { createWorld } from 'bitecs';\nimport { Position } from '@novaland/sim/src/core/transform';\nimport { Body } from '../../sim/src/core/physics';\nimport { runHeadless } from '@novaland/server';\nexport const v = [RAPIER, createWorld, Position, Body, runHeadless];\n",
+      "source": "import RAPIER from '@dimforge/rapier2d-deterministic-compat';\nimport { createWorld } from 'bitecs';\nimport { Position } from '@novaland/sim/src/core/transform';\nimport { Body } from '../../sim/src/core/physics';\nimport { runHeadless } from '@novaland/server';\nimport { __testing__ } from './debug';\nexport const v = [RAPIER, createWorld, Position, Body, runHeadless, __testing__];\n",
       "usedDeprecatedRules": []
     },
     {
@@ -229,63 +247,73 @@
           "endColumn": 40
         },
         {
+          "ruleId": "no-restricted-syntax",
+          "severity": 2,
+          "message": "`__testing__` exports are for *.test.ts files only.",
+          "line": 6,
+          "column": 10,
+          "messageId": "restrictedSyntax",
+          "endLine": 6,
+          "endColumn": 21
+        },
+        {
           "ruleId": "no-restricted-globals",
           "severity": 2,
           "message": "Unexpected use of 'window'. The sim is headless and pure: \"window\" is not allowed in packages/sim.",
-          "line": 6,
+          "line": 7,
           "column": 66,
           "messageId": "customMessage",
-          "endLine": 6,
+          "endLine": 7,
           "endColumn": 72
         },
         {
           "ruleId": "no-restricted-globals",
           "severity": 2,
           "message": "Unexpected use of 'crypto'. The sim is headless and pure: \"crypto\" is not allowed in packages/sim.",
-          "line": 6,
+          "line": 7,
           "column": 74,
           "messageId": "customMessage",
-          "endLine": 6,
+          "endLine": 7,
           "endColumn": 80
         },
         {
           "ruleId": "no-restricted-properties",
           "severity": 2,
           "message": "'Math.random' is restricted from being used. Non-deterministic. Use sim.rng instead.",
-          "line": 6,
+          "line": 7,
           "column": 82,
           "messageId": "restrictedObjectProperty",
-          "endLine": 6,
+          "endLine": 7,
           "endColumn": 93
         },
         {
           "ruleId": "no-restricted-properties",
           "severity": 2,
           "message": "'Date.now' is restricted from being used. Non-deterministic. Use sim.tick instead.",
-          "line": 6,
+          "line": 7,
           "column": 97,
           "messageId": "restrictedObjectProperty",
-          "endLine": 6,
+          "endLine": 7,
           "endColumn": 105
         },
         {
           "ruleId": "no-restricted-syntax",
           "severity": 2,
           "message": "Non-deterministic. Use sim.tick instead.",
-          "line": 6,
+          "line": 7,
           "column": 109,
           "messageId": "restrictedSyntax",
-          "endLine": 6,
+          "endLine": 7,
           "endColumn": 119
         }
       ],
       "suppressedMessages": [],
-      "errorCount": 10,
+      "errorCount": 11,
       "fatalErrorCount": 0,
       "warningCount": 0,
       "fixableErrorCount": 0,
       "fixableWarningCount": 0,
-      "source": "import Phaser from 'phaser';\nimport { boot } from '../../client/src/main';\nimport { runHeadless } from '@novaland/server';\nimport { Room } from 'colyseus';\nimport { readFileSync } from 'node:fs';\nexport const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date()];\n",
+      "source": "import Phaser from 'phaser';\nimport { boot } from '../../client/src/main';\nimport { runHeadless } from '@novaland/server';\nimport { Room } from 'colyseus';\nimport { readFileSync } from 'node:fs';\nimport { __testing__ } from './core/create';\nexport const v = [Phaser, boot, runHeadless, Room, readFileSync, window, crypto, Math.random(), Date.now(), new Date(), __testing__];\n",
       "usedDeprecatedRules": []
     }
   ]

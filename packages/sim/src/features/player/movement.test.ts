@@ -3,7 +3,8 @@ import { DefId, getDef } from '../../content/defs';
 import { starterLevel } from '../../content/levels/starter';
 import { MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
-import { createSimInternal } from '../../core/create';
+import { __testing__ } from '../../core/create';
+import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from './queries';
 
@@ -145,6 +146,8 @@ describe('player movement (headless)', () => {
 
 // ---- Helpers (below the tests so the behaviour reads first) ----
 
+const { createSimInternal } = __testing__;
+
 const playerDef = getDef(DefId.Player);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
@@ -157,7 +160,7 @@ beforeAll(() => {
 const join = (slot = 0): Command => ({ type: 'player/join', slot });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
 
-function playerPosition(sim: Awaited<ReturnType<typeof createSimInternal>>, slot = 0) {
+function playerPosition(sim: Sim, slot = 0) {
   const eid = findPlayerEntity(sim, slot);
   const r = getRenderables(sim).find((x) => x.eid === eid);
   if (!r) throw new Error('player not rendered');
