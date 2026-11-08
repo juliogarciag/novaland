@@ -32,6 +32,7 @@ export const KEEP_ORDER = [
   'locked',
   'detached',
   'unusual name',
+  'path not found',
   'outside .worktrees/',
   'worktree and branch names differ',
   'contains another worktree',
@@ -87,7 +88,12 @@ export function keepReason({ worktree, allWorktrees, root, cwd, env }) {
   if (worktree.detached || worktree.branch === null) return 'detached';
   const slug = path.basename(worktree.path);
   if (!SLUG_PATTERN.test(slug) || !BRANCH_PATTERN.test(worktree.branch)) return 'unusual name';
-  const realPath = safeRealpath(worktree.path);
+  let realPath;
+  try {
+    realPath = realpathSync(worktree.path);
+  } catch {
+    return 'path not found';
+  }
   if (realPath !== path.join(root, '.worktrees', slug)) return 'outside .worktrees/';
   if (slug !== worktree.branch) return 'worktree and branch names differ';
   const nested = allWorktrees.find((other) => other !== worktree && safeRealpath(other.path).startsWith(realPath + path.sep));

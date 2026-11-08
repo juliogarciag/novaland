@@ -190,7 +190,7 @@ try {
   git(['reset', '-q', '--hard', 'HEAD~1'], behind);
   addWorktree({ slug: '30-bad-oid', pr: [{ number: 40, state: 'MERGED', headRefOid: 'HEAD' }], issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: 'could not verify PR (bad value)' } });
   addWorktree({ slug: '31-ticket-weird', issue: { state: 'FOO' }, expect: { verdict: 'keep', reason: 'unknown ticket state (FOO)', issueLookup: true } });
-  addWorktree({ slug: '32-multiline', pr: { error: 'line one\nline two \u001b[31mred' }, expect: { verdict: 'keep', reason: 'could not verify PR (line one)' } });
+  addWorktree({ slug: '32-multiline', pr: { error: 'bad \u001b[31mred \u00e9\nline two' }, expect: { verdict: 'keep', reason: 'could not verify PR (bad ?[31mred ?)' } });
   addWorktree({ slug: '33-not-json', pr: { raw: 'not json at all' }, expect: { verdict: 'keep', reason: 'could not verify PR (output is not JSON)' } });
   addWorktree({ slug: '34-unknown-oid', pr: [{ number: 44, state: 'MERGED', headRefOid: 'f'.repeat(40) }], issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: `could not verify PR (commit ${'f'.repeat(40)} not found locally)` } });
   const longSlug = `35-${'x'.repeat(90)}$`;
@@ -294,6 +294,7 @@ try {
   const frontmatter = Object.fromEntries((/^---\n([\s\S]*?)\n---/.exec(skill)?.[1] ?? '').split('\n').map((l) => [l.slice(0, l.indexOf(':')), l.slice(l.indexOf(':') + 1).trim()]));
   check('frontmatter name matches the folder', frontmatter.name === path.basename(skillDir));
   check('frontmatter has description and argument-hint', frontmatter.description?.length > 40 && frontmatter['argument-hint'] === '[age-days]');
+  check('the skill never uses a variable named path (zsh ties it to PATH)', !/\$path\b|\bpath=\$/.test(skill));
   check('the skill cannot be auto-invoked by the model', frontmatter['disable-model-invocation'] === 'true');
   check('the skill states the default and the argument pattern', skill.includes(`Default \`${DEFAULT_AGE_DAYS}\``) && skill.includes(AGE_ARGUMENT_PATTERN.source));
   check('the skill prescribes the gh commands the procedure runs', skill.includes(GH_COMMANDS.prList) && skill.includes(GH_COMMANDS.issueView));

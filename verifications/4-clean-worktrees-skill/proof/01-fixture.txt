@@ -1,4 +1,4 @@
-# 2026-11-08T03:52:18.211Z  node v24.0.2
+# 2026-11-08T03:55:01.863Z  node v24.0.2
 === step 1: argument validation ===
 PASS  no argument means 7 days
 PASS  1 and 9999 are accepted
@@ -41,7 +41,7 @@ PASS  27-weird: keep — unknown PR state (FOO)  (keep — unknown PR state (FOO
 PASS  29-behind: REMOVE — PR merged (#39), ticket closed (#29)  (REMOVE — PR merged (#39), ticket closed (#29))
 PASS  30-bad-oid: keep — could not verify PR (bad value)  (keep — could not verify PR (bad value))
 PASS  31-ticket-weird: keep — unknown ticket state (FOO)  (keep — unknown ticket state (FOO))
-PASS  32-multiline: keep — could not verify PR (line one)  (keep — could not verify PR (line one))
+PASS  32-multiline: keep — could not verify PR (bad ?[31mred ?)  (keep — could not verify PR (bad ?[31mred ?))
 PASS  33-not-json: keep — could not verify PR (output is not JSON)  (keep — could not verify PR (output is not JSON))
 PASS  34-unknown-oid: keep — could not verify PR (commit ffffffffffffffffffffffffffffffffffffffff not found locally)  (keep — could not verify PR (commit ffffffffffffffffffffffffffffffffffffffff not found locally))
 PASS  35-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx$: keep — unusual name  (keep — unusual name)
@@ -79,7 +79,7 @@ keep    .worktrees/27-weird                                                     
 keep    .worktrees/3-no-pr                                                                   branch=3-no-pr           — keep: ticket open (#3), no PR yet
 keep    .worktrees/30-bad-oid                                                                branch=30-bad-oid        — keep: could not verify PR (bad value)
 keep    .worktrees/31-ticket-weird                                                           branch=31-ticket-weird   — keep: unknown ticket state (FOO)
-keep    .worktrees/32-multiline                                                              branch=32-multiline      — keep: could not verify PR (line one)
+keep    .worktrees/32-multiline                                                              branch=32-multiline      — keep: could not verify PR (bad ?[31mred ?)
 keep    .worktrees/33-not-json                                                               branch=33-not-json       — keep: could not verify PR (output is not JSON)
 keep    .worktrees/34-unknown-oid                                                            branch=34-unknown-oid    — keep: could not verify PR (commit ffffffffffffffffffffffffffffffffffffffff not found locally)
 keep    .worktrees/"35-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..."  branch=35-long           — keep: unusual name
@@ -128,14 +128,15 @@ PASS  kept worktrees are untouched
 === SKILL.md states what this procedure does ===
 PASS  frontmatter name matches the folder
 PASS  frontmatter has description and argument-hint
+PASS  the skill never uses a variable named path (zsh ties it to PATH)
 PASS  the skill cannot be auto-invoked by the model
 PASS  the skill states the default and the argument pattern
 PASS  the skill prescribes the gh commands the procedure runs
 PASS  the skill states the name, commit, number and ROOT patterns the procedure enforces
 PASS  the skill states the age comparison the procedure uses
-PASS  the skill lists the step 3 keep reasons in the order the procedure applies them  (84,120,183,221,304,501,563,669,742,824,929,1016)
+PASS  the skill lists the step 3 keep reasons in the order the procedure applies them  (84,120,183,221,310,385,559,621,759,839,924,1032,1119)
 PASS  the skill states the could-not-verify and unknown-state outcomes
 PASS  the skill runs the ancestor check in ROOT against the worktree head sha and re-checks HEAD in step 8
 PASS  the skill forbids --force, branch deletion and killing processes
 
-ALL 76 CHECKS PASSED
+ALL 77 CHECKS PASSED
