@@ -1,12 +1,25 @@
 import { getTileDef, TILE_SIZE } from '../../features/terrain/defs';
 import type { LevelData, TileCoordinate, TileGrid } from './types';
 
+/** Grids are derived from level data, never changed, so each level object is read once. */
+const gridByLevel = new WeakMap<LevelData, TileGrid>();
+
 /**
- * Resolves a level's ASCII rows through its legend. Levels are content, so a
- * malformed one is a bug in the repository: this throws with the level name
- * instead of guessing.
+ * Resolves a level's ASCII rows through its legend and checks the spawn is on
+ * the grid. Levels are content, so a malformed one is a bug in the
+ * repository: this throws with the level name instead of guessing. The
+ * terrain feature calls it when the sim is created, so a bad level never
+ * gets as far as a command handler.
  */
 export function readTileGrid(level: LevelData): TileGrid {
+  const known = gridByLevel.get(level);
+  if (known) return known;
+  const grid = parseTileGrid(level);
+  gridByLevel.set(level, grid);
+  return grid;
+}
+
+function parseTileGrid(level: LevelData): TileGrid {
   const rows = level.rows.length;
   if (rows === 0) throw new Error(`Level "${level.name}" has no rows`);
   const columns = (level.rows[0] as string).length;
@@ -28,6 +41,10 @@ export function readTileGrid(level: LevelData): TileGrid {
       return defId;
     });
   });
+  const { column, row } = level.spawn;
+  if (!Number.isInteger(column) || !Number.isInteger(row) || column < 0 || row < 0 || column >= columns || row >= rows) {
+    throw new Error(`Level "${level.name}": spawn (${column}, ${row}) is outside the ${columns}x${rows} grid`);
+  }
   return { columns, rows, tileSize: TILE_SIZE, width: columns * TILE_SIZE, height: rows * TILE_SIZE, defIds };
 }
 
@@ -49,10 +66,5 @@ export function tileAt(grid: TileGrid, x: number, y: number): TileCoordinate | u
 
 /** Where players appear, in metres: the centre of the level's spawn tile. */
 export function spawnPoint(level: LevelData): { x: number; y: number } {
-  const grid = readTileGrid(level);
-  const { column, row } = level.spawn;
-  if (!Number.isInteger(column) || !Number.isInteger(row) || column < 0 || row < 0 || column >= grid.columns || row >= grid.rows) {
-    throw new Error(`Level "${level.name}": spawn (${column}, ${row}) is outside the ${grid.columns}x${grid.rows} grid`);
-  }
-  return tileCentre(grid, level.spawn);
+  return tileCentre(readTileGrid(level), level.spawn);
 }

@@ -32,8 +32,23 @@ describe('tile grids', () => {
     expect(() => readTileGrid({ ...level(['T']), legend: { T: DefId.Player } })).toThrow(/not a tile/);
     expect(() => readTileGrid({ ...level(['T']), legend: { TT: DefId.Tree } })).toThrow(/one character/);
     expect(() => readTileGrid(level([]))).toThrow(/no rows/);
-    expect(() => spawnPoint({ ...level(['T.']), spawn: { column: 2, row: 0 } })).toThrow(/outside/);
-    expect(() => spawnPoint({ ...level(['T.']), spawn: { column: 0.5, row: 0 } })).toThrow(/outside/);
+    expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 2, row: 0 } })).toThrow(/outside/);
+    expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 0.5, row: 0 } })).toThrow(/outside/);
+  });
+
+  it('a bad level fails when the sim is created, never inside a command handler', async () => {
+    await expect(createSimInternal({ seed: 1, level: { ...level(['T.']), spawn: { column: 9, row: 0 } } })).rejects.toThrow(/outside/);
+    await expect(createSimInternal({ seed: 1, level: level(['T?']) })).rejects.toThrow(/no legend entry/);
+    const sim = await createSimInternal({ seed: 1, level: { ...level(['T.']), spawn: { column: 1, row: 0 } } });
+    expect(() => sim.step([join()])).not.toThrow();
+    expect(findPlayerEntity(sim, 0)).toBeDefined();
+    sim.destroy();
+  });
+
+  it('reads a level object once and hands back the same grid', () => {
+    const grid = readTileGrid(starterLevel);
+    expect(readTileGrid(starterLevel)).toBe(grid);
+    expect(readTileGrid({ ...starterLevel })).not.toBe(grid);
   });
 });
 

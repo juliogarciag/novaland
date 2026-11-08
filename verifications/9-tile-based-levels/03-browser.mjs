@@ -55,14 +55,17 @@ try {
       const under = layer.getTileAtWorldXY(x * api.pixelsPerMetre, y * api.pixelsPerMetre);
       return { tick: s.tick, x, y, entities: s.entities.length, drawn: circle ? { x: circle.x, y: circle.y } : null, drawnTileIndex: under ? under.index : null };
     });
+  /** Holds keys for `ms`, samples `to`, keeps holding another 300 ms and samples `stillHeld`, then releases and samples `after`. */
   const hold = async (keys, ms) => {
     for (const k of keys) await page.keyboard.down(k);
     const from = await state();
     await page.waitForTimeout(ms);
     const to = await state();
+    await page.waitForTimeout(300);
+    const stillHeld = await state();
     for (const k of keys) await page.keyboard.up(k);
     await page.waitForTimeout(100);
-    return { from, to, after: await state() };
+    return { from, to, stillHeld, after: await state() };
   };
 
   // --- The tilemap matches the sim's grid.
@@ -152,7 +155,7 @@ try {
   const stopY = tileBottom(solidRow) + RADIUS;
   results.push(check(`a ${blocker?.name} tile stops the player at its face (Rapier collision, derived from the grid)`, blocker && north.to.y >= stopY - 0.01 && north.to.y < stopY + 0.2, `y=${north.to.y.toFixed(3)}, face at ${tileBottom(solidRow).toFixed(2)}, stop at ${stopY.toFixed(2)}`));
   results.push(check('it walked north before being blocked', north.to.y < north.from.y - 1));
-  results.push(check('the player stays put while still pushing into it', Math.abs(north.after.y - north.to.y) < 0.01));
+  results.push(check('the player stays put while still pushing into it (sampled with the key still held)', north.stillHeld.tick > north.to.tick + 10 && Math.abs(north.stillHeld.y - north.to.y) < 0.01 && Math.abs(north.stillHeld.x - north.to.x) < 0.01, `${north.to.tick} -> ${north.stillHeld.tick} ticks, y ${north.to.y.toFixed(3)} -> ${north.stillHeld.y.toFixed(3)}`));
   results.push(check('the blocker is a tree', blocker?.name === 'tree'));
   report.steps.push({ step: 'north', ...north.after, blocker: blocker?.name, solidRow, stopY, columnsTouched });
 
