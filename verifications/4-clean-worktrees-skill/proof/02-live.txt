@@ -1,0 +1,6 @@
+# 2026-11-08T03:35:07.957Z
+keep    .worktrees/1-bootstrap-monorepo     branch=1-bootstrap-monorepo     — keep: running process (pid 21810)
+keep    .worktrees/4-clean-worktrees-skill  branch=4-clean-worktrees-skill  — keep: current session
+Nothing to remove (2 kept, age threshold 7d).
+
+ALL 4 CHECKS PASSED
