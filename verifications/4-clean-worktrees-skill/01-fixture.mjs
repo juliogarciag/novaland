@@ -13,10 +13,13 @@ import { REPO, summarize, writeProof } from './lib.mjs';
 import {
   AGE_ARGUMENT_PATTERN,
   BRANCH_PATTERN,
+  COMMIT_PATTERN,
   DEFAULT_AGE_DAYS,
   GH_COMMANDS,
   KEEP_ORDER,
+  NUMBER_PATTERN,
   SLUG_PATTERN,
+  TICKET_PATTERN,
   classify,
   confirmationQuestion,
   findRoot,
@@ -63,11 +66,12 @@ function cleanup() {
   rmSync(tmp, { recursive: true, force: true });
 }
 process.on('exit', cleanup);
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(130));
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(signal, () => process.exit(130));
 
 try {
   // ---------------------------------------------------------------- fixture
-  const realGit = spawnSync('which', ['git'], { encoding: 'utf8' }).stdout.trim();
+  const realGit = spawnSync('sh', ['-c', 'command -v git'], { encoding: 'utf8' }).stdout.trim();
+  if (!path.isAbsolute(realGit)) throw new Error(`cannot resolve git: ${JSON.stringify(realGit)}`);
   mkdirSync(bin);
   mkdirSync(binLsofFail);
   writeFileSync(path.join(bin, 'gh'), FAKE_GH());
@@ -147,7 +151,7 @@ try {
   addWorktree({ slug: '12-cross', pr: [{ number: 40, state: 'MERGED', isCrossRepository: true }], issue: { state: 'OPEN' }, expect: { verdict: 'keep', reason: 'ticket open (#12), no PR yet', issueLookup: true } });
   addWorktree({ slug: '13-bad$name', branch: '13-badname', expect: { verdict: 'keep', reason: 'unusual name' } });
   addWorktree({ slug: '15-old-base', commitAge: null, gitFileAge: 0, expect: { verdict: 'keep', reason: 'no trackers, 0d old (< 7d)', issueLookup: true } });
-  const unpushed = addWorktree({ slug: '16-unpushed', issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: 'PR merged (#26) but HEAD is ahead, ticket closed (#16)', unpushed: 1, issueLookup: true } });
+  const unpushed = addWorktree({ slug: '16-unpushed', issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: 'PR merged (#26) but HEAD is not in the PR head, ticket closed (#16)', unpushed: 1, issueLookup: true } });
   git(['push', '-q', '-u', 'origin', '16-unpushed'], unpushed);
   prs['16-unpushed'] = [{ number: 26, state: 'MERGED', headRefOid: git(['rev-parse', 'HEAD'], unpushed) }];
   writeFileSync(path.join(unpushed, 'more.txt'), 'more\n');
@@ -177,6 +181,20 @@ try {
   });
   addWorktree({ slug: '26-fresh-gitfile', commitAge: 12, gitFileAge: 0, expect: { verdict: 'keep', reason: 'no trackers, 0d old (< 7d)', issueLookup: true } });
   addWorktree({ slug: '27-weird', pr: [{ number: 37, state: 'FOO' }], issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: 'unknown PR state (FOO)' } });
+  // HEAD strictly behind the merged PR head: contained, so terminal.
+  const behind = addWorktree({ slug: '29-behind', issue: { state: 'CLOSED' }, expect: { verdict: 'REMOVE', reason: 'PR merged (#39), ticket closed (#29)', issueLookup: true } });
+  writeFileSync(path.join(behind, 'later.txt'), 'later\n');
+  git(['add', '.'], behind);
+  git(['commit', '-q', '-m', 'later'], behind);
+  prs['29-behind'] = [{ number: 39, state: 'MERGED', headRefOid: git(['rev-parse', 'HEAD'], behind) }];
+  git(['reset', '-q', '--hard', 'HEAD~1'], behind);
+  addWorktree({ slug: '30-bad-oid', pr: [{ number: 40, state: 'MERGED', headRefOid: 'HEAD' }], issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: 'could not verify PR (bad value)' } });
+  addWorktree({ slug: '31-ticket-weird', issue: { state: 'FOO' }, expect: { verdict: 'keep', reason: 'unknown ticket state (FOO)', issueLookup: true } });
+  addWorktree({ slug: '32-multiline', pr: { error: 'line one\nline two \u001b[31mred' }, expect: { verdict: 'keep', reason: 'could not verify PR (line one)' } });
+  addWorktree({ slug: '33-not-json', pr: { raw: 'not json at all' }, expect: { verdict: 'keep', reason: 'could not verify PR (output is not JSON)' } });
+  addWorktree({ slug: '34-unknown-oid', pr: [{ number: 44, state: 'MERGED', headRefOid: 'f'.repeat(40) }], issue: { state: 'CLOSED' }, expect: { verdict: 'keep', reason: `could not verify PR (commit ${'f'.repeat(40)} not found locally)` } });
+  const longSlug = `35-${'x'.repeat(90)}$`;
+  addWorktree({ slug: longSlug, branch: '35-long', expect: { verdict: 'keep', reason: 'unusual name' } });
   const outside = path.join(tmp, 'outside-wt');
   git(['worktree', 'add', '-q', outside, '-b', '14-outside']);
   rows.push({ slug: 'outside-wt', verdict: 'keep', reason: 'outside .worktrees/' });
@@ -192,6 +210,7 @@ try {
   check('no argument means 7 days', parseAgeDays(undefined) === DEFAULT_AGE_DAYS && parseAgeDays('') === 7);
   check('1 and 9999 are accepted', parseAgeDays('1') === 1 && parseAgeDays('9999') === 9999);
   check('0, 10000, 007, +3, 3.0, negatives and words are rejected', ['0', '10000', '007', '+3', '3.0', '-2', 'abc', '7; rm -rf /'].every((v) => parseAgeDays(v) === null));
+  check('surrounding whitespace is trimmed', parseAgeDays(' 3 ') === 3);
 
   // ------------------------------------------------------------ step 2
   log('\n=== step 2: ROOT resolution ===');
@@ -225,8 +244,9 @@ try {
   const removeLines = lines.filter((l) => l.startsWith('REMOVE'));
   const keepLines = lines.filter((l) => l.startsWith('keep'));
   const slugsIn = (group) => group.map((l) => /\.worktrees\/(\S+)/.exec(l)[1]);
-  check('REMOVE lines come first, in slug order', JSON.stringify(slugsIn(removeLines)) === JSON.stringify(['1-merged', '11-prnum', '19-ticket-only', '25-boundary', '4-closed-pr', 'nonum-merged', 'old-untracked']), slugsIn(removeLines).join(' '));
-  check('keep lines follow, in slug order, with unusual names quoted', lines.indexOf(keepLines[0]) === removeLines.length && slugsIn(keepLines).slice(0, 4).join(' ') === '10-detached 12-cross "13-bad$name" 15-old-base');
+  check('REMOVE lines come first, in slug order', JSON.stringify(slugsIn(removeLines)) === JSON.stringify(['1-merged', '11-prnum', '19-ticket-only', '25-boundary', '29-behind', '4-closed-pr', 'nonum-merged', 'old-untracked']), slugsIn(removeLines).join(' '));
+  const expectedKeepOrder = ['10-detached', '12-cross', '"13-bad$name"', '15-old-base', '16-unpushed', '17-open-pr', '18-two-prs', '2-mixed', '20-prunable', '21-badbranch', '22-differs', '23-nested', '26-fresh-gitfile', '27-weird', '3-no-pr', '30-bad-oid', '31-ticket-weird', '32-multiline', '33-not-json', '34-unknown-oid', `"35-${'x'.repeat(64)}..."`, '5-ticket-error', '6-pr-error', '7-dirty', '8-locked', '9-busy', 'fresh-untracked', 'inner', 'main', 'outside-wt'];
+  check('keep lines follow, in slug order, with unusual names quoted and long ones cut', lines.indexOf(keepLines[0]) === removeLines.length && JSON.stringify(slugsIn(keepLines)) === JSON.stringify(expectedKeepOrder), slugsIn(keepLines).join(' '));
   check('every line matches the skill format', [...removeLines, ...keepLines].every((l) => /^(REMOVE|keep)\s+\.worktrees\/\S+\s+branch=\S+\s+— (unused|keep): .+$/.test(l)));
   check('unpushed commits are shown', keepLines.some((l) => l.includes('16-unpushed') && l.endsWith('unpushed=1')));
   check('the summary line counts and warns about ignored files', lines.at(-1) === `${removeLines.length} to remove, ${keepLines.length} to keep. Removal also deletes ignored files (node_modules, .env, local logs).`);
@@ -244,6 +264,9 @@ try {
   writeFileSync(path.join(wtPath('4-closed-pr'), 'late.txt'), 'edited after the preview\n');
   git(['worktree', 'lock', wtPath('11-prnum')]);
   children.push(spawn('sleep', ['300'], { cwd: ticketOnly, stdio: 'ignore' }));
+  writeFileSync(path.join(wtPath('nonum-merged'), 'after.txt'), 'after\n');
+  git(['add', '.'], wtPath('nonum-merged'));
+  git(['commit', '-q', '-m', 'after the preview'], wtPath('nonum-merged'));
   chmodSync(readOnlyDir, 0o555);
   const branchesBefore = git(['branch', '--format=%(refname:short)']);
   rmSync(gitLog, { force: true });
@@ -255,12 +278,13 @@ try {
   check('a worktree dirtied after the preview is skipped', outcome.lines.includes('skipped: .worktrees/4-closed-pr  (uncommitted changes)') && existsSync(path.join(wtPath('4-closed-pr'), 'late.txt')));
   check('a worktree locked after the preview is skipped', outcome.lines.includes('skipped: .worktrees/11-prnum  (locked)') && existsSync(wtPath('11-prnum')));
   check('a process started after the preview is skipped', outcome.lines.some((l) => /^skipped: \.worktrees\/19-ticket-only {2}\(running process \(pid \d+\)\)$/.test(l)) && existsSync(ticketOnly));
+  check('a commit made after the preview is skipped', outcome.lines.includes('skipped: .worktrees/nonum-merged  (HEAD changed)') && existsSync(wtPath('nonum-merged')));
   const failedAt = outcome.lines.findIndex((l) => l.startsWith('failed: .worktrees/25-boundary'));
   check('a git refusal is reported as failed and the run continues', failedAt >= 0 && outcome.lines.slice(failedAt + 1).some((l) => l.startsWith('removed:')));
-  check('the clean ones are removed and reported with their branch', ['1-merged', 'nonum-merged', 'old-untracked'].every((s) => !existsSync(wtPath(s)) && outcome.lines.includes(`removed: .worktrees/${s}  (branch=${s})`)));
+  check('the clean ones are removed and reported with their branch', ['1-merged', '29-behind', 'old-untracked'].every((s) => !existsSync(wtPath(s)) && outcome.lines.includes(`removed: .worktrees/${s}  (branch=${s})`)));
   check('git worktree remove was called only with -- and an absolute path, never --force', removeCalls.length === 4 && removeCalls.every((l) => /worktree remove -- \//.test(l) && !/(^| )(--force|-f)( |$)/.test(l)), `${removeCalls.length} calls`);
   check('no branch was deleted', !readFileSync(gitLog, 'utf8').split('\n').some((l) => /^branch (-d|-D|--delete)/.test(l)) && git(['branch', '--format=%(refname:short)']) === branchesBefore);
-  check('the final summary has the four counts', summaryLine(outcome, kept) === `Removed 3, skipped 3, failed 1, kept ${kept}.`);
+  check('the final summary has the four counts', summaryLine(outcome, kept) === `Removed 3, skipped 4, failed 1, kept ${kept}.`);
   check('kept worktrees are untouched', rows.filter((r) => r.verdict === 'keep' && !['outside-wt', 'inner', '20-prunable'].includes(r.slug)).every((r) => existsSync(wtPath(r.slug))));
 
   // ------------------------------------------------------------ SKILL.md
@@ -273,12 +297,13 @@ try {
   check('the skill cannot be auto-invoked by the model', frontmatter['disable-model-invocation'] === 'true');
   check('the skill states the default and the argument pattern', skill.includes(`Default \`${DEFAULT_AGE_DAYS}\``) && skill.includes(AGE_ARGUMENT_PATTERN.source));
   check('the skill prescribes the gh commands the procedure runs', skill.includes(GH_COMMANDS.prList) && skill.includes(GH_COMMANDS.issueView));
-  check('the skill states the name patterns the procedure enforces', skill.includes(SLUG_PATTERN.source) && skill.includes(BRANCH_PATTERN.source));
+  check('the skill states the name, commit, number and ROOT patterns the procedure enforces', [SLUG_PATTERN, BRANCH_PATTERN, COMMIT_PATTERN, NUMBER_PATTERN, TICKET_PATTERN].every((p) => skill.includes(p.source)) && skill.includes('[A-Za-z0-9._/ -]'));
   check('the skill states the age comparison the procedure uses', skill.includes('age_days >= AGE_DAYS'));
   const step3 = skill.slice(skill.indexOf('Decide `keep` in this order'), skill.indexOf('For the rest, record'));
   const positions = KEEP_ORDER.map((reason) => step3.indexOf(`keep: ${reason}`));
   check('the skill lists the step 3 keep reasons in the order the procedure applies them', positions.every((p, i) => p >= 0 && (i === 0 || p > positions[i - 1])), positions.join(','));
   check('the skill states the could-not-verify and unknown-state outcomes', skill.includes('keep: could not verify') && skill.includes('keep: unknown <PR|ticket> state'));
+  check('the skill runs the ancestor check in ROOT against the worktree head sha and re-checks HEAD in step 8', skill.includes('git -C "$ROOT" merge-base --is-ancestor "$head_sha" "$oid"') && skill.includes('`HEAD` still equal to `$head_sha`'));
   check('the skill forbids --force, branch deletion and killing processes', skill.includes('Never `--force`, never delete a branch, never kill a process'));
 } finally {
   cleanup();
@@ -305,6 +330,7 @@ if (a === 'pr' && b === 'list') {
   const fields = rest[rest.indexOf('--json') + 1].split(',');
   const entry = data.prs[head.slice(7)] ?? [];
   if (entry.error) fail(entry.error);
+  if (entry.raw !== undefined) { process.stdout.write(entry.raw); process.exit(0); }
   process.stdout.write(JSON.stringify(entry.map((p) => Object.fromEntries(fields.map((f) => [f, f === 'isCrossRepository' ? (p[f] ?? false) : p[f]])))));
   process.exit(0);
 }

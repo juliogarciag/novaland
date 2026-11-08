@@ -6,12 +6,6 @@ export const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO = path.resolve(HERE, '../..');
 export const PROOF = path.join(HERE, 'proof');
 
-export function check(name, pass, details) {
-  const line = `${pass ? 'PASS' : 'FAIL'}  ${name}${details ? `  (${details})` : ''}`;
-  console.log(line);
-  return { name, pass, details };
-}
-
 export function summarize(results) {
   const failed = results.filter((r) => !r.pass);
   console.log(failed.length === 0 ? `\nALL ${results.length} CHECKS PASSED` : `\n${failed.length} OF ${results.length} CHECKS FAILED`);

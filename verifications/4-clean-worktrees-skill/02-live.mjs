@@ -6,7 +6,7 @@
 import { realpathSync } from 'node:fs';
 import path from 'node:path';
 import { HERE, REPO, summarize, writeProof } from './lib.mjs';
-import { classify, findRoot, listWorktrees, preview } from './procedure.mjs';
+import { classify, discoverTrackers, findRoot, listWorktrees, preview } from './procedure.mjs';
 
 const results = [];
 const output = [];
@@ -32,6 +32,10 @@ if (bootstrap) {
   const removable = bootstrap.verdict === 'REMOVE' && /PR merged \(#3\), ticket closed \(#1\)/.test(bootstrap.reason);
   const busy = bootstrap.reason.startsWith('running process');
   check('the merged bootstrap worktree is removable, or kept only because a process runs in it', removable || busy, bootstrap.reason);
+  const trackers = discoverTrackers({ root, branch: '1-bootstrap-monorepo', headSha: bootstrap.head, env: process.env });
+  const pr = trackers.list?.find((t) => t.kind === 'PR' && t.number === 3);
+  const ticket = trackers.list?.find((t) => t.kind === 'ticket' && t.number === 1);
+  check('the real gh reports PR #3 merged with the worktree head in it and ticket #1 closed', pr?.state === 'MERGED' && pr.terminal === true && ticket?.state === 'CLOSED', trackers.error ?? `${pr?.state} ${ticket?.state}`);
 } else log('SKIP  1-bootstrap-monorepo no longer exists');
 const after = listWorktrees(root, process.env).map((w) => w.path);
 check('the worktree list is unchanged by a preview', JSON.stringify(after) === JSON.stringify(before), `${after.length} worktrees`);

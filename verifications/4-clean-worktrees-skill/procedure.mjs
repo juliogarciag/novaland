@@ -14,6 +14,10 @@ export const AGE_ARGUMENT_PATTERN = /^[1-9][0-9]{0,3}$/;
 export const SLUG_PATTERN = /^[A-Za-z0-9._-]+$/;
 export const BRANCH_PATTERN = /^[A-Za-z0-9._/-]+$/;
 export const NOT_FOUND_PATTERN = /could not resolve to an issue/i;
+export const COMMIT_PATTERN = /^[0-9a-f]{40,64}$/;
+export const NUMBER_PATTERN = /^[1-9][0-9]*$/;
+export const ROOT_PATTERN = /^[A-Za-z0-9._/ -]+$/;
+export const TICKET_PATTERN = /^([0-9]+)-/;
 
 /** The gh commands the skill prescribes. The argv below is built from these strings. */
 export const GH_COMMANDS = {
@@ -39,13 +43,16 @@ export const KEEP_ORDER = [
 
 /** Step 1. */
 export function parseAgeDays(argument) {
-  if (argument === undefined || argument === '') return DEFAULT_AGE_DAYS;
-  return AGE_ARGUMENT_PATTERN.test(argument) ? Number(argument) : null;
+  const text = (argument ?? '').trim();
+  if (text === '') return DEFAULT_AGE_DAYS;
+  return AGE_ARGUMENT_PATTERN.test(text) ? Number(text) : null;
 }
 
 /** Step 2: the real path of the main checkout. */
 export function findRoot(cwd, env) {
-  return realpathSync(path.dirname(git(['rev-parse', '--path-format=absolute', '--git-common-dir'], cwd, env)));
+  const root = realpathSync(path.dirname(git(['rev-parse', '--path-format=absolute', '--git-common-dir'], cwd, env)));
+  if (!ROOT_PATTERN.test(root)) throw new Error(`ROOT ${JSON.stringify(root)} has characters outside ${ROOT_PATTERN.source}; stop`);
+  return root;
 }
 
 /** Step 3, parsing only (`-z`: entries end with two NULs, lines with one). */
@@ -55,9 +62,10 @@ export function listWorktrees(root, env) {
     .split('\0\0')
     .filter((entry) => entry !== '')
     .map((entry) => {
-      const worktree = { path: '', branch: null, detached: false, locked: false, prunable: false, bare: false };
+      const worktree = { path: '', head: '', branch: null, detached: false, locked: false, prunable: false, bare: false };
       for (const line of entry.split('\0')) {
         if (line.startsWith('worktree ')) worktree.path = line.slice(9);
+        else if (line.startsWith('HEAD ')) worktree.head = line.slice(5);
         else if (line.startsWith('branch refs/heads/')) worktree.branch = line.slice(18);
         else if (line === 'detached') worktree.detached = true;
         else if (line === 'locked' || line.startsWith('locked ')) worktree.locked = true;
@@ -97,7 +105,7 @@ export function classify({ root, cwd, now, ageDays, env }) {
   for (const worktree of allWorktrees) {
     if (safeRealpath(worktree.path) === root) continue;
     const slug = path.basename(worktree.path);
-    const entry = { path: worktree.path, slug, branch: worktree.branch ?? 'HEAD', verdict: 'keep', reason: '', unpushed: 0 };
+    const entry = { path: worktree.path, head: worktree.head, slug, branch: worktree.branch ?? 'HEAD', verdict: 'keep', reason: '', unpushed: 0 };
     entries.push(entry);
 
     const reason = keepReason({ worktree, allWorktrees, root, cwd, env });
@@ -112,7 +120,7 @@ export function classify({ root, cwd, now, ageDays, env }) {
     const unpushed = spawnSync('git', ['rev-list', '--count', '@{u}..HEAD'], { cwd: worktree.path, env, encoding: 'utf8' });
     entry.unpushed = unpushed.status === 0 ? Number(unpushed.stdout.trim()) : 0;
 
-    const trackers = discoverTrackers({ root, branch: worktree.branch, worktreePath: worktree.path, env });
+    const trackers = discoverTrackers({ root, branch: worktree.branch, headSha: worktree.head, env });
     if (trackers.error) {
       entry.reason = trackers.error;
       continue;
@@ -144,7 +152,7 @@ export function classify({ root, cwd, now, ageDays, env }) {
 
 function describe(tracker) {
   const base = `${tracker.kind} ${tracker.state.toLowerCase()} (#${tracker.number})`;
-  return tracker.ahead ? `${base} but HEAD is ahead` : base;
+  return tracker.ahead ? `${base} but HEAD is not in the PR head` : base;
 }
 
 /** Step 3: uncommitted changes and running processes, also re-run in step 8. */
@@ -158,25 +166,31 @@ export function checkLiveness(worktreePath, realPath, env) {
     if (line.startsWith('p')) pid = line.slice(1);
     else if (line.startsWith('n')) {
       const dir = line.slice(1);
-      if (dir === realPath || dir.startsWith(realPath + path.sep)) return `running process (pid ${pid})`;
+      if (dir === realPath || dir.startsWith(realPath + path.sep)) return `running process (pid ${/^[0-9]+$/.test(pid ?? '') ? pid : '?'})`;
     }
   }
   return null;
 }
 
 /** Step 4. */
-export function discoverTrackers({ root, branch, worktreePath, env }) {
+export function discoverTrackers({ root, branch, headSha, env }) {
   const list = [];
   const prs = gh(GH_COMMANDS.prList, { branch }, root, env);
   if (prs.error) return { error: `could not verify PR (${prs.error})`, list };
   for (const pr of prs.data) {
     if (pr.isCrossRepository) continue;
+    if (!NUMBER_PATTERN.test(String(pr.number)) || !COMMIT_PATTERN.test(String(pr.headRefOid))) return { error: 'could not verify PR (bad value)', list };
     if (pr.state !== 'OPEN' && pr.state !== 'CLOSED' && pr.state !== 'MERGED') return { error: `unknown PR state (${clean(pr.state)})`, list };
     const finished = pr.state === 'MERGED' || pr.state === 'CLOSED';
-    const contained = finished && spawnSync('git', ['merge-base', '--is-ancestor', 'HEAD', String(pr.headRefOid)], { cwd: worktreePath, env }).status === 0;
-    list.push({ kind: 'PR', number: pr.number, state: pr.state, terminal: finished && contained, ahead: finished && !contained });
+    let contained = false;
+    if (finished) {
+      const ancestor = spawnSync('git', ['-C', root, 'merge-base', '--is-ancestor', headSha, pr.headRefOid], { env });
+      if (ancestor.status !== 0 && ancestor.status !== 1) return { error: `could not verify PR (commit ${pr.headRefOid} not found locally)`, list };
+      contained = ancestor.status === 0;
+    }
+    list.push({ kind: 'PR', number: Number(pr.number), state: pr.state, terminal: finished && contained, ahead: finished && !contained });
   }
-  const ticket = /^(\d+)-/.exec(branch);
+  const ticket = TICKET_PATTERN.exec(branch);
   if (ticket) {
     const issue = gh(GH_COMMANDS.issueView, { n: ticket[1] }, root, env);
     if (issue.notFound) return { list };
@@ -240,7 +254,8 @@ export function removeWorktrees({ root, plan, cwd, env }) {
   for (const entry of plan) {
     const allWorktrees = listWorktrees(root, env);
     const worktree = allWorktrees.find((w) => w.path === entry.path);
-    const reason = worktree ? keepReason({ worktree, allWorktrees, root, cwd, env }) : 'no longer listed';
+    let reason = worktree ? keepReason({ worktree, allWorktrees, root, cwd, env }) : 'no longer listed';
+    if (!reason && worktree.head !== entry.head) reason = 'HEAD changed';
     if (reason) {
       skipped += 1;
       lines.push(`skipped: .worktrees/${display(entry.slug)}  (${clean(reason)})`);
@@ -280,15 +295,15 @@ function firstLine(text) {
   return String(text ?? '').trim().split('\n')[0] ?? '';
 }
 
-/** Strips control characters from text that came from a tool. */
+/** Replaces control and non-ASCII characters in text that came from a tool, and caps its length. */
 function clean(text) {
-  // eslint-disable-next-line no-control-regex
-  return String(text).replace(/[\u0000-\u001f\u007f]/g, '?');
+  const ascii = String(text).replace(/[^\u0020-\u007e]/g, '?');
+  return ascii.length > 120 ? `${ascii.slice(0, 117)}...` : ascii;
 }
 
-/** Names that fail the name rule are shown JSON-quoted and cut to 80 characters. */
+/** Names that fail the name rule are shown JSON-quoted (ASCII only) and cut to 80 characters. */
 function display(name) {
-  const safe = SLUG_PATTERN.test(name) || BRANCH_PATTERN.test(name);
-  const text = safe ? name : JSON.stringify(name);
-  return text.length > 80 ? `${text.slice(0, 77)}...` : text;
+  if (SLUG_PATTERN.test(name) || BRANCH_PATTERN.test(name)) return name;
+  const cut = name.length > 70 ? `${name.slice(0, 67)}...` : name;
+  return JSON.stringify(cut).replace(/[^\u0020-\u007e]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
