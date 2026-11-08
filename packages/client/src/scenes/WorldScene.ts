@@ -1,7 +1,8 @@
-import type { Command, SimHandle } from '@novaland/sim';
+import { findPlayerEntity, type Command, type SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
+import { LevelCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
 import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
 
@@ -11,21 +12,18 @@ const LOCAL_SLOT = 0;
 /** Never simulate more than this much real time per frame (tab switches, hitches). */
 const MAX_FRAME_SECONDS = 0.25;
 
-/** Above every depth-sorted entity, so the HUD is never covered. */
-const HUD_DEPTH = Number.MAX_SAFE_INTEGER;
-
 /**
- * The one scene for now. Owns the leftover frame time: real time comes in
+ * The world scene. Owns the leftover frame time: real time comes in
  * from Phaser, whole sim ticks go out. Commands wait in `pendingCommands` until the
  * leftover earns a tick, so the sim only ever advances with real time.
- * The scene never touches game rules.
+ * The camera follows the local player. The scene never touches game rules.
  */
 export class WorldScene extends Phaser.Scene {
   private leftover = 0;
   private pendingCommands: Command[] = [];
   private keyboard!: KeyboardInput;
   private entityRenderer!: EntityRenderer;
-  private hud!: Phaser.GameObjects.Text;
+  private levelCamera!: LevelCamera;
 
   constructor(private readonly sim: SimHandle) {
     super('world');
@@ -36,16 +34,15 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.cameras.main.centerOn(0, 0);
     createSpriteAnimations(this);
+    this.levelCamera = new LevelCamera(this.cameras.main, this.sim.level);
+    this.levelCamera.fitZoomTo(this.scale.width);
+    this.scale.on(Phaser.Scale.Events.RESIZE, (gameSize: Phaser.Structs.Size) => this.levelCamera.fitZoomTo(gameSize.width));
     this.entityRenderer = new EntityRenderer(this);
     this.keyboard = createKeyboardInput(this, LOCAL_SLOT);
-    this.hud = this.add
-      .text(12, 12, '', { fontFamily: 'monospace', fontSize: '14px', color: '#94a3b8' })
-      .setScrollFactor(0)
-      .setDepth(HUD_DEPTH);
     this.pendingCommands.push({ type: 'player/join', slot: LOCAL_SLOT });
     this.entityRenderer.sync(this.sim);
+    this.followLocalPlayer();
   }
 
   override update(_time: number, deltaMs: number): void {
@@ -62,6 +59,12 @@ export class WorldScene extends Phaser.Scene {
       this.pendingCommands = [];
     }
     this.entityRenderer.sync(this.sim);
-    this.hud.setText(`WASD / arrows to move   tick ${this.sim.tick}`);
+    this.followLocalPlayer();
+  }
+
+  private followLocalPlayer(): void {
+    const eid = findPlayerEntity(this.sim, LOCAL_SLOT);
+    const drawnAt = eid === undefined ? undefined : this.entityRenderer.pixelPositionOf(eid);
+    if (drawnAt) this.levelCamera.lookAt(drawnAt.x, drawnAt.y);
   }
 }

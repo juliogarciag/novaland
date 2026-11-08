@@ -55,6 +55,12 @@ export class EntityRenderer {
     }
   }
 
+  /** Where an entity is drawn, in pixels, or undefined when it has no game object (yet). */
+  pixelPositionOf(eid: number): { x: number; y: number } | undefined {
+    const view = this.views.get(eid);
+    return view ? { x: view.gameObject.x, y: view.gameObject.y } : undefined;
+  }
+
   private createView(defId: number, halfWidth: number, halfHeight: number): EntityView {
     const def = getDef(defId);
     const sheet = def.sprite;
