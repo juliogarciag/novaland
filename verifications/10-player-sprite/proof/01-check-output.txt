@@ -4,8 +4,8 @@ Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
 Already up to date
 
-Done in 486ms using pnpm v10.9.0
-(node:68335) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 483ms using pnpm v10.9.0
+(node:1124) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 (exit 0)
@@ -14,21 +14,23 @@ $ pnpm exec vitest run --reporter=default --reporter=json --outputFile.json=<rep
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/input/direction.test.ts (5 tests) 3ms
  ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 4ms
- ✓ |client| src/render/pose.test.ts (3 tests) 3ms
  ✓ |client| src/input/keyboard.test.ts (9 tests) 4ms
- ✓ |sim| src/content/defs.test.ts (2 tests) 44ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 116ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 196ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 222ms
- ✓ |server| src/headless.test.ts (3 tests) 205ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 165ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 4ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 12ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 4ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 4ms
+ ✓ |sim| src/content/defs.test.ts (2 tests) 92ms
+ ✓ |server| src/headless.test.ts (3 tests) 204ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 172ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 186ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 248ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 262ms
 
- Test Files  10 passed (10)
-      Tests  53 passed (53)
-   Start at  23:51:45
-   Duration  458ms (tests 64%, import 18%, transform 14%, worker 3%)
+ Test Files  12 passed (12)
+      Tests  61 passed (61)
+   Start at  01:29:53
+   Duration  521ms (tests 66%, import 19%, transform 12%, worker 3%)
 
 JSON report written to <repo>/verifications/10-player-sprite/proof/01-tests.json
 
@@ -42,11 +44,11 @@ $ pnpm typecheck
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:68381) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:1173) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 (exit 0)

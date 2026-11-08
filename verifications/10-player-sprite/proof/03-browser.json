@@ -3,6 +3,29 @@
     {
       "step": "initial",
       "tick": 12,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -480,
+        "scrollY": -360,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -512,
+          "y": -320,
+          "width": 1024,
+          "height": 640
+        },
+        "worldView": {
+          "x": -160,
+          "y": -120,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
       "x": 0,
       "y": 0,
       "intent": {
@@ -17,70 +40,115 @@
       "sprite": {
         "x": 0,
         "y": 0,
-        "depth": 12.8,
+        "depth": 6.4,
         "texture": "player",
         "frame": 0,
         "animation": null,
         "playing": false,
-        "scaleX": 2,
-        "scaleY": 2,
+        "scaleX": 1,
+        "scaleY": 1,
         "originX": 0.5,
         "originY": 0.75,
-        "displayWidth": 32,
-        "displayHeight": 48
+        "displayWidth": 16,
+        "displayHeight": 24
       },
       "rectangles": [
         {
           "x": 0,
+          "y": -312,
+          "width": 1024,
+          "height": 16,
+          "depth": -304
+        },
+        {
+          "x": -128,
           "y": -240,
-          "width": 768,
+          "width": 64,
+          "height": 16,
+          "depth": -232
+        },
+        {
+          "x": -320,
+          "y": -192,
+          "width": 96,
+          "height": 16,
+          "depth": -184
+        },
+        {
+          "x": 352,
+          "y": -128,
+          "width": 16,
+          "height": 128,
+          "depth": -64
+        },
+        {
+          "x": 48,
+          "y": -64,
+          "width": 32,
           "height": 32,
-          "depth": -224
+          "depth": -48
+        },
+        {
+          "x": -96,
+          "y": -48,
+          "width": 48,
+          "height": 16,
+          "depth": -40
         },
         {
           "x": 96,
-          "y": -128,
-          "width": 64,
+          "y": 48,
+          "width": 16,
           "height": 64,
-          "depth": -96
+          "depth": 80
         },
         {
-          "x": -192,
-          "y": -96,
-          "width": 96,
+          "x": -416,
+          "y": 64,
+          "width": 16,
+          "height": 96,
+          "depth": 112
+        },
+        {
+          "x": -256,
+          "y": 160,
+          "width": 32,
           "height": 32,
-          "depth": -80
+          "depth": 176
         },
         {
-          "x": 192,
-          "y": 96,
-          "width": 32,
-          "height": 128,
-          "depth": 160
+          "x": 288,
+          "y": 224,
+          "width": 128,
+          "height": 16,
+          "depth": 232
         },
         {
-          "x": -368,
+          "x": -504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
-          "x": 368,
+          "x": 504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
           "x": 0,
-          "y": 240,
-          "width": 768,
-          "height": 32,
-          "depth": 256
+          "y": 312,
+          "width": 1024,
+          "height": 16,
+          "depth": 320
         }
       ],
-      "hudDepth": 9007199254740991
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
+      }
     },
     {
       "step": "walk-right",
@@ -91,8 +159,31 @@
         15
       ],
       "after": {
-        "tick": 63,
-        "x": 3.166663646697998,
+        "tick": 67,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -422.6666666666667,
+          "scrollY": -360,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -102.66666666666669,
+            "y": -120,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": 3.5833287239074707,
         "y": 0,
         "intent": {
           "x": 0,
@@ -104,76 +195,144 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": 101.33323669433594,
+          "x": 57.33325958251953,
           "y": 0,
-          "depth": 12.8,
+          "depth": 6.4,
           "texture": "player",
           "frame": 12,
           "animation": "player/walk/right",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       },
       "later": {
-        "tick": 94,
-        "x": 3.166663646697998,
+        "tick": 99,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -422.6666666666667,
+          "scrollY": -360,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -102.66666666666669,
+            "y": -120,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": 3.5833287239074707,
         "y": 0,
         "intent": {
           "x": 0,
@@ -185,72 +344,117 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": 101.33323669433594,
+          "x": 57.33325958251953,
           "y": 0,
-          "depth": 12.8,
+          "depth": 6.4,
           "texture": "player",
           "frame": 12,
           "animation": "player/walk/right",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       }
     },
     {
@@ -262,9 +466,32 @@
         3
       ],
       "after": {
-        "tick": 146,
-        "x": 3.166663646697998,
-        "y": 3.499995708465576,
+        "tick": 152,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -422.6666666666667,
+          "scrollY": -301.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -102.66666666666669,
+            "y": -61.333333333333314,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": 3.5833287239074707,
+        "y": 3.6666617393493652,
         "intent": {
           "x": 0,
           "y": 0
@@ -275,77 +502,145 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": 101.33323669433594,
-          "y": 111.99986267089844,
-          "depth": 124.79986267089843,
+          "x": 57.33325958251953,
+          "y": 58.666587829589844,
+          "depth": 65.06658782958985,
           "texture": "player",
           "frame": 0,
           "animation": "player/walk/down",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       },
       "later": {
-        "tick": 177,
-        "x": 3.166663646697998,
-        "y": 3.499995708465576,
+        "tick": 182,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -422.6666666666667,
+          "scrollY": -301.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -102.66666666666669,
+            "y": -61.333333333333314,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": 3.5833287239074707,
+        "y": 3.6666617393493652,
         "intent": {
           "x": 0,
           "y": 0
@@ -356,72 +651,117 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": 101.33323669433594,
-          "y": 111.99986267089844,
-          "depth": 124.79986267089843,
+          "x": 57.33325958251953,
+          "y": 58.666587829589844,
+          "depth": 65.06658782958985,
           "texture": "player",
           "frame": 0,
           "animation": "player/walk/down",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       }
     },
     {
@@ -433,9 +773,32 @@
         11
       ],
       "after": {
-        "tick": 228,
-        "x": -0.33333340287208557,
-        "y": 3.499995708465576,
+        "tick": 236,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -481.33333333333337,
+          "scrollY": -301.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -161.33333333333337,
+            "y": -61.333333333333314,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -0.08333337306976318,
+        "y": 3.6666617393493652,
         "intent": {
           "x": 0,
           "y": 0
@@ -446,77 +809,145 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": -10.666668891906738,
-          "y": 111.99986267089844,
-          "depth": 124.79986267089843,
+          "x": -1.333333969116211,
+          "y": 58.666587829589844,
+          "depth": 65.06658782958985,
           "texture": "player",
           "frame": 8,
           "animation": "player/walk/left",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       },
       "later": {
-        "tick": 259,
-        "x": -0.33333340287208557,
-        "y": 3.499995708465576,
+        "tick": 266,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -481.33333333333337,
+          "scrollY": -301.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -161.33333333333337,
+            "y": -61.333333333333314,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -0.08333337306976318,
+        "y": 3.6666617393493652,
         "intent": {
           "x": 0,
           "y": 0
@@ -527,72 +958,117 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": -10.666668891906738,
-          "y": 111.99986267089844,
-          "depth": 124.79986267089843,
+          "x": -1.333333969116211,
+          "y": 58.666587829589844,
+          "depth": 65.06658782958985,
           "texture": "player",
           "frame": 8,
           "animation": "player/walk/left",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       }
     },
     {
@@ -604,8 +1080,31 @@
         7
       ],
       "after": {
-        "tick": 310,
-        "x": -0.33333340287208557,
+        "tick": 319,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -481.33333333333337,
+          "scrollY": -360,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -161.33333333333337,
+            "y": -120,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -0.08333337306976318,
         "y": -3.3527612686157227e-8,
         "intent": {
           "x": 0,
@@ -617,76 +1116,144 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": -10.666668891906738,
-          "y": -0.0000010728836059570312,
-          "depth": 12.799998927116395,
+          "x": -1.333333969116211,
+          "y": -5.364418029785156e-7,
+          "depth": 6.399999463558197,
           "texture": "player",
           "frame": 4,
           "animation": "player/walk/up",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       },
       "later": {
-        "tick": 341,
-        "x": -0.33333340287208557,
+        "tick": 349,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -481.33333333333337,
+          "scrollY": -360,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -512,
+            "y": -320,
+            "width": 1024,
+            "height": 640
+          },
+          "worldView": {
+            "x": -161.33333333333337,
+            "y": -120,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -0.08333337306976318,
         "y": -3.3527612686157227e-8,
         "intent": {
           "x": 0,
@@ -698,79 +1265,147 @@
         },
         "spriteCount": 1,
         "sprite": {
-          "x": -10.666668891906738,
-          "y": -0.0000010728836059570312,
-          "depth": 12.799998927116395,
+          "x": -1.333333969116211,
+          "y": -5.364418029785156e-7,
+          "depth": 6.399999463558197,
           "texture": "player",
           "frame": 4,
           "animation": "player/walk/up",
           "playing": false,
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1,
+          "scaleY": 1,
           "originX": 0.5,
           "originY": 0.75,
-          "displayWidth": 32,
-          "displayHeight": 48
+          "displayWidth": 16,
+          "displayHeight": 24
         },
         "rectangles": [
           {
             "x": 0,
+            "y": -312,
+            "width": 1024,
+            "height": 16,
+            "depth": -304
+          },
+          {
+            "x": -128,
             "y": -240,
-            "width": 768,
+            "width": 64,
+            "height": 16,
+            "depth": -232
+          },
+          {
+            "x": -320,
+            "y": -192,
+            "width": 96,
+            "height": 16,
+            "depth": -184
+          },
+          {
+            "x": 352,
+            "y": -128,
+            "width": 16,
+            "height": 128,
+            "depth": -64
+          },
+          {
+            "x": 48,
+            "y": -64,
+            "width": 32,
             "height": 32,
-            "depth": -224
+            "depth": -48
+          },
+          {
+            "x": -96,
+            "y": -48,
+            "width": 48,
+            "height": 16,
+            "depth": -40
           },
           {
             "x": 96,
-            "y": -128,
-            "width": 64,
+            "y": 48,
+            "width": 16,
             "height": 64,
-            "depth": -96
+            "depth": 80
           },
           {
-            "x": -192,
-            "y": -96,
-            "width": 96,
+            "x": -416,
+            "y": 64,
+            "width": 16,
+            "height": 96,
+            "depth": 112
+          },
+          {
+            "x": -256,
+            "y": 160,
+            "width": 32,
             "height": 32,
-            "depth": -80
+            "depth": 176
           },
           {
-            "x": 192,
-            "y": 96,
-            "width": 32,
-            "height": 128,
-            "depth": 160
+            "x": 288,
+            "y": 224,
+            "width": 128,
+            "height": 16,
+            "depth": 232
           },
           {
-            "x": -368,
+            "x": -504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
-            "x": 368,
+            "x": 504,
             "y": 0,
-            "width": 32,
-            "height": 448,
-            "depth": 224
+            "width": 16,
+            "height": 608,
+            "depth": 304
           },
           {
             "x": 0,
-            "y": 240,
-            "width": 768,
-            "height": 32,
-            "depth": 256
+            "y": 312,
+            "width": 1024,
+            "height": 16,
+            "depth": 320
           }
         ],
-        "hudDepth": 9007199254740991
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
       }
     },
     {
       "step": "in-front",
-      "tick": 490,
-      "x": 2.666665554046631,
-      "y": -2.600074291229248,
+      "tick": 499,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -430.6666666666667,
+        "scrollY": -401.66666666666663,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -512,
+          "y": -320,
+          "width": 1024,
+          "height": 640
+        },
+        "worldView": {
+          "x": -110.66666666666669,
+          "y": -161.66666666666663,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "x": 3.0833306312561035,
+      "y": -2.6001341342926025,
       "intent": {
         "x": 0,
         "y": 0
@@ -781,85 +1416,159 @@
       },
       "spriteCount": 1,
       "sprite": {
-        "x": 85.33329772949219,
-        "y": -83.20237731933594,
-        "depth": -70.40237731933594,
+        "x": 49.333290100097656,
+        "y": -41.60214614868164,
+        "depth": -35.20214614868164,
         "texture": "player",
         "frame": 4,
         "animation": "player/walk/up",
         "playing": false,
-        "scaleX": 2,
-        "scaleY": 2,
+        "scaleX": 1,
+        "scaleY": 1,
         "originX": 0.5,
         "originY": 0.75,
-        "displayWidth": 32,
-        "displayHeight": 48
+        "displayWidth": 16,
+        "displayHeight": 24
       },
       "rectangles": [
         {
           "x": 0,
+          "y": -312,
+          "width": 1024,
+          "height": 16,
+          "depth": -304
+        },
+        {
+          "x": -128,
           "y": -240,
-          "width": 768,
+          "width": 64,
+          "height": 16,
+          "depth": -232
+        },
+        {
+          "x": -320,
+          "y": -192,
+          "width": 96,
+          "height": 16,
+          "depth": -184
+        },
+        {
+          "x": 352,
+          "y": -128,
+          "width": 16,
+          "height": 128,
+          "depth": -64
+        },
+        {
+          "x": 48,
+          "y": -64,
+          "width": 32,
           "height": 32,
-          "depth": -224
+          "depth": -48
+        },
+        {
+          "x": -96,
+          "y": -48,
+          "width": 48,
+          "height": 16,
+          "depth": -40
         },
         {
           "x": 96,
-          "y": -128,
-          "width": 64,
+          "y": 48,
+          "width": 16,
           "height": 64,
-          "depth": -96
+          "depth": 80
         },
         {
-          "x": -192,
-          "y": -96,
-          "width": 96,
+          "x": -416,
+          "y": 64,
+          "width": 16,
+          "height": 96,
+          "depth": 112
+        },
+        {
+          "x": -256,
+          "y": 160,
+          "width": 32,
           "height": 32,
-          "depth": -80
+          "depth": 176
         },
         {
-          "x": 192,
-          "y": 96,
-          "width": 32,
-          "height": 128,
-          "depth": 160
+          "x": 288,
+          "y": 224,
+          "width": 128,
+          "height": 16,
+          "depth": 232
         },
         {
-          "x": -368,
+          "x": -504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
-          "x": 368,
+          "x": 504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
           "x": 0,
-          "y": 240,
-          "width": 768,
-          "height": 32,
-          "depth": 256
+          "y": 312,
+          "width": 1024,
+          "height": 16,
+          "depth": 320
         }
       ],
-      "hudDepth": 9007199254740991,
-      "blockRectangle": {
-        "x": 96,
-        "y": -128,
-        "width": 64,
-        "height": 64,
-        "depth": -96
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
       },
-      "spriteTop": -119.20237731933594
+      "blockRectangle": {
+        "x": 48,
+        "y": -64,
+        "width": 32,
+        "height": 32,
+        "depth": -48
+      },
+      "spriteTop": -59.60214614868164,
+      "clip": {
+        "x": 356,
+        "y": 149,
+        "width": 240,
+        "height": 288
+      }
     },
     {
       "step": "behind",
-      "tick": 734,
-      "x": 2.83333158493042,
+      "tick": 744,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -430.6666666666667,
+        "scrollY": -446.33333333333337,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -512,
+          "y": -320,
+          "width": 1024,
+          "height": 640
+        },
+        "worldView": {
+          "x": -110.66666666666669,
+          "y": -206.33333333333337,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "x": 3.0833306312561035,
       "y": -5.399866104125977,
       "intent": {
         "x": 0,
@@ -871,79 +1580,124 @@
       },
       "spriteCount": 1,
       "sprite": {
-        "x": 90.66661071777344,
-        "y": -172.79571533203125,
-        "depth": -159.99571533203124,
+        "x": 49.333290100097656,
+        "y": -86.39785766601562,
+        "depth": -79.99785766601562,
         "texture": "player",
         "frame": 0,
         "animation": "player/walk/down",
         "playing": false,
-        "scaleX": 2,
-        "scaleY": 2,
+        "scaleX": 1,
+        "scaleY": 1,
         "originX": 0.5,
         "originY": 0.75,
-        "displayWidth": 32,
-        "displayHeight": 48
+        "displayWidth": 16,
+        "displayHeight": 24
       },
       "rectangles": [
         {
           "x": 0,
+          "y": -312,
+          "width": 1024,
+          "height": 16,
+          "depth": -304
+        },
+        {
+          "x": -128,
           "y": -240,
-          "width": 768,
+          "width": 64,
+          "height": 16,
+          "depth": -232
+        },
+        {
+          "x": -320,
+          "y": -192,
+          "width": 96,
+          "height": 16,
+          "depth": -184
+        },
+        {
+          "x": 352,
+          "y": -128,
+          "width": 16,
+          "height": 128,
+          "depth": -64
+        },
+        {
+          "x": 48,
+          "y": -64,
+          "width": 32,
           "height": 32,
-          "depth": -224
+          "depth": -48
+        },
+        {
+          "x": -96,
+          "y": -48,
+          "width": 48,
+          "height": 16,
+          "depth": -40
         },
         {
           "x": 96,
-          "y": -128,
-          "width": 64,
+          "y": 48,
+          "width": 16,
           "height": 64,
-          "depth": -96
+          "depth": 80
         },
         {
-          "x": -192,
-          "y": -96,
-          "width": 96,
+          "x": -416,
+          "y": 64,
+          "width": 16,
+          "height": 96,
+          "depth": 112
+        },
+        {
+          "x": -256,
+          "y": 160,
+          "width": 32,
           "height": 32,
-          "depth": -80
+          "depth": 176
         },
         {
-          "x": 192,
-          "y": 96,
-          "width": 32,
-          "height": 128,
-          "depth": 160
+          "x": 288,
+          "y": 224,
+          "width": 128,
+          "height": 16,
+          "depth": 232
         },
         {
-          "x": -368,
+          "x": -504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
-          "x": 368,
+          "x": 504,
           "y": 0,
-          "width": 32,
-          "height": 448,
-          "depth": 224
+          "width": 16,
+          "height": 608,
+          "depth": 304
         },
         {
           "x": 0,
-          "y": 240,
-          "width": 768,
-          "height": 32,
-          "depth": 256
+          "y": 312,
+          "width": 1024,
+          "height": 16,
+          "depth": 320
         }
       ],
-      "hudDepth": 9007199254740991
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
+      }
     }
   ],
   "content": {
     "level": {
       "name": "starter",
-      "width": 24,
-      "height": 16,
+      "width": 64,
+      "height": 40,
       "spawn": {
         "x": 0,
         "y": 0
@@ -951,27 +1705,27 @@
       "walls": [
         {
           "x": 0,
-          "y": -7.5,
-          "width": 24,
+          "y": -19.5,
+          "width": 64,
           "height": 1
         },
         {
           "x": 0,
-          "y": 7.5,
-          "width": 24,
+          "y": 19.5,
+          "width": 64,
           "height": 1
         },
         {
-          "x": -11.5,
+          "x": -31.5,
           "y": 0,
           "width": 1,
-          "height": 14
+          "height": 38
         },
         {
-          "x": 11.5,
+          "x": 31.5,
           "y": 0,
           "width": 1,
-          "height": 14
+          "height": 38
         },
         {
           "x": -6,
@@ -990,6 +1744,42 @@
           "y": -4,
           "width": 2,
           "height": 2
+        },
+        {
+          "x": -20,
+          "y": -12,
+          "width": 6,
+          "height": 1
+        },
+        {
+          "x": -8,
+          "y": -15,
+          "width": 4,
+          "height": 1
+        },
+        {
+          "x": 22,
+          "y": -8,
+          "width": 1,
+          "height": 8
+        },
+        {
+          "x": -16,
+          "y": 10,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "x": 18,
+          "y": 14,
+          "width": 8,
+          "height": 1
+        },
+        {
+          "x": -26,
+          "y": 4,
+          "width": 1,
+          "height": 6
         }
       ]
     },
@@ -1036,18 +1826,20 @@
         }
       }
     },
-    "pixelsPerMetre": 32,
+    "pixelsPerMetre": 16,
     "block": {
       "x": 3,
       "y": -4,
       "width": 2,
       "height": 2
     },
-    "scale": 2
+    "scale": 1
   },
   "loaded": {
     "texture": true,
     "frames": 17,
+    "scaleMode": 1,
+    "pixelArt": true,
     "animations": [
       "player/walk/down",
       "player/walk/up",

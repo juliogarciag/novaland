@@ -7,15 +7,20 @@
  * direction's walk cycle and the frame visibly changes; releasing leaves the
  * idle frame of that direction, which persists; every object is depth-sorted
  * by its bottom edge so the player draws in front of a wall it stands south
- * of and behind one it stands north of. Screenshots are the proof.
- * Expected numbers come from the level and the defs, read through the debug API.
+ * of and behind one it stands north of; the level camera keeps the sprite in
+ * the middle of the screen at a whole-number zoom and the sheet is drawn with
+ * nearest-neighbour filtering, so the pixels stay crisp. Screenshots are the proof.
+ * Expected numbers come from the level, the defs and the camera, read through the debug API.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
 import { PROOF, check, start, summarize, waitForPort, writeProof } from './lib.mjs';
 
 const PORT = 5311;
+/** CSS pixels; the page is opened at a pixel ratio of 1 so screen pixels, device pixels and CSS pixels agree. */
+const VIEWPORT = { width: 960, height: 720 };
 const KEY_FOR = { right: 'KeyD', down: 'KeyS', left: 'KeyA', up: 'KeyW' };
+const PHASER_NEAREST_SCALE_MODE = 1; // Phaser.ScaleModes.NEAREST
 const results = [];
 const report = { steps: [] };
 const server = start('pnpm', ['dev'], { env: { PORT: String(PORT) } });
@@ -23,7 +28,7 @@ let browser;
 try {
   results.push(check('dev server up', await waitForPort(PORT)));
   browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 960, height: 720 } });
+  const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
   const errors = [];
   page.on('pageerror', (error) => errors.push(String(error)));
   page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
@@ -38,7 +43,10 @@ try {
   });
   const { level, radius: RADIUS, sprite: SHEET, pixelsPerMetre: PIXELS_PER_METRE } = content;
   const SCALE = PIXELS_PER_METRE / SHEET.pixelsPerMetre;
-  const block = level.walls.find((wall) => wall.width === 2 && wall.height === 2 && Math.abs(wall.x) + 1 < level.width / 2 - 1);
+  // The 2x2 inner block nearest the spawn: the player stands south and north of it to prove the depth sort.
+  const block = level.walls
+    .filter((wall) => wall.width === 2 && wall.height === 2)
+    .sort((a, b) => Math.hypot(a.x - level.spawn.x, a.y - level.spawn.y) - Math.hypot(b.x - level.spawn.x, b.y - level.spawn.y))[0];
   report.content = { ...content, block, scale: SCALE };
   results.push(check('the player def carries a sprite with four directions', SHEET && ['down', 'up', 'left', 'right'].every((direction) => SHEET.directions[direction])));
 
@@ -56,11 +64,14 @@ try {
     return {
       texture: api.game.textures.exists(player.sprite.key),
       frames: api.game.textures.get(player.sprite.key).frameTotal,
+      scaleMode: api.game.textures.get(player.sprite.key).source[0].scaleMode,
+      pixelArt: api.game.config.pixelArt,
       animations: ['down', 'up', 'left', 'right'].map((direction) => `${player.sprite.key}/walk/${direction}`).filter((key) => scene.anims.exists(key)),
     };
   });
   results.push(check('Phaser loaded the sheet as a texture with 16 frames', loaded.texture && loaded.frames === 16 + 1, `${loaded.frames - 1} frames`)); // frameTotal counts the __BASE frame
   results.push(check('the four walk animations are registered', loaded.animations.length === 4, loaded.animations.join(', ')));
+  results.push(check('the sheet is drawn with nearest-neighbour filtering (pixel art stays crisp)', loaded.scaleMode === PHASER_NEAREST_SCALE_MODE && loaded.pixelArt === true, `scaleMode ${loaded.scaleMode}, pixelArt ${loaded.pixelArt}`));
   report.loaded = loaded;
 
   /** Sim state and the drawn objects, read in the same frame. */
@@ -73,9 +84,9 @@ try {
       const objects = scene.children.list;
       const sprites = objects.filter((object) => object.type === 'Sprite');
       const sprite = sprites[0];
-      const hud = objects.find((object) => object.type === 'Text');
       return {
         tick: snapshot.tick,
+        camera: api.camera(),
         x: playerEntity.components.Position.x,
         y: playerEntity.components.Position.y,
         intent: playerEntity.components.MoveIntent,
@@ -97,7 +108,7 @@ try {
           displayHeight: sprite.displayHeight,
         },
         rectangles: objects.filter((object) => object.type === 'Rectangle').map((rectangle) => ({ x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height, depth: rectangle.depth })),
-        hudDepth: hud ? hud.depth : null,
+        hud: { active: api.game.scene.isActive('hud'), drawnAfterWorld: api.game.scene.getIndex('hud') > api.game.scene.getIndex('world') },
       };
     });
   /** Holds keys for `ms`, sampling the state every `every` ms, then releases and samples again after a short settle. */
@@ -115,6 +126,17 @@ try {
   };
   const unitVector = (x, y) => ({ x: x / Math.hypot(x, y), y: y / Math.hypot(x, y) });
   const near = (a, b, tolerance = 1e-9) => Math.abs(a - b) <= tolerance;
+  /** Where a world pixel lands on the screen, in CSS pixels, given the camera of the same sample. */
+  const onScreen = (sample, worldX, worldY) => ({
+    x: (worldX - sample.camera.worldView.x) * sample.camera.zoom,
+    y: (worldY - sample.camera.worldView.y) * sample.camera.zoom,
+  });
+  /** The camera keeps the sprite in the middle of the screen, give or take the device pixel it snaps to. */
+  const centredOnSprite = (sample) => {
+    const screen = onScreen(sample, sample.sprite.x, sample.sprite.y);
+    const tolerance = sample.camera.zoom;
+    return near(screen.x, VIEWPORT.width / 2, tolerance) && near(screen.y, VIEWPORT.height / 2, tolerance);
+  };
 
   const initial = await state();
   await page.screenshot({ path: path.join(PROOF, '03-browser-1-idle-at-spawn.png') });
@@ -154,7 +176,13 @@ try {
   const playerDepth = walkSamples.every((sample) => near(sample.sprite.depth, (sample.y + RADIUS) * PIXELS_PER_METRE, 1e-6));
   const wallDepth = initial.rectangles.every((rectangle) => near(rectangle.depth, rectangle.y + rectangle.height / 2, 1e-6));
   results.push(check('the player and every wall have depth = bottom edge in pixels', playerDepth && wallDepth));
-  results.push(check('the HUD is above everything', initial.hudDepth > Math.max(...initial.rectangles.map((rectangle) => rectangle.depth), initial.sprite.depth)));
+  results.push(check('the HUD is its own scene, drawn after the world, so no depth can cover it', initial.hud.active && initial.hud.drawnAfterWorld));
+  const zoom = initial.camera.zoom;
+  results.push(check(`the camera zoom is a whole number (${zoom}x), so every sprite pixel is ${zoom} screen pixels`, Number.isInteger(zoom) && zoom >= 1 && walkSamples.every((sample) => sample.camera.zoom === zoom), `zoom ${zoom}`));
+  const lastSample = walkSamples[walkSamples.length - 1];
+  results.push(check(`the camera keeps the sprite in the middle of the screen through ${walkSamples.length} samples`, walkSamples.every(centredOnSprite), JSON.stringify(onScreen(lastSample, lastSample.sprite.x, lastSample.sprite.y))));
+  const scrolled = walkSamples.some((sample) => !near(sample.camera.scrollX, initial.camera.scrollX, 1e-6)) && walkSamples.some((sample) => !near(sample.camera.scrollY, initial.camera.scrollY, 1e-6));
+  results.push(check('the camera scrolled on both axes to follow the walk', scrolled));
 
   // Stand just south of the 2x2 inner block: the body is below it, the sprite overlaps it, and it draws in front.
   // The walk east is timed from the def speed; the push north runs long enough to be blocked whatever the start.
@@ -166,8 +194,16 @@ try {
   const spriteTop = front.sprite.y - front.sprite.displayHeight * front.sprite.originY;
   results.push(check('the player stopped against the south face of the block', near(front.y, southFace + RADIUS, 0.05) && Math.abs(front.x - block.x) < block.width / 2, `y=${front.y.toFixed(3)}, face at ${(southFace + RADIUS).toFixed(2)}`));
   results.push(check('its sprite overlaps the block and is drawn in front of it (greater depth)', spriteTop < blockRectangle.y + blockRectangle.height / 2 && front.sprite.depth > blockRectangle.depth, `sprite depth ${front.sprite.depth.toFixed(1)} > block ${blockRectangle.depth.toFixed(1)}`));
-  await page.screenshot({ path: path.join(PROOF, '03-browser-4-in-front-of-block-zoom.png'), clip: { x: 480 + block.x * PIXELS_PER_METRE - 80, y: 360 + block.y * PIXELS_PER_METRE - 80, width: 160, height: 180 } });
-  report.steps.push({ step: 'in-front', ...front, blockRectangle, spriteTop });
+  const blockOnScreen = onScreen(front, block.x * PIXELS_PER_METRE, block.y * PIXELS_PER_METRE);
+  const clipMetres = { width: 5, height: 6 };
+  const clip = {
+    x: Math.round(blockOnScreen.x - (clipMetres.width / 2) * PIXELS_PER_METRE * front.camera.zoom),
+    y: Math.round(blockOnScreen.y - (clipMetres.height / 2) * PIXELS_PER_METRE * front.camera.zoom),
+    width: clipMetres.width * PIXELS_PER_METRE * front.camera.zoom,
+    height: clipMetres.height * PIXELS_PER_METRE * front.camera.zoom,
+  };
+  await page.screenshot({ path: path.join(PROOF, '03-browser-4-in-front-of-block-zoom.png'), clip });
+  report.steps.push({ step: 'in-front', ...front, blockRectangle, spriteTop, clip });
 
   // Walk around to the north side and push against it: now the player is behind (lower depth).
   await hold(['KeyA'], 500);
