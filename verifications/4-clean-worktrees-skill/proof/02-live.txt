@@ -1,0 +1,11 @@
+# 2026-11-08T03:59:31.364Z
+PASS  ROOT is the first entry of git worktree list  (<repo>)
+keep    .worktrees/1-bootstrap-monorepo     branch=1-bootstrap-monorepo     — keep: running process (pid N); stop it to let this be cleaned
+keep    .worktrees/4-clean-worktrees-skill  branch=4-clean-worktrees-skill  — keep: current session
+Nothing to remove (2 kept, age threshold 7d).
+PASS  the worktree this runs from is kept as current session
+PASS  the merged bootstrap worktree is removable, or kept only because a process runs in it  (running process (pid N); stop it to let this be cleaned)
+PASS  the real gh reports PR #3 merged with the worktree head in it and ticket #1 closed  (MERGED CLOSED)
+PASS  the worktree list is unchanged by a preview  (3 worktrees)
+
+ALL 5 CHECKS PASSED
