@@ -243,11 +243,12 @@ try {
   for (const line of lines) log(line);
   const removeLines = lines.filter((l) => l.startsWith('REMOVE'));
   const keepLines = lines.filter((l) => l.startsWith('keep'));
-  const slugsIn = (group) => group.map((l) => /\.worktrees\/(\S+)/.exec(l)[1]);
+  const slugsIn = (group) => group.map((l) => path.basename(/^(?:REMOVE|keep)\s+(\S+)\s+branch=/.exec(l)[1]));
   check('REMOVE lines come first, in slug order', JSON.stringify(slugsIn(removeLines)) === JSON.stringify(['1-merged', '11-prnum', '19-ticket-only', '25-boundary', '29-behind', '4-closed-pr', 'nonum-merged', 'old-untracked']), slugsIn(removeLines).join(' '));
   const expectedKeepOrder = ['10-detached', '12-cross', '"13-bad$name"', '15-old-base', '16-unpushed', '17-open-pr', '18-two-prs', '2-mixed', '20-prunable', '21-badbranch', '22-differs', '23-nested', '26-fresh-gitfile', '27-weird', '3-no-pr', '30-bad-oid', '31-ticket-weird', '32-multiline', '33-not-json', '34-unknown-oid', `"35-${'x'.repeat(64)}..."`, '5-ticket-error', '6-pr-error', '7-dirty', '8-locked', '9-busy', 'fresh-untracked', 'inner', 'main', 'outside-wt'];
   check('keep lines follow, in slug order, with unusual names quoted and long ones cut', lines.indexOf(keepLines[0]) === removeLines.length && JSON.stringify(slugsIn(keepLines)) === JSON.stringify(expectedKeepOrder), slugsIn(keepLines).join(' '));
-  check('every line matches the skill format', [...removeLines, ...keepLines].every((l) => /^(REMOVE|keep)\s+\.worktrees\/\S+\s+branch=\S+\s+— (unused|keep): .+$/.test(l)));
+  check('every line matches the skill format', [...removeLines, ...keepLines].every((l) => /^(REMOVE|keep)\s+\S+\s+branch=\S+\s+— (unused|keep): .+$/.test(l)));
+  check('entries outside .worktrees/ show their listed path instead of a slug', keepLines.some((l) => /^keep\s+\S+\/outside-wt\s+branch=14-outside/.test(l) && !l.includes('.worktrees/outside-wt')));
   check('unpushed commits are shown', keepLines.some((l) => l.includes('16-unpushed') && l.endsWith('unpushed=1')));
   check('the summary line counts and warns about ignored files', lines.at(-1) === `${removeLines.length} to remove, ${keepLines.length} to keep. Removal also deletes ignored files (node_modules, .env, local logs).`);
   check('with nothing removable the preview says so', preview(entries.filter((e) => e.verdict === 'keep'), 7).at(-1).startsWith('Nothing to remove'));

@@ -123,8 +123,8 @@ export function classify({ root, cwd, now, ageDays, env }) {
     const lastCommitTs = Number(git(['log', '-1', '--format=%ct', 'HEAD'], worktree.path, env));
     const gitFileMtime = Math.floor(statSync(path.join(worktree.path, '.git')).mtimeMs / 1000);
     const ageDaysOfWorktree = Math.floor((now - Math.max(lastCommitTs, gitFileMtime)) / 86400);
-    const unpushed = spawnSync('git', ['rev-list', '--count', '@{u}..HEAD'], { cwd: worktree.path, env, encoding: 'utf8' });
-    entry.unpushed = unpushed.status === 0 ? Number(unpushed.stdout.trim()) : 0;
+    const hasUpstream = spawnSync('git', ['rev-parse', '--verify', '--quiet', '@{u}'], { cwd: worktree.path, env }).status === 0;
+    entry.unpushed = hasUpstream ? Number(git(['rev-list', '--count', '@{u}..HEAD'], worktree.path, env)) : 0;
 
     const trackers = discoverTrackers({ root, branch: worktree.branch, headSha: worktree.head, env });
     if (trackers.error) {
@@ -152,7 +152,8 @@ export function classify({ root, cwd, now, ageDays, env }) {
     }
     entry.reason = text;
   }
-  entries.sort((a, b) => (a.verdict === b.verdict ? a.slug.localeCompare(b.slug) : a.verdict === 'REMOVE' ? -1 : 1));
+  const byteOrder = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+  entries.sort((a, b) => (a.verdict === b.verdict ? byteOrder(a.slug, b.slug) : a.verdict === 'REMOVE' ? -1 : 1));
   return entries;
 }
 
@@ -231,12 +232,12 @@ function gh(command, vars, cwd, env) {
 export function preview(entries, ageDays = DEFAULT_AGE_DAYS) {
   const removable = entries.filter((e) => e.verdict === 'REMOVE').length;
   const shown = entries.map((e) => ({ ...e, slug: display(e.slug), branch: display(e.branch) }));
-  const slugWidth = Math.max(0, ...shown.map((e) => e.slug.length + 11));
+  const slugWidth = Math.max(0, ...shown.map((e) => pathColumn(e).length));
   const branchWidth = Math.max(0, ...shown.map((e) => e.branch.length + 7));
   const lines = shown.map((e) => {
     const prefix = e.verdict === 'REMOVE' ? 'unused' : 'keep';
     const unpushed = e.unpushed > 0 ? `  unpushed=${e.unpushed}` : '';
-    return `${e.verdict.padEnd(6)}  ${`.worktrees/${e.slug}`.padEnd(slugWidth)}  ${`branch=${e.branch}`.padEnd(branchWidth)}  — ${prefix}: ${clean(e.reason)}${unpushed}`;
+    return `${e.verdict.padEnd(6)}  ${pathColumn(e).padEnd(slugWidth)}  ${`branch=${e.branch}`.padEnd(branchWidth)}  — ${prefix}: ${clean(e.reason)}${unpushed}`;
   });
   lines.push(
     removable === 0
@@ -277,6 +278,10 @@ export function removeWorktrees({ root, plan, cwd, env }) {
     lines.push(`removed: .worktrees/${display(entry.slug)}  (branch=${display(entry.branch)})`);
   }
   return { removed, skipped, failed, lines };
+}
+
+function pathColumn(entry) {
+  return entry.reason === 'outside .worktrees/' || entry.reason === 'path not found' ? clean(entry.path) : `.worktrees/${entry.slug}`;
 }
 
 export function summaryLine({ removed, skipped, failed }, kept) {
