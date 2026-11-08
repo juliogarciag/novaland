@@ -13,7 +13,7 @@ PASS  the player spawned on the level spawn tile  ({"column":6,"row":14})
 PASS  the spawn tile is a dirt path
 PASS  the drawn tile under the player is that dirt tile
 PASS  only merged terrain colliders and the player exist (no entity per tile)  (45 entities for 356 solid tiles)
-PASS  ArrowRight moves the player east at the def speed, unblocked on the path  (1.58m over 19 ticks, expected 1.58m; 8.67m in all)
+PASS  ArrowRight moves the player east at the def speed, unblocked on the path  (1.50m over 18 ticks, expected 1.50m; 8.58m in all)
 PASS  the player moves only on the x axis
 PASS  it is still on the dirt path  ({"column":15,"row":14})
 PASS  the drawn tile under it is dirt
@@ -21,7 +21,7 @@ PASS  a tree tile stops the player at its face (Rapier collision, derived from t
 PASS  it walked north before being blocked
 PASS  the player stays put while still pushing into it (sampled with the key still held)  (344 -> 362 ticks, y -2.602 -> -2.602)
 PASS  the blocker is a tree
-PASS  the rendered player matches the sim position (32 px/m) in 3 samples  ({"x":-152.00189208984375,"y":-83.20773315429688})
+PASS  the rendered player matches the sim position (32 px/m) in 3 samples  ({"x":-157.33526611328125,"y":-83.20773315429688})
 PASS  moving the camera for the screenshot changed nothing in the sim (the idle player did not move)
 PASS  no page or console errors
 
