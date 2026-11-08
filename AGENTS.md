@@ -43,13 +43,13 @@ packages/
     src/
       index.ts            Public API. The ONLY file client/server may import from.
       core/               Sim class, fixed-step loop, components, physics, rng, snapshot, view.
-      content/            Data: the defs registry, levels, tuning values.
+      content/            Data: the defs registry, levels (ASCII tile grids), tuning values.
       features/<name>/    One folder per feature: components, defs, commands, systems, tests.
       features/index.ts   The list of features the sim runs (one line per feature).
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
   server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
-docs/decisions/   Architecture decision records (ADRs). Read 0001 and 0002 before touching core.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels.
 verifications/    One folder per ticket with its verification scripts and proof.
 ```
 
@@ -75,7 +75,7 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 - The same rule applies to result fields and to state. Store the leftover frame time as `leftover`, not under the name of the pattern it belongs to.
 - If you cannot name a function by its result, it is probably doing two things. Split it, then name each half.
 - Spell names out: `pendingCommands`, not `pending`; `renderable`, not `r`; `translation`, not `t`. A name must say what the value is without the reader looking at where it came from. The domain terms this file defines are the only short forms: `sim`, `eid` (entity id), `dt` (tick length in seconds), `rng`, `def`.
-- Commands are named `'<feature>/<verb>'` and features by their domain noun (`player`, `walls`), never by the ticket or the agent that made them.
+- Commands are named `'<feature>/<verb>'` and features by their domain noun (`player`, `terrain`), never by the ticket or the agent that made them.
 
 **Functions and exports**
 
@@ -108,7 +108,7 @@ Example: a `coins` feature where players pick up coins.
 6. Register it in `features/index.ts`. Order matters only if your feature depends on another feature's work within the same tick.
 7. Tests next to the code (`*.test.ts`): create a sim with `__testing__.createSimInternal` from `core/create.ts` (full access) or `createSim` (handle only), drive `sim.step(commands)` for N ticks, assert on `sim.snapshot()` or `getRenderables(sim)`. Every feature needs at least one headless test that proves it works, and nothing you add may break `core/determinism.test.ts`.
 8. If a view needs something new, export it from `sim/src/index.ts` and consume it in `packages/client`. The client only draws; if you are tempted to put an `if` about game rules in the client, it belongs in the sim.
-9. Level content goes in `sim/src/content/levels/`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's `defs.ts`.
+9. Level content goes in `sim/src/content/levels/`. A level is ASCII rows plus a legend from characters to tile defs (`features/terrain/defs.ts`); one character is one tile, one metre, and the `spawn` is a tile coordinate. Solid tiles (trees, rocks) become colliders in the sim and the client draws every tile from the same rows, so placing an obstacle is typing a character. A new kind of tile is a new `TileDef` with a `solid` flag and a placeholder colour. See `docs/decisions/0003-levels-as-tiles.md`. Tuning numbers that are global go in `content/tuning.ts`; feature-specific ones go in the feature's `defs.ts`.
 10. Run `pnpm check`. Lint will tell you if you crossed a boundary.
 
 **Verifying work**
@@ -116,8 +116,8 @@ Example: a `coins` feature where players pick up coins.
 - Agents verify headlessly: sim tests are the proof that a feature works. The browser is for humans.
 - Test files read top-down: imports, then the `describe` blocks, then fixtures, fakes and helper functions at the bottom under a `// ---- Helpers ----` comment. A reader should see what is being asserted before how it is set up. Function declarations hoist, so this is always safe for them; `const` helpers and fixtures are fine too as long as they are only used inside `it`, `beforeAll` and similar callbacks, never in a `describe` body.
 - For user-facing changes, the ticket's `verifications/<ticket>/` folder holds scripts that exercise the real app (for example Playwright against `pnpm dev`) and the proof they produced (screenshots, logs, JSON reports). See `verifications/1-bootstrap-monorepo/` for the template.
-- Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`, `level`, `defs`, `pixelsPerMetre`, `minVisibleMetres`, `camera()`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. It is stripped from production builds.
-- Units: the sim works in metres, origin at the level centre, y pointing down. One metre is one 16-pixel tile: the client converts with `PIXELS_PER_METRE` in `client/src/render/units.ts`. On-screen size comes from the camera's whole-number zoom (`client/src/render/zoom.ts`), never from that ratio.
+- Dev builds expose `window.__novaland` (`sim`, `snapshot()`, `hash()`, `level`, `grid`, `defs`, `pixelsPerMetre`, `minVisibleMetres`, `camera()`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. It is stripped from production builds.
+- Units: the sim works in metres, origin at the level centre, y pointing down; one tile is `TILE_SIZE` metres and `tileCentre`/`tileAt` (exported by the sim) convert between tiles and metres. One metre is one 16-pixel tile: the client converts metres to pixels with `PIXELS_PER_METRE` in `client/src/render/units.ts`. On-screen size comes from the camera's whole-number zoom (`client/src/render/zoom.ts`), never from that ratio.
 
 **Worktrees and ports**
 
