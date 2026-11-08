@@ -17,7 +17,7 @@ export const starterLevel: LevelData = {
   rows: [
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-    'TTTTTTTTTT.TTTTTTTTT==TTTTTTTTTTTT.TTTTT',
+    'TTTTTTTTTTTTTTTTTTTT==TTTTTTTTTTTT.TTTTT',
     'TTT.......TT........==.......T.......TTT',
     'TT.........T........==...............TTT',
     'TT..................==................TT',

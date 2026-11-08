@@ -23,7 +23,9 @@ const report = existsSync(reportFile) ? JSON.parse(readFileSync(reportFile, 'utf
 if (existsSync(reportFile)) unlinkSync(reportFile);
 const names = report ? report.testResults.flatMap((file) => file.assertionResults.map((t) => ({ file: path.relative(ROOT, file.name), name: t.fullName, status: t.status }))) : [];
 const passing = (pattern) => names.filter((t) => pattern.test(t.name) && t.status === 'passed');
-results.push(check('every test passed', report && report.numFailedTests === 0 && report.numPassedTests > 0, `${report?.numPassedTests} passed`));
+results.push(check('every test passed, none skipped', report && report.numFailedTests === 0 && report.numPendingTests === 0 && report.numPassedTests === report.numTotalTests && report.numTotalTests > 0, `${report?.numPassedTests} of ${report?.numTotalTests}`));
+const packagesWithTests = new Set(names.map((t) => t.file.split('/')[1]));
+results.push(check('tests ran in sim, client and server', ['sim', 'client', 'server'].every((p) => packagesWithTests.has(p)), [...packagesWithTests].join(', ')));
 results.push(check('collider merging tests exist and pass', passing(/solid tile merging/).length >= 4, `${passing(/solid tile merging/).length} tests`));
 results.push(check('trees block the player (headless)', passing(/trees block the player/).length === 1));
 results.push(check('the player walks on paths (headless)', passing(/walks freely along a path/).length === 1));

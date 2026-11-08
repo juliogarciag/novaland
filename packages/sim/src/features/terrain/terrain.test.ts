@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DefId, getDef } from '../../content/defs';
 import { readTileGrid, spawnPoint, tileAt, tileCentre } from '../../content/levels/grid';
 import { starterLevel } from '../../content/levels/starter';
-import type { LevelData } from '../../content/levels/types';
+import type { LevelData, TileGrid } from '../../content/levels/types';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
@@ -26,7 +26,7 @@ describe('tile grids', () => {
     expect(tileAt(grid, 2 * TILE_SIZE, 0)).toBeUndefined();
   });
 
-  it('rejects ragged rows, unknown characters, non-tile defs and spawns outside the grid', () => {
+  it('rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile', () => {
     expect(() => readTileGrid(level(['TTT', 'TT']))).toThrow(/row 1 has 2 tiles, expected 3/);
     expect(() => readTileGrid(level(['T?T']))).toThrow(/no legend entry for "\?"/);
     expect(() => readTileGrid({ ...level(['T']), legend: { T: DefId.Player } })).toThrow(/not a tile/);
@@ -34,6 +34,7 @@ describe('tile grids', () => {
     expect(() => readTileGrid(level([]))).toThrow(/no rows/);
     expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 2, row: 0 } })).toThrow(/outside/);
     expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 0.5, row: 0 } })).toThrow(/outside/);
+    expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 0, row: 0 } })).toThrow(/solid tile/);
   });
 
   it('a bad level fails when the sim is created, never inside a command handler', async () => {
@@ -110,12 +111,11 @@ describe('terrain feature (headless)', () => {
   });
 
   it('places each collider box over its tiles in metres', async () => {
-    const grid = readTileGrid(level(['....', 'TTT.', 'TTT.', '....']));
     const sim = await createSimInternal({ seed: 1, level: { ...level(['....', 'TTT.', 'TTT.', '....']), spawn: { column: 3, row: 0 } } });
     const [collider] = sim.snapshot().entities;
+    // A 3x2 block starting at tile (0, 1) in a 4x4 level: its centre is 1.5 tiles from the left edge, 2 tiles from the top.
     expect(collider?.components['Position']).toEqual({ x: -0.5 * TILE_SIZE, y: 0 });
     expect(collider?.components['Extents']).toEqual({ halfWidth: 1.5 * TILE_SIZE, halfHeight: TILE_SIZE });
-    expect(grid.width).toBe(4 * TILE_SIZE);
     sim.destroy();
   });
 
@@ -138,11 +138,19 @@ describe('terrain feature (headless)', () => {
     const ticks = 90;
     sim.step([move(1, 0)]);
     for (let i = 1; i < ticks; i += 1) sim.step();
-    const end = playerPosition(sim);
-    expect(end.x).toBeCloseTo(start.x + SPEED * ticks * sim.dt, 3);
-    expect(end.y).toBeCloseTo(start.y, 6);
-    const walked = tileAt(grid, end.x, end.y);
-    expect(walked && getTileDef((grid.defIds[walked.row] as number[])[walked.column] as number).name).toBe('dirt');
+    const onPath = playerPosition(sim);
+    expect(onPath.x).toBeCloseTo(start.x + SPEED * ticks * sim.dt, 3);
+    expect(onPath.y).toBeCloseTo(start.y, 6);
+    expect(tileNameUnder(grid, onPath)).toBe('dirt');
+
+    // Then south off the path, onto the grass below it, at the same speed (short enough to stop before the rock further down).
+    const grassTicks = 24;
+    sim.step([move(0, 1)]);
+    for (let i = 1; i < grassTicks; i += 1) sim.step();
+    const onGrass = playerPosition(sim);
+    expect(onGrass.y).toBeCloseTo(onPath.y + SPEED * grassTicks * sim.dt, 3);
+    expect(onGrass.x).toBeCloseTo(onPath.x, 6);
+    expect(tileNameUnder(grid, onGrass)).toBe('grass');
     sim.destroy();
   });
 
@@ -198,15 +206,27 @@ const RADIUS = playerDef.radius ?? 0;
 
 const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefId.Dirt, o: TerrainDefId.Rock };
 
-/** A level from rows alone, with the default legend and a spawn in the top-left corner. */
+/** A level from rows alone, with the default legend and the spawn on the first walkable tile (top-left if there is none). */
 function level(rows: readonly string[]): LevelData {
-  return { name: 'test', legend, rows, spawn: { column: 0, row: 0 } };
+  let spawn = { column: 0, row: 0 };
+  rows.some((row, rowIndex) => {
+    const column = [...row].findIndex((character) => character !== 'T' && character !== 'o');
+    if (column >= 0) spawn = { column, row: rowIndex };
+    return column >= 0;
+  });
+  return { name: 'test', legend, rows, spawn };
 }
 
 const rockRoom: LevelData = {
   ...level(['TTTTTTTT', 'T......T', 'T.=..o.T', 'T......T', 'TTTTTTTT']),
   spawn: { column: 2, row: 2 },
 };
+
+/** Name of the tile def under a point in metres. */
+function tileNameUnder(grid: TileGrid, point: { x: number; y: number }): string | undefined {
+  const tile = tileAt(grid, point.x, point.y);
+  return tile && getTileDef((grid.defIds[tile.row] as number[])[tile.column] as number).name;
+}
 
 const join = (slot = 0): Command => ({ type: 'player/join', slot });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });

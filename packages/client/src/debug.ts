@@ -1,5 +1,5 @@
 import type { EntityDef, LevelData, SimHandle, SimSnapshot, TileGrid } from '@novaland/sim';
-import { entityDefs, hashSnapshot, readTileGrid } from '@novaland/sim';
+import { entityDefs, hashSnapshot, readTileGrid, tileAt, tileCentre } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { cameraView, type CameraView } from './render/camera';
 import { PIXELS_PER_METRE } from './render/units';
@@ -12,6 +12,9 @@ export interface NovalandDebugApi {
   readonly level: LevelData;
   /** The level's rows resolved into tile def ids, in metres. */
   readonly grid: TileGrid;
+  /** The sim's own tile/metre conversions, so checks derive positions from content instead of recomputing them. */
+  readonly tileAt: typeof tileAt;
+  readonly tileCentre: typeof tileCentre;
   readonly defs: readonly EntityDef[];
   readonly pixelsPerMetre: number;
   /** Metres the camera always keeps visible across the window; its zoom follows from this. */
@@ -34,6 +37,8 @@ export function exposeDebugApi(sim: SimHandle, game: Phaser.Game): void {
     game,
     level: sim.level,
     grid: readTileGrid(sim.level),
+    tileAt,
+    tileCentre,
     defs: entityDefs,
     pixelsPerMetre: PIXELS_PER_METRE,
     minVisibleMetres: MIN_VISIBLE_METRES,

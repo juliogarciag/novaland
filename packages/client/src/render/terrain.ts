@@ -1,5 +1,5 @@
-import { readTileGrid, terrainDefs, TILE_SIZE, type LevelData } from '@novaland/sim';
-import type Phaser from 'phaser';
+import { readTileGrid, terrainDefs, tileCentre, TILE_SIZE, type LevelData } from '@novaland/sim';
+import Phaser from 'phaser';
 import { toPixels } from './units';
 
 /** Side of a generated placeholder tile in texture pixels. The layer is scaled up to TILE_SIZE metres on screen. */
@@ -21,11 +21,13 @@ export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilem
   const grid = readTileGrid(level);
   ensurePlaceholderTileset(scene);
   const tileIndexByDefId = new Map(terrainDefs.map((def, index) => [def.id, index]));
-  const data = grid.defIds.map((row) => row.map((defId) => tileIndexByDefId.get(defId) ?? 0));
-  const map = scene.make.tilemap({ data, tileWidth: PLACEHOLDER_TILE_PIXELS, tileHeight: PLACEHOLDER_TILE_PIXELS });
-  const tileset = map.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, PLACEHOLDER_TILE_PIXELS, PLACEHOLDER_TILE_PIXELS, 0, 0);
+  const tileIndexRows = grid.defIds.map((row) => row.map((defId) => tileIndexByDefId.get(defId) ?? 0));
+  const tilemap = scene.make.tilemap({ data: tileIndexRows, tileWidth: PLACEHOLDER_TILE_PIXELS, tileHeight: PLACEHOLDER_TILE_PIXELS });
+  const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, PLACEHOLDER_TILE_PIXELS, PLACEHOLDER_TILE_PIXELS, 0, 0);
   if (!tileset) throw new Error('The terrain tileset texture is missing');
-  const layer = map.createLayer(0, tileset, -toPixels(grid.width / 2), -toPixels(grid.height / 2));
+  // The sim decides where tiles are; the layer's corner is the top-left tile's centre minus half a tile.
+  const firstTileCentre = tileCentre(grid, { column: 0, row: 0 });
+  const layer = tilemap.createLayer(0, tileset, toPixels(firstTileCentre.x - grid.tileSize / 2), toPixels(firstTileCentre.y - grid.tileSize / 2));
   if (!layer) throw new Error('Could not create the terrain layer');
   layer.setScale(toPixels(TILE_SIZE) / PLACEHOLDER_TILE_PIXELS);
   layer.setDepth(TERRAIN_DEPTH);
@@ -47,6 +49,8 @@ function ensurePlaceholderTileset(scene: Phaser.Scene): void {
   });
   graphics.generateTexture(TILESET_TEXTURE_KEY, PLACEHOLDER_TILE_PIXELS * terrainDefs.length, PLACEHOLDER_TILE_PIXELS);
   graphics.destroy();
+  // Scaled up 2x with linear filtering, tile edges would bleed into their neighbours in the strip.
+  scene.textures.get(TILESET_TEXTURE_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 
 function darken(color: number): number {

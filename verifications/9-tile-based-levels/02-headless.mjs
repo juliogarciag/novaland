@@ -13,11 +13,14 @@ results.push(check('pnpm sim:headless exits 0', runs.every((r) => r.code === 0))
 results.push(check('prints a JSON result with a hash and player position', runs.every((r) => r.parsed && r.parsed.hash && r.parsed.player)));
 results.push(check('simulated 300 ticks (5s at 60Hz)', runs.every((r) => r.parsed && r.parsed.ticks === 300)));
 
-// The script walks right for 119 ticks then down for 60 at 5 m/s: 9.92 m right, 5 m down from the spawn.
-// The expected spawn comes from the level source, not from a number typed here.
+// The server's script (packages/server/src/headless.ts) walks right from tick 1 to 120, then down to 180, at the
+// player def's 5 m/s and 60 ticks/s, so 9.92 m right and 5 m down. Those four numbers are typed here because this
+// script runs outside the workspace; the server's own test derives them from the sim. The spawn and the tiles come
+// from the level source: the rows block of starter.ts, one quoted row per line, and one metre per tile.
 const { readFileSync } = await import('node:fs');
 const source = readFileSync(new URL('../../packages/sim/src/content/levels/starter.ts', import.meta.url), 'utf8');
-const rows = [...source.matchAll(/^\s+'([^']+)',$/gm)].map((m) => m[1]);
+const rowsBlock = source.match(/rows: \[([\s\S]*?)\n {2}\]/)[1];
+const rows = [...rowsBlock.matchAll(/^\s+'([^']+)',\s*$/gm)].map((m) => m[1]);
 const spawnMatch = source.match(/spawn: \{ column: (\d+), row: (\d+) \}/);
 const spawn = { column: Number(spawnMatch[1]), row: Number(spawnMatch[2]) };
 const spawnMetres = { x: spawn.column + 0.5 - rows[0].length / 2, y: spawn.row + 0.5 - rows.length / 2 };

@@ -25,9 +25,9 @@ export const terrainFeature: Feature = {
 function spawnCollider(sim: Sim, grid: TileGrid, rectangle: TileRectangle): number {
   const halfWidth = (rectangle.width * grid.tileSize) / 2;
   const halfHeight = (rectangle.height * grid.tileSize) / 2;
-  const topLeft = tileCentre(grid, rectangle);
-  const x = topLeft.x - grid.tileSize / 2 + halfWidth;
-  const y = topLeft.y - grid.tileSize / 2 + halfHeight;
+  const firstTileCentre = tileCentre(grid, rectangle);
+  const x = firstTileCentre.x - grid.tileSize / 2 + halfWidth;
+  const y = firstTileCentre.y - grid.tileSize / 2 + halfHeight;
   const eid = sim.createEntity();
   const collider = sim.store(TerrainCollider);
   const extents = sim.store(Extents);

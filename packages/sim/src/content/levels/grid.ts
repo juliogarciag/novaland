@@ -45,6 +45,9 @@ function parseTileGrid(level: LevelData): TileGrid {
   if (!Number.isInteger(column) || !Number.isInteger(row) || column < 0 || row < 0 || column >= columns || row >= rows) {
     throw new Error(`Level "${level.name}": spawn (${column}, ${row}) is outside the ${columns}x${rows} grid`);
   }
+  if (getTileDef((defIds[row] as number[])[column] as number).solid) {
+    throw new Error(`Level "${level.name}": spawn (${column}, ${row}) is on a solid tile`);
+  }
   return { columns, rows, tileSize: TILE_SIZE, width: columns * TILE_SIZE, height: rows * TILE_SIZE, defIds };
 }
 
@@ -58,6 +61,7 @@ export function tileCentre(grid: TileGrid, { column, row }: TileCoordinate): { x
 
 /** The tile containing a point in metres, or undefined when the point is outside the level. */
 export function tileAt(grid: TileGrid, x: number, y: number): TileCoordinate | undefined {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return undefined;
   const column = Math.floor((x + grid.width / 2) / grid.tileSize);
   const row = Math.floor((y + grid.height / 2) / grid.tileSize);
   if (column < 0 || row < 0 || column >= grid.columns || row >= grid.rows) return undefined;

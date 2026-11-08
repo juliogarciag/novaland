@@ -170,6 +170,56 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) spawns a player at the level spawn point on join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) moves at the def speed for N ticks in open space",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/movement.test.ts",
+    "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
     "status": "passed"
@@ -177,6 +227,16 @@
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns outside the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads a level object once and hands back the same grid",
     "status": "passed"
   },
   {
@@ -227,56 +287,6 @@
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) spawns a player at the level spawn point on join",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) moves at the def speed for N ticks in open space",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/player/movement.test.ts",
-    "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
     "status": "passed"
   }
 ]

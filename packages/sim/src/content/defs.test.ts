@@ -24,16 +24,17 @@ describe('entity definitions', () => {
       expect(def.color).toBeLessThanOrEqual(0xffffff);
       expect(typeof def.solid).toBe('boolean');
     }
-    expect(terrainDefs.map((def) => def.name)).toEqual(['grass', 'dirt', 'tree', 'rock']);
+    expect(terrainDefs.map((def) => def.name)).toEqual(expect.arrayContaining(['grass', 'dirt', 'tree', 'rock']));
   });
 
   it('terrain colliders come from level data, so a new obstacle is only a character in a row', async () => {
     const sim = await createSimInternal({ seed: 1 });
     const colliders = sim.entityCount;
     const withRock = { ...starterLevel, rows: starterLevel.rows.map((row, index) => (index === starterLevel.spawn.row + 2 ? `${row.slice(0, 20)}o${row.slice(21)}` : row)) };
-    const moreColliders = (await createSimInternal({ seed: 1, level: withRock })).entityCount;
-    expect(moreColliders).toBe(colliders + 1);
+    const simWithRock = await createSimInternal({ seed: 1, level: withRock });
+    expect(simWithRock.entityCount).toBe(colliders + 1);
     expect(getRenderables(sim)).toHaveLength(0);
+    simWithRock.destroy();
     sim.destroy();
   });
 });

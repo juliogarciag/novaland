@@ -36,7 +36,8 @@ try {
   const { level, grid, tiles, speed: SPEED, radius: RADIUS, ppm: PPM } = content;
   const tileByName = (name) => tiles.find((t) => t.name === name);
   const defAt = (column, row) => tiles.find((t) => t.id === grid.defIds[row][column]);
-  const tileOf = (x, y) => ({ column: Math.floor((x + grid.width / 2) / grid.tileSize), row: Math.floor((y + grid.height / 2) / grid.tileSize) });
+  /** The sim's own tile lookup, so the check never recomputes the tile maths. */
+  const tileOf = (x, y) => page.evaluate(([px, py]) => window.__novaland.tileAt(window.__novaland.grid, px, py), [x, y]);
   const tileTop = (row) => row * grid.tileSize - grid.height / 2;
   const tileBottom = (row) => tileTop(row + 1);
   report.content = { grid: { columns: grid.columns, rows: grid.rows, tileSize: grid.tileSize }, tiles: tiles.map((t) => t.name), spawn: level.spawn, SPEED, RADIUS, PPM };
@@ -121,7 +122,7 @@ try {
   results.push(check('Phaser canvas is on the page', canvasCount === 1));
   const initial = await state();
   await page.screenshot({ path: path.join(PROOF, '03-browser-1-spawn-on-path.png') });
-  const spawnTile = tileOf(initial.x, initial.y);
+  const spawnTile = await tileOf(initial.x, initial.y);
   results.push(check('the player spawned on the level spawn tile', spawnTile.column === level.spawn.column && spawnTile.row === level.spawn.row, JSON.stringify(spawnTile)));
   results.push(check('the spawn tile is a dirt path', defAt(spawnTile.column, spawnTile.row).name === 'dirt'));
   results.push(check('the drawn tile under the player is that dirt tile', initial.drawnTileIndex === names.indexOf('dirt')));
@@ -129,23 +130,25 @@ try {
   report.steps.push({ step: 'spawn', ...initial, spawnTile });
 
   // --- Walk east along the path: free movement at the def speed, still on dirt.
-  const east = await hold(['ArrowRight'], 1700);
-  const heldTicks = east.to.tick - east.from.tick;
+  const east = await hold(['ArrowRight'], 1400);
+  // Speed is measured between two samples taken while the key is down, so key latency does not enter.
+  const heldTicks = east.stillHeld.tick - east.to.tick;
   const expected = (SPEED * heldTicks) / 60;
-  const travelled = east.after.x - east.from.x;
+  const travelled = east.stillHeld.x - east.to.x;
   await page.screenshot({ path: path.join(PROOF, '03-browser-2-walking-the-path.png') });
-  results.push(check('ArrowRight moves the player east at the def speed, unblocked on the path', Math.abs(travelled - expected) < 0.25 && travelled > 5, `${travelled.toFixed(2)}m over ${heldTicks} ticks, expected ${expected.toFixed(2)}m`));
+  results.push(check('ArrowRight moves the player east at the def speed, unblocked on the path', Math.abs(travelled - expected) < 0.05 && travelled > 1 && east.after.x - east.from.x > 5, `${travelled.toFixed(2)}m over ${heldTicks} ticks, expected ${expected.toFixed(2)}m; ${(east.after.x - east.from.x).toFixed(2)}m in all`));
   results.push(check('the player moves only on the x axis', east.after.y === east.from.y));
-  const eastTile = tileOf(east.after.x, east.after.y);
+  const eastTile = await tileOf(east.after.x, east.after.y);
   results.push(check('it is still on the dirt path', defAt(eastTile.column, eastTile.row).name === 'dirt', JSON.stringify(eastTile)));
   results.push(check('the drawn tile under it is dirt', east.after.drawnTileIndex === names.indexOf('dirt')));
   report.steps.push({ step: 'east', ...east.after, travelled, expected, heldTicks, eastTile });
 
   // --- Walk north until something solid stops the player: the grid says where.
-  const north = await hold(['KeyW'], 2000);
+  // Long enough to reach the forest border from anywhere on the map (30 m tall, 5 m/s), so whatever is above blocks.
+  const north = await hold(['KeyW'], 3500);
   await page.screenshot({ path: path.join(PROOF, '03-browser-3-blocked-by-trees.png') });
-  const columnsTouched = [tileOf(north.from.x - RADIUS + 1e-6, north.from.y).column, tileOf(north.from.x + RADIUS - 1e-6, north.from.y).column];
-  let solidRow = tileOf(north.from.x, north.from.y).row;
+  const columnsTouched = [(await tileOf(north.from.x - RADIUS + 1e-6, north.from.y)).column, (await tileOf(north.from.x + RADIUS - 1e-6, north.from.y)).column];
+  let solidRow = (await tileOf(north.from.x, north.from.y)).row;
   let blocker = null;
   while (solidRow >= 0 && !blocker) {
     const solid = columnsTouched.map((c) => defAt(c, solidRow)).find((t) => t.solid);
