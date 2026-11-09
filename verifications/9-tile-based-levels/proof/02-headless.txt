@@ -1,0 +1,8 @@
+PASS  pnpm sim:headless exits 0
+PASS  prints a JSON result with a hash and player position
+PASS  simulated 300 ticks (5s at 60Hz)
+PASS  the player walked 9.92 m right then 5 m down from the spawn, unblocked  ({"x":-3.583388328552246,"y":4.499997615814209})
+PASS  it ended on a walkable tile  (tile ".")
+PASS  two separate processes produce the same hash  (ad81002b)
+
+ALL 6 CHECKS PASSED

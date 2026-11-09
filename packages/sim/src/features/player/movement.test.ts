@@ -1,11 +1,13 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { DefId, getDef } from '../../content/defs';
+import { readTileGrid, spawnPoint, tileCentre } from '../../content/levels/grid';
 import { starterLevel } from '../../content/levels/starter';
 import { MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
+import { getTileDef } from '../terrain/defs';
 import { findPlayerEntity } from './queries';
 
 describe('player movement (headless)', () => {
@@ -13,7 +15,7 @@ describe('player movement (headless)', () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
     expect(findPlayerEntity(sim, 0)).toBeDefined();
-    expect(playerPosition(sim)).toEqual(starterLevel.spawn);
+    expect(playerPosition(sim)).toEqual(SPAWN);
     sim.destroy();
   });
 
@@ -24,8 +26,8 @@ describe('player movement (headless)', () => {
     sim.step([move(1, 0)]);
     for (let i = 1; i < ticks; i += 1) sim.step();
     const { x, y } = playerPosition(sim);
-    expect(x).toBeCloseTo(starterLevel.spawn.x + SPEED * ticks * sim.dt, 3);
-    expect(y).toBeCloseTo(starterLevel.spawn.y, 6);
+    expect(x).toBeCloseTo(SPAWN.x + SPEED * ticks * sim.dt, 3);
+    expect(y).toBeCloseTo(SPAWN.y, 6);
     expect(sim.tick).toBe(ticks + 1);
     sim.destroy();
   });
@@ -36,7 +38,7 @@ describe('player movement (headless)', () => {
     sim.step([move(0, -1)]);
     for (let i = 0; i < 30; i += 1) sim.step();
     const moving = playerPosition(sim);
-    expect(moving.y).toBeLessThan(starterLevel.spawn.y);
+    expect(moving.y).toBeLessThan(SPAWN.y);
     sim.step([move(0, 0)]);
     for (let i = 0; i < 30; i += 1) sim.step();
     expect(playerPosition(sim)).toEqual(moving);
@@ -49,9 +51,9 @@ describe('player movement (headless)', () => {
     sim.step([move(10, 10)]);
     for (let i = 0; i < 59; i += 1) sim.step();
     const { x, y } = playerPosition(sim);
-    const travelled = Math.hypot(x - starterLevel.spawn.x, y - starterLevel.spawn.y);
+    const travelled = Math.hypot(x - SPAWN.x, y - SPAWN.y);
     expect(travelled).toBeCloseTo(SPEED * 60 * sim.dt, 3);
-    expect(x).toBeCloseTo(y, 6);
+    expect(x - SPAWN.x).toBeCloseTo(y - SPAWN.y, 5);
     sim.destroy();
   });
 
@@ -60,15 +62,14 @@ describe('player movement (headless)', () => {
     sim.step([join()]);
     sim.step([move(1.7e308, 0)]);
     for (let i = 0; i < 9; i += 1) sim.step();
-    expect(playerPosition(sim).x).toBeCloseTo(SPEED * 10 * sim.dt, 3);
+    expect(playerPosition(sim).x).toBeCloseTo(SPAWN.x + SPEED * 10 * sim.dt, 3);
     sim.destroy();
   });
 
-  it('is stopped by the east border wall (Rapier collision), then slides along it', async () => {
+  it('is stopped by the forest border (Rapier collision), then slides along it', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
-    const innerFace = starterLevel.width / 2 - BORDER;
-    const stopX = innerFace - RADIUS;
+    const stopX = firstTreeFaceEastOfSpawn() - RADIUS;
 
     sim.step([move(1, 0)]);
     for (let i = 0; i < 600; i += 1) sim.step();
@@ -95,7 +96,7 @@ describe('player movement (headless)', () => {
     expect(players).toHaveLength(1);
     sim.step([move(Number.NaN, Number.POSITIVE_INFINITY)]);
     for (let i = 0; i < 10; i += 1) sim.step();
-    expect(playerPosition(sim)).toEqual(starterLevel.spawn);
+    expect(playerPosition(sim)).toEqual(SPAWN);
     sim.destroy();
   });
 
@@ -125,14 +126,16 @@ describe('player movement (headless)', () => {
     sim.step([join()]);
     const second = findPlayerEntity(sim, 0);
     expect(second).toBe(first); // bitECS recycles ids: every field must have been reset
-    expect(playerPosition(sim)).toEqual(starterLevel.spawn);
+    expect(playerPosition(sim)).toEqual(SPAWN);
     for (let i = 0; i < 10; i += 1) sim.step();
-    expect(playerPosition(sim)).toEqual(starterLevel.spawn);
+    expect(playerPosition(sim)).toEqual(SPAWN);
     sim.destroy();
   });
 
   it('ignores a join when the sim is full instead of throwing', async () => {
-    const capacity = starterLevel.walls.length + 1;
+    const terrainOnly = await createSimInternal({ seed: 1 });
+    const capacity = terrainOnly.entityCount + 1;
+    terrainOnly.destroy();
     const sim = await createSimInternal({ seed: 1, capacity });
     sim.step([join(0)]);
     expect(sim.entityCount).toBe(capacity);
@@ -151,7 +154,7 @@ const { createSimInternal } = __testing__;
 const playerDef = getDef(DefId.Player);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
-const BORDER = 1; // thickness used by starterLevel's borderWalls
+const SPAWN = spawnPoint(starterLevel);
 
 beforeAll(() => {
   if (!(SPEED > 0) || !(RADIUS > 0)) throw new Error('the player def must define a positive speed and radius');
@@ -159,6 +162,16 @@ beforeAll(() => {
 
 const join = (slot = 0): Command => ({ type: 'player/join', slot });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
+
+/** West edge, in metres, of the first solid tile east of the spawn on its row. */
+function firstTreeFaceEastOfSpawn(): number {
+  const grid = readTileGrid(starterLevel);
+  const row = grid.defIds[starterLevel.spawn.row] as readonly number[];
+  let column = starterLevel.spawn.column;
+  while (column < grid.columns && !getTileDef(row[column] as number).solid) column += 1;
+  if (column === grid.columns) throw new Error('the starter level has no tree east of the spawn');
+  return tileCentre(grid, { column, row: starterLevel.spawn.row }).x - grid.tileSize / 2;
+}
 
 function playerPosition(sim: Sim, slot = 0) {
   const eid = findPlayerEntity(sim, slot);

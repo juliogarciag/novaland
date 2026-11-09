@@ -13,6 +13,8 @@ export { hashSnapshot, type EntitySnapshot, type SimSnapshot } from './core/snap
 export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
 export { starterLevel } from './content/levels/starter';
-export type { LevelData, WallData } from './content/levels/types';
+export type { LevelData, TileCoordinate, TileGrid } from './content/levels/types';
+export { readTileGrid, spawnPoint, tileAt, tileCentre } from './content/levels/grid';
+export { getTileDef, terrainDefs, TILE_SIZE, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity } from './features/player/queries';

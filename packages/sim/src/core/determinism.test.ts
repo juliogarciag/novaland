@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { spawnPoint } from '../content/levels/grid';
 import type { Command } from './commands';
 import { __testing__ } from './create';
 import { hashSnapshot } from './snapshot';
@@ -25,8 +26,8 @@ describe('determinism', () => {
       b.step();
     }
     const px = (s: typeof a) => s.snapshot().entities.find((e) => e.components['Player'])?.components['Position']?.['x'];
-    expect(px(a)).toBeGreaterThan(1);
-    expect(px(b)).toBe(0);
+    expect(px(a)).toBeGreaterThan((px(b) as number) + 1);
+    expect(px(b)).toBe(spawnPoint(a.level).x);
     a.destroy();
     b.destroy();
   });
@@ -49,7 +50,7 @@ describe('determinism', () => {
 
 const { createSimInternal } = __testing__;
 
-/** A scripted session: joins, moves around, bumps into walls, uses the rng. */
+/** A scripted session: joins, moves around, bumps into trees, uses the rng. */
 function script(tick: number): Command[] {
   switch (tick) {
     case 0:

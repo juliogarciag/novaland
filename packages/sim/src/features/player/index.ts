@@ -1,5 +1,6 @@
 import { addComponent, query } from 'bitecs';
 import { getDef } from '../../content/defs';
+import { spawnPoint } from '../../content/levels/grid';
 import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
@@ -13,7 +14,7 @@ import { findPlayerEntity } from './queries';
 /**
  * Player-controlled bodies. A `player/join` spawns one at the level spawn
  * point, `player/move` sets its intended direction and every tick the intent
- * becomes a velocity. Walls stop it through physics, not through code here.
+ * becomes a velocity. Terrain stops it through physics, not through code here.
  *
  * Handlers are the validation boundary: commands will arrive from the
  * network one day, so anything malformed is ignored, never thrown on.
@@ -77,7 +78,8 @@ function spawnPlayer(sim: Sim, slot: number): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  attachDynamicBall(sim, eid, { x: sim.level.spawn.x, y: sim.level.spawn.y, radius });
+  const spawn = spawnPoint(sim.level);
+  attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
 }
 

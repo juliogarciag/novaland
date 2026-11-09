@@ -61,7 +61,7 @@ export interface BoxBodyOptions {
   readonly halfHeight: number;
 }
 
-/** An immovable body: walls and other obstacles. */
+/** An immovable body: terrain and other obstacles. */
 export function attachStaticBox(sim: Sim, eid: number, { x, y, halfWidth, halfHeight }: BoxBodyOptions): RigidBody {
   const bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y);
   const rigidBody = sim.physics.createRigidBody(bodyDesc);
