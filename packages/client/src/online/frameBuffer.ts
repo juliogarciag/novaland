@@ -9,7 +9,7 @@ export interface ViewFrameBufferOptions {
 
 /** Most frames kept; older ones are dropped. At the default rates this is a few seconds. */
 const MAX_FRAMES = 64;
-/** Share of the drift between the drawn tick and where it should be that each advance closes; more than `bufferTicks` behind, it jumps instead. */
+/** Share of the drift between the drawn tick and where it should be that each frame closes; more than `bufferTicks` behind, it jumps instead. */
 const CATCH_UP_SHARE = 0.1;
 
 /**
@@ -41,13 +41,13 @@ export class ViewFrameBuffer {
     this.drawnTick = undefined;
   }
 
-  /** The drawn tick, for tests and debugging; undefined before the first advance. */
+  /** The drawn tick, for tests and debugging; undefined before the first frame was asked for. */
   get tick(): number | undefined {
     return this.drawnTick;
   }
 
   /** The frame to draw after `deltaSeconds` more real time, or undefined before any frame was pushed. */
-  advance(deltaSeconds: number): ViewFrame | undefined {
+  nextFrame(deltaSeconds: number): ViewFrame | undefined {
     const newest = this.frames.at(-1);
     const oldest = this.frames[0];
     if (!newest || !oldest) return undefined;

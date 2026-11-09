@@ -23,7 +23,7 @@ describe('OnlineWorld', () => {
   it('never steps: the replica throws, the frame comes from server updates', async () => {
     const { world } = await seated(0);
     expect(() => world.sim.step()).toThrow(/replica/);
-    expect(world.advance([], FRAME).renderables).toEqual(getRenderables(world.sim));
+    expect(world.nextFrame([], FRAME).renderables).toEqual(getRenderables(world.sim));
   });
 
   it('follows deltas and draws between them, two send intervals behind', async () => {
@@ -41,7 +41,7 @@ describe('OnlineWorld', () => {
     const drawn: number[] = [];
     const ticks: number[] = [];
     for (let frame = 0; frame < 6; frame += 1) {
-      const view = world.advance([], FRAME);
+      const view = world.nextFrame([], FRAME);
       drawn.push(view.renderables.find((renderable) => renderable.eid === eid)!.x);
       ticks.push(view.tick);
     }
@@ -79,17 +79,17 @@ describe('OnlineWorld', () => {
 
   it('sends the move of a player/move command without its slot, and nothing for other commands', async () => {
     const { world, room } = await seated(3);
-    world.advance([{ type: 'player/move', slot: 3, x: 0, y: -1 }, { type: 'player/join', slot: 3 }], FRAME);
+    world.nextFrame([{ type: 'player/move', slot: 3, x: 0, y: -1 }, { type: 'player/join', slot: 3 }], FRAME);
     expect(room.sent).toEqual([{ type: WIRE.move, payload: { x: 0, y: -1 } }]);
   });
 
   it('after a drop takes the new seat and the new state from the next welcome, and repeats the move still held', async () => {
     const { world, room, server, join, statuses } = await seated(0);
-    world.advance([{ type: 'player/move', slot: 0, x: 1, y: 1 }], FRAME);
+    world.nextFrame([{ type: 'player/move', slot: 0, x: 1, y: 1 }], FRAME);
     room.drop(1006);
     expect(statuses.at(-1)?.kind).toBe('disconnected');
     expect(world.localSlot).toBe(0);
-    world.advance([], FRAME); // still draws while disconnected
+    world.nextFrame([], FRAME); // still draws while disconnected
     const secondRoom = await nextRoom(join, 1);
     server.sim.step([{ type: 'player/leave', slot: 0 }, { type: 'player/join', slot: 4 }]);
     server.welcome(secondRoom, 4);
@@ -98,7 +98,7 @@ describe('OnlineWorld', () => {
     expect(findPlayerEntity(world.sim, 0)).toBeUndefined();
     expect(findPlayerEntity(world.sim, 4)).toBeDefined();
     expect(secondRoom.sent).toEqual([{ type: WIRE.move, payload: { x: 1, y: 1 } }]);
-    expect(world.advance([], FRAME).renderables).toEqual(getRenderables(world.sim));
+    expect(world.nextFrame([], FRAME).renderables).toEqual(getRenderables(world.sim));
   });
 
   it('reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape', async () => {
@@ -109,7 +109,7 @@ describe('OnlineWorld', () => {
     ] as const) {
       const statuses: ConnectionStatus[] = [];
       const { join, rooms } = scriptedJoin(['room']);
-      void OnlineWorld.connect({ endpoint: 'ws://world.test', join, onStatus: (status) => statuses.push(status) });
+      void OnlineWorld.join({ endpoint: 'ws://world.test', join, onStatus: (status) => statuses.push(status) });
       const room = await nextRoom({ rooms }, 0);
       room.receive(WIRE.welcome, welcome);
       const last = statuses.at(-1);
@@ -124,7 +124,7 @@ describe('OnlineWorld', () => {
     room.drop(1006);
     const secondRoom = await nextRoom(join, 1);
     secondRoom.receive(WIRE.welcome, { slot: 0, level: server.sim.level.name, capacity: server.sim.capacity + 1, state: emptyState() });
-    expect(statuses.at(-1)).toEqual({ kind: 'incompatible', reason: 'the server changed its world; reload the page' });
+    expect(statuses.at(-1)).toEqual({ kind: 'incompatible', reason: 'the server changed its world' });
   });
 });
 
@@ -184,10 +184,12 @@ async function seated(slot: number) {
   const server = new FakeServer(sim);
   const statuses: ConnectionStatus[] = [];
   const join = scriptedJoin(['room', 'room', 'room']);
-  const worldPromise = OnlineWorld.connect({ endpoint: 'ws://world.test', join: join.join, onStatus: (status) => statuses.push(status) });
+  const { connection, seated } = OnlineWorld.join({ endpoint: 'ws://world.test', join: join.join, onStatus: (status) => statuses.push(status) });
+  expect(connection.status.kind).toBe('connecting');
   const room = await nextRoom(join, 0);
   server.welcome(room, slot);
-  const world = await worldPromise;
+  const world = await seated;
+  expect(world.connection).toBe(connection);
   return { world, server, room, join, statuses };
 }
 

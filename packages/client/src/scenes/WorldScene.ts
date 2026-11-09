@@ -40,7 +40,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   override update(_time: number, deltaMs: number): void {
-    const frame = this.world.advance(this.keyboard.drain(), deltaMs / 1000);
+    const frame = this.world.nextFrame(this.keyboard.drain(), deltaMs / 1000);
     this.entityRenderer.draw(frame);
     this.followLocalPlayer();
   }

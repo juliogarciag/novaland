@@ -23,7 +23,7 @@ export class LocalWorld implements PlayableWorld {
 
   constructor(readonly sim: SimHandle) {}
 
-  advance(commands: readonly Command[], deltaSeconds: number): ViewFrame {
+  nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
     this.pendingCommands.push(...commands);
     const { ticks, leftover } = takeWholeTicks({
       leftover: this.leftover,

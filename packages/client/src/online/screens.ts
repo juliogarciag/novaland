@@ -16,7 +16,14 @@ const COUNTDOWN_INTERVAL_MS = 250;
  * not depend on a render loop that stops with the connection. `data-screen`
  * names the screen for end-to-end checks.
  */
-export function createConnectionScreens(parent: HTMLElement, onRetry: () => void): ConnectionScreens {
+export interface ConnectionScreenActions {
+  /** The "Retry now" button of the full and disconnected screens. */
+  readonly onRetry: () => void;
+  /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
+  readonly onReload: () => void;
+}
+
+export function createConnectionScreens(parent: HTMLElement, actions: ConnectionScreenActions): ConnectionScreens {
   const screen = document.createElement('div');
   screen.id = 'screen';
   screen.hidden = true;
@@ -24,8 +31,12 @@ export function createConnectionScreens(parent: HTMLElement, onRetry: () => void
   const retryButton = document.createElement('button');
   retryButton.type = 'button';
   retryButton.textContent = 'Retry now';
-  retryButton.addEventListener('click', onRetry);
-  screen.append(message, retryButton);
+  retryButton.addEventListener('click', actions.onRetry);
+  const reloadButton = document.createElement('button');
+  reloadButton.type = 'button';
+  reloadButton.textContent = 'Reload page';
+  reloadButton.addEventListener('click', actions.onReload);
+  screen.append(message, retryButton, reloadButton);
   parent.append(screen);
   let countdown: ReturnType<typeof setInterval> | undefined;
   let shown: ConnectionStatus | undefined;
@@ -34,6 +45,7 @@ export function createConnectionScreens(parent: HTMLElement, onRetry: () => void
     if (!shown) return;
     message.textContent = describe(shown);
     retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected';
+    reloadButton.hidden = shown.kind !== 'incompatible';
   };
 
   return {

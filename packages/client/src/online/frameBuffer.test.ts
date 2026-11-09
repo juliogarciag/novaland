@@ -11,9 +11,9 @@ const FRAME_SECONDS = 1 / 60;
 describe('ViewFrameBuffer', () => {
   it('has nothing to draw before a frame arrives, then draws the first frame', () => {
     const buffer = newBuffer();
-    expect(buffer.advance(FRAME_SECONDS)).toBeUndefined();
+    expect(buffer.nextFrame(FRAME_SECONDS)).toBeUndefined();
     buffer.push(frameAt(30, 0));
-    expect(buffer.advance(FRAME_SECONDS)).toEqual(frameAt(30, 0));
+    expect(buffer.nextFrame(FRAME_SECONDS)).toEqual(frameAt(30, 0));
   });
 
   it('draws two send intervals behind the newest frame, moving the entity between frames at the display rate', () => {
@@ -22,7 +22,7 @@ describe('ViewFrameBuffer', () => {
     const drawn: ViewFrame[] = [];
     for (let tick = 0; tick <= 180; tick += 1) {
       if (tick % SEND_EVERY === 0) buffer.push(frameAt(tick, tick / TICKS_PER_SECOND));
-      const frame = buffer.advance(FRAME_SECONDS) as ViewFrame;
+      const frame = buffer.nextFrame(FRAME_SECONDS) as ViewFrame;
       if (tick > 120) drawn.push(frame);
     }
     for (const frame of drawn) expect(frame.tick).toBeLessThanOrEqual(buffer.tick as number);
@@ -39,10 +39,10 @@ describe('ViewFrameBuffer', () => {
   it('keeps the lag when frames arrive as the clock runs', () => {
     const buffer = newBuffer();
     buffer.push(frameAt(0, 0));
-    buffer.advance(FRAME_SECONDS);
+    buffer.nextFrame(FRAME_SECONDS);
     for (let tick = SEND_EVERY; tick <= 300; tick += SEND_EVERY) {
       buffer.push(frameAt(tick, 0));
-      for (let frame = 0; frame < SEND_EVERY; frame += 1) buffer.advance(FRAME_SECONDS);
+      for (let frame = 0; frame < SEND_EVERY; frame += 1) buffer.nextFrame(FRAME_SECONDS);
       if (tick > 30) {
         expect(tick - (buffer.tick as number)).toBeGreaterThan(BUFFER_TICKS - 2);
         expect(tick - (buffer.tick as number)).toBeLessThan(BUFFER_TICKS + 2);
@@ -53,11 +53,11 @@ describe('ViewFrameBuffer', () => {
   it('never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead', () => {
     const buffer = newBuffer();
     for (let tick = 0; tick <= 12; tick += SEND_EVERY) buffer.push(frameAt(tick, tick));
-    for (let frame = 0; frame < 60; frame += 1) buffer.advance(FRAME_SECONDS);
+    for (let frame = 0; frame < 60; frame += 1) buffer.nextFrame(FRAME_SECONDS);
     expect(buffer.tick).toBe(12);
-    expect(buffer.advance(FRAME_SECONDS)).toEqual(frameAt(12, 12));
+    expect(buffer.nextFrame(FRAME_SECONDS)).toEqual(frameAt(12, 12));
     buffer.push(frameAt(120, 120));
-    buffer.advance(FRAME_SECONDS);
+    buffer.nextFrame(FRAME_SECONDS);
     expect(buffer.tick).toBe(120 - BUFFER_TICKS);
   });
 
@@ -65,9 +65,9 @@ describe('ViewFrameBuffer', () => {
     const buffer = newBuffer();
     buffer.push(frameAt(0, 0));
     buffer.push(frameAt(30, 0));
-    buffer.advance(FRAME_SECONDS); // drawn tick settles at 24
+    buffer.nextFrame(FRAME_SECONDS); // drawn tick settles at 24
     buffer.push(frameAt(32, 0)); // the server is a little early: target 26 while the clock says 25
-    buffer.advance(FRAME_SECONDS);
+    buffer.nextFrame(FRAME_SECONDS);
     expect(buffer.tick).toBeGreaterThan(25);
     expect(buffer.tick).toBeLessThan(26);
   });
@@ -76,16 +76,16 @@ describe('ViewFrameBuffer', () => {
     const buffer = newBuffer();
     buffer.push(frameAt(300, 0));
     buffer.push(frameAt(303, 0));
-    buffer.advance(FRAME_SECONDS);
+    buffer.nextFrame(FRAME_SECONDS);
     buffer.push(frameAt(5, 9));
-    expect(buffer.advance(FRAME_SECONDS)).toEqual(frameAt(5, 9));
+    expect(buffer.nextFrame(FRAME_SECONDS)).toEqual(frameAt(5, 9));
     expect(buffer.tick).toBe(5);
   });
 
   it('forgets frames it has drawn past and keeps at most a few seconds of them', () => {
     const buffer = newBuffer();
     for (let tick = 0; tick < 3000; tick += SEND_EVERY) buffer.push(frameAt(tick, 0));
-    const drawn = buffer.advance(FRAME_SECONDS) as ViewFrame;
+    const drawn = buffer.nextFrame(FRAME_SECONDS) as ViewFrame;
     expect(drawn.tick).toBeGreaterThan(3000 - 64 * SEND_EVERY);
   });
 });

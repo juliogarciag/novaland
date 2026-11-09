@@ -5,8 +5,8 @@ import { getHeading, getRenderables, type Heading, type Renderable, type SimHand
  * or a replica at one tick: what to draw and which way each thing is going.
  * Solo, a frame is read from the sim after every step. Online, frames are
  * read from the replica after every server update and the renderer draws a
- * point between two of them (render/viewFrame.ts and online/frameBuffer.ts),
- * so the renderer never knows which mode it is in.
+ * point between two of them (`interpolateViewFrames` below, driven by
+ * online/frameBuffer.ts), so the renderer never knows which mode it is in.
  */
 export interface ViewFrame {
   /** The tick the frame shows; fractional between two server frames. */

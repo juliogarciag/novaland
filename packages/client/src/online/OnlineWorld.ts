@@ -36,8 +36,9 @@ export interface OnlineWorldOptions {
  * page: a later welcome (after a drop) replaces its contents with the new
  * full state, which `applyWorldState` does whatever the tick. A later welcome
  * for a different level or capacity cannot be shown in the scene that was
- * built for the first one, so it is reported as incompatible and the page
- * reloads (main.ts).
+ * built for the first one, so it is reported as incompatible: the connection
+ * stops and the screen offers a reload (a hostile server must not be able
+ * to make the page reload itself in a loop).
  */
 export class OnlineWorld implements PlayableWorld {
   readonly sim: ReplicaHandle;
@@ -57,44 +58,50 @@ export class OnlineWorld implements PlayableWorld {
   }
 
   /**
-   * Connects and resolves once the server has seated this client the first
-   * time, with the replica already holding the world. Until then (and after a
-   * drop) `onStatus` tells what is going on; a full world or an unreachable
-   * server keep the promise pending while the connection retries by itself.
+   * Starts joining. `connection` is there at once, so the screens can offer
+   * a retry before anyone is seated; `seated` resolves the first time the
+   * server seats this client, with the replica already holding the world.
+   * Until then (and after a drop) `onStatus` tells what is going on; a full
+   * world or an unreachable server keep `seated` pending while the
+   * connection retries by itself, an incompatible server leaves it pending
+   * for good.
    */
-  static connect(options: OnlineWorldOptions): Promise<OnlineWorld> {
-    return new Promise<OnlineWorld>((resolve) => {
-      let world: OnlineWorld | undefined;
-      const connection = new WorldConnection({
-        endpoint: options.endpoint,
-        join: options.join,
-        handlers: {
-          onWelcome: (payload) => {
-            const welcome = readWelcome(payload);
-            if (!welcome) return { incompatible: 'the server sent a welcome this client does not understand' };
-            if (world) return world.welcomeAgain(welcome);
-            const level = findLevel(welcome.level);
-            if (!level) return { incompatible: `this client has no level named "${welcome.level}"` };
-            let replica: ReplicaHandle;
-            try {
-              replica = createReplica({ level, capacity: welcome.capacity });
-            } catch {
-              return { incompatible: `the server's capacity (${String(welcome.capacity)}) is out of this client's range` };
-            }
-            world = new OnlineWorld(connection, replica, welcome.slot);
-            world.applyWelcomeState(welcome);
-            resolve(world);
-            return 'seated';
-          },
-          onUpdate: (payload) => world?.applyUpdate(payload),
-          onStatus: (status) => {
-            world?.onStatus(status);
-            options.onStatus?.(status);
-          },
-        },
-      });
-      connection.connect();
+  static join(options: OnlineWorldOptions): { connection: WorldConnection; seated: Promise<OnlineWorld> } {
+    let world: OnlineWorld | undefined;
+    let resolveSeated: (world: OnlineWorld) => void = () => undefined;
+    const seated = new Promise<OnlineWorld>((resolve) => {
+      resolveSeated = resolve;
     });
+    const connection = new WorldConnection({
+      endpoint: options.endpoint,
+      join: options.join,
+      handlers: {
+        onWelcome: (payload) => {
+          const welcome = readWelcome(payload);
+          if (!welcome) return { incompatible: 'the server sent a welcome this client does not understand' };
+          if (world) return world.welcomeAgain(welcome);
+          const level = findLevel(welcome.level);
+          if (!level) return { incompatible: `this client has no level named "${welcome.level}"` };
+          let replica: ReplicaHandle;
+          try {
+            replica = createReplica({ level, capacity: welcome.capacity });
+          } catch {
+            return { incompatible: `the server's capacity (${String(welcome.capacity)}) is out of this client's range` };
+          }
+          world = new OnlineWorld(connection, replica, welcome.slot);
+          world.applyWelcomeState(welcome);
+          resolveSeated(world);
+          return 'seated';
+        },
+        onUpdate: (payload) => world?.applyUpdate(payload),
+        onStatus: (status) => {
+          world?.onStatus(status);
+          options.onStatus?.(status);
+        },
+      },
+  });
+    connection.connect();
+    return { connection, seated };
   }
 
   get localSlot(): number {
@@ -110,7 +117,7 @@ export class OnlineWorld implements PlayableWorld {
     return { online, seats: WORLD_SEATS };
   }
 
-  advance(commands: readonly Command[], deltaSeconds: number): ViewFrame {
+  nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
     for (const command of commands) {
       // The only player-facing command there is today. The slot is dropped: the server stamps the seat.
       if (command.type === 'player/move') {
@@ -118,13 +125,13 @@ export class OnlineWorld implements PlayableWorld {
         this.connection.sendMove(this.lastMove);
       }
     }
-    return this.frames.advance(deltaSeconds) ?? readViewFrame(this.sim);
+    return this.frames.nextFrame(deltaSeconds) ?? readViewFrame(this.sim);
   }
 
   /** A welcome after a drop: the same world, a new seat, a fresh full state. */
   private welcomeAgain(welcome: WelcomeMessage): 'seated' | { readonly incompatible: string } {
     if (welcome.level !== this.sim.level.name || welcome.capacity !== this.sim.capacity) {
-      return { incompatible: 'the server changed its world; reload the page' };
+      return { incompatible: 'the server changed its world' };
     }
     this.slot = welcome.slot;
     this.applyWelcomeState(welcome);

@@ -30,26 +30,25 @@ async function boot(): Promise<void> {
   if (import.meta.env.DEV) exposeDebugApi({ world, game, online });
 }
 
-/** Connects to the world server, showing the connection screens until seated; they stay up for drops and come down again when seated. */
+/**
+ * Joins the world server, showing the connection screens until seated; they
+ * stay for drops and come down again when seated. The screens' buttons reach
+ * the connection from the first moment, before anyone is seated: that is
+ * when the full and disconnected screens show.
+ */
 async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorld; online: OnlineDebugApi }> {
-  let retryNow = (): void => undefined;
-  const screens = createConnectionScreens(document.body, () => retryNow());
-  let seated = false;
-  const world = await OnlineWorld.connect({
-    endpoint: serverUrl,
-    onStatus: (status) => {
-      screens.show(status);
-      // The scene was built for the first welcome's level; a different world after a drop needs a fresh page.
-      if (status.kind === 'incompatible' && seated) window.location.reload();
-    },
+  // The screens need the connection and the connection reports to the screens; `join` returns synchronously, before any click can happen.
+  const screens = createConnectionScreens(document.body, {
+    onRetry: () => joining.connection.retryNow(),
+    onReload: () => window.location.reload(),
   });
-  seated = true;
-  retryNow = () => world.connection.retryNow();
+  const joining = OnlineWorld.join({ endpoint: serverUrl, onStatus: (status) => screens.show(status) });
+  const world = await joining.seated;
   return {
     world,
     online: {
       status: () => world.connection.status,
-      retryNow,
+      retryNow: () => world.connection.retryNow(),
       malformedUpdates: () => world.malformedUpdates,
     },
   };

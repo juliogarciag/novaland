@@ -32,22 +32,33 @@ let browser;
 try {
   results.push(check('client dev server up (VITE_SERVER_URL set, room server not yet started)', await waitForPort(CLIENT_PORT)));
   browser = await chromium.launch();
-  const open = async (name) => {
+  const open = async (name, { holdJoins = false } = {}) => {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
     const page = await context.newPage();
     page.on('pageerror', (error) => pageErrors.push(`${name}: ${error}`));
     page.on('console', (message) => message.type() === 'error' && errors.push(`${name}: ${message.text()}`));
+    // Every join starts with the SDK's matchmake request; counting them shows when the client (re)tries.
+    const joins = { count: 0, held: [] };
+    page.on('request', (request) => request.url().includes('/matchmake/joinById/') && (joins.count += 1));
+    if (holdJoins) await page.route('**/matchmake/**', (route) => joins.held.push(route));
     await page.goto(`http://localhost:${CLIENT_PORT}/`);
-    return { name, context, page };
+    return { name, context, page, joins };
   };
 
-  // 1. A page before the server: the connecting screen; then the server boots and the page joins by itself.
-  const a = await open('A');
-  await a.page.waitForSelector('#screen[data-screen="connecting"], #screen[data-screen="disconnected"]', { timeout: 15000 });
+  // 1. A page whose join is held shows the connecting screen; released against no server it shows the retrying screen; then the server boots and the page joins by itself.
+  const a = await open('A', { holdJoins: true });
+  await a.page.waitForSelector('#screen[data-screen="connecting"]', { timeout: 15000 });
   await a.page.waitForTimeout(300);
-  const beforeServer = await screenOf(a.page);
+  const connecting = await screenOf(a.page);
   await a.page.screenshot({ path: path.join(PROOF, '03-online-1-connecting.png') });
-  results.push(check('before the server is up the page shows the connecting / retrying screen and no game', (beforeServer.screen === 'connecting' || beforeServer.screen === 'disconnected') && beforeServer.hasApi === false, JSON.stringify(beforeServer)));
+  results.push(check('while the join is in flight the page shows the connecting screen, no button, no game', connecting.screen === 'connecting' && /Connecting to the world/.test(connecting.text) && connecting.button === false && connecting.hasApi === false, JSON.stringify(connecting)));
+  for (const route of a.joins.held.splice(0)) await route.abort('connectionrefused').catch(() => undefined);
+  await a.page.unroute('**/matchmake/**');
+  await a.page.waitForSelector('#screen[data-screen="disconnected"]', { timeout: 15000 });
+  const beforeServer = await screenOf(a.page);
+  const joinsBeforeWait = a.joins.count;
+  await a.page.waitForTimeout(1500);
+  results.push(check('with no server the page shows the disconnected-and-retrying screen with a retry button, and keeps trying', beforeServer.screen === 'disconnected' && /Retrying in \ds/.test(beforeServer.text) && beforeServer.button === true && beforeServer.hasApi === false && a.joins.count > joinsBeforeWait, `${JSON.stringify(beforeServer)}, joins ${joinsBeforeWait} -> ${a.joins.count}`));
   server = startServer();
   results.push(check('room server up', await waitForPort(SERVER_PORT)));
   await waitOnline(a.page, 20000);
@@ -64,7 +75,7 @@ try {
     }
   });
   results.push(check('the replica never steps: window.__novaland.sim.step() throws', /replica/.test(stepped), stepped));
-  report.steps.push({ step: 'first-join', beforeServer, aJoined, stepped });
+  report.steps.push({ step: 'first-join', connecting, beforeServer, aJoined, stepped });
 
   // 2. Two players see each other.
   const b = await open('B');
@@ -110,9 +121,13 @@ try {
   // The replica changes 20 times a second; the drawn sprite should change on (nearly) every display frame, ~60 a second.
   const displayFrames = sampledSeconds * 60;
   results.push(check(`the drawn position changes far more often than the replica (${spriteXs.size} distinct sprite x vs ${replicaXs.size} replica x in ${sampledSeconds.toFixed(2)} s, ~${displayFrames.toFixed(0)} display frames): 20 Hz updates draw as 60 Hz motion`, spriteXs.size >= replicaXs.size * 2 && spriteXs.size >= displayFrames * 0.6));
-  results.push(check(`the drawn sprite lags the replica by about two send intervals (mean ${meanLag.toFixed(1)} px, expected ~${expectedLag.toFixed(1)} px for ${speed} m/s)`, meanLag > expectedLag * 0.5 && meanLag < expectedLag * 2));
+  results.push(check(`the drawn sprite lags the replica by about two send intervals (mean ${meanLag.toFixed(1)} px, expected ~${expectedLag.toFixed(1)} px for ${speed} m/s)`, meanLag > expectedLag * 0.7 && meanLag < expectedLag * 1.4));
   const monotone = samples.every((sample, index) => index === 0 || sample.spriteX >= samples[index - 1].spriteX);
   results.push(check('the drawn position never goes backwards while A walks east', monotone));
+  await a.page.waitForTimeout(400); // the drawn frame catches up with the stop
+  const aCamera = await cameraOf(a.page);
+  const bCamera = await cameraOf(b.page);
+  results.push(check("each page's camera is centred on its own seat's avatar (A on A, B on B, 5 m apart), or pinned at a level edge", centredOnOwn(aCamera) && centredOnOwn(bCamera) && Math.hypot(aCamera.own.x - bCamera.own.x, aCamera.own.y - bCamera.own.y) > 3 * aCamera.pixelsPerMetre, JSON.stringify({ a: aCamera, b: bCamera })));
   report.steps.push({ step: 'two-players', aTwo, bTwo, speed, sampledSeconds, sampleCount: samples.length, distinctSpriteX: spriteXs.size, distinctReplicaX: replicaXs.size, samples: samples.filter((sample, index) => index % 10 === 0), meanLag, expectedLag });
 
   // 3. Five fill the world; the sixth sees the world-full screen with a retry button.
@@ -129,10 +144,14 @@ try {
   const fFull = await screenOf(f.page);
   await f.page.screenshot({ path: path.join(PROOF, '03-online-5-F-world-full.png') });
   results.push(check('the sixth context sees the world-full screen, with the count and a retry button, and no game', fFull.screen === 'full' && /full/i.test(fFull.text) && /5\/5/.test(fFull.text) && fFull.button === true && fFull.hasApi === false, fFull.text));
-  await f.page.click('#screen button');
-  await f.page.waitForTimeout(1500);
+  const joinsBeforeClick = f.joins.count;
+  await f.page.waitForTimeout(1200); // let the countdown drop below 5s, so a reset is visible
+  await f.page.click('#screen button:not([hidden])');
+  await waitFor(() => Promise.resolve(f.joins.count), (count) => count > joinsBeforeClick, 'a new join after the click', 1500);
+  const clickedAt = Date.now();
+  await f.page.waitForSelector('#screen[data-screen="full"]', { timeout: 5000 });
   const fRetried = await screenOf(f.page);
-  results.push(check('retrying while still full shows the full screen again', fRetried.screen === 'full' && fRetried.hasApi === false, fRetried.text));
+  results.push(check(`the Retry button sends a new join at once (${f.joins.count - joinsBeforeClick} matchmake request(s) within ${Date.now() - clickedAt + 1500} ms) and, still full, the full screen is back with a fresh countdown`, f.joins.count > joinsBeforeClick && fRetried.screen === 'full' && /Retrying in 5s/.test(fRetried.text) && fRetried.hasApi === false, fRetried.text));
   report.steps.push({ step: 'full', aFive, fFull, fRetried });
 
   // 4. Closing a context removes its avatar for the others; the sixth gets in on its next retry.
@@ -144,12 +163,15 @@ try {
   const goneAfterMs = Date.now() - closedAt;
   const aFour = await waitFor(() => stateOf(a.page), (state) => state.sprites.length === 4 && /4\/5 online/.test(state.hud), 'A no longer draws E', 3000);
   const drawnGoneAfterMs = Date.now() - closedAt;
-  results.push(check(`closing E removed its avatar for A: entity gone after ${goneAfterMs} ms, sprite gone after ${drawnGoneAfterMs} ms, HUD reads 4/5`, !aFour.players.some((player) => player.eid === eEidInA) && aFour.sprites.length === 4 && goneAfterMs < 3000, aFour.hud));
+  results.push(check(`closing E removed its avatar for A: entity gone after ${goneAfterMs} ms, sprite gone after ${drawnGoneAfterMs} ms, HUD reads 4/5`, !aFour.players.some((player) => player.eid === eEidInA) && aFour.sprites.length === 4 && goneAfterMs < 1000 && drawnGoneAfterMs < 1000, aFour.hud));
   await waitOnline(f.page, 12000);
   const fIn = await stateOf(f.page);
   results.push(check("F got the freed seat on its next retry and sees everybody", fIn.status.kind === 'online' && fIn.localSlot === eSlot && fIn.players.length === SEATS, `F seat ${fIn.localSlot}, ${fIn.players.length} players`));
   await f.page.screenshot({ path: path.join(PROOF, '03-online-6-F-seated-after-E-left.png') });
-  report.steps.push({ step: 'leave', eSlot, goneAfterMs, drawnGoneAfterMs, aFour, fIn });
+  await f.page.waitForTimeout(1500); // players spawn on one tile and are pushed apart; let F's avatar settle
+  const fCamera = await cameraOf(f.page);
+  results.push(check(`F's camera follows its own new seat (${fIn.localSlot}), not seat 0`, centredOnOwn(fCamera) && fCamera.localSlot === eSlot, JSON.stringify(fCamera)));
+  report.steps.push({ step: 'leave', eSlot, goneAfterMs, drawnGoneAfterMs, aFour, fIn, fCamera });
 
   // 5. The server dies: every page shows the disconnected screen; it comes back: every page is seated again and can move.
   const tickBeforeKill = (await stateOf(a.page)).tick;
@@ -160,9 +182,12 @@ try {
   await a.page.screenshot({ path: path.join(PROOF, '03-online-7-A-disconnected.png') });
   results.push(check('killing the server shows the disconnected-and-retrying screen with a retry button; the game stays underneath', aDown.screen === 'disconnected' && /retrying/i.test(aDown.text) && aDown.button === true && aDown.hasApi === true, aDown.text));
   await waitFor(() => isPortOpen(SERVER_PORT), (open) => open === false, 'server port closed');
-  await a.page.waitForTimeout(2500);
+  const attemptsAtKill = await a.page.evaluate(() => window.__novaland.online.status().attempt ?? 0);
+  const joinsAtKill = a.joins.count;
+  await a.page.waitForTimeout(3500); // retries at 1 s and 2 s fall in here
   const aStillDown = await screenOf(a.page);
-  results.push(check('while the server is down the page keeps retrying (still disconnected, no uncaught error)', aStillDown.screen === 'disconnected' || aStillDown.screen === 'connecting', aStillDown.text));
+  const attemptsLater = await a.page.evaluate(() => window.__novaland.online.status().attempt ?? 0);
+  results.push(check(`while the server is down the page keeps retrying with a growing wait (${a.joins.count - joinsAtKill} more joins, attempt ${attemptsAtKill} -> ${attemptsLater}), no uncaught error`, aStillDown.screen === 'disconnected' && a.joins.count >= joinsAtKill + 2 && attemptsLater >= attemptsAtKill + 2, aStillDown.text));
   server = startServer();
   results.push(check('room server restarted', await waitForPort(SERVER_PORT)));
   for (const player of [a, b, c, d, f]) await waitOnline(player.page, 25000);
@@ -175,8 +200,11 @@ try {
   await waitFor(() => stateOf(b.page), (state) => state.players.find((player) => player.slot === aBack.localSlot).intent.y === 0, 'B sees A stop');
   const bBackEnd = (await stateOf(b.page)).players.find((player) => player.slot === aBack.localSlot);
   results.push(check('play resumes: A walks south and B sees it', bBackEnd.y > bBackStart.y + 0.5, `${bBackStart.y.toFixed(2)} -> ${bBackEnd.y.toFixed(2)}`));
+  await a.page.waitForTimeout(400);
+  const aBackCamera = await cameraOf(a.page);
+  results.push(check(`after the restart A's camera follows its new seat (${aBack.localSlot})`, centredOnOwn(aBackCamera) && aBackCamera.localSlot === aBack.localSlot, JSON.stringify(aBackCamera)));
   await a.page.screenshot({ path: path.join(PROOF, '03-online-8-A-back-online.png') });
-  report.steps.push({ step: 'restart', tickBeforeKill, aDown, aStillDown, aBack, bBackStart, bBackEnd });
+  report.steps.push({ step: 'restart', tickBeforeKill, aDown, aStillDown, attemptsAtKill, attemptsLater, aBack, bBackStart, bBackEnd, aBackCamera });
 
   const unexpected = errors.filter((line) => !/WebSocket|Failed to fetch|ERR_CONNECTION_REFUSED|net::ERR|Failed to load resource|matchmake|NetworkError/i.test(line));
   results.push(check('no uncaught page errors, and no console errors beyond the browser reporting the server outage', pageErrors.length === 0 && unexpected.length === 0, [...pageErrors, ...unexpected].join(' | ').slice(0, 300)));
@@ -251,6 +279,41 @@ function sampleEntity(eid) {
     animation: sprite.anims.currentAnim && sprite.anims.isPlaying ? sprite.anims.currentAnim.key : null,
     pixelsPerMetre: api.pixelsPerMetre,
   };
+}
+
+/** The world camera and where this page's own avatar is drawn, in world pixels. */
+function cameraOf(page) {
+  return page.evaluate(() => {
+    const api = window.__novaland;
+    const camera = api.camera();
+    const own = api.snapshot().entities.find((entity) => entity.components.Player && entity.components.Player.slot === api.localSlot());
+    const scene = api.game.scene.getScene('world');
+    // The sprite drawn nearest the own entity's replica position is the own sprite (sprites carry no ids); when still, the two coincide.
+    const sprite = scene.children.list
+      .filter((object) => object.type === 'Sprite')
+      .map((candidate) => ({ candidate, distance: Math.hypot(candidate.x - own.components.Position.x * api.pixelsPerMetre, candidate.y - own.components.Position.y * api.pixelsPerMetre) }))
+      .sort((left, right) => left.distance - right.distance)[0].candidate;
+    return {
+      localSlot: api.localSlot(),
+      own: { x: sprite.x, y: sprite.y },
+      centre: { x: camera.worldView.x + camera.worldView.width / 2, y: camera.worldView.y + camera.worldView.height / 2 },
+      worldView: camera.worldView,
+      bounds: camera.bounds,
+      zoom: camera.zoom,
+      pixelsPerMetre: api.pixelsPerMetre,
+    };
+  });
+}
+
+/** On each axis the camera centre is on the own sprite (give or take the device pixel it snaps to), unless the view is pinned at a level edge on that axis. */
+function centredOnOwn({ own, centre, worldView, bounds, zoom }) {
+  const axis = (position, middle, viewStart, viewSize, boundStart, boundSize) => {
+    if (Math.abs(position - middle) <= 1 / zoom + 1e-6) return true;
+    const pinnedAtStart = Math.abs(viewStart - boundStart) < 1e-6;
+    const pinnedAtEnd = Math.abs(viewStart + viewSize - (boundStart + boundSize)) < 1e-6;
+    return (pinnedAtStart && position < middle) || (pinnedAtEnd && position > middle);
+  };
+  return axis(own.x, centre.x, worldView.x, worldView.width, bounds.x, bounds.width) && axis(own.y, centre.y, worldView.y, worldView.height, bounds.y, bounds.height);
 }
 
 async function waitOnline(page, timeout = 15000) {
