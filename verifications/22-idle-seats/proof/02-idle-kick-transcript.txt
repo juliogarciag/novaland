@@ -6,30 +6,30 @@ $ IDLE_TIMEOUT_SECONDS=soon PORT=0 pnpm --filter @novaland/server dev (exit 1)
 <repo>/packages/server:
  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @novaland/server@0.0.0 dev: `tsx src/index.ts`
 Exit status 1
-(node:29574) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:38332) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 IDLE_TIMEOUT_SECONDS must be a positive number of seconds, got "soon"
 
 
-$ tsx idleClients.ts 50781 3 (exit 0)
+$ tsx idleClients.ts 53974 3 (exit 0)
 [0.1s] idler seated in slot 0, walker in slot 1; idle timeout 3 s
-[3.0s] idler left with code 4100 reason "idle" 2.98 s after joining; walker still seated: true (2 moves sent so far)
+[3.1s] idler left with code 4100 reason "idle" 3.02 s after joining; walker still seated: true (3 moves sent so far)
 [3.1s] the walker no longer sees a player in slot 0: true
-[6.1s] walker still seated after 6.0 s of moving: true; walker's heading as the world sees it: {"x":0,"y":0}
-[6.1s] the kicked player rejoined and was seated in slot 0
-[6.1s] walker stopped sending moves after 6 of them
-[9.1s] walker left with code 4100 reason "idle" 3.02 s after its last move, 9.029 s after joining
-{"idleTimeoutSeconds":3,"idler":{"slot":0,"leftWith":{"code":4100,"reason":"idle"},"kickedAfterSeconds":2.98,"avatarGoneForWalker":true},"walker":{"slot":1,"movesSent":6,"stillSeatedWhenIdlerKicked":true,"secondsSeatedWhileMoving":6.03,"leftWith":{"code":4100,"reason":"idle"},"kickedAfterLastMoveSeconds":3.02},"rejoin":{"slot":0,"seatsTakenAfter":2},"allApplied":true}
+[6.1s] walker still seated after 6.1 s of moving: true; walker's heading as the world sees it: {"x":0,"y":0}
+[6.2s] the kicked player rejoined and was seated in slot 0; the walker sees 2 players
+[6.2s] walker stopped sending moves after 6 of them
+[9.1s] walker left with code 4100 reason "idle" 3.01 s after its last move, 9.014 s after joining
+{"idleTimeoutSeconds":3,"idler":{"slot":0,"leftWith":{"code":4100,"reason":"idle"},"kickedAfterSeconds":3.02,"avatarGoneForWalker":true},"walker":{"slot":1,"movesSent":6,"stillSeatedWhenIdlerKicked":true,"stillSeatedTwiceTheTimeout":true,"secondsSeatedWhileMoving":6.06,"leftWith":{"code":4100,"reason":"idle"},"kickedAfterLastMoveSeconds":3.01},"rejoin":{"slot":0,"seatsTakenAfter":2},"allApplied":true}
 
 
 server output:
-(node:29637) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:38376) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 > @novaland/server@0.0.0 dev <repo>/packages/server
 > tsx src/index.ts
 
-{"event":"world-room-listening","port":50781,"roomId":"world","seed":1907764456,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":3}
+{"event":"world-room-listening","port":53974,"roomId":"world","seed":306404198,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":3}
 {"event":"world-room-idle-kick","slot":0,"idleSeconds":3}
 {"event":"world-room-idle-kick","slot":1,"idleSeconds":3}
-{"event":"world-room-stopping","signal":"SIGTERM","tick":583,"seatsTaken":0,"dropped":{"unknownType":0,"oversized":0,"malformed":0,"overBudget":0},"idleSeatsFreed":2}
+{"event":"world-room-stopping","signal":"SIGTERM","tick":589,"seatsTaken":0,"dropped":{"unknownType":0,"oversized":0,"malformed":0,"overBudget":0},"idleSeatsFreed":2}

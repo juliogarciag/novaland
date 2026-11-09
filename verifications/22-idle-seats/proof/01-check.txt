@@ -1,0 +1,21 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (150 of 150)
+PASS  an idle session is kicked at the 10 minute timeout with 4100 "idle" on a fake clock, the playing one stays, the next joiner takes the seat
+PASS  the idle test ran on a fake clock, not on ten real minutes  (471.20133299999907 ms)
+PASS  #17 still holds: five players join by room id
+PASS  #17 still holds: every player sees the others move
+PASS  #17 still holds: the sixth player is refused
+PASS  #17 still holds: a leaver frees the seat for the next joiner
+PASS  #17 still holds: junk is dropped while the world runs
+PASS  #17 still holds: a flood spends the budget
+PASS  #17 still holds: world/resync answers with one full state
+PASS  #17 still holds: an unknown-type flood closes its sender
+PASS  #17 still holds: a join that is never acknowledged is closed
+PASS  #17 still holds: an oversized HTTP body is refused
+PASS  #17 still holds: the room driven directly: a leave mid-join and a dispose mid-join
+PASS  the sim, replica and client tests still pass
+
+ALL 19 CHECKS PASSED

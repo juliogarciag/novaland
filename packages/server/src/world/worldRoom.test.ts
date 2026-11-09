@@ -254,32 +254,35 @@ describe('WorldRoom over a real connection', () => {
     let walkerLeftWith: number | undefined;
     walker.room.onLeave((code) => (walkerLeftWith = code));
     await waitForUpdates(players, 1);
-    // Almost the whole timeout passes with nobody playing: nobody is kicked yet.
-    clock.skip(IDLE_TIMEOUT_MS - 5000);
+    // Most of the timeout passes with nobody playing: nobody is kicked yet. The minute left is slack for real time on a slow machine; the fake clock makes it free.
+    clock.skip(IDLE_TIMEOUT_MS - 60_000);
     await waitForUpdates(players, 3);
     expect(server.room.clients.length).toBe(2);
     expect(server.room.idleSeatsFreed).toBe(0);
-    // The walker plays once, just before the deadline; only the idler crosses it.
+    // The walker plays once, just before the deadline. The idler only sends a move that fails the gate, which is not input: only the idler crosses the deadline.
     walker.room.send(WIRE.move, { x: 0, y: 1 });
-    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1);
-    clock.skip(6000);
+    idler.room.send(WIRE.move, { x: 1 });
+    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1 && server!.room.dropped.malformed === 1);
+    clock.skip(61_000);
     expect(await idlerLeft).toEqual([IDLE_KICK.code, IDLE_KICK.reason]);
+    expect(server.room.idleSeatsFreed).toBe(1);
     expect(walkerLeftWith).toBeUndefined();
     // The leave reached the sim: the idler's avatar is gone for the walker, and its seat goes to the next joiner.
     await waitUntil(() => findPlayerEntity(walker.replica, idler.welcome.slot) === undefined);
     expect(server.room.seatsTaken).toBe(1);
-    expect(server.room.idleSeatsFreed).toBe(1);
     players.splice(players.indexOf(idler), 1);
     const next = await join(server.port);
     players.push(next);
     expect(next.welcome.slot).toBe(idler.welcome.slot);
     expect(walker.applyResults.every((result) => result === 'applied')).toBe(true);
     // The walker's own timeout runs from its last accepted move, not from its join: most of it is still ahead of it.
-    clock.skip(IDLE_TIMEOUT_MS - 10000);
+    clock.skip(IDLE_TIMEOUT_MS - 120_000);
     await waitForUpdates(players, 3);
     expect(walkerLeftWith).toBeUndefined();
+    expect(server.room.idleSeatsFreed).toBe(1);
     expect(server.room.clients.length).toBe(2);
-    clock.skip(10000);
+    // Past it, the walker goes; so does `next`, which joined a whole timeout ago and never played (the cleanup copes: a left room's `leave` resolves at once).
+    clock.skip(120_000);
     await waitUntil(() => walkerLeftWith !== undefined);
     expect(walkerLeftWith).toBe(IDLE_KICK.code);
     expect(IDLE_KICK.code).not.toBe(CloseCode.WITH_ERROR);

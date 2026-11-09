@@ -59,8 +59,6 @@ interface Session {
   wantsFullState: boolean;
   /** When the session's last input passed the edge gate (its join counts as one); `idleTimeoutMs` after it the seat is freed. */
   lastInputAt: number;
-  /** The session was told to leave; its seat is freed when the socket closes, and it is not kicked twice meanwhile. */
-  kicked: boolean;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
 }
@@ -122,7 +120,11 @@ export class WorldRoom extends Room {
   override async onCreate(options: WorldRoomOptions): Promise<void> {
     this.roomId = WORLD_ROOM_ID;
     if (options.clock) this.time = options.clock;
-    if (options.idleTimeoutMs !== undefined && Number.isFinite(options.idleTimeoutMs) && options.idleTimeoutMs > 0) this.idleTimeoutMs = options.idleTimeoutMs;
+    if (options.idleTimeoutMs !== undefined) {
+      // The boot refuses a bad IDLE_TIMEOUT_SECONDS the same way: a typo must never silently become ten minutes, or zero.
+      if (!Number.isFinite(options.idleTimeoutMs) || options.idleTimeoutMs <= 0) throw new RangeError(`idleTimeoutMs must be a positive number of milliseconds, got ${String(options.idleTimeoutMs)}`);
+      this.idleTimeoutMs = options.idleTimeoutMs;
+    }
     this.sim = await createSim({ seed: options.seed });
     this.onMessage(WIRE.move, (client, payload: unknown) => this.onMove(client, payload));
     this.onMessage(WIRE.resync, (client) => this.onResync(client));
@@ -147,7 +149,6 @@ export class WorldRoom extends Room {
       welcomedAt: undefined,
       wantsFullState: false,
       lastInputAt: now,
-      kicked: false,
       budget: new MessageBudget(INBOUND_MESSAGES_PER_SECOND, INBOUND_BURST, now),
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
     };
@@ -162,8 +163,13 @@ export class WorldRoom extends Room {
     client.send(WIRE.welcome, welcome);
   }
 
-  /** Frees the seat; the sim removes the player on the next tick. Runs for consented and dropped connections alike. */
+  /** Frees the seat; the sim removes the player on the next tick. Runs for consented and dropped connections alike, and after a kick, which freed the seat already. */
   override onLeave(client: Client): void {
+    this.freeSeat(client);
+  }
+
+  /** The session's seat, free, and `player/leave` queued for its slot; nothing when the session holds no seat any more. */
+  private freeSeat(client: Client): void {
     const slot = this.seats.release(client.sessionId);
     this.sessions.delete(client.sessionId);
     if (slot !== undefined) this.pendingCommands.push({ type: 'player/leave', slot });
@@ -262,18 +268,20 @@ export class WorldRoom extends Room {
   }
 
   /**
-   * Closes every session whose last accepted input is `idleTimeoutMs` or more
-   * behind `now`. The close reaches the client as `IDLE_KICK`; the leave that
-   * follows frees the seat and removes the player from the sim. Runs once per
-   * send: a kick is never more than one send interval late.
+   * Frees the seat of every session whose last accepted input is
+   * `idleTimeoutMs` or more behind `now`, then closes it; the close reaches
+   * the client as `IDLE_KICK`. The seat is freed here and not when the socket's
+   * close completes: a peer that never answers the close handshake would hold
+   * it for the transport's close timeout otherwise. Runs once per send, so a
+   * kick is never more than one send interval late.
    */
   private freeIdleSeats(now: number): void {
     for (const client of this.clients) {
       const session = this.sessions.get(client.sessionId);
-      if (!session || session.kicked || now - session.lastInputAt < this.idleTimeoutMs) continue;
-      session.kicked = true;
+      if (!session || now - session.lastInputAt < this.idleTimeoutMs) continue;
       this.idleSeatsFreed += 1;
       console.log(JSON.stringify({ event: 'world-room-idle-kick', slot: session.slot, idleSeconds: Math.round((now - session.lastInputAt) / 1000) }));
+      this.freeSeat(client);
       client.leave(IDLE_KICK.code, IDLE_KICK.reason);
     }
   }

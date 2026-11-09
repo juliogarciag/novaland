@@ -70,10 +70,12 @@ say(`the walker no longer sees a player in slot ${idler.welcome.slot}: ${avatarG
 // 3. The walker keeps playing well past the timeout, then the kicked player rejoins into the freed seat.
 await new Promise((resolve) => setTimeout(resolve, idleTimeoutSeconds * 1000));
 const secondsSeatedWhileMoving = (Date.now() - walker.joinedAt) / 1000;
-say(`walker still seated after ${secondsSeatedWhileMoving.toFixed(1)} s of moving: ${walker.leftWith === undefined}; walker's heading as the world sees it: ${JSON.stringify(headingOf(walker.replica, walker.welcome.slot)?.moveIntent)}`);
+const walkerStillSeatedTwiceTheTimeout = walker.leftWith === undefined;
+say(`walker still seated after ${secondsSeatedWhileMoving.toFixed(1)} s of moving: ${walkerStillSeatedTwiceTheTimeout}; walker's heading as the world sees it: ${JSON.stringify(headingOf(walker.replica, walker.welcome.slot)?.moveIntent)}`);
 const rejoined = await join('idler-again');
 await waitUntil(() => findPlayerEntity(walker.replica, rejoined.welcome.slot) !== undefined);
-say(`the kicked player rejoined and was seated in slot ${rejoined.welcome.slot}`);
+const seatsTakenAfterRejoin = [0, 1, 2, 3, 4].filter((slot) => findPlayerEntity(walker.replica, slot) !== undefined).length;
+say(`the kicked player rejoined and was seated in slot ${rejoined.welcome.slot}; the walker sees ${seatsTakenAfterRejoin} players`);
 
 // 4. The walker stops: its own timeout runs from its last accepted move.
 clearInterval(walking);
@@ -89,8 +91,8 @@ console.log(
   JSON.stringify({
     idleTimeoutSeconds,
     idler: { slot: idler.welcome.slot, leftWith: idler.leftWith, kickedAfterSeconds: round(idlerKickedAfterSeconds), avatarGoneForWalker },
-    walker: { slot: walker.welcome.slot, movesSent: moves, stillSeatedWhenIdlerKicked: walkerStillSeated, secondsSeatedWhileMoving: round(secondsSeatedWhileMoving), leftWith: walker.leftWith, kickedAfterLastMoveSeconds: round(walkerKickedAfterLastMoveSeconds) },
-    rejoin: { slot: rejoined.welcome.slot, seatsTakenAfter: 2 },
+    walker: { slot: walker.welcome.slot, movesSent: moves, stillSeatedWhenIdlerKicked: walkerStillSeated, stillSeatedTwiceTheTimeout: walkerStillSeatedTwiceTheTimeout, secondsSeatedWhileMoving: round(secondsSeatedWhileMoving), leftWith: walker.leftWith, kickedAfterLastMoveSeconds: round(walkerKickedAfterLastMoveSeconds) },
+    rejoin: { slot: rejoined.welcome.slot, seatsTakenAfter: seatsTakenAfterRejoin },
     allApplied,
   }),
 );

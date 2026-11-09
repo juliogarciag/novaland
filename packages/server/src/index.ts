@@ -36,7 +36,7 @@ function readPort(value: string | undefined): number {
 function readIdleTimeoutMs(value: string | undefined): number {
   if (value === undefined || value === '') return IDLE_TIMEOUT_MS;
   const seconds = Number(value);
-  if (!Number.isFinite(seconds) || seconds <= 0) {
+  if (!Number.isFinite(seconds * 1000) || seconds <= 0) {
     console.error(`IDLE_TIMEOUT_SECONDS must be a positive number of seconds, got ${JSON.stringify(value)}`);
     process.exit(1);
   }
