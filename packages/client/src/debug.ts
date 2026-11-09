@@ -38,6 +38,8 @@ export interface OnlineDebugApi {
   retryNow(): void;
   /** Updates the replica refused as malformed since the page loaded. */
   malformedUpdates(): number;
+  /** Ticks the drawn frame stays behind the newest server state, so checks can derive the expected lag. */
+  readonly interpolationBufferTicks: number;
 }
 
 declare global {

@@ -7,8 +7,8 @@ export interface ViewFrameBufferOptions {
   readonly ticksPerSecond: number;
 }
 
-/** Most frames kept; older ones are dropped. At the default rates this is a few seconds. */
-const MAX_FRAMES = 64;
+/** Most frames kept, trimmed as they arrive (a hidden tab asks for no frames); older ones are dropped. At the default rates this is under a second, far more than the buffer needs. */
+const MAX_FRAMES = 16;
 /** Share of the drift between the drawn tick and where it should be that each frame closes; more than `bufferTicks` behind, it jumps instead. */
 const CATCH_UP_SHARE = 0.1;
 

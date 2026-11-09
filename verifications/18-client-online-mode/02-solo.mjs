@@ -7,7 +7,8 @@
  * every existing verification must keep passing.
  */
 import { chromium } from 'playwright';
-import { copyFileSync, existsSync, readdirSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { PROOF, ROOT, check, run, start, summarize, waitForPort, writeProof } from './lib.mjs';
 
@@ -59,16 +60,25 @@ try {
   server.stop();
 }
 
-// The existing browser verification of #10, unchanged, against this branch.
+// The existing browser verification of #10, unchanged, against this branch. It writes into its own proof folder,
+// which this ticket must not change: that folder is set aside first and put back as it was, whatever happens.
 const tenDir = path.join(ROOT, 'verifications/10-player-sprite');
-if (!existsSync(path.join(tenDir, 'node_modules'))) await run('pnpm', ['install', '--ignore-workspace', '--frozen-lockfile'], { cwd: tenDir });
-const ten = await run('node', ['03-browser.mjs'], { cwd: tenDir, env: { VITE_SERVER_URL: undefined } });
-writeProof('02-solo-10-player-sprite.txt', ten.output);
-for (const file of readdirSync(path.join(tenDir, 'proof')).filter((name) => name.startsWith('03-browser') && name.endsWith('.png'))) {
-  copyFileSync(path.join(tenDir, 'proof', file), path.join(PROOF, `02-solo-10-${file}`));
+const tenProof = path.join(tenDir, 'proof');
+const setAside = path.join(os.tmpdir(), `novaland-10-proof-${process.pid}`);
+cpSync(tenProof, setAside, { recursive: true });
+let ten;
+try {
+  if (!existsSync(path.join(tenDir, 'node_modules'))) await run('pnpm', ['install', '--ignore-workspace', '--frozen-lockfile'], { cwd: tenDir });
+  ten = await run('node', ['03-browser.mjs'], { cwd: tenDir, env: { VITE_SERVER_URL: undefined } });
+  writeProof('02-solo-10-player-sprite.txt', ten.output);
+  for (const file of readdirSync(tenProof).filter((name) => name.startsWith('03-browser') && name.endsWith('.png'))) {
+    copyFileSync(path.join(tenProof, file), path.join(PROOF, `02-solo-10-${file}`));
+  }
+} finally {
+  rmSync(tenProof, { recursive: true, force: true });
+  cpSync(setAside, tenProof, { recursive: true });
+  rmSync(setAside, { recursive: true, force: true });
 }
-// Its run rewrote its own proof files; this ticket does not change #10's folder.
-await run('git', ['checkout', '--', 'verifications/10-player-sprite/proof']);
 const tenSummary = ten.output.split('\n').find((line) => /CHECKS (PASSED|FAILED)/.test(line));
 results.push(check("ticket #10's browser verification still passes on this branch", ten.code === 0 && /ALL \d+ CHECKS PASSED/.test(ten.output), tenSummary));
 report.tenPlayerSprite = { code: ten.code, summary: tenSummary };

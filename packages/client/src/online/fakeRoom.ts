@@ -8,6 +8,8 @@ import type { JoinedRoom } from './connection';
 export class FakeRoom implements JoinedRoom {
   readonly sent: Array<{ readonly type: string; readonly payload: unknown }> = [];
   left = false;
+  /** False for a room whose server never closes the socket after `leave()`: `onLeave` then never fires. */
+  closesOnLeave = true;
   private readonly messageHandlers = new Map<string, (payload: unknown) => void>();
   private readonly leaveHandlers: Array<(code: number) => void> = [];
 
@@ -23,11 +25,11 @@ export class FakeRoom implements JoinedRoom {
     this.sent.push({ type, payload });
   }
 
-  /** A consented leave: the client asked, the room closes with 4000. */
+  /** A consented leave: the client asked and, unless the server is silent, the room closes with 4000. */
   leave(): Promise<number> {
     this.left = true;
-    this.drop(4000);
-    return Promise.resolve(4000);
+    if (this.closesOnLeave) this.drop(4000);
+    return new Promise(() => undefined);
   }
 
   /** The server sent a message. */
@@ -46,8 +48,8 @@ export class FakeRoom implements JoinedRoom {
   }
 }
 
-/** What one join attempt does: hands out a room, or fails the way the SDK fails. */
-export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting';
+/** What one join attempt does: hands out a room, fails the way the SDK fails, or never settles. */
+export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting' | 'hangs';
 
 /**
  * A `join` for the connection that plays a script of outcomes, one per
@@ -69,6 +71,8 @@ export function scriptedJoin(outcomes: readonly JoinOutcome[]): { join: (endpoin
           return Promise.reject(matchMakeError('room "world" not found'));
         case 'unreachable':
           return Promise.reject(new TypeError('Failed to fetch'));
+        case 'hangs':
+          return new Promise(() => undefined);
         default: {
           const room = new FakeRoom();
           rooms.push(room);

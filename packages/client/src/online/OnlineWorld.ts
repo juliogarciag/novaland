@@ -14,7 +14,7 @@ import { readViewFrame, type ViewFrame } from '../render/viewFrame';
 import type { Occupancy, PlayableWorld } from '../worlds/PlayableWorld';
 import { WorldConnection, type ConnectionStatus, type JoinedRoom } from './connection';
 import { ViewFrameBuffer } from './frameBuffer';
-import { INTERPOLATION_BUFFER_TICKS, WORLD_SEATS } from './tuning';
+import { INTERPOLATION_BUFFER_TICKS, MAX_LEVEL_NAME_LENGTH, MAX_SLOT, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
 
 export interface OnlineWorldOptions {
   readonly endpoint: string;
@@ -43,13 +43,15 @@ export interface OnlineWorldOptions {
 export class OnlineWorld implements PlayableWorld {
   readonly sim: ReplicaHandle;
   readonly connection: WorldConnection;
-  /** Updates the replica refused as malformed since the page loaded. Debug hooks read it. */
-  malformedUpdates = 0;
 
   private slot: number;
+  private refusedUpdates = 0;
   private readonly frames = new ViewFrameBuffer({ bufferTicks: INTERPOLATION_BUFFER_TICKS, ticksPerSecond: TICK_RATE });
   private lastMove: MoveMessage = { x: 0, y: 0 };
-  private resyncPending = false;
+  /** Out-of-sequence updates seen since the last full state; a resync is asked for at 1 and again every `RESYNC_RETRY_AFTER_UPDATES`. */
+  private outOfSequenceUpdates = 0;
+  /** The welcome's own state was refused: ask for a full state as soon as the connection is online. */
+  private needsFullState = false;
 
   private constructor(connection: WorldConnection, replica: ReplicaHandle, slot: number) {
     this.connection = connection;
@@ -108,6 +110,11 @@ export class OnlineWorld implements PlayableWorld {
     return this.slot;
   }
 
+  /** Updates the replica refused as malformed since the page loaded. Debug hooks read it. */
+  get malformedUpdates(): number {
+    return this.refusedUpdates;
+  }
+
   /** Seats taken, counted from the replica: one entity per seat. */
   get occupancy(): Occupancy {
     let online = 0;
@@ -140,42 +147,56 @@ export class OnlineWorld implements PlayableWorld {
 
   private applyWelcomeState(welcome: WelcomeMessage): void {
     this.frames.reset();
-    this.resyncPending = false;
-    this.applyUpdate(welcome.state);
+    this.outOfSequenceUpdates = 0;
+    // The connection is not online yet while the welcome is being read, so a refused state is asked for again once it is.
+    this.needsFullState = applyWorldState(this.sim, welcome.state) !== 'applied';
+    if (!this.needsFullState) this.frames.push(readViewFrame(this.sim));
   }
 
-  /** Writes a server update into the replica. The replica validates it; a delta that does not chain is answered with a resync request. */
+  /**
+   * Writes a server update into the replica. The replica validates it. A
+   * delta that does not chain is answered with one resync request, repeated
+   * every `RESYNC_RETRY_AFTER_UPDATES` further misses in case the server
+   * dropped the request, and the count starts over when a full state lands.
+   */
   private applyUpdate(payload: unknown): void {
     const result = applyWorldState(this.sim, payload as WorldStateUpdate);
     if (result === 'applied') {
-      if ((payload as WorldStateUpdate).kind === 'full') this.resyncPending = false;
+      if ((payload as WorldStateUpdate).kind === 'full') this.outOfSequenceUpdates = 0;
       this.frames.push(readViewFrame(this.sim));
       return;
     }
     if (result === 'malformed') {
-      this.malformedUpdates += 1;
+      this.refusedUpdates += 1;
       return;
     }
-    if (!this.resyncPending) this.resyncPending = this.connection.sendResync();
+    this.outOfSequenceUpdates += 1;
+    if (this.outOfSequenceUpdates % RESYNC_RETRY_AFTER_UPDATES === 1) this.connection.sendResync();
   }
 
-  /** Seated again after a drop: the key the player holds is still held, but the new seat never heard of it. */
+  /** Seated again: a welcome whose state was refused needs a full state, and the key the player still holds never reached the new seat. */
   private onStatus(status: ConnectionStatus): void {
-    if (status.kind === 'online' && (this.lastMove.x !== 0 || this.lastMove.y !== 0)) this.connection.sendMove(this.lastMove);
+    if (status.kind !== 'online') return;
+    if (this.needsFullState) {
+      this.needsFullState = false;
+      this.connection.sendResync();
+    }
+    if (this.lastMove.x !== 0 || this.lastMove.y !== 0) this.connection.sendMove(this.lastMove);
   }
 }
 
 /**
  * The welcome behind an untrusted payload, or undefined when it has not the
- * shape the wire promises: a non-negative integer slot, a level name, a
- * capacity and a state object. The capacity's range is checked by
- * `createReplica`, the state by `applyWorldState`.
+ * shape the wire promises: a seat number in `0..MAX_SLOT`, a level name of
+ * at most `MAX_LEVEL_NAME_LENGTH` characters, a capacity and a state object.
+ * The capacity's range is checked by `createReplica`, the state by
+ * `applyWorldState`.
  */
 function readWelcome(payload: unknown): WelcomeMessage | undefined {
   if (typeof payload !== 'object' || payload === null) return undefined;
   const { slot, level, capacity, state } = payload as Record<string, unknown>;
-  if (!Number.isSafeInteger(slot) || (slot as number) < 0) return undefined;
-  if (typeof level !== 'string' || typeof capacity !== 'number') return undefined;
+  if (!Number.isSafeInteger(slot) || (slot as number) < 0 || (slot as number) > MAX_SLOT) return undefined;
+  if (typeof level !== 'string' || level.length > MAX_LEVEL_NAME_LENGTH || typeof capacity !== 'number') return undefined;
   if (typeof state !== 'object' || state === null) return undefined;
   return { slot: slot as number, level, capacity, state: state as WelcomeMessage['state'] };
 }

@@ -89,8 +89,8 @@ try {
     const own = api.snapshot().entities.find((entity) => entity.components.Player && entity.components.Player.slot === api.localSlot());
     return api.defs.find((def) => def.id === own.components.DefRef.id).speed;
   });
-  const sendRate = 20;
-  const bufferSeconds = 2 / sendRate;
+  // The expected lag comes from the client's own buffer: ticks behind the newest server state, at the sim's tick length.
+  const bufferSeconds = await a.page.evaluate(() => window.__novaland.online.interpolationBufferTicks * window.__novaland.sim.dt);
 
   // A walks east; B samples A's replica position and A's drawn sprite at the display rate.
   const aEidInB = bTwo.players.find((player) => player.slot === aTwo.localSlot).eid;
@@ -121,7 +121,7 @@ try {
   // The replica changes 20 times a second; the drawn sprite should change on (nearly) every display frame, ~60 a second.
   const displayFrames = sampledSeconds * 60;
   results.push(check(`the drawn position changes far more often than the replica (${spriteXs.size} distinct sprite x vs ${replicaXs.size} replica x in ${sampledSeconds.toFixed(2)} s, ~${displayFrames.toFixed(0)} display frames): 20 Hz updates draw as 60 Hz motion`, spriteXs.size >= replicaXs.size * 2 && spriteXs.size >= displayFrames * 0.6));
-  results.push(check(`the drawn sprite lags the replica by about two send intervals (mean ${meanLag.toFixed(1)} px, expected ~${expectedLag.toFixed(1)} px for ${speed} m/s)`, meanLag > expectedLag * 0.7 && meanLag < expectedLag * 1.4));
+  results.push(check(`the drawn sprite lags the replica by the buffer, ${(bufferSeconds * 1000).toFixed(0)} ms = two send intervals (mean ${meanLag.toFixed(1)} px, expected ~${expectedLag.toFixed(1)} px for ${speed} m/s)`, meanLag > expectedLag * 0.7 && meanLag < expectedLag * 1.4));
   const monotone = samples.every((sample, index) => index === 0 || sample.spriteX >= samples[index - 1].spriteX);
   results.push(check('the drawn position never goes backwards while A walks east', monotone));
   await a.page.waitForTimeout(400); // the drawn frame catches up with the stop
@@ -168,9 +168,13 @@ try {
   const fIn = await stateOf(f.page);
   results.push(check("F got the freed seat on its next retry and sees everybody", fIn.status.kind === 'online' && fIn.localSlot === eSlot && fIn.players.length === SEATS, `F seat ${fIn.localSlot}, ${fIn.players.length} players`));
   await f.page.screenshot({ path: path.join(PROOF, '03-online-6-F-seated-after-E-left.png') });
-  await f.page.waitForTimeout(1500); // players spawn on one tile and are pushed apart; let F's avatar settle
+  // Walk F out of the spawn stack (where the camera is pinned at the level's west edge) so the check is live on both axes.
+  await f.page.keyboard.down('KeyD');
+  await f.page.waitForTimeout(900);
+  await f.page.keyboard.up('KeyD');
+  await f.page.waitForTimeout(500);
   const fCamera = await cameraOf(f.page);
-  results.push(check(`F's camera follows its own new seat (${fIn.localSlot}), not seat 0`, centredOnOwn(fCamera) && fCamera.localSlot === eSlot, JSON.stringify(fCamera)));
+  results.push(check(`F's camera follows the seat the server gave it (${fIn.localSlot}), not seat 0`, centredOnOwn(fCamera) && fCamera.seatFromServer === eSlot && fCamera.localSlot === fCamera.seatFromServer && fCamera.own.x > -10 * fCamera.pixelsPerMetre, JSON.stringify(fCamera)));
   report.steps.push({ step: 'leave', eSlot, goneAfterMs, drawnGoneAfterMs, aFour, fIn, fCamera });
 
   // 5. The server dies: every page shows the disconnected screen; it comes back: every page is seated again and can move.
@@ -184,10 +188,10 @@ try {
   await waitFor(() => isPortOpen(SERVER_PORT), (open) => open === false, 'server port closed');
   const attemptsAtKill = await a.page.evaluate(() => window.__novaland.online.status().attempt ?? 0);
   const joinsAtKill = a.joins.count;
-  await a.page.waitForTimeout(3500); // retries at 1 s and 2 s fall in here
+  const retrying = (page) => page.evaluate(() => ({ status: window.__novaland.online.status(), retryIn: window.__novaland.online.status().retryAt - Date.now() }));
+  const twoMore = await waitFor(() => retrying(a.page), (sample) => (sample.status.attempt ?? 0) >= attemptsAtKill + 2, 'two failed retries', 8000);
   const aStillDown = await screenOf(a.page);
-  const attemptsLater = await a.page.evaluate(() => window.__novaland.online.status().attempt ?? 0);
-  results.push(check(`while the server is down the page keeps retrying with a growing wait (${a.joins.count - joinsAtKill} more joins, attempt ${attemptsAtKill} -> ${attemptsLater}), no uncaught error`, aStillDown.screen === 'disconnected' && a.joins.count >= joinsAtKill + 2 && attemptsLater >= attemptsAtKill + 2, aStillDown.text));
+  results.push(check(`while the server is down the page keeps retrying and the wait grows (${a.joins.count - joinsAtKill} more joins, attempt ${attemptsAtKill} -> ${twoMore.status.attempt}, next try in ${Math.round(twoMore.retryIn)} ms), no uncaught error`, aStillDown.screen === 'disconnected' && a.joins.count >= joinsAtKill + 2 && twoMore.retryIn > 2000, aStillDown.text));
   server = startServer();
   results.push(check('room server restarted', await waitForPort(SERVER_PORT)));
   for (const player of [a, b, c, d, f]) await waitOnline(player.page, 25000);
@@ -200,11 +204,14 @@ try {
   await waitFor(() => stateOf(b.page), (state) => state.players.find((player) => player.slot === aBack.localSlot).intent.y === 0, 'B sees A stop');
   const bBackEnd = (await stateOf(b.page)).players.find((player) => player.slot === aBack.localSlot);
   results.push(check('play resumes: A walks south and B sees it', bBackEnd.y > bBackStart.y + 0.5, `${bBackStart.y.toFixed(2)} -> ${bBackEnd.y.toFixed(2)}`));
-  await a.page.waitForTimeout(400);
+  await a.page.keyboard.down('KeyD');
+  await a.page.waitForTimeout(900);
+  await a.page.keyboard.up('KeyD');
+  await a.page.waitForTimeout(500);
   const aBackCamera = await cameraOf(a.page);
-  results.push(check(`after the restart A's camera follows its new seat (${aBack.localSlot})`, centredOnOwn(aBackCamera) && aBackCamera.localSlot === aBack.localSlot, JSON.stringify(aBackCamera)));
+  results.push(check(`after the restart A's camera follows the seat the server gave it (${aBack.localSlot}), away from the spawn stack`, centredOnOwn(aBackCamera) && aBackCamera.seatFromServer === aBack.localSlot && aBackCamera.localSlot === aBackCamera.seatFromServer && aBackCamera.own.x > -10 * aBackCamera.pixelsPerMetre, JSON.stringify(aBackCamera)));
   await a.page.screenshot({ path: path.join(PROOF, '03-online-8-A-back-online.png') });
-  report.steps.push({ step: 'restart', tickBeforeKill, aDown, aStillDown, attemptsAtKill, attemptsLater, aBack, bBackStart, bBackEnd, aBackCamera });
+  report.steps.push({ step: 'restart', tickBeforeKill, aDown, aStillDown, attemptsAtKill, twoMore, aBack, bBackStart, bBackEnd, aBackCamera });
 
   const unexpected = errors.filter((line) => !/WebSocket|Failed to fetch|ERR_CONNECTION_REFUSED|net::ERR|Failed to load resource|matchmake|NetworkError/i.test(line));
   results.push(check('no uncaught page errors, and no console errors beyond the browser reporting the server outage', pageErrors.length === 0 && unexpected.length === 0, [...pageErrors, ...unexpected].join(' | ').slice(0, 300)));
@@ -286,7 +293,9 @@ function cameraOf(page) {
   return page.evaluate(() => {
     const api = window.__novaland;
     const camera = api.camera();
-    const own = api.snapshot().entities.find((entity) => entity.components.Player && entity.components.Player.slot === api.localSlot());
+    // The seat the server stated in its welcome, not the one the camera follows, so a camera stuck on a stale seat fails here.
+    const seatFromServer = api.online.status().slot;
+    const own = api.snapshot().entities.find((entity) => entity.components.Player && entity.components.Player.slot === seatFromServer);
     const scene = api.game.scene.getScene('world');
     // The sprite drawn nearest the own entity's replica position is the own sprite (sprites carry no ids); when still, the two coincide.
     const sprite = scene.children.list
@@ -295,6 +304,7 @@ function cameraOf(page) {
       .sort((left, right) => left.distance - right.distance)[0].candidate;
     return {
       localSlot: api.localSlot(),
+      seatFromServer,
       own: { x: sprite.x, y: sprite.y },
       centre: { x: camera.worldView.x + camera.worldView.width / 2, y: camera.worldView.y + camera.worldView.height / 2 },
       worldView: camera.worldView,

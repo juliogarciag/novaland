@@ -10,12 +10,6 @@ export interface ConnectionScreens {
 /** How often a "retrying in Ns" line is redrawn. */
 const COUNTDOWN_INTERVAL_MS = 250;
 
-/**
- * Plain DOM over the canvas, not a Phaser scene: it has to show before the
- * game exists (nothing to draw until a welcome brings the level) and it must
- * not depend on a render loop that stops with the connection. `data-screen`
- * names the screen for end-to-end checks.
- */
 export interface ConnectionScreenActions {
   /** The "Retry now" button of the full and disconnected screens. */
   readonly onRetry: () => void;
@@ -23,6 +17,12 @@ export interface ConnectionScreenActions {
   readonly onReload: () => void;
 }
 
+/**
+ * Plain DOM over the canvas, not a Phaser scene: it has to show before the
+ * game exists (nothing to draw until a welcome brings the level) and it must
+ * not depend on a render loop that stops with the connection. `data-screen`
+ * names the screen for end-to-end checks.
+ */
 export function createConnectionScreens(parent: HTMLElement, actions: ConnectionScreenActions): ConnectionScreens {
   const screen = document.createElement('div');
   screen.id = 'screen';
@@ -43,7 +43,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
 
   const render = (): void => {
     if (!shown) return;
-    message.textContent = describe(shown);
+    message.textContent = describeStatus(shown);
     retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected';
     reloadButton.hidden = shown.kind !== 'incompatible';
   };
@@ -69,7 +69,8 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   };
 }
 
-function describe(status: ConnectionStatus): string {
+/** The line the player reads for a status. */
+function describeStatus(status: ConnectionStatus): string {
   switch (status.kind) {
     case 'connecting':
       return status.attempt > 1 ? `Connecting to the world… (attempt ${status.attempt})` : 'Connecting to the world…';
@@ -87,3 +88,5 @@ function describe(status: ConnectionStatus): string {
 function secondsUntil(timestamp: number): number {
   return Math.max(0, Math.ceil((timestamp - Date.now()) / 1000));
 }
+
+export const __testing__ = { describeStatus };

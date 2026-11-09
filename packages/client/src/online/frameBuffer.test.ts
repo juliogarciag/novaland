@@ -82,11 +82,11 @@ describe('ViewFrameBuffer', () => {
     expect(buffer.tick).toBe(5);
   });
 
-  it('forgets frames it has drawn past and keeps at most a few seconds of them', () => {
+  it('keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up', () => {
     const buffer = newBuffer();
     for (let tick = 0; tick < 3000; tick += SEND_EVERY) buffer.push(frameAt(tick, 0));
     const drawn = buffer.nextFrame(FRAME_SECONDS) as ViewFrame;
-    expect(drawn.tick).toBeGreaterThan(3000 - 64 * SEND_EVERY);
+    expect(drawn.tick).toBeGreaterThanOrEqual(3000 - 16 * SEND_EVERY);
   });
 });
 

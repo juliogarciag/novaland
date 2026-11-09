@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ConnectionStatus } from './connection';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
 import { __testing__, OnlineWorld } from './OnlineWorld';
-import { INTERPOLATION_BUFFER_TICKS, WORLD_SEATS } from './tuning';
+import { INTERPOLATION_BUFFER_TICKS, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
 
 const { readWelcome } = __testing__;
 const FRAME = 1 / 60;
@@ -68,6 +68,38 @@ describe('OnlineWorld', () => {
     expect(room.sentTypes).toEqual([WIRE.resync, WIRE.resync]);
   });
 
+  it('asks again after enough further misses, in case the server dropped the request', async () => {
+    const { room, server } = await seated(0);
+    server.sim.step();
+    server.skipSend();
+    server.sim.step();
+    const missed = server.lastSent;
+    for (let miss = 0; miss < RESYNC_RETRY_AFTER_UPDATES * 2 + 1; miss += 1) {
+      room.receive(WIRE.delta, roundTrip(diffWorldState(missed, worldState(server.sim))));
+    }
+    expect(room.sentTypes).toEqual([WIRE.resync, WIRE.resync, WIRE.resync]);
+  });
+
+  it('asks for a full state once online when the welcome carried a state the replica refused, and is whole after it', async () => {
+    const sim = await createSim({ seed: 3 });
+    sim.step([{ type: 'player/join', slot: 0 }]);
+    const server = new FakeServer(sim);
+    const { join, rooms } = scriptedJoin(['room']);
+    const statuses: ConnectionStatus[] = [];
+    const { seated } = OnlineWorld.join({ endpoint: 'ws://world.test', join, onStatus: (status) => statuses.push(status) });
+    const room = await nextRoom({ rooms }, 0);
+    room.receive(WIRE.welcome, { slot: 0, level: sim.level.name, capacity: sim.capacity, state: { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] } });
+    const world = await seated;
+    expect(statuses.at(-1)).toEqual({ kind: 'online', slot: 0 });
+    expect(room.sentTypes).toEqual([WIRE.resync]);
+    expect(world.sim.hasState).toBe(false);
+    server.room = room;
+    server.sendFullState();
+    expect(world.sim.hasState).toBe(true);
+    expect(findPlayerEntity(world.sim, 0)).toBeDefined();
+    expect(world.nextFrame([], FRAME).renderables).toEqual(getRenderables(world.sim));
+  });
+
   it('counts malformed updates and sends nothing for them', async () => {
     const { world, room } = await seated(0);
     room.receive(WIRE.delta, { kind: 'nonsense' });
@@ -106,6 +138,7 @@ describe('OnlineWorld', () => {
       [{ slot: 0, level: 'moon-base', capacity: 1024, state: emptyState() }, /no level named "moon-base"/],
       [{ slot: 0, level: 'starter', capacity: 1e9, state: emptyState() }, /capacity/],
       [{ slot: -1, level: 'starter', capacity: 1024, state: emptyState() }, /does not understand/],
+      [{ slot: 0, level: 'x'.repeat(65), capacity: 1024, state: emptyState() }, /does not understand/],
     ] as const) {
       const statuses: ConnectionStatus[] = [];
       const { join, rooms } = scriptedJoin(['room']);
@@ -133,6 +166,9 @@ describe('readWelcome', () => {
     const welcome = { slot: 0, level: 'starter', capacity: 1024, state: emptyState() };
     expect(readWelcome(welcome)).toEqual(welcome);
     expect(readWelcome({ ...welcome, slot: 1.5 })).toBeUndefined();
+    expect(readWelcome({ ...welcome, slot: 1025 })).toBeUndefined();
+    expect(readWelcome({ ...welcome, level: 'x'.repeat(64) })).toBeDefined();
+    expect(readWelcome({ ...welcome, level: 'x'.repeat(65) })).toBeUndefined();
     expect(readWelcome({ ...welcome, slot: '0' })).toBeUndefined();
     expect(readWelcome({ ...welcome, level: 7 })).toBeUndefined();
     expect(readWelcome({ ...welcome, capacity: '1024' })).toBeUndefined();

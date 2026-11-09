@@ -51,6 +51,10 @@ function start(name, args, env) {
   };
   child.stdout.on('data', prefix);
   child.stderr.on('data', prefix);
+  child.on('error', (error) => {
+    process.stdout.write(`[${name}] could not start: ${error.message}\n`);
+    stopAll(1);
+  });
   child.on('exit', (code, signal) => {
     process.stdout.write(`[${name}] exited (${signal ?? code})\n`);
     stopAll(code ?? 0);

@@ -37,7 +37,7 @@ export class HudScene extends Phaser.Scene {
 }
 
 /** The HUD text: controls, the tick, and online the seats taken. */
-export function hudLine(world: PlayableWorld): string {
+function hudLine(world: PlayableWorld): string {
   const occupancy = world.occupancy;
   const online = occupancy ? `   ${occupancy.online}/${occupancy.seats} online` : '';
   return `WASD / arrows to move   tick ${world.sim.tick}${online}`;

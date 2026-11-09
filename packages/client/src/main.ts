@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { exposeDebugApi, type OnlineDebugApi } from './debug';
 import { OnlineWorld } from './online/OnlineWorld';
+import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
 import { createConnectionScreens } from './online/screens';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
@@ -50,6 +51,7 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
       status: () => world.connection.status,
       retryNow: () => world.connection.retryNow(),
       malformedUpdates: () => world.malformedUpdates,
+      interpolationBufferTicks: INTERPOLATION_BUFFER_TICKS,
     },
   };
 }

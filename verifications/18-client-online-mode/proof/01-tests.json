@@ -126,7 +126,32 @@
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
-    "name": "WorldRoom over a real connection answers world/resync with a full state the replica applies",
+    "name": "WorldRoom over a real connection closes a session that floods unknown message types once its budget is spent, and keeps the others",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection closes a connection that never acknowledges its join after 5000 ms and frees the seat",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection closes the connection of an oversized HTTP request before reading its body, and keeps serving joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom driven directly frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom driven directly fails a join that is waiting for a tick when the room is disposed instead of hanging it",
     "status": "passed"
   },
   {
@@ -246,6 +271,16 @@
   },
   {
     "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld asks again after enough further misses, in case the server dropped the request",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
     "name": "OnlineWorld counts malformed updates and sends nothing for them",
     "status": "passed"
   },
@@ -301,7 +336,22 @@
   },
   {
     "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection drops a room that never welcomes and tries again",
+    "name": "WorldConnection abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection abandons a join that never settles and tries again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection does not let a full world grow the wait of a later connection failure",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection leaves a room whose join settles only after close()",
     "status": "passed"
   },
   {
@@ -361,7 +411,12 @@
   },
   {
     "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer forgets frames it has drawn past and keeps at most a few seconds of them",
+    "name": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/screens.test.ts",
+    "name": "describeStatus tells the player what is going on, with the seats of a full world and the seconds until the next try",
     "status": "passed"
   },
   {
@@ -735,6 +790,76 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads a level object once and hands back the same grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile exactly once",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each collider box over its tiles in metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) spawns facing down with no move intent",
     "status": "passed"
@@ -817,76 +942,6 @@
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads a level object once and hands back the same grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging covers every solid tile exactly once",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) places each collider box over its tiles in metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely along a path and over grass",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
     "status": "passed"
   }
 ]

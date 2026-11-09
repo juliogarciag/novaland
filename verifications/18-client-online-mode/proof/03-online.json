@@ -30,7 +30,7 @@
             "y": 0
           }
         },
-        "tick": 68,
+        "tick": 80,
         "isReplica": true,
         "players": [
           {
@@ -51,7 +51,7 @@
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 65   1/5 online",
+        "hud": "WASD / arrows to move   tick 77   1/5 online",
         "screen": null
       },
       "stepped": "Error: A replica cannot step: it only shows what the authoritative sim sent. Use applyWorldState."
@@ -68,20 +68,20 @@
           "eid": 45,
           "slot": 0,
           "x": -13.5,
-          "y": -0.7355694770812988,
+          "y": -0.77696692943573,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 109,
+        "tick": 120,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -0.7355694770812988,
+            "y": -0.77696692943573,
             "intent": {
               "x": 0,
               "y": 0
@@ -91,7 +91,7 @@
             "eid": 46,
             "slot": 1,
             "x": -13.5,
-            "y": -0.26443052291870117,
+            "y": -0.2230330854654312,
             "intent": {
               "x": 0,
               "y": 0
@@ -101,7 +101,7 @@
         "sprites": [
           {
             "x": -216,
-            "y": -8.268716489945417,
+            "y": -8.374964909532107,
             "texture": "player"
           },
           {
@@ -110,7 +110,7 @@
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 109   2/5 online",
+        "hud": "WASD / arrows to move   tick 117   2/5 online",
         "screen": null
       },
       "bTwo": {
@@ -123,20 +123,20 @@
           "eid": 46,
           "slot": 1,
           "x": -13.5,
-          "y": -0.2064245194196701,
+          "y": -0.1796308308839798,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 112,
+        "tick": 123,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -0.7935754656791687,
+            "y": -0.8203691840171814,
             "intent": {
               "x": 0,
               "y": 0
@@ -146,7 +146,7 @@
             "eid": 46,
             "slot": 1,
             "x": -13.5,
-            "y": -0.2064245194196701,
+            "y": -0.1796308308839798,
             "intent": {
               "x": 0,
               "y": 0
@@ -156,106 +156,106 @@
         "sprites": [
           {
             "x": -216,
-            "y": -8.795282554626464,
+            "y": -9.54910488128662,
             "texture": "player"
           },
           {
             "x": -216,
-            "y": -7.204717445373535,
+            "y": -6.450895118713379,
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 109   2/5 online",
+        "hud": "WASD / arrows to move   tick 120   2/5 online",
         "screen": null
       },
       "speed": 5,
-      "sampledSeconds": 0.7,
-      "sampleCount": 96,
+      "sampledSeconds": 0.704,
+      "sampleCount": 93,
       "distinctSpriteX": 43,
       "distinctReplicaX": 15,
       "samples": [
         {
-          "tick": 130,
-          "replicaX": -12.333118438720703,
-          "spriteX": -207.8595243797546,
+          "tick": 138,
+          "replicaX": -12.332995414733887,
+          "spriteX": -207.52239229448224,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 133,
-          "replicaX": -12.083122253417969,
-          "spriteX": -202.11024099616733,
+          "tick": 141,
+          "replicaX": -12.082999229431152,
+          "spriteX": -200.63264350701675,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 139,
-          "replicaX": -11.5831298828125,
-          "spriteX": -195.1099979010844,
+          "tick": 147,
+          "replicaX": -11.583006858825684,
+          "spriteX": -194.97563443365246,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 142,
-          "replicaX": -11.333133697509766,
-          "spriteX": -188.3912368753013,
+          "tick": 153,
+          "replicaX": -11.083014488220215,
+          "spriteX": -187.50521033004236,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 148,
-          "replicaX": -10.833141326904297,
-          "spriteX": -182.81789624113125,
+          "tick": 156,
+          "replicaX": -10.83301830291748,
+          "spriteX": -180.94562050073833,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 151,
-          "replicaX": -10.583145141601562,
-          "spriteX": -177.4261339268824,
+          "tick": 162,
+          "replicaX": -10.333025932312012,
+          "spriteX": -175.87219304353005,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 154,
-          "replicaX": -10.333148956298828,
-          "spriteX": -172.1873739115296,
+          "tick": 165,
+          "replicaX": -10.083029747009277,
+          "spriteX": -170.47686770390695,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 160,
-          "replicaX": -9.83315658569336,
-          "spriteX": -166.68392379516854,
+          "tick": 168,
+          "replicaX": -9.833033561706543,
+          "spriteX": -165.2004703662438,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 163,
-          "replicaX": -9.583160400390625,
-          "spriteX": -161.33796865038656,
+          "tick": 174,
+          "replicaX": -9.333041191101074,
+          "spriteX": -158.5687118768587,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 169,
-          "replicaX": -9.083168029785156,
-          "spriteX": -153.32166142994305,
+          "tick": 177,
+          "replicaX": -9.08304500579834,
+          "spriteX": -152.07049700873216,
           "intentX": 1,
           "animation": "player/walk/right",
           "pixelsPerMetre": 16
         }
       ],
-      "meanLag": 8.626244862704775,
+      "meanLag": 8.78163666335864,
       "expectedLag": 8
     },
     {
@@ -269,21 +269,21 @@
         "ownEntity": {
           "eid": 45,
           "slot": 0,
-          "x": -8.333179473876953,
-          "y": -0.8503928780555725,
+          "x": -8.333056449890137,
+          "y": -0.8433108329772949,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 341,
+        "tick": 336,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333179473876953,
-            "y": -0.8503928780555725,
+            "x": -8.333056449890137,
+            "y": -0.8433108329772949,
             "intent": {
               "x": 0,
               "y": 0
@@ -292,8 +292,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.500823020935059,
-            "y": 0.7776121497154236,
+            "x": -13.50129508972168,
+            "y": 0.7632967829704285,
             "intent": {
               "x": 0,
               "y": 0
@@ -302,8 +302,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.499303817749023,
-            "y": -1.6023039817810059,
+            "x": -13.498929977416992,
+            "y": -1.5912072658538818,
             "intent": {
               "x": 0,
               "y": 0
@@ -312,8 +312,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.50020980834961,
-            "y": -0.01351142767816782,
+            "x": -13.500333786010742,
+            "y": -0.017485477030277252,
             "intent": {
               "x": 0,
               "y": 0
@@ -322,8 +322,8 @@
           {
             "eid": 49,
             "slot": 4,
-            "x": -13.499883651733398,
-            "y": -0.8114045262336731,
+            "x": -13.499805450439453,
+            "y": -0.8112928867340088,
             "intent": {
               "x": 0,
               "y": 0
@@ -332,32 +332,32 @@
         ],
         "sprites": [
           {
-            "x": -215.98886108398438,
-            "y": -25.52997667620529,
+            "x": -215.9833289098913,
+            "y": -25.072700044705492,
             "texture": "player"
           },
           {
-            "x": -133.33087158203125,
-            "y": -13.60628604888916,
+            "x": -133.3289031982422,
+            "y": -13.492973327636719,
             "texture": "player"
           },
           {
-            "x": -215.99813842773438,
-            "y": -12.96810010357741,
+            "x": -215.99688720703125,
+            "y": -12.901173573971526,
             "texture": "player"
           },
           {
-            "x": -216.00335693359375,
-            "y": -0.2327707038683741,
+            "x": -216.00534057617188,
+            "y": -0.37451290600320997,
             "texture": "player"
           },
           {
-            "x": -216.01316833496094,
-            "y": 12.337122699051328,
+            "x": -216.0202874231165,
+            "y": 11.841365925675072,
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 341   5/5 online",
+        "hud": "WASD / arrows to move   tick 336   5/5 online",
         "screen": null
       },
       "fFull": {
@@ -376,8 +376,8 @@
     {
       "step": "leave",
       "eSlot": 4,
-      "goneAfterMs": 80,
-      "drawnGoneAfterMs": 190,
+      "goneAfterMs": 112,
+      "drawnGoneAfterMs": 134,
       "aFour": {
         "status": {
           "kind": "online",
@@ -387,21 +387,21 @@
         "ownEntity": {
           "eid": 45,
           "slot": 0,
-          "x": -8.333179473876953,
-          "y": -0.8503928780555725,
+          "x": -8.333056449890137,
+          "y": -0.8433108329772949,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 482,
+        "tick": 471,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333179473876953,
-            "y": -0.8503928780555725,
+            "x": -8.333056449890137,
+            "y": -0.8433108329772949,
             "intent": {
               "x": 0,
               "y": 0
@@ -410,8 +410,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.500823020935059,
-            "y": 0.7875980734825134,
+            "x": -13.501306533813477,
+            "y": 0.7858274579048157,
             "intent": {
               "x": 0,
               "y": 0
@@ -420,8 +420,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.499303817749023,
-            "y": -1.6123988628387451,
+            "x": -13.498920440673828,
+            "y": -1.6141687631607056,
             "intent": {
               "x": 0,
               "y": 0
@@ -430,8 +430,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.50020980834961,
-            "y": -0.012401202693581581,
+            "x": -13.500333786010742,
+            "y": -0.014171254821121693,
             "intent": {
               "x": 0,
               "y": 0
@@ -440,27 +440,27 @@
         ],
         "sprites": [
           {
-            "x": -215.98886108398438,
-            "y": -25.798381805419922,
+            "x": -215.98272705078125,
+            "y": -25.82670021057129,
             "texture": "player"
           },
           {
-            "x": -133.33087158203125,
-            "y": -13.60628604888916,
+            "x": -133.3289031982422,
+            "y": -13.492973327636719,
             "texture": "player"
           },
           {
-            "x": -216.00335693359375,
-            "y": -0.19841425591716455,
+            "x": -216.00534057617188,
+            "y": -0.22673651303159872,
             "texture": "player"
           },
           {
-            "x": -216.01316833496094,
-            "y": 12.601569175720215,
+            "x": -216.02090454101562,
+            "y": 12.57323932647705,
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 482   4/5 online",
+        "hud": "WASD / arrows to move   tick 471   4/5 online",
         "screen": null
       },
       "fIn": {
@@ -472,21 +472,21 @@
         "ownEntity": {
           "eid": 49,
           "slot": 4,
-          "x": -13.499927520751953,
-          "y": -0.6908225417137146,
+          "x": -13.499897003173828,
+          "y": -0.653708279132843,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 794,
+        "tick": 776,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333179473876953,
-            "y": -0.8503928780555725,
+            "x": -8.333056449890137,
+            "y": -0.8433108329772949,
             "intent": {
               "x": 0,
               "y": 0
@@ -495,8 +495,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.500892639160156,
-            "y": 0.8721490502357483,
+            "x": -13.50137996673584,
+            "y": 0.8430570960044861,
             "intent": {
               "x": 0,
               "y": 0
@@ -505,8 +505,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.499303817749023,
-            "y": -1.6123988628387451,
+            "x": -13.498920440673828,
+            "y": -1.6141687631607056,
             "intent": {
               "x": 0,
               "y": 0
@@ -515,8 +515,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.500226974487305,
-            "y": 0.09387007355690002,
+            "x": -13.5003662109375,
+            "y": 0.0823066309094429,
             "intent": {
               "x": 0,
               "y": 0
@@ -525,8 +525,8 @@
           {
             "eid": 49,
             "slot": 4,
-            "x": -13.499927520751953,
-            "y": -0.6908225417137146,
+            "x": -13.499897003173828,
+            "y": -0.653708279132843,
             "intent": {
               "x": 0,
               "y": 0
@@ -539,17 +539,18 @@
       },
       "fCamera": {
         "localSlot": 4,
+        "seatFromServer": 4,
         "own": {
-          "x": -215.99884033203125,
-          "y": -11.332267761230469
+          "x": -144.23112079850756,
+          "y": -10.970286432060819
         },
         "centre": {
-          "x": -160,
-          "y": -11.333333333333371
+          "x": -144.33333333333326,
+          "y": -11
         },
         "worldView": {
-          "x": -320,
-          "y": -131.33333333333337,
+          "x": -304.33333333333326,
+          "y": -131,
           "width": 320,
           "height": 240
         },
@@ -565,7 +566,7 @@
     },
     {
       "step": "restart",
-      "tickBeforeKill": 905,
+      "tickBeforeKill": 879,
       "aDown": {
         "screen": "disconnected",
         "text": "Disconnected from the world. Retrying in 1s…",
@@ -574,36 +575,43 @@
       },
       "aStillDown": {
         "screen": "disconnected",
-        "text": "Disconnected from the world. Retrying in 1s…",
+        "text": "Disconnected from the world. Retrying in 4s…",
         "button": true,
         "hasApi": true
       },
-      "attemptsAtKill": 0,
-      "attemptsLater": 2,
+      "attemptsAtKill": 1,
+      "twoMore": {
+        "status": {
+          "kind": "disconnected",
+          "retryAt": 1794266063106,
+          "attempt": 3
+        },
+        "retryIn": 3957
+      },
       "aBack": {
         "status": {
           "kind": "online",
-          "slot": 2
+          "slot": 4
         },
-        "localSlot": 2,
+        "localSlot": 4,
         "ownEntity": {
-          "eid": 47,
-          "slot": 2,
+          "eid": 49,
+          "slot": 4,
           "x": -13.5,
-          "y": -0.011060093529522419,
+          "y": -0.6015291213989258,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 235,
+        "tick": 201,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -1.210587501525879,
+            "y": -1.2784128189086914,
             "intent": {
               "x": 0,
               "y": 0
@@ -613,7 +621,7 @@
             "eid": 46,
             "slot": 1,
             "x": -13.5,
-            "y": -0.8770275712013245,
+            "y": 0.24577696621418,
             "intent": {
               "x": 0,
               "y": 0
@@ -623,7 +631,7 @@
             "eid": 47,
             "slot": 2,
             "x": -13.5,
-            "y": -0.011060093529522419,
+            "y": -0.79477858543396,
             "intent": {
               "x": 0,
               "y": 0
@@ -633,7 +641,7 @@
             "eid": 48,
             "slot": 3,
             "x": -13.5,
-            "y": 0.1671585887670517,
+            "y": -0.0710567831993103,
             "intent": {
               "x": 0,
               "y": 0
@@ -643,7 +651,7 @@
             "eid": 49,
             "slot": 4,
             "x": -13.5,
-            "y": -0.5684838891029358,
+            "y": -0.6015291213989258,
             "intent": {
               "x": 0,
               "y": 0
@@ -653,66 +661,67 @@
         "sprites": [
           {
             "x": -216,
-            "y": -13.909142890743958,
+            "y": -15.671383846933654,
             "texture": "player"
           },
           {
             "x": -216,
-            "y": -11.43475786427884,
+            "y": -10.735353473344535,
             "texture": "player"
           },
           {
             "x": -216,
-            "y": -8.473711013793945,
+            "y": -8.925672666317503,
             "texture": "player"
           },
           {
             "x": -216,
-            "y": -3.850589175338658,
+            "y": -4.154225151374511,
             "texture": "player"
           },
           {
             "x": -216,
-            "y": -2.3510976768306584,
+            "y": -0.5133708831266682,
             "texture": "player"
           }
         ],
-        "hud": "WASD / arrows to move   tick 235   5/5 online",
+        "hud": "WASD / arrows to move   tick 201   5/5 online",
         "screen": null
       },
       "bBackStart": {
-        "eid": 47,
-        "slot": 2,
+        "eid": 49,
+        "slot": 4,
         "x": -13.5,
-        "y": -0.011060093529522419,
+        "y": -0.6015291213989258,
         "intent": {
           "x": 0,
           "y": 0
         }
       },
       "bBackEnd": {
-        "eid": 47,
-        "slot": 2,
+        "eid": 49,
+        "slot": 4,
         "x": -13.5,
-        "y": 1.3731213808059692,
+        "y": 0.2861119210720062,
         "intent": {
           "x": 0,
           "y": 0
         }
       },
       "aBackCamera": {
-        "localSlot": 2,
+        "localSlot": 4,
+        "seatFromServer": 4,
         "own": {
-          "x": -216,
-          "y": 21.90751194720564
+          "x": -142.66778564453125,
+          "y": 4.541965961456299
         },
         "centre": {
-          "x": -160,
-          "y": 22
+          "x": -142.66666666666674,
+          "y": 4.666666666666686
         },
         "worldView": {
-          "x": -320,
-          "y": -98,
+          "x": -302.66666666666674,
+          "y": -115.33333333333331,
           "width": 320,
           "height": 240
         },
@@ -734,21 +743,16 @@
       "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "F: Failed to load resource: the server responded with a status of 522 (unknown)",
       "F: Failed to load resource: the server responded with a status of 522 (unknown)",
-      "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED"
     ]
   }
 }

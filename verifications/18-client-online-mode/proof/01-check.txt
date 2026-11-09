@@ -1,0 +1,25 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (189 of 189)
+PASS  the connection joins, goes online on the welcome and forwards updates only from then on
+PASS  a full world is shown and asked again, by itself and on retryNow
+PASS  an unreachable or booting server is retried with a growing wait
+PASS  a drop leads to a fresh join and a new seat, and the dead room is ignored
+PASS  a silent room or a join that never settles is abandoned by the client; an unusable welcome stops for good; close() never comes back, even from a join that settles late
+PASS  a full world does not grow the wait of a later connection failure
+PASS  a move is sent as exactly { x, y } and only while online
+PASS  the full-world refusal is told apart from a booting server and junk
+PASS  the online world resolves on the welcome with a replica, the seat and the player count
+PASS  the online world never steps and follows deltas, drawing between them two send intervals behind
+PASS  a delta that does not chain is answered with one resync, asked again after enough misses; a refused welcome state is asked for once online; malformed updates are counted
+PASS  the screens describe every status
+PASS  player/move goes out without its slot; after a drop the new seat is taken and the held move repeated
+PASS  a server the client cannot play on is reported, first time and after a drop
+PASS  the frame buffer draws two send intervals behind at the display rate, holds on a stall, jumps on a gap, starts over on a restart
+PASS  view frames are read from a sim and interpolated by entity id
+PASS  the sim, replica, world room and client tests still pass
+PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (2e110fbf)
+
+ALL 23 CHECKS PASSED

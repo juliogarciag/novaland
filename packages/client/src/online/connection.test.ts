@@ -2,10 +2,9 @@ import { WIRE } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
-import { FULL_WORLD_RETRY_MS, RECONNECT_DELAYS_MS, WELCOME_TIMEOUT_MS } from './tuning';
+import { FULL_WORLD_RETRY_MS, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
 
 const { isWorldFullRefusal } = __testing__;
-const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 describe('WorldConnection', () => {
   beforeEach(() => {
@@ -82,7 +81,7 @@ describe('WorldConnection', () => {
     const first = rooms[0]!;
     first.receive(WIRE.welcome, WELCOME);
     first.drop(1006);
-    expect(connection.status).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 0 });
+    expect(connection.status).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 1 });
     expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
     first.receive(WIRE.delta, { stale: true });
     expect(handlers.onUpdate).not.toHaveBeenCalled();
@@ -92,19 +91,57 @@ describe('WorldConnection', () => {
     second.receive(WIRE.welcome, { ...WELCOME, slot: 4 });
     expect(connection.status).toEqual({ kind: 'online', slot: 4 });
     first.drop(1006);
+    first.receive(WIRE.welcome, { ...WELCOME, slot: 1 });
     expect(connection.status).toEqual({ kind: 'online', slot: 4 });
+    expect(handlers.onWelcome).toHaveBeenCalledTimes(2);
     expect(statuses.map((status) => status.kind)).toEqual(['connecting', 'online', 'disconnected', 'connecting', 'online']);
   });
 
-  it('drops a room that never welcomes and tries again', async () => {
-    const { connection, rooms, endpoints } = connect(['room', 'room']);
+  it('abandons a room that never welcomes, even one whose server never closes the socket, and tries again', async () => {
+    const { connection, rooms, endpoints, handlers } = connect(['room', 'room']);
     await settle();
-    await vi.advanceTimersByTimeAsync(WELCOME_TIMEOUT_MS);
-    expect(rooms[0]!.left).toBe(true);
-    expect(connection.status.kind).toBe('disconnected');
+    const silent = rooms[0]!;
+    silent.closesOnLeave = false;
+    await vi.advanceTimersByTimeAsync(JOIN_TIMEOUT_MS);
+    expect(silent.left).toBe(true);
+    expect(connection.status).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 1 });
+    silent.receive(WIRE.welcome, WELCOME); // too late: the welcome of an abandoned room means nothing
+    expect(handlers.onWelcome).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
     expect(endpoints).toHaveLength(2);
     expect(rooms[1]!.left).toBe(false);
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    expect(connection.status).toEqual({ kind: 'online', slot: 2 });
+  });
+
+  it('abandons a join that never settles and tries again', async () => {
+    const { connection, endpoints } = connect(['hangs', 'room']);
+    await vi.advanceTimersByTimeAsync(JOIN_TIMEOUT_MS - 1);
+    expect(connection.status).toEqual({ kind: 'connecting', attempt: 1 });
+    await vi.advanceTimersByTimeAsync(1);
+    expect(connection.status.kind).toBe('disconnected');
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(endpoints).toHaveLength(2);
+    expect(connection.status).toEqual({ kind: 'connecting', attempt: 2 });
+  });
+
+  it('does not let a full world grow the wait of a later connection failure', async () => {
+    const { connection } = connect(['full', 'full', 'full', 'unreachable']);
+    for (let full = 0; full < 3; full += 1) {
+      await settle();
+      expect(connection.status.kind).toBe('full');
+      await vi.advanceTimersByTimeAsync(FULL_WORLD_RETRY_MS);
+    }
+    await settle();
+    expect(connection.status).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 1 });
+  });
+
+  it('leaves a room whose join settles only after close()', async () => {
+    const { connection, rooms } = connect(['room']);
+    connection.close();
+    await settle();
+    expect(rooms[0]!.left).toBe(true);
+    expect(connection.status.kind).toBe('connecting');
   });
 
   it('stops for good on a welcome the world cannot use', async () => {
@@ -153,6 +190,8 @@ describe('isWorldFullRefusal', () => {
 });
 
 // ---- Helpers ----
+
+const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
   const script = scriptedJoin(outcomes);

@@ -18,7 +18,7 @@ The browser has to play two worlds with one code base: its own sim when `pnpm de
 
 - `@colyseus/sdk` is confined to `packages/client/src/online/` by lint (`eslint.config.js` refuses `@colyseus/*` anywhere else in the client) and, by convention, to one file there: `online/connection.ts`, behind a four-method `JoinedRoom` interface (`onMessage`, `onLeave`, `send`, `leave`). Tests join a `FakeRoom`. When the transport changes (WebTransport, another SDK), one file changes.
 - The SDK's automatic reconnection is switched off on every room. The server does not expose `reconnect` and keeps no session to reconnect to (ADR 0005), so a reconnection would only fail a few times before the client could try a fresh join. Every return is a new join and a new seat.
-- `WorldConnection` owns the retry policy: a full world is asked again every `FULL_WORLD_RETRY_MS` (and at once on the screen's button, which reaches the connection from the first moment, before anyone is seated), an unreachable server or a dropped connection after `RECONNECT_DELAYS_MS` (1, 2, 4, 8 s, then 8 s), a room that sends no welcome within `WELCOME_TIMEOUT_MS` is dropped. The refusals are mapped as ADR 0005 fixes them: code 522 with "locked" (or the room guard's `JOIN_REFUSAL.worldFull`) is a full world; the same code with "not found" is a server still booting and is retried like an unreachable one.
+- `WorldConnection` owns the retry policy: a full world is asked again every `FULL_WORLD_RETRY_MS` (and at once on the screen's button, which reaches the connection from the first moment, before anyone is seated), an unreachable server or a dropped connection after `RECONNECT_DELAYS_MS` (1, 2, 4, 8 s, then 8 s, counted per run of failures: a full world does not grow the wait), a join that does not settle or a room that sends no welcome within `JOIN_TIMEOUT_MS` is abandoned by the client itself (it never waits for the server to close the socket). The refusals are mapped as ADR 0005 fixes them: code 522 with "locked" (or the room guard's `JOIN_REFUSAL.worldFull`) is a full world; the same code with "not found" is a server still booting and is retried like an unreachable one.
 
 ### One replica for the life of the page
 
@@ -40,7 +40,7 @@ The browser has to play two worlds with one code base: its own sim when `pnpm de
 
 ## Consequences
 
-- A feature that works solo works online if it reads the sim through `@novaland/sim` and sends its input as commands: replication is feature-agnostic (ADR 0004). A new player-facing command still needs its wire message and a line in `OnlineWorld.advance` that sends it, until a generic command envelope exists.
+- A feature that works solo works online if it reads the sim through `@novaland/sim` and sends its input as commands: replication is feature-agnostic (ADR 0004). A new player-facing command still needs its wire message and a line in `OnlineWorld.nextFrame` that sends it, until a generic command envelope exists.
 - AGENTS.md rule 4 gains an online clause: the server owns the tick, the client only reads; `step` on a replica throws.
 - `window.__novaland` works in both modes with the same fields (`sim` is the replica online) plus `localSlot()` and, online, `online.status()`, `online.retryNow()` and `online.malformedUpdates()`.
 - `pnpm dev:online` (`scripts/dev-online.mjs`) runs the server and the client together for local play; `SERVER_PORT` and `PORT` pin them.
