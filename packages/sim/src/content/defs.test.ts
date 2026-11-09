@@ -10,7 +10,7 @@ describe('entity definitions', () => {
   it('have unique, stable ids inside their feature block and resolve by id', () => {
     const ids = entityDefs.map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(getDef(DefId.Sky).name).toBe('player-sky');
+    expect(getDef(DefId.PlayerSky).name).toBe('player-sky');
     for (const avatarDefId of avatarDefIds) {
       expect(avatarDefId).toBeGreaterThanOrEqual(1);
       expect(avatarDefId).toBeLessThan(100);

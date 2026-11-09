@@ -11,14 +11,14 @@ export const MIN_MOVE_INTENT = 1e-3;
  * number, a retired one keeps its number out of use.
  */
 export const PlayerDefId = {
-  Sky: 1,
-  Rose: 2,
-  Moss: 3,
-  Sun: 4,
-  Plum: 5,
-  Ember: 6,
-  Teal: 7,
-  Slate: 8,
+  PlayerSky: 1,
+  PlayerRose: 2,
+  PlayerMoss: 3,
+  PlayerSun: 4,
+  PlayerPlum: 5,
+  PlayerEmber: 6,
+  PlayerTeal: 7,
+  PlayerSlate: 8,
 } as const;
 
 /** How fast every avatar walks, in metres per second, and how big its body is, in metres. Avatars differ in looks only. */
@@ -34,14 +34,14 @@ const AVATAR_RADIUS = 0.4;
  * the shirt colour, for views that draw a flat shape instead of the sheet.
  */
 const avatarLooks: readonly { readonly id: number; readonly name: string; readonly color: number }[] = [
-  { id: PlayerDefId.Sky, name: 'player-sky', color: 0x3b82f6 },
-  { id: PlayerDefId.Rose, name: 'player-rose', color: 0xe11d48 },
-  { id: PlayerDefId.Moss, name: 'player-moss', color: 0x16a34a },
-  { id: PlayerDefId.Sun, name: 'player-sun', color: 0xf59e0b },
-  { id: PlayerDefId.Plum, name: 'player-plum', color: 0x7c3aed },
-  { id: PlayerDefId.Ember, name: 'player-ember', color: 0xea580c },
-  { id: PlayerDefId.Teal, name: 'player-teal', color: 0x0d9488 },
-  { id: PlayerDefId.Slate, name: 'player-slate', color: 0x475569 },
+  { id: PlayerDefId.PlayerSky, name: 'player-sky', color: 0x3b82f6 },
+  { id: PlayerDefId.PlayerRose, name: 'player-rose', color: 0xe11d48 },
+  { id: PlayerDefId.PlayerMoss, name: 'player-moss', color: 0x16a34a },
+  { id: PlayerDefId.PlayerSun, name: 'player-sun', color: 0xf59e0b },
+  { id: PlayerDefId.PlayerPlum, name: 'player-plum', color: 0x7c3aed },
+  { id: PlayerDefId.PlayerEmber, name: 'player-ember', color: 0xea580c },
+  { id: PlayerDefId.PlayerTeal, name: 'player-teal', color: 0x0d9488 },
+  { id: PlayerDefId.PlayerSlate, name: 'player-slate', color: 0x475569 },
 ];
 
 function avatarSprite(key: string): SpriteDef {

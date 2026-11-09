@@ -152,7 +152,7 @@ describe('player movement (headless)', () => {
 
 const { createSimInternal } = __testing__;
 
-const playerDef = getDef(DefId.Sky);
+const playerDef = getDef(DefId.PlayerSky);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
 const SPAWN = spawnPoint(starterLevel);
