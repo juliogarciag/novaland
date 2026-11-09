@@ -44,7 +44,7 @@ interface Session {
   lastSent: WorldState | undefined;
   /** When the welcome went out; a session that has not acknowledged the join `JOIN_ACK_TIMEOUT_MS` later is closed. */
   welcomedAt: number | undefined;
-  /** Set by `world/resync` (or by a send the session could not receive): the next send carries a full state instead of a delta. */
+  /** Set by `world/resync`: the next send carries a full state instead of a delta. */
   wantsFullState: boolean;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
@@ -204,8 +204,8 @@ export class WorldRoom extends Room {
    * for one, a delta from the last state sent to each of the others. Sessions
    * that last saw the same tick share one diff. A session that has not yet
    * acknowledged its join cannot receive anything (Colyseus would buffer it
-   * without bound), so it gets nothing now and a full state once it can; one
-   * that stays unacknowledged past `JOIN_ACK_TIMEOUT_MS` is closed.
+   * without bound), so it gets nothing until it can; one that stays
+   * unacknowledged past `JOIN_ACK_TIMEOUT_MS` is closed.
    */
   private sendWorldUpdates(sim: SimHandle, now: number): void {
     const next = worldState(sim);
@@ -214,7 +214,7 @@ export class WorldRoom extends Room {
       const session = this.sessions.get(client.sessionId);
       if (!session?.lastSent) continue;
       if (client.state !== ClientState.JOINED) {
-        session.wantsFullState = true;
+        // Nothing is sent, and `lastSent` stays at the welcome, so the first delta after the acknowledgement chains from it.
         if (session.welcomedAt !== undefined && now - session.welcomedAt > JOIN_ACK_TIMEOUT_MS) client.leave(CloseCode.WITH_ERROR);
         continue;
       }
@@ -269,7 +269,7 @@ export class WorldRoom extends Room {
    * Every type the room does not handle. Without this handler Colyseus
    * disconnects the sender; with it the message is dropped and counted. No
    * real client sends these, so a session that keeps sending them past its
-   * budget is closed: each one may already have cost a decode error log line.
+   * budget is closed rather than decoded and dropped forever.
    */
   private onUnknownMessage(client: Client): void {
     this.dropped.unknownType += 1;

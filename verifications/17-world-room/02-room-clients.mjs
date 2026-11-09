@@ -58,6 +58,9 @@ if (boot) {
 server.kill('SIGTERM');
 const exitCode = await new Promise((resolve) => server.on('exit', (code, signal) => resolve(code ?? signal)));
 transcript.push(`server output:\n${serverOutput}`);
-results.push(check('SIGTERM stops the server cleanly', exitCode === 0 && serverOutput.includes('world-room-stopping'), String(exitCode)));
+const stoppingLine = serverOutput.split('\n').find((line) => line.includes('world-room-stopping'));
+const stopping = stoppingLine ? JSON.parse(stoppingLine.slice(stoppingLine.indexOf('{'))) : null;
+results.push(check('SIGTERM stops the server cleanly', exitCode === 0 && stopping !== null, String(exitCode)));
+results.push(check("the server's own counters agree: junk dropped by reason and the flood's excess over budget", stopping?.dropped?.unknownType === 2 && stopping?.dropped?.oversized === 1 && stopping?.dropped?.malformed === 9 && stopping?.dropped?.overBudget > 0, JSON.stringify(stopping?.dropped)));
 writeProof('02-room-clients-transcript.txt', transcript.join('\n\n'));
 process.exit(summarize(results) ? 0 : 1);

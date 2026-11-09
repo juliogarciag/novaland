@@ -1,6 +1,6 @@
 import { matchMaker, Server } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
-import type { IncomingMessage, Server as HttpServer } from 'node:http';
+import type { IncomingMessage, Server as HttpServer, ServerResponse } from 'node:http';
 import { MAX_FRAME_BYTES, MAX_REQUEST_BODY_BYTES, WORLD_ROOM_NAME } from './tuning';
 import { WorldRoom, type WorldRoomOptions } from './WorldRoom';
 
@@ -56,23 +56,55 @@ export async function startWorldServer({ port, seed }: WorldServerOptions): Prom
 
 /**
  * Colyseus reads the whole body of every matchmaking POST before it looks at
- * the method, with no size limit. This runs before its handler (it is
- * prepended after `listen`, which is when Colyseus binds its routes) and
- * closes the connection of any request that declares or streams more than
- * `maxBytes`, so the body is never buffered. No response is written: Colyseus's
- * handler still runs, finds the socket gone and answers nothing.
+ * the method, with no size limit, and logs a stack trace when that read is
+ * cut short. So the body is read here first, the way Colyseus's own
+ * `prereadRequestBodies` does, but capped: a request that declares or streams
+ * more than `maxBytes` is answered 413 and its connection closed, and Colyseus
+ * never sees it. Everything else reaches Colyseus's handlers with `body`
+ * already set, which its router honours. Installed after `listen`, which is
+ * when Colyseus binds its routes.
  */
 function refuseLargeRequestBodies(httpServer: HttpServer, maxBytes: number): void {
-  httpServer.prependListener('request', (request: IncomingMessage) => {
-    const declared = Number(request.headers['content-length']);
-    if (Number.isFinite(declared) && declared > maxBytes) {
+  const colyseusHandlers = httpServer.listeners('request') as Array<(request: IncomingMessage, response: ServerResponse) => void>;
+  httpServer.removeAllListeners('request');
+  httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
+    const handOver = () => {
+      for (const handler of colyseusHandlers) handler.call(httpServer, request, response);
+    };
+    const refuse = () => {
+      response.writeHead(413, { connection: 'close', 'content-length': '0' });
+      response.end();
       request.socket.destroy();
+    };
+    const declaredBytes = Number(request.headers['content-length']);
+    if (Number.isFinite(declaredBytes) && declaredBytes > maxBytes) {
+      refuse();
       return;
     }
-    let received = 0;
+    const method = request.method ?? 'GET';
+    const hasBody = method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS' && (declaredBytes > 0 || request.headers['transfer-encoding'] !== undefined);
+    if (!hasBody) {
+      handOver();
+      return;
+    }
+    const chunks: Buffer[] = [];
+    let receivedBytes = 0;
+    let refused = false;
+    request.on('error', () => undefined);
     request.on('data', (chunk: Buffer) => {
-      received += chunk.length;
-      if (received > maxBytes) request.socket.destroy();
+      if (refused) return;
+      receivedBytes += chunk.length;
+      if (receivedBytes > maxBytes) {
+        refused = true;
+        refuse();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on('end', () => {
+      if (refused) return;
+      (request as IncomingMessage & { body?: string }).body = Buffer.concat(chunks).toString('utf8');
+      handOver();
     });
   });
 }

@@ -27,6 +27,7 @@ import {
   MAX_REQUEST_BODY_BYTES,
   MAX_SEATS,
   RESYNC_BURST,
+  RESYNCS_PER_SECOND,
   WORLD_ROOM_ID,
 } from './tuning';
 import { WorldRoom } from './WorldRoom';
@@ -182,10 +183,13 @@ describe('WorldRoom over a real connection', () => {
     for (let seat = 0; seat < 2; seat += 1) players.push(await join(server.port));
     const [flooder, watcher] = players as [Player, Player];
     const left = new Promise<number>((resolve) => flooder.room.onLeave((code) => resolve(code)));
-    for (let i = 0; i < INBOUND_BURST * 2; i += 1) flooder.room.send('nonsense', i);
+    // Between the room's budget and Colyseus's own per-second ceiling, so only the room's guard can close the socket.
+    const flood = INBOUND_BURST + 10;
+    expect(flood).toBeLessThan(DISCONNECT_MESSAGES_PER_SECOND);
+    for (let i = 0; i < flood; i += 1) flooder.room.send('nonsense', i);
     expect(await left).toBe(CloseCode.WITH_ERROR);
     expect(server.room.dropped.unknownType).toBeGreaterThan(INBOUND_BURST);
-    expect(server.room.dropped.unknownType).toBeLessThanOrEqual(INBOUND_BURST * 2);
+    expect(server.room.dropped.unknownType).toBeLessThanOrEqual(flood);
     await waitUntil(() => findPlayerEntity(watcher.replica, flooder.welcome.slot) === undefined);
     players.splice(players.indexOf(flooder), 1);
     await waitForUpdates(players, 2);
@@ -209,11 +213,13 @@ describe('WorldRoom over a real connection', () => {
     expect(player.applyResults.every((result) => result === 'applied')).toBe(true);
     expect(player.replica.tick).toBe(player.updates.at(-1)?.tick);
     // A request every send for a while: the resync budget, not the move budget, bounds the full states that come back.
+    const floodStartedAt = performance.now();
     for (let i = 0; i < 20; i += 1) {
       player.room.send(WIRE.resync);
       await waitForUpdates(players, 1);
     }
-    expect(fullStates() - before).toBeLessThanOrEqual(RESYNC_BURST + 1);
+    const refilled = Math.ceil(((performance.now() - floodStartedAt) / 1000) * RESYNCS_PER_SECOND) + 1;
+    expect(fullStates() - before).toBeLessThanOrEqual(RESYNC_BURST + refilled);
     expect(server.room.dropped.overBudget).toBeGreaterThan(10);
   });
 
@@ -225,12 +231,13 @@ describe('WorldRoom over a real connection', () => {
     const socket = new WebSocket(`ws://127.0.0.1:${server.port}/${reservation.processId}/${reservation.roomId}?sessionId=${reservation.sessionId}`);
     const closed = new Promise<number>((resolve) => socket.addEventListener('close', (event) => resolve(event.code)));
     await new Promise<void>((resolve) => socket.addEventListener('open', () => resolve()));
-    // The seat is taken and the player spawned, but nothing is sent to a session that cannot receive yet.
+    // The seat is taken and the player spawned, but nothing is sent to a session that cannot receive yet: Colyseus
+    // would hold every send in its per-client queue until the acknowledgement, so that queue must stay at the welcome alone.
     await waitUntil(() => server!.room.seatsTaken === 2 && findPlayerEntity(watcher.replica, 1) !== undefined);
-    const frames: number[] = [];
-    socket.addEventListener('message', (event) => frames.push((event.data as Blob).size));
+    const queued = () => (server!.room.clients.find((client) => client.sessionId === reservation.sessionId) as { _enqueuedMessages?: unknown[] } | undefined)?._enqueuedMessages?.length;
+    expect(queued()).toBe(1);
     await waitForUpdates(players, 10);
-    expect(frames.length).toBeLessThanOrEqual(1); // at most the JOIN_ROOM handshake
+    expect(queued()).toBe(1);
     expect(await closed).toBe(CloseCode.WITH_ERROR);
     await waitUntil(() => server!.room.seatsTaken === 1 && findPlayerEntity(watcher.replica, 1) === undefined);
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
@@ -240,7 +247,8 @@ describe('WorldRoom over a real connection', () => {
     server = await startWorldServer({ port: 0, seed: 10 });
     const url = `http://127.0.0.1:${server.port}/matchmake/joinById/${WORLD_ROOM_ID}`;
     const big = 'x'.repeat(MAX_REQUEST_BODY_BYTES * 256);
-    await expect(fetch(url, { method: 'POST', body: big, headers: { 'content-type': 'application/json' } })).rejects.toThrow();
+    const refused = await fetch(url, { method: 'POST', body: big, headers: { 'content-type': 'application/json' } }).then((response) => response.status, () => 'connection cut');
+    expect([413, 'connection cut']).toContain(refused);
     // Chunked, so no content-length to refuse up front: the stream is cut once it passes the cap.
     const chunked = new ReadableStream<Uint8Array>({
       start(controller) {
@@ -248,7 +256,10 @@ describe('WorldRoom over a real connection', () => {
         controller.close();
       },
     });
-    await expect(fetch(url, { method: 'POST', body: chunked, duplex: 'half', headers: { 'content-type': 'application/json' } } as RequestInit)).rejects.toThrow();
+    const refusedChunked = await fetch(url, { method: 'POST', body: chunked, duplex: 'half', headers: { 'content-type': 'application/json' } } as RequestInit).then((response) => response.status, () => 'connection cut');
+    expect([413, 'connection cut']).toContain(refusedChunked);
+    // A small body still reaches Colyseus whole: the reservation it answers with is what a join starts from.
+    expect(await reserveSeat(server.port)).toMatchObject({ roomId: WORLD_ROOM_ID });
     expect(server.room.seatsTaken).toBe(0);
     players.push(await join(server.port));
     expect(players[0]?.welcome.slot).toBe(0);

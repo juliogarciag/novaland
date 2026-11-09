@@ -1,4 +1,4 @@
-PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":60292,"roomId":"world","seed":1191069810,"seats":5,"tickRate":60,"sendRate":20})
+PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":65345,"roomId":"world","seed":204512184,"seats":5,"tickRate":60,"sendRate":20})
 PASS  the test clients ran to the end
 PASS  five players joined by id and got seats 0..4
 PASS  the last welcome already holds every player's entity
@@ -10,7 +10,8 @@ PASS  oversized, unknown, slot-carrying and malformed messages were dropped: nei
 PASS  a move flood was absorbed: the world kept running and nobody was disconnected  (55 moves)
 PASS  a frame over the transport limit closed only its own connection (1009)
 PASS  every delta chained: no replica ever reported out-of-sequence or malformed
-PASS  deltas stay small next to the welcome  (deltas 154-794 bytes, welcome 8498 bytes)
+PASS  deltas stay small next to the welcome  (deltas 154-834 bytes, welcome 8498 bytes)
 PASS  SIGTERM stops the server cleanly  (0)
+PASS  the server's own counters agree: junk dropped by reason and the flood's excess over budget  ({"unknownType":2,"oversized":1,"malformed":9,"overBudget":15})
 
-ALL 14 CHECKS PASSED
+ALL 15 CHECKS PASSED
