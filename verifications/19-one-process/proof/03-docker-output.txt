@@ -1,0 +1,47 @@
+$ docker build -t novaland:19-verify . (exit 0)
+#19 CACHED
+
+#20 [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
+#20 CACHED
+
+#21 [base 5/7] COPY packages/sim/package.json packages/sim/
+#21 CACHED
+
+#22 [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+#22 CACHED
+
+#23 [base 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#23 CACHED
+
+#24 [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
+#24 CACHED
+
+#25 exporting to image
+#25 exporting layers done
+#25 exporting manifest sha256:3b4eb45c773b7a5b4ad591e4289151f727578efd5fe7517b7a5645b2c7982288 done
+#25 exporting config sha256:991510d130038afd206f9235348718f95749ae28d5c709b39de1beb523e563ff done
+#25 exporting attestation manifest sha256:9f15239ef57463da9d0b85d794fdc380e67fa1c87d60326e640b9fcd23c4d639 done
+#25 exporting manifest list sha256:820ff0b9e319d915f92bd5c605f4e8afcdd1f87fdb21d62b1fce5a0208f72965
+#25 exporting manifest list sha256:820ff0b9e319d915f92bd5c605f4e8afcdd1f87fdb21d62b1fce5a0208f72965 done
+#25 naming to docker.io/library/novaland:19-verify done
+#25 unpacking to docker.io/library/novaland:19-verify done
+#25 DONE 0.0s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/1zmzvuszzqh3jjxt5tz2enbxd
+
+
+$ docker run -d --rm --name novaland-19-verify -e PORT=5419 -p 5419:5419 novaland:19-verify (exit 0)
+777c8ec8cdd535fad7ffd26c81044c66ac69800b21175b9a9c9e0cd4c24d17be
+
+
+$ docker exec novaland-19-verify sh -c ... (exit 0)
+node
+NODE_ENV=production
+v24.22.2
+server deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport 
+store: @better-auth+utils @better-fetch+fetch @colyseus+auth @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @pm2+io @standard-schema+spec @types+jsonwebtoken @types+ms @types+node @types+ws accepts asn1.js async bn.js body-parser brorand buffer-equal-constant-time bytes call-bind-apply-helpers call-bound connect-redis content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ecdsa-sig-formatter ee-first elliptic encodeurl es-define-property es-errors es-object-atoms escape-html etag eventemitter2 express express-jwt express-session express-unless finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd grant has-symbols hash.js hasown hmac-drbg http-errors iconv-lite inherits ipaddr.js is-core-module is-promise jsonwebtoken jwa jwk-to-pem jws lock.yaml lodash lodash.includes lodash.isboolean lodash.isinteger lodash.isnumber lodash.isplainobject lodash.isstring lodash.once lru-cache math-intrinsics media-typer merge-descriptors mime-db mime-types minimalistic-assert minimalistic-crypto-utils module-details-from-path ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules oauth-sign object-inspect on-finished on-headers once parseurl path-parse path-to-regexp proxy-addr qs random-bytes range-parser raw-body request-compose request-oauth require-in-the-middle resolve rou3 router safe-buffer safer-buffer semver send serve-static set-cookie-parser setprototypeof shimmer side-channel side-channel-list side-channel-map side-channel-weakmap signal-exit statuses supports-preserve-symlinks-flag toidentifier tslib type-is typescript uid-safe undici-types unpipe uuid vary wrappy ws yallist zod 
+files: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map 
+
+
+container logs before stop:
+{"event":"world-room-listening","port":5419,"roomId":"world","seed":1429287511,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[]}

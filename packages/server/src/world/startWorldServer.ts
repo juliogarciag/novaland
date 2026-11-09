@@ -18,6 +18,8 @@ export interface WorldServer {
   readonly roomId: string;
   /** The room instance, for smoke runs and tests in the same process. */
   readonly room: WorldRoom;
+  /** The HTTP server the room listens on, so the boot can put the client files, the health check and the origin check in front of Colyseus. */
+  readonly httpServer: HttpServer;
   /** Disconnects every client, disposes the room (which destroys the sim) and closes the port. */
   stop(): Promise<void>;
 }
@@ -50,6 +52,7 @@ export async function startWorldServer({ port, seed }: WorldServerOptions): Prom
     port: boundPort,
     roomId: listing.roomId,
     room,
+    httpServer,
     stop: () => gameServer.gracefullyShutdown(false),
   };
 }

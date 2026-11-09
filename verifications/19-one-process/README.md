@@ -1,0 +1,21 @@
+# Verifications for #19 - One deployable process: serve the built client and the world room from one port
+
+Ticket: https://github.com/juliogarciag/novaland/issues/19. Stacked on #18 (`18-client-online-mode`, PR #28), #17 (PR #27) and #16 (PR #24).
+
+The highest-level user of this ticket is whoever deploys the game: they build one image, run it with a `PORT`, point a health check at `/healthz`, and two people open the URL and see each other move, with nothing else configured. So the proof is the real image, built and run with Docker, driven from the served URL by Playwright, with a Node observer of the authoritative world as the witness (production builds carry no debug API, so the pages cannot be asked).
+
+Run everything (from anywhere; installs Playwright on first run; `03` needs Docker):
+
+```bash
+bash verifications/19-one-process/run.sh
+```
+
+Each script prints `PASS`/`FAIL` lines, exits non-zero on failure, and writes its proof into `proof/`.
+
+| # | Verification | What it proves | Proof |
+|---|---|---|---|
+| 01 | `01-check.mjs` | `pnpm install && pnpm test && pnpm typecheck && pnpm lint` pass; the headless tests this ticket adds exist and pass: the origin policy (same origin whatever the scheme, foreign hosts/ports/null refused, the allow-list, `*`, loopback to loopback only), strict `ALLOWED_ORIGINS` parsing, the one-process HTTP edge against a real world server (index.html with security headers, immutable hashed assets, ETag/HEAD, no escape from the client directory, hand-over to Colyseus, `/healthz`, `403` for foreign matchmaking calls and upgrades, files and health open to everyone), the client's choice of server (configured, own origin in production, solo in dev); the sim, replica, room and online-client tests still pass | `proof/01-check-output.txt`, `proof/01-tests.json` |
+| 02 | `02-built-server.mjs` | `pnpm build` writes both bundles and `index.html` references its bundle by an absolute `/assets/` path; `PORT=5420 pnpm start` (plain `node dist/index.mjs`, nothing else set) serves `/healthz`, the page with nosniff/CSP/DENY, the bundle as immutable JavaScript, the sprites, refuses traversal and dotfiles, refuses a foreign-origin upgrade and preflight with `403` while same-origin and no-origin upgrades complete; a production page served by it joins the world on its own origin (the observer sees it seated), has no `window.__novaland`, loads every asset and logs no errors; a Vite dev client on another loopback port with `VITE_SERVER_URL` pointed at it still joins (loopback rule) with its debug API; a bare host in `ALLOWED_ORIGINS` or a missing `CLIENT_DIR` stops the boot | `proof/02-built-server.json`, `proof/02-built-server-output.txt`, `proof/02-built-server-production-page.png` |
+| 03 | `03-docker.mjs` | `docker build` at the repository root; `docker run -e PORT=5419 -p 5419:5419`; `/healthz` answers and Docker's own `HEALTHCHECK` turns healthy; the process runs as `node`, `NODE_ENV=production`, Node 24, with the server's runtime dependencies and no build tools; a foreign-origin upgrade is refused; two Chromium contexts opened on the served URL are seated in two seats, `window.__novaland` is absent, every asset comes back with a correct path and type, no console or page errors (the CSP lets the game run); holding D on A moves A's avatar east in the authoritative world while B receives the deltas carrying it, holding S on B moves B's avatar south while A receives it; closing the pages frees the seats; `docker stop` ends the process on SIGTERM at once | `proof/03-docker.json`, `proof/03-docker-output.txt`, `proof/03-docker-*.png` |
+
+The console output of each run is also kept as `proof/<script>.txt`. `observer.ts` (the Node witness) and `browser.mjs` (page helpers) are shared by 02 and 03.

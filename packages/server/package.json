@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The authoritative world server: one Colyseus room that owns the only sim and steps it.",
+  "description": "The authoritative world server: one Colyseus room that owns the only sim and steps it, served from one port together with the built client.",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "start": "tsx src/index.ts",
+    "build": "vite build",
+    "start": "node dist/index.mjs",
     "headless": "tsx src/headlessRun.ts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json"
   },
   "dependencies": {
     "@colyseus/core": "catalog:",
@@ -23,6 +24,7 @@
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:"
   }
 }

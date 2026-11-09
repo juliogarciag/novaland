@@ -1,0 +1,22 @@
+PASS  pnpm build exits 0 and writes packages/client/dist/index.html and packages/server/dist/index.mjs
+PASS  the built index.html references its bundle by an absolute /assets/ path  (/assets/index-DWGi6AMj.js)
+PASS  PORT=5420 pnpm start listens
+PASS  the boot line names the client directory it serves and an empty allow-list  ({"event":"world-room-listening","port":5420,"roomId":"world","seed":"<random>","seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[]})
+PASS  /healthz answers 200 with ok, the room id, the seats and the tick  ({"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":2})
+PASS  / is the built index.html with nosniff, a CSP, DENY framing and no long cache
+PASS  every asset the page references is served as JavaScript, immutable for a year, with its full size  ([{"path":"/assets/index-DWGi6AMj.js","status":200,"contentType":"text/javascript; charset=utf-8","cacheControl":"public, max-age=31536000, immutable","bytes":5030326}])
+PASS  the sprites come with the page: /sprites/player.png is image/png
+PASS  a path cannot leave the client directory, and dotfiles are not served  ({"dotdot":404,"encoded":404,"dotfile":404})
+PASS  a WebSocket upgrade from a foreign origin is refused with 403; same origin and no origin are taken (101)  ({"foreign":403,"sameOrigin":101,"noOrigin":101})
+PASS  a matchmaking preflight from a foreign origin is refused with 403 and no CORS headers
+PASS  a page served by the built process, with no VITE_SERVER_URL, joins the world on its own origin: the screen is hidden, the canvas draws, the observer sees a seated player  ({"seated":{"screen":null,"text":"Connecting to the world…Retry nowReload page","hasDebugApi":false,"canvas":true},"seenByObserver":[{"slot":1,"eid":46,"x":-13.5,"y":-0.206,"intentX":0,"intentY":0}]})
+PASS  the production page has no window.__novaland
+PASS  every request the page made to its origin succeeded (no missing asset, no wrong path)  ([{"url":"/","status":200},{"url":"/assets/index-DWGi6AMj.js","status":200},{"url":"/matchmake/joinById/world","status":200},{"url":"/sprites/player.png","status":200},{"url":"blob:/f9c4122e-c5b3-4059-a27f-85d274542549","status":200}])
+PASS  no console errors and no page errors on the production page (the CSP lets the bundle run)  ([])
+PASS  a Vite dev client on 5421 with VITE_SERVER_URL=http://localhost:5420 starts
+PASS  the dev page on another loopback port is online against the built server (same-origin check lets loopback reach loopback) and keeps its debug API  ({"devSeated":{"screen":null,"text":"Connecting to the world…Retry nowReload page","hasDebugApi":true,"canvas":true},"devStatus":{"kind":"online","slot":2}})
+PASS  no console errors on the dev page  ([])
+PASS  ALLOWED_ORIGINS with a bare host (no scheme) stops the boot with a message naming the variable  (ALLOWED_ORIGINS must list origins like https://play.example.com, got "play.example.com")
+PASS  a CLIENT_DIR without an index.html stops the boot  (CLIENT_DIR must hold a client build with an index.html, found none in /nonexistent/client)
+
+ALL 20 CHECKS PASSED

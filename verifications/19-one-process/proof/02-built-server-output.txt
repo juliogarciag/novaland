@@ -1,0 +1,53 @@
+$ pnpm build (exit 0)
+
+> novaland@0.0.0 build <repo>
+> pnpm -r build
+
+Scope: 3 of 4 workspace projects
+packages/server build$ vite build
+packages/client build$ vite build
+packages/server build: vite v8.3.6 building ssr environment for production...
+packages/client build: vite v8.3.6 building client environment for production...
+packages/server build: transforming...
+packages/client build: transforming...
+packages/server build: ✓ 44 modules transformed.
+packages/server build: rendering chunks...
+packages/server build: computing gzip size...
+packages/server build: dist/index.mjs  3,565.05 kB │ gzip: 1,341.51 kB │ map: 3,818.66 kB
+packages/server build: ✓ built in 121ms
+packages/server build: Done
+packages/client build: ✓ 105 modules transformed.
+packages/client build: rendering chunks...
+packages/client build: computing gzip size...
+packages/client build: dist/index.html                    0.89 kB │ gzip:     0.54 kB
+packages/client build: dist/assets/index-DWGi6AMj.js  5,030.32 kB │ gzip: 1,740.05 kB
+packages/client build: [plugin builtin:vite-reporter] 
+packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
+packages/client build: - Using dynamic import() to code-split the application
+packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+packages/client build: ✓ built in 489ms
+packages/client build: Done
+(node:50044) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+server output:
+
+> novaland@0.0.0 start <repo>
+> pnpm --filter @novaland/server start
+
+(node:50122) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+> @novaland/server@0.0.0 start <repo>/packages/server
+> node dist/index.mjs
+
+{"event":"world-room-listening","port":5420,"roomId":"world","seed":1688290431,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[]}
+
+
+observer output (last lines):
+{"event":"world","tick":226,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.085,"intentX":0,"intentY":0}]}
+{"event":"world","tick":232,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.085,"intentX":0,"intentY":0}]}
+{"event":"world","tick":238,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.085,"intentX":0,"intentY":0}]}
+{"event":"world","tick":244,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.085,"intentX":0,"intentY":0}]}

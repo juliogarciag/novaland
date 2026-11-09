@@ -11,6 +11,7 @@
     "dev": "pnpm --filter @novaland/client dev",
     "dev:online": "node scripts/dev-online.mjs",
     "build": "pnpm -r build",
+    "start": "pnpm --filter @novaland/server start",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "pnpm -r typecheck",

@@ -98,6 +98,8 @@ pnpm lint         # eslint, including the boundary rules
 pnpm check        # test + typecheck + lint, what CI runs
 pnpm sim:headless # runs the sim in the server package for 5 simulated seconds and prints a state hash
 PORT=<n> pnpm --filter @novaland/server dev   # the world room server (default port 2567); clients join room id `world`
+pnpm build        # the client bundle and the server bundle (what the Dockerfile runs)
+pnpm start        # the built server: the client and the world room on PORT (see "Running it yourself" in README.md)
 ```
 
 Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` must pass.

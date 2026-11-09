@@ -3,11 +3,22 @@
 The authoritative world server (ticket #17, ADR 0004 and 0005): one Colyseus room that owns the only live sim, steps it, and tells every player what the world looks like.
 
 ```bash
-PORT=5117 pnpm --filter @novaland/server dev   # default port 2567 when PORT is unset; a busy PORT fails the boot
+PORT=5117 pnpm --filter @novaland/server dev   # from source; default port 2567 when PORT is unset; a busy PORT fails the boot
+pnpm build && PORT=5117 pnpm start             # the built bundle (dist/index.mjs), serving the built client too
 pnpm sim:headless                               # the sim alone, five simulated seconds, prints a state hash
 ```
 
-Only the shell environment is read (`@colyseus/core` and `@colyseus/ws-transport` are imported directly; the `colyseus` meta-package would also load `@colyseus/tools`, which reads `.env` files). `express` and `@colyseus/schema` are in the dependencies because they are required peers of the transport and of core; nothing here imports them. The boot prints one JSON line with the port, the room id, the seed of this boot (random, so a session can be replayed) and the rates; `SIGINT`/`SIGTERM` print the tick, the seats taken and the dropped-message counters, then stop. Colyseus answers `GET /__healthcheck` with `OK`.
+Only the shell environment is read (`@colyseus/core` and `@colyseus/ws-transport` are imported directly; the `colyseus` meta-package would also load `@colyseus/tools`, which reads `.env` files). `express` and `@colyseus/schema` are in the dependencies because they are required peers of the transport and of core; nothing here imports them. The boot prints one JSON line with the port, the room id, the seed of this boot (random, so a session can be replayed), the rates, the client directory served and the allowed origins; `SIGINT`/`SIGTERM` print the tick, the seats taken and the dropped-message counters, then stop.
+
+## One process, one port (ticket #19)
+
+The same process is the whole deployment (see "Running it yourself" in the root README and the `Dockerfile`). `src/index.ts` puts three handlers in front of Colyseus on its HTTP server, each in its own file under `src/http/` and each installed with `handleRequestsFirst`/`handleUpgradesFirst` (`handleFirst.ts`), which take Colyseus's listeners off and run them only on hand-over, so a request is never answered twice:
+
+- `serveClientFiles.ts`: `GET`/`HEAD` of the built client in `CLIENT_DIR` (default `packages/client/dist`, found from `src/` and from `dist/` alike): `/` is `index.html`; files under `assets/` are content-hashed and cached for a year, everything else revalidates with an ETag; dotfiles are not served and a path cannot leave the directory. Pages get `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `X-Frame-Options: DENY` and a Content-Security-Policy that names what the bundle needs (`'self'` scripts with `wasm-unsafe-eval` for the inlined physics, inline styles for `index.html`, `data:`/`blob:` images for Phaser, `'self'` connections, which covers the same-origin WebSocket). Anything that is not a file hands over.
+- `answerHealthChecks.ts`: `GET /healthz` → `200 {"ok":true,"roomId","seats","seatsTaken","tick"}`, never cached.
+- `refuseForeignOrigins.ts` with the policy in `origins.ts`: a request or WebSocket upgrade whose `Origin` is not allowed is answered `403` before Colyseus sees it (so a foreign page can neither open the socket nor hold a seat reservation). Allowed: no `Origin` (not a browser), the origin of the `Host` the request came to (scheme ignored, a proxy may terminate TLS), the origins in `ALLOWED_ORIGINS`, and a loopback origin when the server is reached on a loopback address (the dev flow: Vite on one port, the room on another). `ALLOWED_ORIGINS=*` allows everything; a malformed entry stops the boot. The files and the health check are not origin-checked.
+
+`pnpm --filter @novaland/server build` bundles `src/index.ts` with Vite into `dist/index.mjs`; the sim and its dependencies are bundled in, Colyseus and its peers stay in `node_modules`. `start` runs that file with plain `node`.
 
 ## The room
 
