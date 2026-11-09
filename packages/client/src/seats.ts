@@ -8,6 +8,10 @@ export const LOCAL_SLOT = 0;
  * undefined when every seat is spoken for. Joins wait in the command buffer
  * until the next tick, so two joins queued in one frame must not pick the
  * same seat.
+ *
+ * Dev-only convenience for seating extra players from one browser: a client
+ * choosing seats is a stop-gap until the server assigns them. The sim still
+ * rejects a join for a taken seat, so nothing depends on this being right.
  */
 export function firstEmptySeat(sim: SimHandle, pendingCommands: readonly Command[]): number | undefined {
   const pendingJoins = new Set(pendingCommands.flatMap((command) => (command.type === 'player/join' ? [command.slot] : [])));

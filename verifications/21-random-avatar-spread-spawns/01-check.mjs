@@ -24,7 +24,8 @@ results.push(check('all tests passed, none skipped', report.numFailedTests === 0
 results.push(check('avatars: deterministic per seed, other seeds differ', passedNamed(/avatars on join \(headless\) picks the same avatars for the same seed/) === 1));
 results.push(check('avatars: no duplicates while an unworn one is left, fallback once all are worn, freed on leave', passedNamed(/avatars on join \(headless\) (never hands out|falls back|frees an avatar)/) === 3));
 results.push(check('avatars: a join carrying an avatar is ignored, the sim chooses', passedNamed(/avatars on join \(headless\) ignores any avatar a client puts/) === 1));
-results.push(check('spawns: five joins on five distinct walkable tiles next to the spawn, spread on both axes', passedNamed(/spread spawns \(headless\) (lands five joins|spreads players around)/) === 2));
+results.push(check('spawns: five joins on five distinct walkable tiles next to the spawn, on other tiles for other seeds', passedNamed(/spread spawns \(headless\) (lands five joins|picks the ring tiles at random)/) === 2));
+results.push(check('client art: generator palettes match the avatar defs (keys, shirt colour, frame layout)', passedNamed(/avatar sheet generator/) === 3));
 results.push(check('spawns: taken and solid tiles skipped, freed tiles reused, no free tile never throws', passedNamed(/spread spawns \(headless\) (skips solid|treats a tile|falls back)/) === 3));
 results.push(check('pass-through: two players cross at full speed; a standing player blocks nobody; terrain still stops', passedNamed(/players pass through each other \(headless\)/) === 3));
 results.push(check('client seats: queued joins never pick the same seat twice in one frame', passedNamed(/^seats /) === 3));

@@ -2,15 +2,16 @@ PASS  pnpm install exits 0  (exit 0)
 PASS  pnpm test exits 0  (exit 0)
 PASS  pnpm typecheck exits 0  (exit 0)
 PASS  pnpm lint exits 0  (exit 0)
-PASS  all tests passed, none skipped  (96/96)
+PASS  all tests passed, none skipped  (99/99)
 PASS  avatars: deterministic per seed, other seeds differ
 PASS  avatars: no duplicates while an unworn one is left, fallback once all are worn, freed on leave
 PASS  avatars: a join carrying an avatar is ignored, the sim chooses
-PASS  spawns: five joins on five distinct walkable tiles next to the spawn, spread on both axes
+PASS  spawns: five joins on five distinct walkable tiles next to the spawn, on other tiles for other seeds
+PASS  client art: generator palettes match the avatar defs (keys, shirt colour, frame layout)
 PASS  spawns: taken and solid tiles skipped, freed tiles reused, no free tile never throws
 PASS  pass-through: two players cross at full speed; a standing player blocks nobody; terrain still stops
 PASS  client seats: queued joins never pick the same seat twice in one frame
 PASS  determinism test still passes
 PASS  existing movement, facing, terrain and server tests still pass
 
-ALL 14 CHECKS PASSED
+ALL 15 CHECKS PASSED

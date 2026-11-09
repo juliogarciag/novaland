@@ -39,7 +39,7 @@ try {
   // Content the expectations are derived from.
   const content = await page.evaluate(() => {
     const api = window.__novaland;
-    const avatars = api.defs.filter((def) => def.sprite && def.name.startsWith('player-'));
+    const avatars = api.avatarDefIds.map((defId) => api.defs.find((def) => def.id === defId));
     const tiles = api.defs.filter((def) => typeof def.solid === 'boolean');
     return {
       grid: api.grid,

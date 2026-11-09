@@ -26,7 +26,11 @@ export class HudScene extends Phaser.Scene {
   }
 
   override update(): void {
-    const lines = [`WASD / arrows to move   tick ${this.sim.tick}`, `you: ${localAvatarName(this.sim) ?? 'joining...'}   players: ${playerCount(this.sim)}`];
+    const renderables = getRenderables(this.sim);
+    const players = renderables.filter((renderable) => isAvatarDefId(renderable.defId));
+    const localEid = findPlayerEntity(this.sim, LOCAL_SLOT);
+    const local = players.find((player) => player.eid === localEid);
+    const lines = [`WASD / arrows to move   tick ${this.sim.tick}`, `you: ${local ? getDef(local.defId).name : 'joining...'}   players: ${players.length}`];
     if (import.meta.env.DEV) lines.push('J: seat another player (dev)');
     this.text.setText(lines);
   }
@@ -37,15 +41,4 @@ export class HudScene extends Phaser.Scene {
     this.text.setFontSize(Math.round(HUD_FONT_SIZE * pixelRatio));
     this.text.setPosition(HUD_MARGIN * pixelRatio, HUD_MARGIN * pixelRatio);
   }
-}
-
-/** Name of the avatar the local player wears, or undefined before the join lands. */
-function localAvatarName(sim: SimHandle): string | undefined {
-  const eid = findPlayerEntity(sim, LOCAL_SLOT);
-  const renderable = eid === undefined ? undefined : getRenderables(sim).find((candidate) => candidate.eid === eid);
-  return renderable ? getDef(renderable.defId).name : undefined;
-}
-
-function playerCount(sim: SimHandle): number {
-  return getRenderables(sim).filter((renderable) => isAvatarDefId(renderable.defId)).length;
 }

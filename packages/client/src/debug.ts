@@ -1,5 +1,5 @@
 import type { Command, EntityDef, LevelData, SimHandle, SimSnapshot, TileGrid } from '@novaland/sim';
-import { entityDefs, hashSnapshot, readTileGrid, tileAt, tileCentre } from '@novaland/sim';
+import { avatarDefIds, entityDefs, hashSnapshot, readTileGrid, tileAt, tileCentre } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { cameraView, type CameraView } from './render/camera';
 import { PIXELS_PER_METRE } from './render/units';
@@ -17,6 +17,8 @@ export interface NovalandDebugApi {
   readonly tileAt: typeof tileAt;
   readonly tileCentre: typeof tileCentre;
   readonly defs: readonly EntityDef[];
+  /** The def ids a joining player may be dressed in, so checks need not guess which defs are avatars. */
+  readonly avatarDefIds: readonly number[];
   readonly pixelsPerMetre: number;
   /** Metres the camera always keeps visible across the window; its zoom follows from this. */
   readonly minVisibleMetres: number;
@@ -45,6 +47,7 @@ export function exposeDebugApi(sim: SimHandle, game: Phaser.Game): void {
     tileAt,
     tileCentre,
     defs: entityDefs,
+    avatarDefIds,
     pixelsPerMetre: PIXELS_PER_METRE,
     minVisibleMetres: MIN_VISIBLE_METRES,
     snapshot: () => sim.snapshot(),
@@ -52,7 +55,7 @@ export function exposeDebugApi(sim: SimHandle, game: Phaser.Game): void {
     camera: () => (game.scene.isActive('world') ? cameraView(game.scene.getScene('world').cameras.main) : undefined),
     queueCommand: (command) => {
       const world = runningWorldScene(game);
-      world?.enqueueCommand(command);
+      world?.queueCommand(command);
       return world !== undefined;
     },
     joinAnotherSeat: () => {

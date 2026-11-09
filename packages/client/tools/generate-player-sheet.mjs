@@ -268,6 +268,7 @@ export function writeAvatarSheets(directory) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const outFlag = process.argv.indexOf('--out');
-  const directory = outFlag >= 0 && process.argv[outFlag + 1] ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
+  if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheets go to public/sprites');
+  const directory = outFlag >= 0 ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
   for (const file of writeAvatarSheets(directory)) console.log(`wrote ${file}`);
 }

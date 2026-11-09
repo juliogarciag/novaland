@@ -40,7 +40,7 @@ export class WorldScene extends Phaser.Scene {
     drawTerrain(this, this.sim.level);
     this.entityRenderer = new EntityRenderer(this);
     this.keyboard = createKeyboardInput(this, LOCAL_SLOT);
-    this.enqueueCommand({ type: 'player/join', slot: LOCAL_SLOT });
+    this.queueCommand({ type: 'player/join', slot: LOCAL_SLOT });
     // Dev builds seat extra players with J so one browser can see several avatars; the server will do this for real.
     if (import.meta.env.DEV) this.input.keyboard?.on('keydown-J', () => this.joinAnotherSeat());
     this.entityRenderer.sync(this.sim);
@@ -65,14 +65,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   /** Queues a command for the next earned tick, the same way keyboard input reaches the sim. */
-  enqueueCommand(command: Command): void {
+  queueCommand(command: Command): void {
     this.pendingCommands.push(command);
   }
 
-  /** Queues a join for the lowest empty seat; nothing happens when every seat is taken. */
+  /** Queues a join for the lowest empty seat; nothing happens when every seat is taken. Dev-only (the J key and the debug API) until the server assigns seats. */
   joinAnotherSeat(): void {
     const slot = firstEmptySeat(this.sim, this.pendingCommands);
-    if (slot !== undefined) this.enqueueCommand({ type: 'player/join', slot });
+    if (slot !== undefined) this.queueCommand({ type: 'player/join', slot });
   }
 
   private followLocalPlayer(): void {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { getDef } from '../../content/defs';
 import { readTileGrid, spawnPoint, tileAt } from '../../content/levels/grid';
 import { starterLevel } from '../../content/levels/starter';
 import type { LevelData, TileCoordinate } from '../../content/levels/types';
@@ -7,6 +8,7 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { getTileDef, TerrainDefId } from '../terrain/defs';
+import { avatarDefIds } from './defs';
 import { findPlayerEntity } from './queries';
 
 describe('spread spawns (headless)', () => {
@@ -39,13 +41,16 @@ describe('spread spawns (headless)', () => {
     sim.destroy();
   });
 
-  it('spreads players around the spawn, not in one line: five arrivals use both rows and columns', async () => {
-    const sim = await createSimInternal({ seed: 2 });
-    sim.step([join(0), join(1), join(2), join(3), join(4)]);
-    const tiles = [0, 1, 2, 3, 4].map((slot) => playerTile(sim, slot));
-    expect(new Set(tiles.map((tile) => tile.column)).size).toBeGreaterThan(1);
-    expect(new Set(tiles.map((tile) => tile.row)).size).toBeGreaterThan(1);
-    sim.destroy();
+  it('picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn', async () => {
+    const layouts = new Set<string>();
+    for (const seed of [1, 2, 3, 4, 5, 6]) {
+      const sim = await createSimInternal({ seed });
+      sim.step([join(0), join(1), join(2), join(3), join(4)]);
+      const tiles = [1, 2, 3, 4].map((slot) => playerTile(sim, slot));
+      layouts.add(tiles.map((tile) => `${tile.column},${tile.row}`).sort().join(' '));
+      sim.destroy();
+    }
+    expect(layouts.size).toBeGreaterThan(1);
   });
 
   it('chooses the same tiles for the same seed and joins', async () => {
@@ -76,7 +81,7 @@ describe('spread spawns (headless)', () => {
     sim.step([join(0)]);
     // The first player walks one tile east and stops there. The spawn tile is free again, so the second join takes it...
     sim.step([move(1, 0, 0)]);
-    for (let tick = 0; tick < Math.ceil(grid.tileSize / (5 * sim.dt)); tick += 1) sim.step();
+    for (let tick = 0; tick < Math.ceil(grid.tileSize / (SPEED * sim.dt)); tick += 1) sim.step();
     sim.step([move(0, 0, 0)]);
     expect(playerTile(sim, 0)).toEqual({ column: 6, row: 1 });
     sim.step([join(1)]);
@@ -103,6 +108,8 @@ describe('spread spawns (headless)', () => {
 // ---- Helpers (below the tests so the behaviour reads first) ----
 
 const { createSimInternal } = __testing__;
+
+const SPEED = getDef(avatarDefIds[0] as number).speed ?? 0;
 
 const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefId.Dirt, o: TerrainDefId.Rock };
 

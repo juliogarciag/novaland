@@ -2,7 +2,7 @@
   "steps": [
     {
       "step": "alone",
-      "tick": 14,
+      "tick": 13,
       "camera": {
         "zoom": 3,
         "scrollX": -640,
@@ -52,7 +52,7 @@
         }
       ],
       "circleCount": 0,
-      "hud": "WASD / arrows to move   tick 13\nyou: player-ember   players: 1\nJ: seat another player (dev)"
+      "hud": "WASD / arrows to move   tick 12\nyou: player-ember   players: 1\nJ: seat another player (dev)"
     },
     {
       "step": "five",
@@ -267,7 +267,7 @@
     },
     {
       "step": "six",
-      "tick": 220,
+      "tick": 219,
       "camera": {
         "zoom": 3,
         "scrollX": -640,
@@ -422,7 +422,7 @@
         }
       ],
       "circleCount": 0,
-      "hud": "WASD / arrows to move   tick 219\nyou: player-ember   players: 5\nJ: seat another player (dev)"
+      "hud": "WASD / arrows to move   tick 218\nyou: player-ember   players: 5\nJ: seat another player (dev)"
     }
   ],
   "content": {

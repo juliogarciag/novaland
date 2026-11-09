@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readTileGrid, tileCentre } from '../../content/levels/grid';
+import { getDef } from '../../content/defs';
 import type { LevelData } from '../../content/levels/types';
 import type { Command } from '../../core/commands';
 import { __testing__ as createTesting } from '../../core/create';
@@ -7,6 +8,7 @@ import { getBody } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { TerrainDefId } from '../terrain/defs';
+import { avatarDefIds } from './defs';
 import { __testing__ as playerTesting } from './index';
 import { findPlayerEntity } from './queries';
 
@@ -69,8 +71,9 @@ describe('players pass through each other (headless)', () => {
 const { createSimInternal } = createTesting;
 const { PLAYER_COLLISION_GROUPS } = playerTesting;
 
-const SPEED = 5;
-const RADIUS = 0.4;
+const avatarDef = getDef(avatarDefIds[0] as number);
+const SPEED = avatarDef.speed ?? 0;
+const RADIUS = avatarDef.radius ?? 0;
 
 const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefId.Dirt, o: TerrainDefId.Rock };
 
