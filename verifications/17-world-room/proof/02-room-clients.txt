@@ -1,0 +1,15 @@
+PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":52552,"roomId":"world","seed":1310293593,"seats":5,"tickRate":60,"sendRate":20})
+PASS  the test clients ran to the end
+PASS  five players joined by id and got seats 0..4
+PASS  the last welcome already holds every player's entity
+PASS  every player saw every other player move, and all five replicas agree
+PASS  the sixth join was refused because the room is locked (full)  (522 room "world" is locked)
+PASS  create / join / joinOrCreate are not exposed
+PASS  a leaver's seat was freed, its avatar vanished for the others, the next joiner took the seat
+PASS  junk and a flood were dropped: the named slot never moved, the world kept running, nobody was disconnected
+PASS  a frame over the transport limit closed only its own connection (1009)
+PASS  every delta chained: no replica ever reported out-of-sequence or malformed
+PASS  deltas stay small next to the welcome  (deltas 154-908 bytes, welcome 8498 bytes)
+PASS  SIGTERM stops the server cleanly  (0)
+
+ALL 13 CHECKS PASSED

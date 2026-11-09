@@ -1,0 +1,81 @@
+{
+  "boot": {
+    "event": "world-room-listening",
+    "port": 52552,
+    "roomId": "world",
+    "seed": "<random>",
+    "seats": 5,
+    "tickRate": 60,
+    "sendRate": 20
+  },
+  "summary": {
+    "port": 52552,
+    "seats": 5,
+    "slots": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "everyoneInLastWelcome": true,
+    "everyoneSeesEveryoneMove": true,
+    "replicasAgree": true,
+    "refusal": {
+      "name": "MatchMakeError",
+      "code": 522,
+      "message": "room \"world\" is locked"
+    },
+    "otherMethods": {
+      "joinOrCreate": "invalid method \"joinOrCreate\"",
+      "create": "invalid method \"create\"",
+      "join": "invalid method \"join\""
+    },
+    "leaver": {
+      "slot": 2,
+      "code": 4000,
+      "avatarGone": true,
+      "newcomerSlot": 2
+    },
+    "junk": {
+      "messages": 12,
+      "flood": 150,
+      "targetIntent": "{\"moveIntent\":{\"x\":0,\"y\":0}}",
+      "worldKeptRunning": true,
+      "oversizedCloseCode": 1009
+    },
+    "chained": [
+      {
+        "name": "player-0",
+        "updates": 27,
+        "applied": true
+      },
+      {
+        "name": "player-1",
+        "updates": 28,
+        "applied": true
+      },
+      {
+        "name": "player-5",
+        "updates": 16,
+        "applied": true
+      },
+      {
+        "name": "player-3",
+        "updates": 28,
+        "applied": true
+      },
+      {
+        "name": "player-4",
+        "updates": 27,
+        "applied": true
+      }
+    ],
+    "deltaBytes": {
+      "count": 125,
+      "min": 154,
+      "max": 908
+    },
+    "welcomeBytes": 8498
+  }
+}

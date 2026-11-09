@@ -3,16 +3,21 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.",
+  "description": "The authoritative world server: one Colyseus room that owns the only sim and steps it.",
   "scripts": {
+    "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
+    "headless": "tsx src/headlessRun.ts",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@novaland/sim": "workspace:*"
+    "@colyseus/schema": "catalog:",
+    "@novaland/sim": "workspace:*",
+    "colyseus": "catalog:"
   },
   "devDependencies": {
+    "@colyseus/sdk": "catalog:",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

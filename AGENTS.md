@@ -33,7 +33,7 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
 - Rapier 2D (`@dimforge/rapier2d-deterministic-compat`): all physics, in `packages/sim`. Phaser Arcade/Matter physics are never used.
 - bitECS: entities and components, in `packages/sim`.
 - Vitest: all tests. They run headless in Node.
-- Colyseus: future multiplayer server in `packages/server`. Not implemented yet; the package exists so the sim already runs there.
+- Colyseus 0.18 (`colyseus` on the server, `@colyseus/sdk` for clients): the authoritative multiplayer server in `packages/server`. One `WorldRoom` owns the only live sim and steps it; browsers hold a replica (ADR 0004). `PORT=<n> pnpm --filter @novaland/server dev` runs it.
 
 **Repository layout**
 
@@ -48,7 +48,8 @@ packages/
       features/index.ts   The list of features the sim runs (one line per feature).
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
-  server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
+  server/     The authoritative Colyseus server: one world room (5 seats, joined by id) that owns the only live sim,
+              steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
 docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 before touching replication or networking.
 verifications/    One folder per ticket with its verification scripts and proof.
 ```
@@ -92,6 +93,7 @@ pnpm typecheck    # tsc for every package
 pnpm lint         # eslint, including the boundary rules
 pnpm check        # test + typecheck + lint, what CI runs
 pnpm sim:headless # runs the sim in the server package for 5 simulated seconds and prints a state hash
+PORT=<n> pnpm --filter @novaland/server dev   # the world room server (default port 2567); clients join room id `world`
 ```
 
 Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` must pass.

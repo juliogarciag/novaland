@@ -1,0 +1,122 @@
+$ pnpm install
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: msgpackr-extract.                                   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Done in 547ms using pnpm v10.9.0
+(node:71543) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:71565) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+
+$ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/input/direction.test.ts (5 tests) 3ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 4ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 7ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 5ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 6ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 12ms
+ ✓ |server| src/world/seats.test.ts (3 tests) 3ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 4ms
+ ✓ |server| src/headless.test.ts (3 tests) 398ms
+   ✓ server headless run (3)
+     ✓ drives the sim without a browser and is reproducible 301ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 505ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 474ms
+stdout | src/world/worldRoom.test.ts
+ℹ️  optional .env file not found: .env.test, .env
+
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 510ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 399ms
+   ✓ snapshot (5)
+     ✓ is plain JSON that survives a round trip 347ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 493ms
+   ✓ player facing (headless) (7)
+     ✓ spawns facing down with no move intent 345ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 699ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 546ms
+   ✓ diffWorldState and applyWorldStateDelta (9)
+     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 345ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 338ms
+   ✓ allocation cost of writing a message into a replica (2)
+     ✓ a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity 311ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 59ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 38ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 65ms
+ ✓ |sim| src/core/replica.test.ts (19 tests) 1251ms
+   ✓ a replica fed full world states every tick (1)
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 954ms
+ ✓ |server| src/world/worldRoom.test.ts (7 tests) 2006ms
+   ✓ WorldRoom over a real connection (7)
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 456ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 429ms
+
+ Test Files  22 passed (22)
+      Tests  144 passed (144)
+   Start at  17:14:34
+   Duration  3.03s (tests 70%, import 18%, transform 11%, worker 1%)
+
+JSON report written to <repo>/verifications/17-world-room/proof/01-tests-report.json
+stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses
+Max payload size exceeded
+RangeError: Max payload size exceeded
+    at Receiver.haveLength (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:442:28)
+    at Receiver.getPayloadLength16 (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:393:10)
+    at Receiver.startLoop (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:181:16)
+    at Receiver._write (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:117:10)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.socketOnData (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/websocket.js:1407:35)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+
+
+
+$ pnpm sim:headless (exit 0)
+
+> novaland@0.0.0 sim:headless <repo>
+> pnpm --filter @novaland/server headless
+
+
+> @novaland/server@0.0.0 headless <repo>/packages/server
+> tsx src/headlessRun.ts
+
+{"simulatedSeconds":5,"ticks":300,"hash":"2e110fbf","player":{"x":-3.583388328552246,"y":4.499997615814209}}
+(node:71744) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -1,0 +1,39 @@
+$ tsx clients.ts 52552 (exit 0)
+[t+   51ms] player-0 welcomed: slot 0, level "starter", capacity 1024, state at tick 37 with 45 entities; own entity 45
+[t+   75ms] player-1 welcomed: slot 1, level "starter", capacity 1024, state at tick 39 with 46 entities; own entity 46
+[t+   90ms] player-2 welcomed: slot 2, level "starter", capacity 1024, state at tick 40 with 47 entities; own entity 47
+[t+  107ms] player-3 welcomed: slot 3, level "starter", capacity 1024, state at tick 41 with 48 entities; own entity 48
+[t+  123ms] player-4 welcomed: slot 4, level "starter", capacity 1024, state at tick 42 with 49 entities; own entity 49
+[t+  582ms] after 11 deltas every player sees all 5 avatars moving: true; the five replicas draw the same thing: true
+[t+  643ms] sixth join refused: MatchMakeError code 522 "room "world" is locked"
+[t+  651ms] other matchmaking methods: {"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\""}
+[t+  686ms] player-2 left (code 4000); slot 2 empty on every replica, entity 47 no longer drawn: true
+[t+  716ms] player-5 joined into the freed seat: slot 2; everyone draws it again
+[t+ 1377ms] 12 junk messages and a flood of 150: the targeted slot never moved (true), the world advanced 39 ticks, nobody was disconnected: true; a good move from the same sender still works
+[t+ 1435ms] a 4 KB frame closed only its own connection (code 1009); the others keep playing and no longer see slot 0
+[t+ 1481ms] player-1 asked for a resync and got a full state at tick 123
+{"port":52552,"seats":5,"slots":[0,1,2,3,4],"everyoneInLastWelcome":true,"everyoneSeesEveryoneMove":true,"replicasAgree":true,"refusal":{"name":"MatchMakeError","code":522,"message":"room \"world\" is locked"},"otherMethods":{"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\""},"leaver":{"slot":2,"code":4000,"avatarGone":true,"newcomerSlot":2},"junk":{"messages":12,"flood":150,"targetIntent":"{\"moveIntent\":{\"x\":0,\"y\":0}}","worldKeptRunning":true,"oversizedCloseCode":1009},"chained":[{"name":"player-0","updates":27,"applied":true},{"name":"player-1","updates":28,"applied":true},{"name":"player-5","updates":16,"applied":true},{"name":"player-3","updates":28,"applied":true},{"name":"player-4","updates":27,"applied":true}],"deltaBytes":{"count":125,"min":154,"max":908},"welcomeBytes":8498}
+
+
+server output:
+(node:71943) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+> @novaland/server@0.0.0 dev <repo>/packages/server
+> tsx src/index.ts
+
+ℹ️  optional .env file not found: .env.development, .env
+{"event":"world-room-listening","port":52552,"roomId":"world","seed":1310293593,"seats":5,"tickRate":60,"sendRate":20}
+Max payload size exceeded
+RangeError: Max payload size exceeded
+    at Receiver.haveLength (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:442:28)
+    at Receiver.getPayloadLength16 (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:393:10)
+    at Receiver.startLoop (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:181:16)
+    at Receiver._write (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:117:10)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.socketOnData (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/websocket.js:1407:35)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+{"event":"world-room-stopping","signal":"SIGTERM"}
