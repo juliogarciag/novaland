@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { starterLevel } from '../content/levels/starter';
-import { DEFAULT_CAPACITY, FIXED_DT } from '../content/tuning';
+import { DEFAULT_CAPACITY, FIXED_DT, MAX_CAPACITY } from '../content/tuning';
 import { findPlayerEntity, getHeading } from '../features/player/queries';
 import type { Command } from './commands';
 import { __testing__, createReplica, createSim } from './create';
@@ -139,6 +139,14 @@ describe('createReplica', () => {
     replica.destroy();
   });
 
+  it('refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything', () => {
+    for (const capacity of [0, -5, 1.5, MAX_CAPACITY + 1, 1e9, 2 ** 53, Number.NaN, Number.POSITIVE_INFINITY, '100' as unknown as number]) {
+      expect(() => createReplica({ level: starterLevel, capacity })).toThrow(RangeError);
+    }
+    expect(createReplica({ level: starterLevel, capacity: 1 }).capacity).toBe(1);
+    expect(createReplica({ level: starterLevel, capacity: MAX_CAPACITY }).capacity).toBe(MAX_CAPACITY);
+  });
+
   it('refuses to step: a replica only shows what the server sent', () => {
     const replica = createReplica({ level: starterLevel });
     expect(() => replica.step()).toThrow(/cannot step/);
@@ -200,10 +208,13 @@ describe('applyWorldState with data from the network', () => {
     sim.destroy();
   });
 
-  it('rejects a delta whose ticks do not make sense', async () => {
+  it('rejects a delta whose ticks do not make sense, including ticks beyond the safe integer range', async () => {
     const { replica, sim } = await replicaInSync();
     const tick = replica.tick;
     const empty = { changed: [], removed: [] };
+    expect(applyWorldState(replica, { kind: 'full', tick: 2 ** 53, entities: [] })).toBe('malformed');
+    expect(applyWorldState(replica, { kind: 'full', tick: 1e308, entities: [] })).toBe('malformed');
+    expect(applyWorldState(replica, { kind: 'delta', fromTick: tick, tick: 2 ** 53 + 2, ...empty })).toBe('malformed');
     expect(applyWorldState(replica, { kind: 'delta', fromTick: tick, tick: tick - 1, ...empty })).toBe('malformed');
     expect(applyWorldState(replica, { kind: 'delta', fromTick: -1, tick, ...empty })).toBe('malformed');
     expect(applyWorldState(replica, { kind: 'delta', fromTick: tick + 1, tick: tick + 2, ...empty })).toBe('out-of-sequence');

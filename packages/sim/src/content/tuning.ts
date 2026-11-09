@@ -9,6 +9,13 @@ export const FIXED_DT = 1 / TICK_RATE;
 /** Maximum number of live entities per sim. Component stores are sized to this. */
 export const DEFAULT_CAPACITY = 1024;
 
+/**
+ * The largest capacity a sim or replica may be created with. A replica takes
+ * its capacity from the server's welcome message, so this bounds what a bad
+ * server can make a client allocate and scan.
+ */
+export const MAX_CAPACITY = 65536;
+
 /** Radius in metres for circle defs that do not specify one. */
 export const DEFAULT_RADIUS = 0.5;
 

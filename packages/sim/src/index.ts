@@ -26,6 +26,7 @@ export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
 export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from './content/sprites';
 export { starterLevel } from './content/levels/starter';
+export { findLevel, levels } from './content/levels';
 export type { LevelData, TileCoordinate, TileGrid } from './content/levels/types';
 export { readTileGrid, spawnPoint, tileAt, tileCentre } from './content/levels/grid';
 export { getTileDef, terrainDefs, TILE_SIZE, type TileDef } from './features/terrain/defs';

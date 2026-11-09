@@ -1,7 +1,8 @@
 import { entityExists, getAllEntities, removeEntity } from 'bitecs';
+import { getComponentDef } from './components';
 import { asEntityWorld } from './entityWorld';
 import { asReplica } from './replica';
-import { ensureEntityExists, isEntityId, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
+import { ensureEntityExists, isEntityId, mergeComponentFields, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
 import type { SimHandle } from './sim';
 import { snapshotEntities, type EntitySnapshot } from './snapshot';
 
@@ -86,25 +87,31 @@ export function diffWorldState(previous: WorldState, next: WorldState): WorldSta
 }
 
 /**
- * The world state after `delta`, or undefined when `delta` is malformed or
- * does not continue from `state.tick`. Pure: `state` is not changed. Views
- * that keep the last few states for interpolation use this; a replica uses
- * `applyWorldState`.
+ * The world state after `delta`, or undefined when either argument is not
+ * what its type says or `delta` does not continue from `state.tick`. Pure:
+ * neither argument is changed, and the result shares unchanged entity
+ * objects with `state`, so never mutate a WorldState. Both arguments are
+ * validated like `applyWorldState` validates its input, and the result is
+ * what a replica would hold after the same delta. Views do not read world
+ * states (they read a replica through the view queries); this is for
+ * tooling and tests that work on recorded states and deltas.
  */
 export function applyWorldStateDelta(state: WorldState, delta: WorldStateDelta): WorldState | undefined {
+  const base = readWorldStateUpdate(state);
   const update = readWorldStateUpdate(delta);
-  if (!update || update.kind !== 'delta' || update.fromTick !== state.tick) return undefined;
-  const byId = new Map(state.entities.map((entity) => [entity.id, entity]));
+  if (!base || base.kind !== 'full' || !update || update.kind !== 'delta' || update.fromTick !== base.tick) return undefined;
+  const byId = new Map(base.entities.map((entity) => [entity.id, entity]));
   for (const id of update.removed) byId.delete(id);
   for (const change of update.changed) {
     const before = byId.get(change.id)?.components ?? {};
     const lost = new Set(change.removedComponents ?? []);
     const merged: Record<string, Record<string, number>> = {};
     for (const name of Object.keys(before)) {
-      if (!lost.has(name)) merged[name] = before[name] as Record<string, number>;
+      if (!lost.has(name) && getComponentDef(name)) merged[name] = before[name] as Record<string, number>;
     }
     for (const name of Object.keys(change.components)) {
-      merged[name] = sortedFields({ ...merged[name], ...change.components[name] });
+      const def = getComponentDef(name);
+      if (def) merged[name] = mergeComponentFields(def, merged[name], change.components[name]);
     }
     byId.set(change.id, { id: change.id, components: sortedComponents(merged) });
   }
@@ -186,11 +193,11 @@ function readWorldStateUpdate(value: unknown): WorldStateUpdate | undefined {
 }
 
 function isTick(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 }
 
 function isId(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 1;
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 1;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -202,12 +209,6 @@ function sameFields(before: Record<string, number> | undefined, after: Record<st
   const names = Object.keys(after);
   if (names.length !== Object.keys(before).length) return false;
   return names.every((name) => before[name] === after[name]);
-}
-
-function sortedFields(fields: Record<string, number>): Record<string, number> {
-  const sorted: Record<string, number> = {};
-  for (const name of Object.keys(fields).sort()) sorted[name] = fields[name] as number;
-  return sorted;
 }
 
 function sortedComponents(components: Record<string, Record<string, number>>): Record<string, Record<string, number>> {

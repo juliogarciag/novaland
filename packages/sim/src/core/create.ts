@@ -1,6 +1,6 @@
 import { starterLevel } from '../content/levels/starter';
 import type { LevelData } from '../content/levels/types';
-import { DEFAULT_CAPACITY } from '../content/tuning';
+import { DEFAULT_CAPACITY, MAX_CAPACITY } from '../content/tuning';
 import { features } from '../features';
 import { initPhysics } from './physics';
 import { Replica } from './replica';
@@ -39,9 +39,17 @@ export interface ReplicaOptions {
  * `applyWorldState`; read it with the same view queries as a live sim. No
  * physics loads, so this is synchronous. Importing `features` above has
  * registered every component, so the names in a world state resolve.
+ *
+ * The capacity usually arrives in the server's welcome message, so it is
+ * checked here: anything but an integer in 1..MAX_CAPACITY throws a
+ * RangeError, before any store is allocated or any id is scanned.
  */
 export function createReplica(options: ReplicaOptions): SimHandle {
-  return new Replica({ level: options.level, capacity: options.capacity ?? DEFAULT_CAPACITY });
+  const capacity = options.capacity ?? DEFAULT_CAPACITY;
+  if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > MAX_CAPACITY) {
+    throw new RangeError(`Replica capacity must be an integer from 1 to ${MAX_CAPACITY}, got ${String(capacity)}`);
+  }
+  return new Replica({ level: options.level, capacity });
 }
 
 /** Test-only access to the full Sim. Lint forbids importing this outside *.test.ts. */

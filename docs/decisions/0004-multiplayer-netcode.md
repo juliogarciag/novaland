@@ -24,9 +24,13 @@ Two designs were on the table:
 
 - `worldState(handle)` is the `entities` part of `sim.snapshot()` plus the tick: `{ kind: 'full', tick, entities }`. No physics bytes, no rng: a replica has nothing to do with them. It is plain JSON, with entities sorted by id and components and fields sorted by name.
 - `diffWorldState(previous, next)` returns `{ kind: 'delta', fromTick, tick, changed, removed }`. `changed` holds one `{ id, components, removedComponents? }` per entity that changed, carrying **whole components** (every field) for each component that changed or appeared, and the names of components it lost; a new entity carries all of its components. `removed` lists the ids that no longer exist. Static entities (terrain) travel once, in the full state; five walking players cost a few hundred bytes per delta.
-- `applyWorldStateDelta(state, delta)` is the pure form: the next `WorldState`, or `undefined` when the delta does not continue from `state.tick`. Views that keep the last few states for interpolation use it.
+- `applyWorldStateDelta(state, delta)` is the pure form: the next `WorldState`, or `undefined` when the delta does not continue from `state.tick`. It validates both arguments like `applyWorldState` does and yields what a replica would hold after the same delta. It is for tooling and tests that work on recorded states and deltas (replays, desync diagnosis); views never read a `WorldState`'s entities, see "Interpolation" below.
 - `applyWorldState(replica, update)` takes either kind and answers `'applied'`, `'out-of-sequence'` (a delta whose `fromTick` is not the replica's tick; the replica is untouched and the client must ask for a full state) or `'malformed'`. A full state replaces everything whatever its tick, because the server may have restarted.
-- Network data is validated at this boundary and in `core/restore.ts`: wrong top-level shape is refused; entries without an integer id in `1..capacity`, unknown component names, unknown fields and values that are not finite numbers are skipped, never thrown on. A `DefRef` pointing at no def is left out of `getRenderables` for the same reason.
+- Network data is validated at this boundary and in `core/restore.ts`: wrong top-level shape is refused; entries without an integer id in `1..capacity`, unknown component names, unknown fields and values that are not finite numbers are skipped, never thrown on. A `DefRef` pointing at no def is left out of `getRenderables` for the same reason. The capacity itself arrives in `welcome`, so `createReplica` refuses anything but an integer in `1..MAX_CAPACITY` (`content/tuning.ts`) with a `RangeError`: it bounds what a bad server can make a client allocate and scan.
+
+### Interpolation (client, ticket #18)
+
+Deltas arrive at the send rate, frames are drawn at 60 Hz. The client keeps **one replica** and interpolates in view space: before each `applyWorldState` it keeps `getRenderables(replica)` (and the headings it needs) as the previous frame of reference, after it reads them again, and it draws each `eid` between the two by the time elapsed since the update. That is view-only math on `Renderable`s; the client never reads `WorldState.entities` by component name (AGENTS.md rule 8), so a feature that adds a component changes nothing in the client.
 - `core/restore.ts` holds the shared "write snapshot fields into component stores" code (`ensureEntityExists`, `writeEntityComponents`, `restoreEntity`). Restoring a saved snapshot into a live sim (#2) builds on it and adds the physics world and the rng.
 
 ### Wire messages (`core/wire.ts`)
@@ -36,7 +40,7 @@ Transport is Colyseus (one room, `maxClients` 5, joined by id, never `joinOrCrea
 | Direction | Name | Payload | When |
 |---|---|---|---|
 | client → server | join (the Colyseus join itself) | none | On connect. A full room refuses the join with reason `world-full`. |
-| server → client | `welcome` | `WelcomeMessage` `{ seat, level, capacity, state }` | Once, when the join is accepted. `seat` is the client's slot, `level` the level name, `state` the full `WorldState`. The server has already sent `player/join` for that seat to the sim. |
+| server → client | `welcome` | `WelcomeMessage` `{ seat, level, capacity, state }` | Once, when the join is accepted. `seat` is the client's slot, `level` the level name, `state` the full `WorldState`. The client resolves the level with `findLevel(level)` and the capacity with `createReplica({ level, capacity })`; an unknown level name or a refused capacity means the client cannot play on this server and treats the join as refused. The server has already sent `player/join` for that seat to the sim. |
 | client → server | `player/move` | `MoveMessage` `{ x, y }` | When the player's direction changes. **No slot**: the server stamps the client's seat and forwards `{ type: 'player/move', slot, x, y }` to the sim. A slot in the payload is ignored. Anything that is not an allow-listed message is dropped. |
 | server → client | `world/delta` | `WorldStateDelta` | At the send rate: `DEFAULT_SEND_RATE` (20 per second) unless the server is configured otherwise. Each delta is diffed from the state the server last sent to **that** client, so deltas chain. |
 | server → client | `world/state` | `WorldState` | On `world/resync`, and whenever the server cannot continue a client's sequence. |
@@ -47,8 +51,8 @@ On disconnect the server sends `player/leave` for the seat to the sim and frees 
 ## Consequences
 
 - Features stay single-player code. A new component is replicated as soon as it is defined; a new view query works online if it reads through the sim's public exports.
-- The client draws state that is one round trip plus one send interval old. Interpolating between the last two states (#18) hides the send rate; input latency is accepted for now.
-- The server's capacity, level and tick rate must match the client's replica: `welcome` carries the first two, `FIXED_DT` is shared code.
+- The client draws state that is one round trip plus one send interval old. Interpolating between the last two renderable sets (#18) hides the send rate; input latency is accepted for now.
+- The server's capacity, level and tick rate must match the client's replica: `welcome` carries the first two (`findLevel` resolves the name: levels are content both sides ship, see `content/levels/index.ts`), `FIXED_DT` is shared code.
 - Bandwidth scales with what moves, not with the world: deltas are component-granular, so a feature that writes a component every tick (a timer, say) pays for it every send. Keep per-tick writes to components that really change.
 - The sim gained a second kind of `SimHandle`. Code inside `packages/sim` that needs physics or the rng keeps taking a `Sim`; code that only reads entities takes `asEntityWorld(handle)` and works on both.
 - Lockstep is not coming back: there is no need to keep `Math.*` out of features for cross-engine bit-identity. Determinism within one process (same seed, same commands, same state) still holds and is still tested, for replays and tests.

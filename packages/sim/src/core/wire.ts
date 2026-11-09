@@ -23,9 +23,9 @@ export const WIRE = {
 export interface WelcomeMessage {
   /** The client's seat: the `slot` of its player entity. */
   readonly seat: number;
-  /** Name of the level the server runs; the client builds its replica from the matching LevelData. */
+  /** Name of the level the server runs; the client resolves it with `findLevel` and builds its replica from it. */
   readonly level: string;
-  /** Capacity of the server's sim; the replica is created with the same one. */
+  /** Capacity of the server's sim; the replica is created with the same one (createReplica refuses one outside 1..MAX_CAPACITY). */
   readonly capacity: number;
   readonly state: WorldState;
 }

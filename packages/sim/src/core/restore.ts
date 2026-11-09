@@ -1,5 +1,5 @@
 import { addComponent, addEntity, entityExists, getEntityComponents, hasComponent, removeComponent, removeEntity, type World } from 'bitecs';
-import { getComponentDef, type NumericArray } from './components';
+import { getComponentDef, type ComponentDef, type NumericArray } from './components';
 import type { EntityWorld } from './entityWorld';
 
 /**
@@ -16,6 +16,39 @@ import type { EntityWorld } from './entityWorld';
 /** True when `id` can be an entity of a world with `capacity` entities. */
 export function isEntityId(id: unknown, capacity: number): id is number {
   return typeof id === 'number' && Number.isInteger(id) && id >= 1 && id <= capacity;
+}
+
+/** True when `value` may be written into a component field: JSON cannot carry anything else. */
+export function isFieldValue(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+const fieldNamesByDef = new Map<ComponentDef, readonly string[]>();
+
+/** The field names of a component, sorted, as its snapshot lists them. */
+export function componentFieldNames(def: ComponentDef): readonly string[] {
+  let names = fieldNamesByDef.get(def);
+  if (!names) {
+    names = Object.keys(def.create(1)).sort();
+    fieldNamesByDef.set(def, names);
+  }
+  return names;
+}
+
+/**
+ * The component fields the sim would end up with after writing `fields` over
+ * `before`: every field of the component, taken from `fields` where it holds
+ * a finite number, else from `before`, else 0. This is the pure form of
+ * `writeEntityComponents` for one component; the two must agree.
+ */
+export function mergeComponentFields(def: ComponentDef, before: Record<string, number> | undefined, fields: unknown): Record<string, number> {
+  const merged: Record<string, number> = {};
+  const given = isRecord(fields) ? fields : {};
+  for (const name of componentFieldNames(def)) {
+    const value = given[name];
+    merged[name] = isFieldValue(value) ? value : (before?.[name] ?? 0);
+  }
+  return merged;
 }
 
 /**
@@ -60,10 +93,10 @@ export function writeEntityComponents(entityWorld: EntityWorld, eid: number, com
     const store = entityWorld.store(def);
     const isNew = !hasComponent(entityWorld.world, eid, store);
     if (isNew) addComponent(entityWorld.world, eid, store);
-    for (const field of Object.keys(store)) {
+    for (const field of componentFieldNames(def)) {
       const value = fields[field];
       const array = store[field] as NumericArray;
-      if (typeof value === 'number' && Number.isFinite(value)) array[eid] = value;
+      if (isFieldValue(value)) array[eid] = value;
       else if (isNew) array[eid] = 0;
     }
   }

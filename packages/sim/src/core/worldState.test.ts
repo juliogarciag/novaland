@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { findPlayerEntity } from '../features/player/queries';
 import type { Command } from './commands';
-import { createSim } from './create';
-import { applyWorldStateDelta, diffWorldState, worldState, type WorldState, type WorldStateDelta } from './worldState';
+import { createReplica, createSim } from './create';
+import { applyWorldState, applyWorldStateDelta, diffWorldState, worldState, type WorldState, type WorldStateDelta } from './worldState';
 
 describe('worldState', () => {
   it('is the entities of the snapshot plus the tick, with no physics and no rng', async () => {
@@ -83,6 +84,42 @@ describe('diffWorldState and applyWorldStateDelta', () => {
     expect(applyWorldStateDelta(state, { kind: 'full', tick: 6, entities: [] } as unknown as WorldStateDelta)).toBeUndefined();
     expect(applyWorldStateDelta(state, null as unknown as WorldStateDelta)).toBeUndefined();
     expect(applyWorldStateDelta(state, { kind: 'delta', fromTick: 5, tick: 6, ...empty })).toEqual({ ...state, tick: 6 });
+  });
+
+  it('returns undefined for a state that is not a world state, instead of throwing', () => {
+    const delta: WorldStateDelta = { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] };
+    for (const state of [null, undefined, 4, 'full', {}, { kind: 'full', tick: 0 }, { kind: 'full', tick: 0, entities: null }, { kind: 'delta', fromTick: 0, tick: 0, changed: [], removed: [] }]) {
+      expect(applyWorldStateDelta(state as unknown as WorldState, delta)).toBeUndefined();
+    }
+    expect(applyWorldStateDelta({ kind: 'full', tick: 0, entities: [null as unknown as WorldState['entities'][number]] }, delta)).toEqual(stateAt(1, []));
+  });
+
+  it('validates component names, fields and values exactly like a replica would, so both agree on bad input', async () => {
+    const sim = await createSim({ seed: 2 });
+    sim.step([{ type: 'player/join', slot: 0 }]);
+    const state = worldState(sim);
+    const player = findPlayerEntity(sim, 0) as number;
+    const delta = {
+      kind: 'delta',
+      fromTick: state.tick,
+      tick: state.tick + 1,
+      changed: [
+        { id: player, components: { Nonsense: { x: 1 }, Position: { x: 'far', y: 2.5, z: 9 }, MoveIntent: { x: Number.NaN, y: 0.5 } } },
+        { id: player + 1, components: { Facing: { y: 1 }, Bogus: {} } },
+      ],
+      removed: [],
+    } as unknown as WorldStateDelta;
+    const pure = applyWorldStateDelta(state, delta);
+    const replica = createReplica({ level: sim.level });
+    applyWorldState(replica, state);
+    expect(applyWorldState(replica, delta)).toBe('applied');
+    expect(pure).toEqual(worldState(replica));
+    const written = pure?.entities.find((entity) => entity.id === player)?.components;
+    expect(written?.['Position']).toEqual({ x: state.entities.find((entity) => entity.id === player)?.components['Position']?.['x'], y: 2.5 });
+    expect(written?.['MoveIntent']).toEqual({ x: 0, y: 0.5 });
+    expect(written?.['Nonsense']).toBeUndefined();
+    expect(pure?.entities.find((entity) => entity.id === player + 1)?.components).toEqual({ Facing: { x: 0, y: 1 } });
+    sim.destroy();
   });
 
   it('skips malformed entries of a delta and keeps the rest', () => {
