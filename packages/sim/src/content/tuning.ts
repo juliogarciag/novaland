@@ -14,3 +14,6 @@ export const DEFAULT_RADIUS = 0.5;
 
 /** Seats a world can hold. Slots outside [0, MAX_PLAYER_SLOTS) are rejected. */
 export const MAX_PLAYER_SLOTS = 64;
+
+/** World-state deltas per second a server sends its players. The server may be configured with another rate. */
+export const DEFAULT_SEND_RATE = 20;

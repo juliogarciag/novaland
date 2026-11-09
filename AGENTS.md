@@ -49,7 +49,7 @@ packages/
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
   server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 before touching replication or networking.
 verifications/    One folder per ticket with its verification scripts and proof.
 ```
 

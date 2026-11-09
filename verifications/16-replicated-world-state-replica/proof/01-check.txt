@@ -1,0 +1,19 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (106 of 106)
+PASS  a replica fed full states every tick draws what the sim draws
+PASS  a replica fed deltas matches the sim at every send, through joins, leaves and a recycled id
+PASS  removed entities disappear and an out-of-sequence delta is reported
+PASS  deltas never carry the terrain again
+PASS  a full state from a restarted server replaces the replica
+PASS  replica.step throws and a live sim is refused by applyWorldState
+PASS  malformed network data is ignored, never thrown on
+PASS  a DefRef at no def does not crash the view
+PASS  diff -> apply rebuilds the next state exactly, through JSON
+PASS  ensureEntityExists agrees with a model over 2000 random steps
+PASS  the determinism test still passes
+PASS  the snapshot tests still pass (shared entity snapshot code)
+
+ALL 17 CHECKS PASSED

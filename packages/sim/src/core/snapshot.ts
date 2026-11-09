@@ -1,4 +1,5 @@
 import { getAllEntities, getEntityComponents } from 'bitecs';
+import type { EntityWorld } from './entityWorld';
 import type { Sim } from './sim';
 
 /**
@@ -28,11 +29,29 @@ export interface SimSnapshot {
 }
 
 export function takeSnapshot(sim: Sim): SimSnapshot {
-  const ids = [...getAllEntities(sim.world)].sort((a, b) => a - b);
-  const entities: EntitySnapshot[] = ids.map((id) => {
+  return {
+    version: 1,
+    seed: sim.seed,
+    level: sim.level.name,
+    capacity: sim.capacity,
+    tick: sim.tick,
+    rng: sim.rng.state(),
+    entities: snapshotEntities(sim),
+    physics: toBase64(sim.physics.takeSnapshot()),
+  };
+}
+
+/**
+ * Every entity with every component field, sorted by id, component name and
+ * field name. This is the `entities` part of a snapshot and the whole of a
+ * world state (see worldState.ts); a replica produces it too.
+ */
+export function snapshotEntities(entityWorld: EntityWorld): EntitySnapshot[] {
+  const ids = [...getAllEntities(entityWorld.world)].sort((a, b) => a - b);
+  return ids.map((id) => {
     const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
-    for (const store of getEntityComponents(sim.world, id)) {
-      const name = sim.componentName(store);
+    for (const store of getEntityComponents(entityWorld.world, id)) {
+      const name = entityWorld.componentName(store);
       if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
     }
     named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
@@ -46,16 +65,6 @@ export function takeSnapshot(sim: Sim): SimSnapshot {
     }
     return { id, components };
   });
-  return {
-    version: 1,
-    seed: sim.seed,
-    level: sim.level.name,
-    capacity: sim.capacity,
-    tick: sim.tick,
-    rng: sim.rng.state(),
-    entities,
-    physics: toBase64(sim.physics.takeSnapshot()),
-  };
 }
 
 /** Stable 32-bit FNV-1a hash of a snapshot, as 8 hex chars. Handy for desync checks and tests. */

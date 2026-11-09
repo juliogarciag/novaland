@@ -3,7 +3,8 @@ import { addEntity, createWorld, getAllEntities, removeEntity, type World } from
 import { FIXED_DT } from '../content/tuning';
 import type { LevelData } from '../content/levels/types';
 import { isCommandShaped, type Command } from './commands';
-import type { ComponentDef, NumericStore } from './components';
+import { ComponentStores, type ComponentDef, type NumericStore } from './components';
+import { registerEntityWorld, type EntityWorld } from './entityWorld';
 import type { Feature } from './feature';
 import { createPhysicsWorld, detachBody, syncBodiesToPositions } from './physics';
 import { createRng, type Rng } from './rng';
@@ -46,7 +47,7 @@ export interface SimHandle {
  * Constructing one directly (tests with a custom feature list) requires
  * `await initPhysics()` first.
  */
-export class Sim implements SimHandle {
+export class Sim implements SimHandle, EntityWorld {
   readonly world: World = createWorld();
   readonly physics: PhysicsWorld;
   readonly rng: Rng;
@@ -57,34 +58,28 @@ export class Sim implements SimHandle {
   readonly features: readonly Feature[];
   tick = 0;
 
-  private readonly stores = new Map<ComponentDef, NumericStore>();
-  private readonly storeNames = new Map<NumericStore, string>();
+  private readonly stores: ComponentStores;
 
   constructor(config: SimConfig, features: readonly Feature[]) {
     this.seed = config.seed;
     this.level = config.level;
     this.capacity = config.capacity;
+    this.stores = new ComponentStores(this.capacity);
     this.rng = createRng(this.seed);
     this.physics = createPhysicsWorld(this.dt);
     this.features = features;
+    registerEntityWorld(this, this);
     for (const feature of features) feature.init?.(this);
   }
 
   /** The per-sim data store for a component. Created on first use. */
   store<T extends NumericStore>(def: ComponentDef<T>): T {
-    let store = this.stores.get(def);
-    if (!store) {
-      // bitECS hands out ids starting at 1, so index 0 is never used.
-      store = def.create(this.capacity + 1);
-      this.stores.set(def, store);
-      this.storeNames.set(store, def.name);
-    }
-    return store as T;
+    return this.stores.get(def);
   }
 
   /** Name of the component a store belongs to, or undefined if it is not one of this sim's stores. */
   componentName(store: object): string | undefined {
-    return this.storeNames.get(store as NumericStore);
+    return this.stores.nameOf(store);
   }
 
   get entityCount(): number {
@@ -134,10 +129,4 @@ export class Sim implements SimHandle {
   destroy(): void {
     this.physics.free();
   }
-}
-
-/** Recovers the internal Sim behind a handle. Only for code inside packages/sim. */
-export function asSim(handle: SimHandle): Sim {
-  if (!(handle instanceof Sim)) throw new TypeError('Expected a sim created by createSim');
-  return handle;
 }

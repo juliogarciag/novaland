@@ -53,3 +53,8 @@ export function getDef(id: number): EntityDef {
   if (!def) throw new Error(`Unknown entity def id ${id}`);
   return def;
 }
+
+/** The def with this id, or undefined. For ids that came from outside the process (a replica's world state). */
+export function findDef(id: number): EntityDef | undefined {
+  return byId.get(id);
+}

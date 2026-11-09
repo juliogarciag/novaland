@@ -1,0 +1,72 @@
+$ pnpm install
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 476ms using pnpm v10.9.0
+(node:5804) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:5837) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+
+$ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 14ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 4ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 5ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 6ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 489ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 465ms
+   ✓ snapshot (5)
+     ✓ is plain JSON that survives a round trip 452ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 592ms
+   ✓ player movement (headless) (10)
+     ✓ spawns a player at the level spawn point on join 332ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 689ms
+ ✓ |sim| src/core/worldState.test.ts (7 tests) 657ms
+   ✓ worldState (1)
+     ✓ is the entities of the snapshot plus the tick, with no physics and no rng 458ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 744ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 646ms
+ ✓ |server| src/headless.test.ts (3 tests) 474ms
+   ✓ server headless run (3)
+     ✓ drives the sim without a browser and is reproducible 432ms
+ ✓ |sim| src/core/restore.test.ts (10 tests) 25ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 43ms
+ ✓ |sim| src/core/replica.test.ts (13 tests) 905ms
+   ✓ a replica fed full world states every tick (1)
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 810ms
+
+ Test Files  16 passed (16)
+      Tests  106 passed (106)
+   Start at  15:26:35
+   Duration  1.32s (tests 71%, transform 16%, import 11%, worker 1%)
+
+JSON report written to <repo>/verifications/16-replicated-world-state-replica/proof/01-tests-report.json

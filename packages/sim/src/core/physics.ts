@@ -10,8 +10,9 @@ import { Position } from './transform';
  * mirrors body translations into Position after every step.
  *
  * We use the `deterministic` build of Rapier so that the same inputs produce
- * the same bytes on every platform (needed for lockstep networking and
- * replays). See docs/decisions/0002-physics.md.
+ * the same bytes on every platform (replays, desync checks between a server
+ * and its tests). See docs/decisions/0002-physics.md; multiplayer itself is
+ * server-authoritative, see 0004-multiplayer-netcode.md.
  */
 
 let ready: Promise<void> | undefined;

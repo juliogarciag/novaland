@@ -32,5 +32,34 @@ export function getComponentDef(name: string): ComponentDef | undefined {
   return registry.get(name);
 }
 
+/**
+ * The component data of one world: a store per definition, created on first
+ * use and sized to the world's capacity. A live sim and a replica each own
+ * one, so two worlds in the same process never share data.
+ */
+export class ComponentStores {
+  private readonly byDef = new Map<ComponentDef, NumericStore>();
+  private readonly nameByStore = new Map<NumericStore, string>();
+
+  constructor(private readonly capacity: number) {}
+
+  /** The store for a component. Created on first use. */
+  get<T extends NumericStore>(def: ComponentDef<T>): T {
+    let store = this.byDef.get(def);
+    if (!store) {
+      // bitECS hands out ids starting at 1, so index 0 is never used.
+      store = def.create(this.capacity + 1);
+      this.byDef.set(def, store);
+      this.nameByStore.set(store, def.name);
+    }
+    return store as T;
+  }
+
+  /** Name of the component a store belongs to, or undefined if it is not one of these stores. */
+  nameOf(store: object): string | undefined {
+    return this.nameByStore.get(store as NumericStore);
+  }
+}
+
 export const f64 = (capacity: number): Float64Array => new Float64Array(capacity);
 export const u32 = (capacity: number): Uint32Array => new Uint32Array(capacity);
