@@ -1,0 +1,674 @@
+{
+  "steps": [
+    {
+      "step": "first-join",
+      "beforeServer": {
+        "screen": "disconnected",
+        "text": "Disconnected from the world. Retrying in 1s…",
+        "button": true,
+        "hasApi": false
+      },
+      "aJoined": {
+        "status": {
+          "kind": "online",
+          "slot": 0
+        },
+        "localSlot": 0,
+        "ownEntity": {
+          "eid": 45,
+          "slot": 0,
+          "x": -13.5,
+          "y": -0.5,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 135,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -13.5,
+            "y": -0.5,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -8,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 132   1/5 online",
+        "screen": null
+      },
+      "stepped": "Error: A replica cannot step: it only shows what the authoritative sim sent. Use applyWorldState."
+    },
+    {
+      "step": "two-players",
+      "aTwo": {
+        "status": {
+          "kind": "online",
+          "slot": 0
+        },
+        "localSlot": 0,
+        "ownEntity": {
+          "eid": 45,
+          "slot": 0,
+          "x": -13.5,
+          "y": -0.8079420328140259,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 183,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -13.5,
+            "y": -0.8079420328140259,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": -0.1920579969882965,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -8.622855916206321,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -7.246177673339844,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 180   2/5 online",
+        "screen": null
+      },
+      "bTwo": {
+        "status": {
+          "kind": "online",
+          "slot": 1
+        },
+        "localSlot": 1,
+        "ownEntity": {
+          "eid": 46,
+          "slot": 1,
+          "x": -13.5,
+          "y": -0.15958277881145477,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 186,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -13.5,
+            "y": -0.8404172658920288,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": -0.15958277881145477,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -9.17205802993775,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -6.827941970062251,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 180   2/5 online",
+        "screen": null
+      },
+      "speed": 5,
+      "sampledSeconds": 0.7,
+      "sampleCount": 74,
+      "distinctSpriteX": 42,
+      "distinctReplicaX": 15,
+      "samples": [
+        {
+          "tick": 201,
+          "replicaX": -12.500015258789062,
+          "spriteX": -206.8975887670957,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 207,
+          "replicaX": -12.000022888183594,
+          "spriteX": -200.6661868986177,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 210,
+          "replicaX": -11.75002670288086,
+          "spriteX": -194.40134505785971,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 216,
+          "replicaX": -11.25003433227539,
+          "spriteX": -187.75124554522117,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 223,
+          "replicaX": -10.666709899902344,
+          "spriteX": -180.71382694340392,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 229,
+          "replicaX": -10.166717529296875,
+          "spriteX": -173.8862653338772,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 235,
+          "replicaX": -9.666725158691406,
+          "spriteX": -165.68084004429224,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        },
+        {
+          "tick": 241,
+          "replicaX": -9.166732788085938,
+          "spriteX": -154.74327521642815,
+          "intentX": 1,
+          "animation": "player/walk/right",
+          "pixelsPerMetre": 16
+        }
+      ],
+      "meanLag": 8.924558325119202,
+      "expectedLag": 8
+    },
+    {
+      "step": "full",
+      "aFive": {
+        "status": {
+          "kind": "online",
+          "slot": 0
+        },
+        "localSlot": 0,
+        "ownEntity": {
+          "eid": 45,
+          "slot": 0,
+          "x": -8.166748046875,
+          "y": -0.8666420578956604,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 393,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -8.166748046875,
+            "y": -0.8666420578956604,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": 0.76956707239151,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 47,
+            "slot": 2,
+            "x": -13.5,
+            "y": -1.5857646465301514,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 48,
+            "slot": 3,
+            "x": -13.5,
+            "y": -0.011619784869253635,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 49,
+            "slot": 4,
+            "x": -13.5,
+            "y": -0.8055412173271179,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -25.176298024365416,
+            "texture": "player"
+          },
+          {
+            "x": -130.66796875,
+            "y": -13.866272926330566,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -12.852177465960358,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -0.2302200002433062,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": 12.124961596195611,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 393   5/5 online",
+        "screen": null
+      },
+      "fFull": {
+        "screen": "full",
+        "text": "The world is full (5/5 online). Retrying in 5s.",
+        "button": true,
+        "hasApi": false
+      },
+      "fRetried": {
+        "screen": "full",
+        "text": "The world is full (5/5 online). Retrying in 4s.",
+        "button": true,
+        "hasApi": false
+      }
+    },
+    {
+      "step": "leave",
+      "eSlot": 4,
+      "goneAfterMs": 69,
+      "drawnGoneAfterMs": 148,
+      "aFour": {
+        "status": {
+          "kind": "online",
+          "slot": 0
+        },
+        "localSlot": 0,
+        "ownEntity": {
+          "eid": 45,
+          "slot": 0,
+          "x": -8.166748046875,
+          "y": -0.8666420578956604,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 562,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -8.166748046875,
+            "y": -0.8666420578956604,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": 0.7916601896286011,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 47,
+            "slot": 2,
+            "x": -13.5,
+            "y": -1.608337163925171,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 48,
+            "slot": 3,
+            "x": -13.5,
+            "y": -0.008339263498783112,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -25.733394622802734,
+            "texture": "player"
+          },
+          {
+            "x": -130.66796875,
+            "y": -13.866272926330566,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -0.1334220352231316,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": 12.666563034057617,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 559   4/5 online",
+        "screen": null
+      },
+      "fIn": {
+        "status": {
+          "kind": "online",
+          "slot": 4
+        },
+        "localSlot": 4,
+        "ownEntity": {
+          "eid": 49,
+          "slot": 4,
+          "x": -13.5,
+          "y": -0.6969085931777954,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 784,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -8.166748046875,
+            "y": -0.8666420578956604,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": 0.8836638331413269,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 47,
+            "slot": 2,
+            "x": -13.5,
+            "y": -1.608337163925171,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 48,
+            "slot": 3,
+            "x": -13.5,
+            "y": 0.0965651273727417,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 49,
+            "slot": 4,
+            "x": -13.5,
+            "y": -0.6969085931777954,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [],
+        "hud": "",
+        "screen": null
+      }
+    },
+    {
+      "step": "restart",
+      "tickBeforeKill": 811,
+      "aDown": {
+        "screen": "disconnected",
+        "text": "Disconnected from the world. Retrying in 1s…",
+        "button": true,
+        "hasApi": true
+      },
+      "aStillDown": {
+        "screen": "disconnected",
+        "text": "Disconnected from the world. Retrying in 2s…",
+        "button": true,
+        "hasApi": true
+      },
+      "aBack": {
+        "status": {
+          "kind": "online",
+          "slot": 1
+        },
+        "localSlot": 1,
+        "ownEntity": {
+          "eid": 46,
+          "slot": 1,
+          "x": -13.5,
+          "y": -1.0576332807540894,
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "tick": 37,
+        "isReplica": true,
+        "players": [
+          {
+            "eid": 45,
+            "slot": 0,
+            "x": -13.5,
+            "y": -1.6277942657470703,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 46,
+            "slot": 1,
+            "x": -13.5,
+            "y": -1.0576332807540894,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 47,
+            "slot": 2,
+            "x": -13.5,
+            "y": 0.16996249556541443,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 48,
+            "slot": 3,
+            "x": -13.5,
+            "y": 0.564195990562439,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "eid": 49,
+            "slot": 4,
+            "x": -13.5,
+            "y": -0.5487317442893982,
+            "intent": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "sprites": [
+          {
+            "x": -216,
+            "y": -19.507610817663586,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -14.088030503369145,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -9.097806203901673,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": -0.10782506866480686,
+            "texture": "player"
+          },
+          {
+            "x": -216,
+            "y": 2.801264996229183,
+            "texture": "player"
+          }
+        ],
+        "hud": "WASD / arrows to move   tick 37   5/5 online",
+        "screen": null
+      },
+      "bBackStart": {
+        "eid": 46,
+        "slot": 1,
+        "x": -13.5,
+        "y": -1.1093838214874268,
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "bBackEnd": {
+        "eid": 46,
+        "slot": 1,
+        "x": -13.5,
+        "y": -0.5748047232627869,
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "errors": {
+    "pageErrors": [],
+    "consoleErrors": [
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "F: Failed to load resource: the server responded with a status of 522 (unknown)",
+      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "F: Failed to load resource: net::ERR_CONNECTION_REFUSED"
+    ]
+  }
+}

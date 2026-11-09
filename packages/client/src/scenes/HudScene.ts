@@ -1,5 +1,5 @@
-import type { SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
+import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 /** CSS pixels, so the text reads the same on every screen. */
 const HUD_MARGIN = 12;
@@ -13,7 +13,7 @@ const HUD_FONT_SIZE = 14;
 export class HudScene extends Phaser.Scene {
   private text!: Phaser.GameObjects.Text;
 
-  constructor(private readonly sim: SimHandle) {
+  constructor(private readonly world: PlayableWorld) {
     super({ key: 'hud', active: true });
   }
 
@@ -25,7 +25,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   override update(): void {
-    this.text.setText(`WASD / arrows to move   tick ${this.sim.tick}`);
+    this.text.setText(hudLine(this.world));
   }
 
   /** The canvas is zoomed by 1 / pixelRatio (render/viewport.ts), so device pixels per CSS pixel is the inverse. */
@@ -34,4 +34,11 @@ export class HudScene extends Phaser.Scene {
     this.text.setFontSize(Math.round(HUD_FONT_SIZE * pixelRatio));
     this.text.setPosition(HUD_MARGIN * pixelRatio, HUD_MARGIN * pixelRatio);
   }
+}
+
+/** The HUD text: controls, the tick, and online the seats taken. */
+export function hudLine(world: PlayableWorld): string {
+  const occupancy = world.occupancy;
+  const online = occupancy ? `   ${occupancy.online}/${occupancy.seats} online` : '';
+  return `WASD / arrows to move   tick ${world.sim.tick}${online}`;
 }

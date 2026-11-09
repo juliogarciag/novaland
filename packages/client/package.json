@@ -13,6 +13,7 @@
     "art:player": "node tools/generate-player-sheet.mjs"
   },
   "dependencies": {
+    "@colyseus/sdk": "catalog:",
     "@novaland/sim": "workspace:*",
     "phaser": "catalog:"
   },

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @novaland/client dev",
+    "dev:online": "node scripts/dev-online.mjs",
     "build": "pnpm -r build",
     "test": "vitest run",
     "test:watch": "vitest",

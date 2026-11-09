@@ -1,0 +1,27 @@
+{
+  "status": {
+    "status": {
+      "kind": "online",
+      "slot": 0
+    },
+    "isReplica": true
+  },
+  "outputHead": [
+    "",
+    "> novaland@0.0.0 dev:online <repo>",
+    "> node scripts/dev-online.mjs",
+    "",
+    "[server] (node:98574) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+    "[server] (Use `node --trace-deprecation ...` to show where the warning was created)",
+    "[client] (node:98579) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+    "[client] (Use `node --trace-deprecation ...` to show where the warning was created)",
+    "[client] > @novaland/client@0.0.0 dev <repo>/packages/client",
+    "[client] > vite",
+    "[server] > @novaland/server@0.0.0 dev <repo>/packages/server",
+    "[server] > tsx src/index.ts"
+  ],
+  "stopped": {
+    "serverOpen": false,
+    "clientOpen": false
+  }
+}

@@ -1,0 +1,131 @@
+$ pnpm install
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: msgpackr-extract.                                   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Done in 624ms using pnpm v10.9.0
+(node:96542) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:96609) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+
+$ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/render/zoom.test.ts (4 tests) 10ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 7ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 9ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 22ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 4ms
+ ✓ |client| src/online/frameBuffer.test.ts (7 tests) 7ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 5ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 3ms
+ ✓ |client| src/render/viewFrame.test.ts (6 tests) 150ms
+ ✓ |client| src/online/connection.test.ts (11 tests) 15ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 15ms
+ ✓ |server| src/world/seats.test.ts (3 tests) 3ms
+ ✓ |server| src/headless.test.ts (3 tests) 513ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 312ms
+   ✓ snapshot (5)
+     ✓ is plain JSON that survives a round trip 305ms
+stdout | src/world/worldRoom.test.ts
+ℹ️  optional .env file not found: .env.test, .env
+
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 517ms
+   ✓ player facing (headless) (7)
+     ✓ spawns facing down with no move intent 320ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 656ms
+   ✓ player movement (headless) (10)
+     ✓ spawns a player at the level spawn point on join 343ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 756ms
+   ✓ worldState (1)
+     ✓ is the entities of the snapshot plus the tick, with no physics and no rng 457ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 734ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 312ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 111ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 119ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 153ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 531ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 485ms
+ ✓ |sim| src/core/replica.test.ts (19 tests) 1668ms
+   ✓ a replica fed full world states every tick (1)
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 1240ms
+ ✓ |client| src/online/OnlineWorld.test.ts (10 tests) 2189ms
+   ✓ OnlineWorld (9)
+     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1008ms
+     ✓ after a drop refuses a welcome for another world, so the page can reload 1004ms
+ ✓ |server| src/world/worldRoom.test.ts (7 tests) 2392ms
+   ✓ WorldRoom over a real connection (7)
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 777ms
+     ✓ shows every player the others moving, through deltas that chain without a gap 350ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 440ms
+
+ Test Files  26 passed (26)
+      Tests  178 passed (178)
+   Start at  17:39:50
+   Duration  3.78s (tests 70%, import 18%, transform 10%, worker 2%)
+
+    Isolate  26 workers spawned · ~159ms startup each (spawn + environment, per file)
+             at least ~301ms faster with isolate: false — reuses workers across files instead of one per file
+
+JSON report written to <repo>/verifications/18-client-online-mode/proof/01-tests-report.json
+stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses
+Max payload size exceeded
+RangeError: Max payload size exceeded
+    at Receiver.haveLength (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:442:28)
+    at Receiver.getPayloadLength16 (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:393:10)
+    at Receiver.startLoop (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:181:16)
+    at Receiver._write (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:117:10)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.socketOnData (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/websocket.js:1407:35)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+
+
+
+$ pnpm sim:headless (exit 0)
+
+> novaland@0.0.0 sim:headless <repo>
+> pnpm --filter @novaland/server headless
+
+
+> @novaland/server@0.0.0 headless <repo>/packages/server
+> tsx src/headlessRun.ts
+
+{"simulatedSeconds":5,"ticks":300,"hash":"2e110fbf","player":{"x":-3.583388328552246,"y":4.499997615814209}}
+(node:97163) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -1,0 +1,16 @@
+{
+  "solo": {
+    "screen": null,
+    "isReplica": false,
+    "tick": 11,
+    "localSlot": 0,
+    "hud": "WASD / arrows to move   tick 10",
+    "playerSlot": 0,
+    "x": -13.5
+  },
+  "errors": [],
+  "tenPlayerSprite": {
+    "code": 0,
+    "summary": "ALL 45 CHECKS PASSED"
+  }
+}
