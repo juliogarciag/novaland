@@ -33,7 +33,7 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
 - Rapier 2D (`@dimforge/rapier2d-deterministic-compat`): all physics, in `packages/sim`. Phaser Arcade/Matter physics are never used.
 - bitECS: entities and components, in `packages/sim`.
 - Vitest: all tests. They run headless in Node.
-- Colyseus 0.18 (`colyseus` on the server, `@colyseus/sdk` for clients): the authoritative multiplayer server in `packages/server`. One `WorldRoom` owns the only live sim and steps it; browsers hold a replica (ADR 0004). `PORT=<n> pnpm --filter @novaland/server dev` runs it.
+- Colyseus 0.18 (`@colyseus/core` and `@colyseus/ws-transport` on the server, `@colyseus/sdk` for clients): the authoritative multiplayer server in `packages/server`. One `WorldRoom` owns the only live sim and steps it; browsers hold a replica (ADR 0004, 0005). `PORT=<n> pnpm --filter @novaland/server dev` runs it.
 
 **Repository layout**
 
@@ -50,7 +50,7 @@ packages/
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
   server/     The authoritative Colyseus server: one world room (5 seats, joined by id) that owns the only live sim,
               steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 before touching replication or networking.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking.
 verifications/    One folder per ticket with its verification scripts and proof.
 ```
 

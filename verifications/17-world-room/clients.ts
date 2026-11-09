@@ -23,6 +23,7 @@ import {
   type WorldStateApplyResult,
   type WorldStateUpdate,
 } from '../../packages/sim/src/index.ts';
+import { DISCONNECT_MESSAGES_PER_SECOND, INBOUND_BURST } from '../../packages/server/src/world/tuning.ts';
 
 // The SDK is a dependency of the server package; resolve it from there.
 const serverPackage = new URL('../../packages/server/package.json', import.meta.url);
@@ -84,6 +85,7 @@ const otherMethods: Record<string, string> = {};
 for (const method of ['joinOrCreate', 'create', 'join'] as const) {
   otherMethods[method] = await sixth[method]('world').then(() => 'ALLOWED', (error: Error) => error.message);
 }
+otherMethods['reconnect'] = await sixth.reconnect('world:token').then(() => 'ALLOWED', (error: Error) => error.message);
 say(`other matchmaking methods: ${JSON.stringify(otherMethods)}`);
 
 // 4. A leaver frees the seat and vanishes for the others; the next joiner gets the seat.
@@ -117,16 +119,22 @@ const junk: Array<[string, unknown]> = [
   [WIRE.move, undefined],
 ];
 for (const [type, payload] of junk) sender.room.send(type, payload);
-for (let i = 0; i < 150; i += 1) sender.room.send(WIRE.move, { x: i % 2 ? 1 : -1, y: 0 });
 await waitForUpdates(players, 6);
 const intentsAfterJunk = { sender: JSON.stringify({ moveIntent: headingOf(watcher.replica, sender.welcome.slot)?.moveIntent }), target: JSON.stringify({ moveIntent: headingOf(watcher.replica, target.welcome.slot)?.moveIntent }) };
+const junkDropped = intentsAfterJunk.sender === still && intentsAfterJunk.target === still;
+say(`${junk.length} junk messages: neither the sender (${intentsAfterJunk.sender === still}) nor the slot named in a payload (${intentsAfterJunk.target === still}) was told to move`);
+// Then a flood, under Colyseus's own per-second disconnect ceiling: the room's budget lets a burst through (so the sender may walk), the rest is dropped, nobody is disconnected.
+const flood = DISCONNECT_MESSAGES_PER_SECOND - 5;
+await new Promise((resolve) => setTimeout(resolve, 1100)); // let Colyseus's one-second message window, which the junk above also counted against, roll over
+for (let i = 0; i < flood; i += 1) sender.room.send(WIRE.move, { x: i % 2 ? 1 : -1, y: 0 });
+await waitForUpdates(players, 6);
 const worldKeptRunning = watcher.replica.tick > tickBefore + 10 && players.every((player) => player.leftWith === undefined);
-// The flood's last 150 moves alternate; the budget lets a burst through, so the sender may end up walking. Stop it and check the gate let a good move through.
 sender.room.send(WIRE.move, { x: 0, y: 0 });
 await waitForUpdates(players, 6);
 sender.room.send(WIRE.move, { x: 0, y: 1 });
-await waitUntil(() => headingOf(watcher.replica, sender.welcome.slot)?.moveIntent.y === 1);
-say(`${junk.length} junk messages and a flood of 150: the targeted slot never moved (${intentsAfterJunk.target === still}), the world advanced ${watcher.replica.tick - tickBefore} ticks, nobody was disconnected: ${worldKeptRunning}; a good move from the same sender still works`);
+await waitUntil(() => sender.leftWith !== undefined || headingOf(watcher.replica, sender.welcome.slot)?.moveIntent.y === 1);
+if (sender.leftWith !== undefined) throw new Error(`the flooding sender was disconnected with code ${sender.leftWith}`);
+say(`a flood of ${flood} moves (budget ${INBOUND_BURST}): the world advanced ${watcher.replica.tick - tickBefore} ticks, nobody was disconnected: ${worldKeptRunning}; a good move from the same sender still works`);
 const oversizedLeft = new Promise<number>((resolve) => sender.room.onLeave((code) => resolve(code)));
 sender.room.send(WIRE.move, { x: 1, y: 0, padding: 'p'.repeat(4000) });
 const oversizedCode = await oversizedLeft;
@@ -153,7 +161,7 @@ console.log(JSON.stringify({
   refusal,
   otherMethods,
   leaver: { slot: leaver.welcome.slot, code: leaverCode, avatarGone, newcomerSlot: newcomer.welcome.slot },
-  junk: { messages: junk.length, flood: 150, targetIntent: intentsAfterJunk.target, worldKeptRunning, oversizedCloseCode: oversizedCode },
+  junk: { messages: junk.length, junkDropped, senderIntent: intentsAfterJunk.sender, targetIntent: intentsAfterJunk.target, flood, worldKeptRunning, oversizedCloseCode: oversizedCode },
   chained,
   deltaBytes: { count: deltaBytes.length, min: Math.min(...deltaBytes), max: Math.max(...deltaBytes) },
   welcomeBytes: JSON.stringify(players[0]!.welcome).length,
@@ -163,22 +171,28 @@ process.exit(0);
 
 // ---- Helpers ----
 
+/** Update handlers go on before the welcome is awaited (ADR 0005): a delta can share the welcome's batch, and the SDK drops a message with no handler. */
 async function join(name: string): Promise<Player> {
   const room = await new Client(endpoint).joinById('world');
   const updates: WorldStateUpdate[] = [];
   const applyResults: WorldStateApplyResult[] = [];
+  const bound: { replica?: ReplicaHandle } = {};
+  const pending: WorldStateUpdate[] = [];
+  const onUpdate = (update: WorldStateUpdate) => {
+    updates.push(update);
+    if (bound.replica) applyResults.push(applyWorldState(bound.replica, update));
+    else pending.push(update);
+  };
+  room.onMessage(WIRE.delta, onUpdate);
+  room.onMessage(WIRE.state, onUpdate);
   const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
   const level = findLevel(welcome.level);
   if (!level) throw new Error(`unknown level ${welcome.level}`);
   const replica = createReplica({ level, capacity: welcome.capacity });
   applyResults.push(applyWorldState(replica, welcome.state));
+  for (const update of pending.splice(0)) applyResults.push(applyWorldState(replica, update));
+  bound.replica = replica;
   const player: Player = { name, room, welcome, replica, updates, applyResults, leftWith: undefined };
-  const onUpdate = (update: WorldStateUpdate) => {
-    updates.push(update);
-    applyResults.push(applyWorldState(replica, update));
-  };
-  room.onMessage(WIRE.delta, onUpdate);
-  room.onMessage(WIRE.state, onUpdate);
   room.onLeave((code) => {
     player.leftWith = code;
   });

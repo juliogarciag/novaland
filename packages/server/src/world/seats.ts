@@ -32,8 +32,4 @@ export class Seats {
     this.slotBySession.delete(sessionId);
     return slot;
   }
-
-  slotOf(sessionId: string): number | undefined {
-    return this.slotBySession.get(sessionId);
-  }
 }

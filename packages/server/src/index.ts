@@ -15,7 +15,7 @@ console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, r
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
-    console.log(JSON.stringify({ event: 'world-room-stopping', signal }));
+    console.log(JSON.stringify({ event: 'world-room-stopping', signal, tick: server.room.tick, seatsTaken: server.room.seatsTaken, dropped: server.room.dropped }));
     void server.stop().finally(() => process.exit(0));
   });
 }

@@ -2,18 +2,22 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (144 of 144)
+PASS  every test passed, none skipped  (149 of 149)
 PASS  five players join by room id and are welcomed into the world
 PASS  every player sees the others move through chained deltas
 PASS  the sixth player is refused, as are create / join / joinOrCreate
 PASS  a leaver frees the seat, vanishes for the others, and the next joiner takes it
 PASS  oversized, unknown, slot-carrying and malformed messages are dropped while the world runs
 PASS  a flood spends the budget, a refused frame disconnects only its sender
-PASS  world/resync answers with one full state
+PASS  world/resync answers with one full state, and a resync flood only gets its own small budget
+PASS  a session flooding unknown message types is closed once its budget is spent
+PASS  a connection that never acknowledges its join is closed and its seat freed
+PASS  an oversized HTTP request body is refused before it is read
+PASS  a client leaving during its own join frees the seat; a dispose fails a waiting join instead of hanging it
 PASS  the inbound gate is unit tested (exact shape, finite numbers, never throws, budget)
 PASS  seats hand out the lowest free slot
 PASS  the server tick helper caps the catch-up
 PASS  the sim, replica and client tests still pass
 PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (2e110fbf)
 
-ALL 17 CHECKS PASSED
+ALL 21 CHECKS PASSED

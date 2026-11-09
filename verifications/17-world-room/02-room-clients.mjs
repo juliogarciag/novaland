@@ -44,9 +44,10 @@ if (boot) {
     results.push(check("the last welcome already holds every player's entity", summary.everyoneInLastWelcome === true));
     results.push(check('every player saw every other player move, and all five replicas agree', summary.everyoneSeesEveryoneMove === true && summary.replicasAgree === true));
     results.push(check('the sixth join was refused because the room is locked (full)', summary.refusal?.code === 522 && /locked/.test(summary.refusal?.message ?? ''), `${summary.refusal?.code} ${summary.refusal?.message}`));
-    results.push(check('create / join / joinOrCreate are not exposed', Object.values(summary.otherMethods).every((message) => /invalid method/.test(message))));
+    results.push(check('create / join / joinOrCreate / reconnect are not exposed', Object.keys(summary.otherMethods).length === 4 && Object.values(summary.otherMethods).every((message) => /invalid method/.test(message))));
     results.push(check("a leaver's seat was freed, its avatar vanished for the others, the next joiner took the seat", summary.leaver.avatarGone === true && summary.leaver.newcomerSlot === summary.leaver.slot));
-    results.push(check('junk and a flood were dropped: the named slot never moved, the world kept running, nobody was disconnected', summary.junk.targetIntent === JSON.stringify({ moveIntent: { x: 0, y: 0 } }) && summary.junk.worldKeptRunning === true));
+    results.push(check('oversized, unknown, slot-carrying and malformed messages were dropped: neither the sender nor the named slot moved', summary.junk.junkDropped === true, `${summary.junk.senderIntent} ${summary.junk.targetIntent}`));
+    results.push(check('a move flood was absorbed: the world kept running and nobody was disconnected', summary.junk.worldKeptRunning === true, `${summary.junk.flood} moves`));
     results.push(check('a frame over the transport limit closed only its own connection (1009)', summary.junk.oversizedCloseCode === 1009));
     results.push(check('every delta chained: no replica ever reported out-of-sequence or malformed', summary.chained.every((player) => player.applied)));
     results.push(check('deltas stay small next to the welcome', summary.deltaBytes.max < summary.welcomeBytes / 4, `deltas ${summary.deltaBytes.min}-${summary.deltaBytes.max} bytes, welcome ${summary.welcomeBytes} bytes`));

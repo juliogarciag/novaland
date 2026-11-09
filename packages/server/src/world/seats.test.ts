@@ -20,7 +20,7 @@ describe('Seats', () => {
     expect(seats.release('a')).toBe(0);
     expect(seats.claim('d')).toBe(0);
     expect(seats.claim('e')).toBe(1);
-    expect(seats.slotOf('c')).toBe(2);
+    expect(seats.release('c')).toBe(2);
   });
 
   it('never seats the same session twice and releasing a stranger frees nothing', () => {
@@ -29,6 +29,5 @@ describe('Seats', () => {
     expect(seats.claim('a')).toBeUndefined();
     expect(seats.release('ghost')).toBeUndefined();
     expect(seats.taken).toBe(1);
-    expect(seats.slotOf('ghost')).toBeUndefined();
   });
 });

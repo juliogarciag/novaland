@@ -1,7 +1,7 @@
 {
   "boot": {
     "event": "world-room-listening",
-    "port": 52552,
+    "port": 60292,
     "roomId": "world",
     "seed": "<random>",
     "seats": 5,
@@ -9,7 +9,7 @@
     "sendRate": 20
   },
   "summary": {
-    "port": 52552,
+    "port": 60292,
     "seats": 5,
     "slots": [
       0,
@@ -29,7 +29,8 @@
     "otherMethods": {
       "joinOrCreate": "invalid method \"joinOrCreate\"",
       "create": "invalid method \"create\"",
-      "join": "invalid method \"join\""
+      "join": "invalid method \"join\"",
+      "reconnect": "invalid method \"reconnect\""
     },
     "leaver": {
       "slot": 2,
@@ -39,42 +40,44 @@
     },
     "junk": {
       "messages": 12,
-      "flood": 150,
+      "junkDropped": true,
+      "senderIntent": "{\"moveIntent\":{\"x\":0,\"y\":0}}",
       "targetIntent": "{\"moveIntent\":{\"x\":0,\"y\":0}}",
+      "flood": 55,
       "worldKeptRunning": true,
       "oversizedCloseCode": 1009
     },
     "chained": [
       {
         "name": "player-0",
-        "updates": 27,
+        "updates": 54,
         "applied": true
       },
       {
         "name": "player-1",
-        "updates": 28,
+        "updates": 56,
         "applied": true
       },
       {
         "name": "player-5",
-        "updates": 16,
+        "updates": 43,
         "applied": true
       },
       {
         "name": "player-3",
-        "updates": 28,
+        "updates": 54,
         "applied": true
       },
       {
         "name": "player-4",
-        "updates": 27,
+        "updates": 54,
         "applied": true
       }
     ],
     "deltaBytes": {
-      "count": 125,
+      "count": 259,
       "min": 154,
-      "max": 908
+      "max": 794
     },
     "welcomeBytes": 8498
   }

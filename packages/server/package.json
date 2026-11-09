@@ -12,9 +12,11 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@colyseus/core": "catalog:",
     "@colyseus/schema": "catalog:",
+    "@colyseus/ws-transport": "catalog:",
     "@novaland/sim": "workspace:*",
-    "colyseus": "catalog:"
+    "express": "catalog:"
   },
   "devDependencies": {
     "@colyseus/sdk": "catalog:",

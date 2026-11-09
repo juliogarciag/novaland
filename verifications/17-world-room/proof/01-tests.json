@@ -276,7 +276,32 @@
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
-    "name": "WorldRoom over a real connection answers world/resync with a full state the replica applies",
+    "name": "WorldRoom over a real connection closes a session that floods unknown message types once its budget is spent, and keeps the others",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection closes a connection that never acknowledges its join after 5000 ms and frees the seat",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection closes the connection of an oversized HTTP request before reading its body, and keeps serving joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom driven directly frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom driven directly fails a join that is waiting for a tick when the room is disposed instead of hanging it",
     "status": "passed"
   },
   {
