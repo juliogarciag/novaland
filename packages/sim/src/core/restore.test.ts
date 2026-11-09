@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { starterLevel } from '../content/levels/starter';
 import { Facing, MoveIntent } from '../features/player/components';
 import { Replica } from './replica';
-import { ensureEntityExists, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
+import { ensureEntitiesExist, ensureEntityExists, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
 import { Position } from './transform';
 
 describe('ensureEntityExists', () => {
@@ -66,6 +66,19 @@ describe('ensureEntityExists', () => {
       expect(alive(world)).toEqual([...model].sort((a, b) => a - b));
     }
   });
+});
+
+describe('ensureEntitiesExist', () => {
+  it('creates every wanted id in one pass and reports which are alive, dropping invalid ones', () => {
+    const world = emptyWorld(16);
+    expect([...ensureEntitiesExist(world, [9, 3, 0, 16, 17, 3, 1.5])].sort((a, b) => a - b)).toEqual([3, 9, 16]);
+    expect(alive(world)).toEqual([3, 9, 16]);
+    expect([...ensureEntitiesExist(world, [])]).toEqual([]);
+    expect([...ensureEntitiesExist(world, [3, 4])].sort((a, b) => a - b)).toEqual([3, 4]);
+    expect(alive(world)).toEqual([3, 4, 9, 16]);
+  });
+
+  // How many allocations one pass costs is asserted in restore.allocation.test.ts, which counts them through a mock.
 });
 
 describe('writeEntityComponents', () => {

@@ -46,35 +46,51 @@ export function mergeComponentFields(def: ComponentDef, before: Record<string, n
   const given = isRecord(fields) ? fields : {};
   for (const name of componentFieldNames(def)) {
     const value = given[name];
-    merged[name] = isFieldValue(value) ? value : (before?.[name] ?? 0);
+    const kept = before?.[name];
+    merged[name] = isFieldValue(value) ? value : isFieldValue(kept) ? kept : 0;
   }
   return merged;
 }
 
 /**
  * Makes `id` a live entity of the world, or leaves it alone if it already
- * is. bitECS picks ids itself: freed ids are handed out again first, then a
- * counter, so this allocates until `id` comes out and frees whatever came out
- * before it. That takes at most capacity + id allocations, so an id this
- * loop cannot reach (which no bitECS world without versioning produces) is
- * given up on rather than spun on. Returns whether `id` is alive afterwards.
+ * is. Returns whether `id` is alive afterwards. One allocation scan per call
+ * (see `ensureEntitiesExist`), so a message with many new ids batches them
+ * through that function instead.
  */
 export function ensureEntityExists(entityWorld: EntityWorld, id: number): boolean {
-  if (!isEntityId(id, entityWorld.capacity)) return false;
+  return ensureEntitiesExist(entityWorld, [id]).has(id);
+}
+
+/**
+ * Makes every valid id in `ids` a live entity of the world, in one pass, and
+ * returns the ids that are alive afterwards. bitECS picks ids itself: freed
+ * ids are handed out again first, then a counter, so this allocates until
+ * every wanted id has come out and frees whatever else came out. The whole
+ * pass costs at most about `capacity` allocations however many ids are
+ * wanted and whatever order they come in, which is what keeps a full state
+ * at MAX_CAPACITY cheap; one scan per id would cost `ids × capacity`. An id
+ * the scan cannot reach within that budget (which no bitECS world without
+ * versioning produces) is given up on rather than spun on.
+ */
+export function ensureEntitiesExist(entityWorld: EntityWorld, ids: Iterable<number>): Set<number> {
   const world: World = entityWorld.world;
-  if (entityExists(world, id)) return true;
+  const alive = new Set<number>();
+  const wanted = new Set<number>();
+  for (const id of ids) {
+    if (!isEntityId(id, entityWorld.capacity)) continue;
+    if (entityExists(world, id)) alive.add(id);
+    else wanted.add(id);
+  }
+  if (wanted.size === 0) return alive;
   const spare: number[] = [];
-  let found = false;
-  for (let attempt = 0; attempt <= entityWorld.capacity + id; attempt += 1) {
+  for (let attempt = 0; attempt <= 2 * entityWorld.capacity + 1 && wanted.size > 0; attempt += 1) {
     const eid = addEntity(world);
-    if (eid === id) {
-      found = true;
-      break;
-    }
-    spare.push(eid);
+    if (wanted.delete(eid)) alive.add(eid);
+    else spare.push(eid);
   }
   for (const eid of spare) removeEntity(world, eid);
-  return found;
+  return alive;
 }
 
 /**

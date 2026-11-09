@@ -2,7 +2,7 @@ import { entityExists, getAllEntities, removeEntity } from 'bitecs';
 import { getComponentDef } from './components';
 import { asEntityWorld } from './entityWorld';
 import { asReplica } from './replica';
-import { ensureEntityExists, isEntityId, mergeComponentFields, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
+import { ensureEntitiesExist, isEntityId, mergeComponentFields, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
 import type { SimHandle } from './sim';
 import { snapshotEntities, type EntitySnapshot } from './snapshot';
 
@@ -131,10 +131,12 @@ export function applyWorldState(handle: SimHandle, update: WorldStateUpdate): Wo
   const replica = asReplica(handle);
   const read = readWorldStateUpdate(update);
   if (!read) return 'malformed';
+  // New ids are allocated in one pass per message (ensureEntitiesExist), so a
+  // message costs O(capacity + entries) whatever order its ids come in.
   if (read.kind === 'full') {
-    const keep = new Set<number>();
+    const keep = ensureEntitiesExist(replica, read.entities.map((entity) => entity.id));
     for (const entity of read.entities) {
-      if (restoreEntity(replica, entity.id, entity.components)) keep.add(entity.id);
+      if (keep.has(entity.id)) restoreEntity(replica, entity.id, entity.components);
     }
     for (const eid of [...getAllEntities(replica.world)]) {
       if (!keep.has(eid)) removeEntity(replica.world, eid);
@@ -146,8 +148,9 @@ export function applyWorldState(handle: SimHandle, update: WorldStateUpdate): Wo
   for (const id of read.removed) {
     if (isEntityId(id, replica.capacity) && entityExists(replica.world, id)) removeEntity(replica.world, id);
   }
+  const changed = ensureEntitiesExist(replica, read.changed.map((change) => change.id));
   for (const change of read.changed) {
-    if (!ensureEntityExists(replica, change.id)) continue;
+    if (!changed.has(change.id)) continue;
     removeEntityComponents(replica, change.id, change.removedComponents);
     writeEntityComponents(replica, change.id, change.components);
   }
