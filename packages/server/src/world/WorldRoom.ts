@@ -13,10 +13,12 @@ import {
 } from '@novaland/sim';
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
 import { MessageBudget, payloadLength, readMoveMessage } from './inbound';
+import { IDLE_KICK } from './kicks';
 import { Seats } from './seats';
 import { takeWholeTicks } from './takeWholeTicks';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
+  IDLE_TIMEOUT_MS,
   INBOUND_BURST,
   INBOUND_MESSAGES_PER_SECOND,
   JOIN_ACK_TIMEOUT_MS,
@@ -31,10 +33,19 @@ import {
   WORLD_ROOM_ID,
 } from './tuning';
 
+/** Where the room reads the time: milliseconds from a fixed point, like `performance.now()`. Every timeout in the room is measured on it, so a fake clock can run one in a test. */
+export interface Clock {
+  now(): number;
+}
+
 /** What the boot passes to `matchMaker.createRoom`. Clients cannot create rooms (see startWorldServer). */
 export interface WorldRoomOptions {
   /** Seed of the one sim. The boot draws a random one; a test pins it. */
   readonly seed: number;
+  /** Milliseconds a session may go without an accepted input before its seat is freed; `IDLE_TIMEOUT_MS` unless set. */
+  readonly idleTimeoutMs?: number;
+  /** The clock the room reads; `performance.now` unless a test passes a fake. */
+  readonly clock?: Clock;
 }
 
 /** What the room knows about one connected session. */
@@ -46,6 +57,10 @@ interface Session {
   welcomedAt: number | undefined;
   /** Set by `world/resync`: the next send carries a full state instead of a delta. */
   wantsFullState: boolean;
+  /** When the session's last input passed the edge gate (its join counts as one); `idleTimeoutMs` after it the seat is freed. */
+  lastInputAt: number;
+  /** The session was told to leave; its seat is freed when the socket closes, and it is not kicked twice meanwhile. */
+  kicked: boolean;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
 }
@@ -67,7 +82,9 @@ export interface DroppedMessages {
  * gate in `inbound.ts` (allow-list, budget, size, exact shape) and leave it
  * stamped with the session's slot; the sim's own handlers validate again.
  * Outbound, each session gets a full state in its welcome and then a delta
- * every `TICKS_PER_SEND` ticks, diffed from the last state sent to it.
+ * every `TICKS_PER_SEND` ticks, diffed from the last state sent to it. A
+ * session that sends no accepted input for `idleTimeoutMs` is closed with
+ * `IDLE_KICK` so its seat goes to someone who plays (#22).
  */
 export class WorldRoom extends Room {
   override maxClients = MAX_SEATS;
@@ -77,8 +94,13 @@ export class WorldRoom extends Room {
   override seatReservationTimeout = SEAT_RESERVATION_SECONDS;
 
   readonly dropped: DroppedMessages = { unknownType: 0, oversized: 0, malformed: 0, overBudget: 0 };
+  /** Sessions closed with `IDLE_KICK` since the room was created. Printed when the server stops. */
+  idleSeatsFreed = 0;
 
   private sim: SimHandle | undefined;
+  /** Not Colyseus's `clock` (a timer scheduler): only where the room reads the time. */
+  private time: Clock = { now: () => performance.now() };
+  private idleTimeoutMs = IDLE_TIMEOUT_MS;
   private readonly seats = new Seats(MAX_SEATS);
   private readonly sessions = new Map<string, Session>();
   private pendingCommands: Command[] = [];
@@ -99,11 +121,13 @@ export class WorldRoom extends Room {
 
   override async onCreate(options: WorldRoomOptions): Promise<void> {
     this.roomId = WORLD_ROOM_ID;
+    if (options.clock) this.time = options.clock;
+    if (options.idleTimeoutMs !== undefined && Number.isFinite(options.idleTimeoutMs) && options.idleTimeoutMs > 0) this.idleTimeoutMs = options.idleTimeoutMs;
     this.sim = await createSim({ seed: options.seed });
     this.onMessage(WIRE.move, (client, payload: unknown) => this.onMove(client, payload));
     this.onMessage(WIRE.resync, (client) => this.onResync(client));
     this.onMessage('*', (client) => this.onUnknownMessage(client));
-    this.wokeAt = performance.now();
+    this.wokeAt = this.time.now();
     this.loop = setInterval(() => this.advance(), LOOP_INTERVAL_MS);
   }
 
@@ -116,12 +140,14 @@ export class WorldRoom extends Room {
   override async onJoin(client: Client): Promise<void> {
     const slot = this.seats.claim(client.sessionId);
     if (slot === undefined) throw new ServerError(ErrorCode.MATCHMAKE_INVALID_ROOM_ID, JOIN_REFUSAL.worldFull);
-    const now = performance.now();
+    const now = this.time.now();
     const session: Session = {
       slot,
       lastSent: undefined,
       welcomedAt: undefined,
       wantsFullState: false,
+      lastInputAt: now,
+      kicked: false,
       budget: new MessageBudget(INBOUND_MESSAGES_PER_SECOND, INBOUND_BURST, now),
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
     };
@@ -131,7 +157,7 @@ export class WorldRoom extends Room {
     if (!ticked || !this.sim) throw new ServerError(ErrorCode.MATCHMAKE_UNHANDLED, 'the world is shutting down');
     const state = worldState(this.sim);
     session.lastSent = state;
-    session.welcomedAt = performance.now();
+    session.welcomedAt = this.time.now();
     const welcome: WelcomeMessage = { slot, level: this.sim.level.name, capacity: this.sim.capacity, state };
     client.send(WIRE.welcome, welcome);
   }
@@ -162,7 +188,7 @@ export class WorldRoom extends Room {
   private advance(): void {
     const sim = this.sim;
     if (!sim) return;
-    const now = performance.now();
+    const now = this.time.now();
     const { ticks, leftover } = takeWholeTicks({
       leftover: this.leftover,
       deltaSeconds: (now - this.wokeAt) / 1000,
@@ -181,6 +207,7 @@ export class WorldRoom extends Room {
       if (sim.tick - this.lastSendTick >= TICKS_PER_SEND) {
         this.lastSendTick = sim.tick;
         this.sendWorldUpdates(sim, now);
+        this.freeIdleSeats(now);
       }
     } catch (error) {
       console.error(JSON.stringify({ event: 'world-room-crashed', seed: sim.seed, tick: sim.tick, error: String(error) }));
@@ -234,11 +261,29 @@ export class WorldRoom extends Room {
     }
   }
 
-  /** The edge gate for `player/move`: budget, size, exact shape; then the command carries the session's slot, never the payload's. */
+  /**
+   * Closes every session whose last accepted input is `idleTimeoutMs` or more
+   * behind `now`. The close reaches the client as `IDLE_KICK`; the leave that
+   * follows frees the seat and removes the player from the sim. Runs once per
+   * send: a kick is never more than one send interval late.
+   */
+  private freeIdleSeats(now: number): void {
+    for (const client of this.clients) {
+      const session = this.sessions.get(client.sessionId);
+      if (!session || session.kicked || now - session.lastInputAt < this.idleTimeoutMs) continue;
+      session.kicked = true;
+      this.idleSeatsFreed += 1;
+      console.log(JSON.stringify({ event: 'world-room-idle-kick', slot: session.slot, idleSeconds: Math.round((now - session.lastInputAt) / 1000) }));
+      client.leave(IDLE_KICK.code, IDLE_KICK.reason);
+    }
+  }
+
+  /** The edge gate for `player/move`: budget, size, exact shape; then the command carries the session's slot, never the payload's. An accepted move is what keeps a seat. */
   private onMove(client: Client, payload: unknown): void {
     const session = this.sessions.get(client.sessionId);
     if (!session) return;
-    if (!session.budget.allows(performance.now())) {
+    const now = this.time.now();
+    if (!session.budget.allows(now)) {
       this.dropped.overBudget += 1;
       return;
     }
@@ -251,6 +296,7 @@ export class WorldRoom extends Room {
       this.dropped.malformed += 1;
       return;
     }
+    session.lastInputAt = now;
     this.pendingCommands.push({ type: 'player/move', slot: session.slot, x: move.x, y: move.y });
   }
 
@@ -258,7 +304,8 @@ export class WorldRoom extends Room {
   private onResync(client: Client): void {
     const session = this.sessions.get(client.sessionId);
     if (!session) return;
-    if (!session.budget.allows(performance.now()) || !session.resyncBudget.allows(performance.now())) {
+    const now = this.time.now();
+    if (!session.budget.allows(now) || !session.resyncBudget.allows(now)) {
       this.dropped.overBudget += 1;
       return;
     }
@@ -274,6 +321,6 @@ export class WorldRoom extends Room {
   private onUnknownMessage(client: Client): void {
     this.dropped.unknownType += 1;
     const session = this.sessions.get(client.sessionId);
-    if (session && !session.budget.allows(performance.now())) client.leave(CloseCode.WITH_ERROR);
+    if (session && !session.budget.allows(this.time.now())) client.leave(CloseCode.WITH_ERROR);
   }
 }

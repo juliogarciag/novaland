@@ -2,13 +2,17 @@ import { matchMaker, Server } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import type { IncomingMessage, Server as HttpServer, ServerResponse } from 'node:http';
 import { MAX_FRAME_BYTES, MAX_REQUEST_BODY_BYTES, WORLD_ROOM_NAME } from './tuning';
-import { WorldRoom, type WorldRoomOptions } from './WorldRoom';
+import { WorldRoom, type Clock, type WorldRoomOptions } from './WorldRoom';
 
 export interface WorldServerOptions {
   /** TCP port to listen on; 0 picks a free one. Fails if it is busy. */
   readonly port: number;
   /** Seed of the one sim. */
   readonly seed: number;
+  /** Milliseconds a session may go without an accepted input before its seat is freed; `IDLE_TIMEOUT_MS` unless set. */
+  readonly idleTimeoutMs?: number;
+  /** The clock the room reads; `performance.now` unless a test passes a fake. */
+  readonly clock?: Clock;
 }
 
 /** A running world server: one Colyseus server with the one world room created. */
@@ -30,7 +34,7 @@ export interface WorldServer {
  * the transport are imported directly: the `colyseus` meta-package would
  * also load `@colyseus/tools`, which reads `.env` files into the environment.
  */
-export async function startWorldServer({ port, seed }: WorldServerOptions): Promise<WorldServer> {
+export async function startWorldServer({ port, seed, idleTimeoutMs, clock }: WorldServerOptions): Promise<WorldServer> {
   const gameServer = new Server({
     transport: new WebSocketTransport({ maxPayload: MAX_FRAME_BYTES }),
     greet: false,
@@ -42,7 +46,8 @@ export async function startWorldServer({ port, seed }: WorldServerOptions): Prom
   const httpServer = gameServer.transport.server;
   if (!httpServer) throw new Error('the transport has no HTTP server to listen on');
   refuseLargeRequestBodies(httpServer, MAX_REQUEST_BODY_BYTES);
-  const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed } satisfies WorldRoomOptions);
+  // Options reach `onCreate` by reference within this process, so the clock passes through as it is.
+  const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed, idleTimeoutMs, clock } satisfies WorldRoomOptions);
   const room = matchMaker.getLocalRoomById(listing.roomId) as WorldRoom;
   const address = httpServer.address();
   const boundPort = typeof address === 'object' && address !== null ? address.port : port;

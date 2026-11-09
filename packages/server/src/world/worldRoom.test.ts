@@ -16,9 +16,11 @@ import {
   type WorldStateUpdate,
 } from '@novaland/sim';
 import { afterEach, describe, expect, it } from 'vitest';
+import { IDLE_KICK } from './kicks';
 import { startWorldServer, type WorldServer } from './startWorldServer';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
+  IDLE_TIMEOUT_MS,
   INBOUND_BURST,
   INBOUND_MESSAGES_PER_SECOND,
   JOIN_ACK_TIMEOUT_MS,
@@ -30,7 +32,7 @@ import {
   RESYNCS_PER_SECOND,
   WORLD_ROOM_ID,
 } from './tuning';
-import { WorldRoom } from './WorldRoom';
+import { WorldRoom, type Clock } from './WorldRoom';
 
 /**
  * The room from the network side: a real Colyseus server on a free port and
@@ -243,6 +245,47 @@ describe('WorldRoom over a real connection', () => {
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
   });
 
+  it(`frees the seat of a session with no accepted input for ${IDLE_TIMEOUT_MS / 60000} minutes, closing it with ${IDLE_KICK.code} "${IDLE_KICK.reason}", and keeps one that plays`, async () => {
+    const clock = fakeClock();
+    server = await startWorldServer({ port: 0, seed: 13, clock });
+    for (let seat = 0; seat < 2; seat += 1) players.push(await join(server.port));
+    const [idler, walker] = players as [Player, Player];
+    const idlerLeft = new Promise<[number, string | undefined]>((resolve) => idler.room.onLeave((code, reason) => resolve([code, reason])));
+    let walkerLeftWith: number | undefined;
+    walker.room.onLeave((code) => (walkerLeftWith = code));
+    await waitForUpdates(players, 1);
+    // Almost the whole timeout passes with nobody playing: nobody is kicked yet.
+    clock.skip(IDLE_TIMEOUT_MS - 5000);
+    await waitForUpdates(players, 3);
+    expect(server.room.clients.length).toBe(2);
+    expect(server.room.idleSeatsFreed).toBe(0);
+    // The walker plays once, just before the deadline; only the idler crosses it.
+    walker.room.send(WIRE.move, { x: 0, y: 1 });
+    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1);
+    clock.skip(6000);
+    expect(await idlerLeft).toEqual([IDLE_KICK.code, IDLE_KICK.reason]);
+    expect(walkerLeftWith).toBeUndefined();
+    // The leave reached the sim: the idler's avatar is gone for the walker, and its seat goes to the next joiner.
+    await waitUntil(() => findPlayerEntity(walker.replica, idler.welcome.slot) === undefined);
+    expect(server.room.seatsTaken).toBe(1);
+    expect(server.room.idleSeatsFreed).toBe(1);
+    players.splice(players.indexOf(idler), 1);
+    const next = await join(server.port);
+    players.push(next);
+    expect(next.welcome.slot).toBe(idler.welcome.slot);
+    expect(walker.applyResults.every((result) => result === 'applied')).toBe(true);
+    // The walker's own timeout runs from its last accepted move, not from its join: most of it is still ahead of it.
+    clock.skip(IDLE_TIMEOUT_MS - 10000);
+    await waitForUpdates(players, 3);
+    expect(walkerLeftWith).toBeUndefined();
+    expect(server.room.clients.length).toBe(2);
+    clock.skip(10000);
+    await waitUntil(() => walkerLeftWith !== undefined);
+    expect(walkerLeftWith).toBe(IDLE_KICK.code);
+    expect(IDLE_KICK.code).not.toBe(CloseCode.WITH_ERROR);
+    expect(IDLE_KICK.code).not.toBe(CloseCode.CONSENTED);
+  });
+
   it('closes the connection of an oversized HTTP request before reading its body, and keeps serving joins', async () => {
     server = await startWorldServer({ port: 0, seed: 10 });
     const url = `http://127.0.0.1:${server.port}/matchmake/joinById/${WORLD_ROOM_ID}`;
@@ -358,6 +401,17 @@ interface FakeClient extends ServerClient {
 function fakeClient(sessionId: string): FakeClient {
   const sent: Array<[string, unknown]> = [];
   return { sessionId, sent, send: (type: string, message: unknown) => sent.push([type, message]) } as unknown as FakeClient;
+}
+
+/** A clock a test pushes forward: real time plus whatever was skipped, so the room keeps ticking while an idle timeout passes in an instant. */
+function fakeClock(): Clock & { skip(ms: number): void } {
+  let skippedMs = 0;
+  return {
+    now: () => performance.now() + skippedMs,
+    skip: (ms) => {
+      skippedMs += ms;
+    },
+  };
 }
 
 /** Where the player in `slot` is drawn. Players that spawn on the same tile push each other apart, so stillness is never asserted on this. */
