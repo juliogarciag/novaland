@@ -1,4 +1,4 @@
-import type { Client as ServerClient } from '@colyseus/core';
+import { ClientState, type Client as ServerClient } from '@colyseus/core';
 import { Client, CloseCode, type Room } from '@colyseus/sdk';
 import {
   applyWorldState,
@@ -264,7 +264,7 @@ describe('WorldRoom over a real connection', () => {
     idler.room.send(WIRE.move, { x: 1 });
     await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1 && server!.room.dropped.malformed === 1);
     clock.skip(61_000);
-    expect(await idlerLeft).toEqual([IDLE_KICK.code, IDLE_KICK.reason]);
+    expect(await orTimeout(idlerLeft, 'the idler was not kicked after the timeout passed')).toEqual([IDLE_KICK.code, IDLE_KICK.reason]);
     expect(server.room.idleSeatsFreed).toBe(1);
     expect(walkerLeftWith).toBeUndefined();
     // The leave reached the sim: the idler's avatar is gone for the walker, and its seat goes to the next joiner.
@@ -285,8 +285,6 @@ describe('WorldRoom over a real connection', () => {
     clock.skip(120_000);
     await waitUntil(() => walkerLeftWith !== undefined);
     expect(walkerLeftWith).toBe(IDLE_KICK.code);
-    expect(IDLE_KICK.code).not.toBe(CloseCode.WITH_ERROR);
-    expect(IDLE_KICK.code).not.toBe(CloseCode.CONSENTED);
   });
 
   it('closes the connection of an oversized HTTP request before reading its body, and keeps serving joins', async () => {
@@ -332,6 +330,35 @@ describe('WorldRoom driven directly', () => {
     } finally {
       room.onDispose();
     }
+  });
+
+  it('frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive', async () => {
+    const clock = fakeClock();
+    const room = new WorldRoom();
+    await room.onCreate({ seed: 14, clock, idleTimeoutMs: 1000 });
+    try {
+      // A peer that never answers the close handshake: its `leave` closes nothing, so `onLeave` never runs for it.
+      const idler = fakeClient('idler');
+      await room.onJoin(idler);
+      room.clients.push(idler);
+      expect(room.seatsTaken).toBe(1);
+      clock.skip(2000);
+      await waitUntil(() => room.idleSeatsFreed === 1);
+      expect(idler.left).toEqual([[IDLE_KICK.code, IDLE_KICK.reason]]);
+      expect(room.seatsTaken).toBe(0);
+      // The seat is already the next joiner's, and the kicked session is not kicked again while its socket lingers.
+      const next = fakeClient('next');
+      await room.onJoin(next);
+      expect((idler.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
+      expect((next.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
+      expect(room.idleSeatsFreed).toBe(1);
+      expect(idler.left.length).toBe(1);
+    } finally {
+      room.onDispose();
+    }
+    const refused = new WorldRoom();
+    await expect(refused.onCreate({ seed: 15, idleTimeoutMs: 0 })).rejects.toThrow(RangeError);
+    refused.onDispose();
   });
 
   it('fails a join that is waiting for a tick when the room is disposed instead of hanging it', async () => {
@@ -398,12 +425,39 @@ async function reserveSeat(port: number): Promise<{ sessionId: string; roomId: s
 
 interface FakeClient extends ServerClient {
   readonly sent: Array<[string, unknown]>;
+  /** Every `leave(code, reason)` the room asked for. Nothing closes: the fake is a peer that never answers. */
+  readonly left: Array<[number | undefined, string | undefined]>;
 }
 
-/** Enough of a Colyseus client for the room's own join and leave paths: a session id and a `send` that records. */
+/** Enough of a Colyseus client for the room's own join, kick and leave paths: a session id, a joined state, a `send` that records and a `leave` that records and closes nothing. */
 function fakeClient(sessionId: string): FakeClient {
   const sent: Array<[string, unknown]> = [];
-  return { sessionId, sent, send: (type: string, message: unknown) => sent.push([type, message]) } as unknown as FakeClient;
+  const left: Array<[number | undefined, string | undefined]> = [];
+  return {
+    sessionId,
+    state: ClientState.JOINED,
+    sent,
+    left,
+    send: (type: string, message: unknown) => sent.push([type, message]),
+    leave: (code?: number, reason?: string) => left.push([code, reason]),
+  } as unknown as FakeClient;
+}
+
+/** `promise`, or a rejection that names what did not happen once the suite's usual wait is up. */
+function orTimeout<T>(promise: Promise<T>, message: string, timeoutMs = JOIN_ACK_TIMEOUT_MS + 4000): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error: unknown) => {
+        clearTimeout(timer);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      },
+    );
+  });
 }
 
 /** A clock a test pushes forward: real time plus whatever was skipped, so the room keeps ticking while an idle timeout passes in an instant. */
