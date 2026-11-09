@@ -2,6 +2,7 @@ import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import type { IncomingMessage, Server as HttpServer, ServerResponse } from 'node:http';
 import path from 'node:path';
+import { pipeline } from 'node:stream';
 import { handleRequestsFirst } from './handleFirst';
 
 export interface ClientFilesOptions {
@@ -30,14 +31,14 @@ export function serveClientFiles(httpServer: HttpServer, { directory }: ClientFi
       handOver();
       return;
     }
-    void sendFile(request, response, file).then((sent) => {
+    void sendFile(request, response, root, file).then((sent) => {
       if (!sent) handOver();
     });
   });
 }
 
 /** Response headers every served file carries. The page's CSP names what the client bundle needs and nothing else. */
-export function securityHeaders(contentType: string): Record<string, string> {
+function securityHeaders(contentType: string): Record<string, string> {
   const headers: Record<string, string> = {
     'x-content-type-options': 'nosniff',
     'referrer-policy': 'same-origin',
@@ -56,7 +57,7 @@ export function securityHeaders(contentType: string): Record<string, string> {
  * `data:` and `blob:` URLs; the world room is reached on this origin (`'self'`
  * matches `ws`/`wss` to the same host).
  */
-export const CONTENT_SECURITY_POLICY = [
+const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "script-src 'self' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
@@ -116,7 +117,7 @@ function fileFor(root: string, url: string): string | undefined {
 }
 
 /** True when the file was answered (also a 304); false when it is not a regular file and the request must hand over. */
-async function sendFile(request: IncomingMessage, response: ServerResponse, file: string): Promise<boolean> {
+async function sendFile(request: IncomingMessage, response: ServerResponse, root: string, file: string): Promise<boolean> {
   let size: number;
   let modifiedMs: number;
   try {
@@ -132,7 +133,7 @@ async function sendFile(request: IncomingMessage, response: ServerResponse, file
   const headers = {
     ...securityHeaders(contentType),
     'content-type': contentType,
-    'cache-control': file.includes(`${path.sep}assets${path.sep}`) ? IMMUTABLE : REVALIDATE,
+    'cache-control': isHashedAsset(root, file) ? IMMUTABLE : REVALIDATE,
     etag,
   };
   if (request.headers['if-none-match'] === etag) {
@@ -145,8 +146,14 @@ async function sendFile(request: IncomingMessage, response: ServerResponse, file
     response.end();
     return true;
   }
-  const stream = createReadStream(file);
-  stream.on('error', () => response.destroy());
-  stream.pipe(response);
+  // `pipeline`, not `pipe`: when the browser gives up mid-download, `pipe` leaves the read stream paused with its descriptor open for good; `pipeline` destroys both ends.
+  pipeline(createReadStream(file), response, () => undefined);
   return true;
 }
+
+/** Whether `file` sits under the build's `assets/` folder (relative to `root`: a `CLIENT_DIR` with `assets` in its own path must not make everything immutable). */
+function isHashedAsset(root: string, file: string): boolean {
+  return path.relative(root, file).split(path.sep)[0] === 'assets';
+}
+
+export const __testing__ = { CONTENT_SECURITY_POLICY };

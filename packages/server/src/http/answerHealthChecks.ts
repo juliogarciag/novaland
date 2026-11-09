@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from 'node:http';
 import { handleRequestsFirst } from './handleFirst';
 
-export const HEALTH_PATH = '/healthz';
+const HEALTH_PATH = '/healthz';
 
 /** What `/healthz` reports. Small on purpose: a host's probe reads the status code, a human reads the rest. */
 export interface HealthReport {

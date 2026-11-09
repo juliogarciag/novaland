@@ -23,7 +23,7 @@ export interface OriginCheck {
   readonly policy: OriginPolicy;
 }
 
-export const SAME_ORIGIN_ONLY: OriginPolicy = { allowAll: false, allowedOrigins: new Set() };
+const SAME_ORIGIN_ONLY: OriginPolicy = { allowAll: false, allowedOrigins: new Set() };
 
 /**
  * The policy in `ALLOWED_ORIGINS`: a comma-separated list of origins, or `*`.
@@ -36,6 +36,7 @@ export function readAllowedOrigins(value: string | undefined): OriginPolicy {
     .map((entry) => entry.trim())
     .filter((entry) => entry.length > 0);
   if (entries.includes('*')) return { allowAll: true, allowedOrigins: new Set() };
+  if (entries.length === 0) return SAME_ORIGIN_ONLY;
   const allowedOrigins = new Set<string>();
   for (const entry of entries) {
     const origin = normalisedOrigin(entry);
@@ -82,6 +83,7 @@ function parseOrigin(value: string): URL | undefined {
   return url;
 }
 
+/** `localhost`, a `*.localhost` name (browsers resolve those to loopback), `[::1]`, or a `127.x.x.x` literal. `new URL` has already canonicalised IPv4 spellings (`127.1`, `0177.0.0.1`) to dotted quads, so a DNS name such as `127.evil.com` does not match. */
 function isLoopback(hostname: string): boolean {
-  return hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '127.0.0.1' || hostname === '[::1]' || hostname.startsWith('127.');
+  return hostname === 'localhost' || hostname.endsWith('.localhost') || hostname === '[::1]' || /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname);
 }

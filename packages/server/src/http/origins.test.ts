@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isOriginAllowed, readAllowedOrigins, SAME_ORIGIN_ONLY } from './origins';
+import { isOriginAllowed, readAllowedOrigins } from './origins';
 
 describe('isOriginAllowed', () => {
   it('lets a request without an Origin through: it did not come from a browser', () => {
@@ -39,6 +39,9 @@ describe('isOriginAllowed', () => {
     expect(isOriginAllowed({ origin: 'http://localhost:5218', host: 'play.example.com', policy: SAME_ORIGIN_ONLY })).toBe(false);
     expect(isOriginAllowed({ origin: 'https://evil.example.com', host: 'localhost:5118', policy: SAME_ORIGIN_ONLY })).toBe(false);
     expect(isOriginAllowed({ origin: 'http://localhost.evil.com:5218', host: 'localhost:5118', policy: SAME_ORIGIN_ONLY })).toBe(false);
+    expect(isOriginAllowed({ origin: 'http://127.evil.com:5218', host: 'localhost:5118', policy: SAME_ORIGIN_ONLY })).toBe(false);
+    expect(isOriginAllowed({ origin: 'http://127.0.0.1.nip.io', host: '127.0.0.1:5118', policy: SAME_ORIGIN_ONLY })).toBe(false);
+    expect(isOriginAllowed({ origin: 'http://127.1:5218', host: '127.0.0.1:5118', policy: SAME_ORIGIN_ONLY })).toBe(true);
   });
 
   it('allows everything only when asked for with *', () => {
@@ -50,7 +53,7 @@ describe('isOriginAllowed', () => {
 
 describe('readAllowedOrigins', () => {
   it('is same-origin only when unset or empty', () => {
-    expect(readAllowedOrigins(undefined)).toEqual({ allowAll: false, allowedOrigins: new Set() });
+    expect(SAME_ORIGIN_ONLY).toEqual({ allowAll: false, allowedOrigins: new Set() });
     expect(readAllowedOrigins('')).toEqual({ allowAll: false, allowedOrigins: new Set() });
     expect(readAllowedOrigins(' , ')).toEqual({ allowAll: false, allowedOrigins: new Set() });
   });
@@ -65,3 +68,8 @@ describe('readAllowedOrigins', () => {
     }
   });
 });
+
+// ---- Helpers ----
+
+/** The policy with nothing configured: same origin (and loopback to loopback) only. */
+const SAME_ORIGIN_ONLY = readAllowedOrigins(undefined);
