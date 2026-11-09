@@ -3,14 +3,16 @@
  * V3: the sprite in a real browser. Starts `pnpm dev`, opens the page in
  * Chromium and checks, from the sim state on window.__novaland and the Phaser
  * display list, that: the sheet is served and loaded; the player is a sprite
- * from it (walls stay flat shapes); holding each of the four keys plays that
- * direction's walk cycle and the frame visibly changes; releasing leaves the
- * idle frame of that direction, which persists; every object is depth-sorted
- * by its bottom edge so the player draws in front of a wall it stands south
- * of and behind one it stands north of; the level camera keeps the sprite in
- * the middle of the screen at a whole-number zoom and the sheet is drawn with
+ * from it, drawn over the tile terrain; holding each of the four keys plays
+ * that direction's walk cycle and the frame visibly changes; releasing leaves
+ * the idle frame of that direction, which persists; the sprite is depth-sorted
+ * by its bottom edge, so standing south of a block of trees it overlaps them
+ * and is in front, and north of them its bottom edge is above theirs; the
+ * level camera keeps the sprite in the middle of the screen (unless pinned at
+ * a level edge) at a whole-number zoom and the sheet is drawn with
  * nearest-neighbour filtering, so the pixels stay crisp. Screenshots are the proof.
- * Expected numbers come from the level, the defs and the camera, read through the debug API.
+ * Expected numbers come from the level grid, the defs and the camera, read
+ * through the debug API.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
@@ -39,23 +41,30 @@ try {
   const content = await page.evaluate(() => {
     const api = window.__novaland;
     const player = api.defs.find((def) => def.name === 'player');
-    return { level: api.level, radius: player.radius, speed: player.speed, sprite: player.sprite, pixelsPerMetre: api.pixelsPerMetre };
+    const tiles = api.defs.filter((def) => typeof def.solid === 'boolean');
+    return {
+      grid: api.grid,
+      tiles,
+      spawn: api.tileCentre(api.grid, api.level.spawn),
+      radius: player.radius,
+      speed: player.speed,
+      sprite: player.sprite,
+      pixelsPerMetre: api.pixelsPerMetre,
+    };
   });
-  const { level, radius: RADIUS, sprite: SHEET, pixelsPerMetre: PIXELS_PER_METRE } = content;
+  const { grid, tiles, spawn: SPAWN, radius: RADIUS, speed: SPEED, sprite: SHEET, pixelsPerMetre: PIXELS_PER_METRE } = content;
   const SCALE = PIXELS_PER_METRE / SHEET.pixelsPerMetre;
-  // The 2x2 inner block nearest the spawn: the player stands south and north of it to prove the depth sort.
-  const block = level.walls
-    .filter((wall) => wall.width === 2 && wall.height === 2)
-    .sort((a, b) => Math.hypot(a.x - level.spawn.x, a.y - level.spawn.y) - Math.hypot(b.x - level.spawn.x, b.y - level.spawn.y))[0];
-  report.content = { ...content, block, scale: SCALE };
+  const block = nearestTwoByTwoSolidBlock(grid, tiles, SPAWN);
+  report.content = { ...content, grid: { columns: grid.columns, rows: grid.rows, tileSize: grid.tileSize }, block, scale: SCALE };
   results.push(check('the player def carries a sprite with four directions', SHEET && ['down', 'up', 'left', 'right'].every((direction) => SHEET.directions[direction])));
+  results.push(check('the level has a free-standing 2x2 block of solid tiles to stand around', block !== undefined, JSON.stringify(block)));
 
   const sheetResponse = await page.request.get(`http://localhost:${PORT}/sprites/${SHEET.key}.png`);
   const sheetBytes = await sheetResponse.body();
   const sheetWidth = sheetBytes.readUInt32BE(16);
   const sheetHeight = sheetBytes.readUInt32BE(20);
   results.push(check('the sheet is served as a PNG', sheetResponse.status() === 200 && sheetResponse.headers()['content-type'].includes('image/png'), `${sheetResponse.status()} ${sheetResponse.headers()['content-type']}`));
-  results.push(check('the sheet holds 4x4 frames of the def\'s frame size', sheetWidth === SHEET.frameWidth * 4 && sheetHeight === SHEET.frameHeight * 4, `${sheetWidth}x${sheetHeight}`));
+  results.push(check("the sheet holds 4x4 frames of the def's frame size", sheetWidth === SHEET.frameWidth * 4 && sheetHeight === SHEET.frameHeight * 4, `${sheetWidth}x${sheetHeight}`));
 
   const loaded = await page.evaluate(() => {
     const api = window.__novaland;
@@ -74,7 +83,7 @@ try {
   results.push(check('the sheet is drawn with nearest-neighbour filtering (pixel art stays crisp)', loaded.scaleMode === PHASER_NEAREST_SCALE_MODE && loaded.pixelArt === true, `scaleMode ${loaded.scaleMode}, pixelArt ${loaded.pixelArt}`));
   report.loaded = loaded;
 
-  /** Sim state and the drawn objects, read in the same frame. */
+  /** Sim state, the camera and the drawn objects, read in the same frame. */
   const state = () =>
     page.evaluate(() => {
       const api = window.__novaland;
@@ -84,6 +93,7 @@ try {
       const objects = scene.children.list;
       const sprites = objects.filter((object) => object.type === 'Sprite');
       const sprite = sprites[0];
+      const terrain = objects.find((object) => object.type === 'TilemapLayer');
       return {
         tick: snapshot.tick,
         camera: api.camera(),
@@ -92,6 +102,7 @@ try {
         intent: playerEntity.components.MoveIntent,
         facing: playerEntity.components.Facing,
         spriteCount: sprites.length,
+        circleCount: objects.filter((object) => object.type === 'Arc').length,
         sprite: sprite && {
           x: sprite.x,
           y: sprite.y,
@@ -107,7 +118,7 @@ try {
           displayWidth: sprite.displayWidth,
           displayHeight: sprite.displayHeight,
         },
-        rectangles: objects.filter((object) => object.type === 'Rectangle').map((rectangle) => ({ x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height, depth: rectangle.depth })),
+        terrainDepth: terrain ? terrain.depth : null,
         hud: { active: api.game.scene.isActive('hud'), drawnAfterWorld: api.game.scene.getIndex('hud') > api.game.scene.getIndex('world') },
       };
     });
@@ -131,22 +142,32 @@ try {
     x: (worldX - sample.camera.worldView.x) * sample.camera.zoom,
     y: (worldY - sample.camera.worldView.y) * sample.camera.zoom,
   });
-  /** The camera keeps the sprite in the middle of the screen, give or take the device pixel it snaps to. */
+  /**
+   * On each axis the camera keeps the sprite in the middle of the screen, give or take the device pixel it snaps
+   * to, unless the view is pinned at a level edge on that axis; then the sprite is on the edge's side of the middle.
+   */
   const centredOnSprite = (sample) => {
     const screen = onScreen(sample, sample.sprite.x, sample.sprite.y);
-    const tolerance = sample.camera.zoom;
-    return near(screen.x, VIEWPORT.width / 2, tolerance) && near(screen.y, VIEWPORT.height / 2, tolerance);
+    const { worldView, bounds, zoom } = sample.camera;
+    const axis = (position, middle, viewStart, viewSize, boundStart, boundSize) => {
+      if (near(position, middle, zoom)) return true;
+      const pinnedAtStart = near(viewStart, boundStart, 1e-6);
+      const pinnedAtEnd = near(viewStart + viewSize, boundStart + boundSize, 1e-6);
+      return (pinnedAtStart && position < middle) || (pinnedAtEnd && position > middle);
+    };
+    return axis(screen.x, VIEWPORT.width / 2, worldView.x, worldView.width, bounds.x, bounds.width) && axis(screen.y, VIEWPORT.height / 2, worldView.y, worldView.height, bounds.y, bounds.height);
   };
 
   const initial = await state();
   await page.screenshot({ path: path.join(PROOF, '03-browser-1-idle-at-spawn.png') });
   report.steps.push({ step: 'initial', ...initial });
-  results.push(check('the player is drawn as one sprite from the sheet, not a circle', initial.spriteCount === 1 && initial.sprite.texture === SHEET.key, `${initial.spriteCount} sprite(s), texture ${initial.sprite && initial.sprite.texture}`));
-  results.push(check('walls without a sprite still draw as flat rectangles (fallback)', initial.rectangles.length === level.walls.length, `${initial.rectangles.length} rectangles`));
+  results.push(check('the player is drawn as one sprite from the sheet, not a circle', initial.spriteCount === 1 && initial.circleCount === 0 && initial.sprite.texture === SHEET.key, `${initial.spriteCount} sprite(s), ${initial.circleCount} circle(s), texture ${initial.sprite && initial.sprite.texture}`));
+  results.push(check('the terrain tilemap is drawn below the sprite', initial.terrainDepth !== null && initial.terrainDepth < initial.sprite.depth, `terrain depth ${initial.terrainDepth}, sprite depth ${initial.sprite.depth}`));
   results.push(check(`the sprite is scaled by ${PIXELS_PER_METRE}/${SHEET.pixelsPerMetre} with the def's origin`, near(initial.sprite.scaleX, SCALE) && near(initial.sprite.scaleY, SCALE) && near(initial.sprite.originX, SHEET.origin.x) && near(initial.sprite.originY, SHEET.origin.y) && near(initial.sprite.displayWidth, SHEET.frameWidth * SCALE) && near(initial.sprite.displayHeight, SHEET.frameHeight * SCALE), `${initial.sprite.displayWidth}x${initial.sprite.displayHeight} px`));
   results.push(check('a freshly spawned player stands still on the idle-down frame', !initial.sprite.playing && initial.sprite.frame === SHEET.directions.down.idle && initial.facing.x === 0 && initial.facing.y === 1, `frame ${initial.sprite.frame}`));
+  results.push(check('the player spawned at the centre of the spawn tile', near(initial.x, SPAWN.x, 1e-6) && near(initial.y, SPAWN.y, 1e-6), `(${initial.x}, ${initial.y})`));
 
-  // One pass per direction, in an order that keeps the player away from every wall.
+  // One pass per direction, in an order that keeps the player on open ground around the spawn.
   const walkSamples = [];
   for (const direction of ['right', 'down', 'left', 'up']) {
     const frames = SHEET.directions[direction];
@@ -170,30 +191,16 @@ try {
     report.steps.push({ step: `walk-${direction}`, seenFrames, after, later });
   }
 
-  // The drawn sprite tracks the sim position and every object is depth-sorted by its bottom edge.
-  const tracked = walkSamples.every((sample) => near(sample.sprite.x, sample.x * PIXELS_PER_METRE, 1e-6) && near(sample.sprite.y, sample.y * PIXELS_PER_METRE, 1e-6));
-  results.push(check(`the sprite sits where the sim says (${PIXELS_PER_METRE} px/m) in ${walkSamples.length} samples`, tracked));
-  const playerDepth = walkSamples.every((sample) => near(sample.sprite.depth, (sample.y + RADIUS) * PIXELS_PER_METRE, 1e-6));
-  const wallDepth = initial.rectangles.every((rectangle) => near(rectangle.depth, rectangle.y + rectangle.height / 2, 1e-6));
-  results.push(check('the player and every wall have depth = bottom edge in pixels', playerDepth && wallDepth));
-  results.push(check('the HUD is its own scene, drawn after the world, so no depth can cover it', initial.hud.active && initial.hud.drawnAfterWorld));
-  const zoom = initial.camera.zoom;
-  results.push(check(`the camera zoom is a whole number (${zoom}x), so every sprite pixel is ${zoom} screen pixels`, Number.isInteger(zoom) && zoom >= 1 && walkSamples.every((sample) => sample.camera.zoom === zoom), `zoom ${zoom}`));
-  const lastSample = walkSamples[walkSamples.length - 1];
-  results.push(check(`the camera keeps the sprite in the middle of the screen through ${walkSamples.length} samples`, walkSamples.every(centredOnSprite), JSON.stringify(onScreen(lastSample, lastSample.sprite.x, lastSample.sprite.y))));
-  const scrolled = walkSamples.some((sample) => !near(sample.camera.scrollX, initial.camera.scrollX, 1e-6)) && walkSamples.some((sample) => !near(sample.camera.scrollY, initial.camera.scrollY, 1e-6));
-  results.push(check('the camera scrolled on both axes to follow the walk', scrolled));
-
-  // Stand just south of the 2x2 inner block: the body is below it, the sprite overlaps it, and it draws in front.
+  // Stand just south of the 2x2 block of solid tiles: the body is below it, the sprite overlaps it, and its depth puts it in front.
   // The walk east is timed from the def speed; the push north runs long enough to be blocked whatever the start.
-  await hold(['KeyD'], (block.x / content.speed) * 1000);
-  const front = (await hold(['KeyW'], 1500)).after;
+  await hold(['KeyD'], ((block.x - SPAWN.x) / SPEED) * 1000);
+  const { samples: approachSamples, after: front } = await hold(['KeyW'], 1500);
   await page.screenshot({ path: path.join(PROOF, '03-browser-4-in-front-of-block.png') });
-  const blockRectangle = initial.rectangles.find((rectangle) => near(rectangle.x, block.x * PIXELS_PER_METRE, 1e-6) && near(rectangle.y, block.y * PIXELS_PER_METRE, 1e-6));
+  const blockBottomEdgeDepth = (block.y + block.height / 2) * PIXELS_PER_METRE;
   const southFace = block.y + block.height / 2;
   const spriteTop = front.sprite.y - front.sprite.displayHeight * front.sprite.originY;
   results.push(check('the player stopped against the south face of the block', near(front.y, southFace + RADIUS, 0.05) && Math.abs(front.x - block.x) < block.width / 2, `y=${front.y.toFixed(3)}, face at ${(southFace + RADIUS).toFixed(2)}`));
-  results.push(check('its sprite overlaps the block and is drawn in front of it (greater depth)', spriteTop < blockRectangle.y + blockRectangle.height / 2 && front.sprite.depth > blockRectangle.depth, `sprite depth ${front.sprite.depth.toFixed(1)} > block ${blockRectangle.depth.toFixed(1)}`));
+  results.push(check("its sprite overlaps the block and its depth is greater than the block's bottom edge, so it draws in front", spriteTop < blockBottomEdgeDepth && front.sprite.depth > blockBottomEdgeDepth && front.sprite.depth > front.terrainDepth, `sprite top ${spriteTop.toFixed(1)}, depth ${front.sprite.depth.toFixed(1)} > block ${blockBottomEdgeDepth.toFixed(1)}`));
   const blockOnScreen = onScreen(front, block.x * PIXELS_PER_METRE, block.y * PIXELS_PER_METRE);
   const clipMetres = { width: 5, height: 6 };
   const clip = {
@@ -203,18 +210,31 @@ try {
     height: clipMetres.height * PIXELS_PER_METRE * front.camera.zoom,
   };
   await page.screenshot({ path: path.join(PROOF, '03-browser-4-in-front-of-block-zoom.png'), clip });
-  report.steps.push({ step: 'in-front', ...front, blockRectangle, spriteTop, clip });
+  report.steps.push({ step: 'in-front', ...front, blockBottomEdgeDepth, spriteTop, clip });
 
-  // Walk around to the north side and push against it: now the player is behind (lower depth).
-  await hold(['KeyA'], 500);
-  await hold(['KeyW'], 800);
-  await hold(['KeyD'], 500);
-  const behind = (await hold(['KeyS'], 1500)).after;
+  // Walk around to the north side and push against it: now the sprite's bottom edge is above the block's, so it would sort behind.
+  const detour = [await hold(['KeyA'], 500), await hold(['KeyW'], 800), await hold(['KeyD'], 500)];
+  const { samples: returnSamples, after: behind } = await hold(['KeyS'], 1500);
   await page.screenshot({ path: path.join(PROOF, '03-browser-5-behind-block.png') });
   const northFace = block.y - block.height / 2;
   results.push(check('the player stopped against the north face of the block', near(behind.y, northFace - RADIUS, 0.05) && Math.abs(behind.x - block.x) < block.width / 2, `y=${behind.y.toFixed(3)}, face at ${(northFace - RADIUS).toFixed(2)}`));
-  results.push(check('there it is drawn behind the block (lower depth), facing down', behind.sprite.depth < blockRectangle.depth && behind.sprite.frame === SHEET.directions.down.idle, `sprite depth ${behind.sprite.depth.toFixed(1)} < block ${blockRectangle.depth.toFixed(1)}`));
+  results.push(check("there its depth is below the block's bottom edge (it would sort behind a y-sorted object there), facing down", behind.sprite.depth < blockBottomEdgeDepth && behind.sprite.frame === SHEET.directions.down.idle, `sprite depth ${behind.sprite.depth.toFixed(1)} < block ${blockBottomEdgeDepth.toFixed(1)}`));
   report.steps.push({ step: 'behind', ...behind });
+
+  // Across every sample: the sprite tracks the sim, its depth is its bottom edge, and the camera follows it crisply.
+  const allSamples = [...walkSamples, ...approachSamples, front, ...detour.flatMap(({ samples, after }) => [...samples, after]), ...returnSamples, behind];
+  const tracked = allSamples.every((sample) => near(sample.sprite.x, sample.x * PIXELS_PER_METRE, 1e-6) && near(sample.sprite.y, sample.y * PIXELS_PER_METRE, 1e-6));
+  results.push(check(`the sprite sits where the sim says (${PIXELS_PER_METRE} px/m) in ${allSamples.length} samples`, tracked));
+  results.push(check('the sprite depth is its bottom edge in pixels in every sample', allSamples.every((sample) => near(sample.sprite.depth, (sample.y + RADIUS) * PIXELS_PER_METRE, 1e-6))));
+  results.push(check('the HUD is its own scene, drawn after the world, so no depth can cover it', initial.hud.active && initial.hud.drawnAfterWorld));
+  const zoom = initial.camera.zoom;
+  results.push(check(`the camera zoom is a whole number (${zoom}x), so every sprite pixel is ${zoom} screen pixels`, Number.isInteger(zoom) && zoom >= 1 && allSamples.every((sample) => sample.camera.zoom === zoom), `zoom ${zoom}`));
+  const offCentre = allSamples.find((sample) => !centredOnSprite(sample));
+  results.push(check(`the camera keeps the sprite in the middle of the screen (or against a pinned edge) through ${allSamples.length} samples`, offCentre === undefined, offCentre ? JSON.stringify({ sprite: onScreen(offCentre, offCentre.sprite.x, offCentre.sprite.y), view: offCentre.camera.worldView }) : ''));
+  const centredSamples = allSamples.filter((sample) => near(onScreen(sample, sample.sprite.x, sample.sprite.y).x, VIEWPORT.width / 2, zoom) && near(onScreen(sample, sample.sprite.x, sample.sprite.y).y, VIEWPORT.height / 2, zoom));
+  results.push(check('the sprite was dead centre on both axes in some samples', centredSamples.length > 5, `${centredSamples.length} samples`));
+  const scrolled = allSamples.some((sample) => !near(sample.camera.scrollX, initial.camera.scrollX, 1e-6)) && allSamples.some((sample) => !near(sample.camera.scrollY, initial.camera.scrollY, 1e-6));
+  results.push(check('the camera scrolled on both axes to follow the walk', scrolled));
 
   results.push(check('no page or console errors', errors.length === 0, errors.join(' | ').slice(0, 200)));
   report.errors = errors;
@@ -224,3 +244,34 @@ try {
 }
 writeProof('03-browser.json', report);
 process.exit(summarize(results) ? 0 : 1);
+
+// ---- Helpers ----
+
+/**
+ * The 2x2 square of solid tiles nearest to a point, with no solid tile in the ring around it, as a box in metres
+ * (centre, width, height). Undefined when the level has none.
+ */
+function nearestTwoByTwoSolidBlock(grid, tiles, point) {
+  const solidById = new Map(tiles.map((tile) => [tile.id, tile.solid]));
+  const solidAt = (column, row) => column >= 0 && row >= 0 && column < grid.columns && row < grid.rows && solidById.get(grid.defIds[row][column]) === true;
+  const blocks = [];
+  for (let row = 0; row + 1 < grid.rows; row += 1) {
+    for (let column = 0; column + 1 < grid.columns; column += 1) {
+      let square = true;
+      let ringClear = true;
+      for (let dy = -1; dy <= 2; dy += 1) {
+        for (let dx = -1; dx <= 2; dx += 1) {
+          const inside = dx >= 0 && dx <= 1 && dy >= 0 && dy <= 1;
+          const solid = solidAt(column + dx, row + dy);
+          if (inside && !solid) square = false;
+          if (!inside && solid) ringClear = false;
+        }
+      }
+      if (!square || !ringClear) continue;
+      const x = (column + 1) * grid.tileSize - grid.width / 2;
+      const y = (row + 1) * grid.tileSize - grid.height / 2;
+      blocks.push({ column, row, x, y, width: 2 * grid.tileSize, height: 2 * grid.tileSize });
+    }
+  }
+  return blocks.sort((a, b) => Math.hypot(a.x - point.x, a.y - point.y) - Math.hypot(b.x - point.x, b.y - point.y))[0];
+}

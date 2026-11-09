@@ -3,7 +3,7 @@ PASS  the player def declares 16x24 frames at 16 px/m with four directions
 PASS  the sheet is a whole number of 16x24 frames: 4 columns x 4 rows  (64x96)
 PASS  every idle frame and walk range of the def exists on the sheet
 PASS  each direction uses its own row of the sheet
-PASS  the generator runs with plain node and no dependencies  (wrote /var/folders/6f/g_s0t20x289cyxgrht770p580000gn/T/novaland-sheet-OKwWpH/player.png)
+PASS  the generator runs with plain node and no dependencies  (wrote /var/folders/6f/g_s0t20x289cyxgrht770p580000gn/T/novaland-sheet-ts9IJz/player.png)
 PASS  the committed sheet is pixel-identical to a fresh run of the generator
 PASS  every frame has a drawn figure (at least 100 opaque pixels)  (min 162)
 PASS  all 16 frames are pairwise distinct
