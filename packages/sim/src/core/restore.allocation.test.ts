@@ -1,9 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { starterLevel } from '../content/levels/starter';
 import { MAX_CAPACITY } from '../content/tuning';
-import { Replica } from './replica';
+import { applyWorldState, Replica } from './replica';
 import { ensureEntitiesExist } from './restore';
-import { applyWorldState } from './worldState';
 
 // bitECS is mocked in this file only, to count allocations: the behaviour itself is tested in restore.test.ts.
 const addEntityCalls = vi.hoisted(() => ({ count: 0 }));

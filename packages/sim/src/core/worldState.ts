@@ -1,8 +1,6 @@
-import { entityExists, getAllEntities, removeEntity } from 'bitecs';
 import { getComponentDef } from './components';
 import { asEntityWorld } from './entityWorld';
-import { asReplica } from './replica';
-import { ensureEntitiesExist, isEntityId, mergeComponentFields, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
+import { mergeComponentFields } from './restore';
 import type { SimHandle } from './sim';
 import { snapshotEntities, type EntitySnapshot } from './snapshot';
 
@@ -43,14 +41,6 @@ export interface WorldStateDelta {
 }
 
 export type WorldStateUpdate = WorldState | WorldStateDelta;
-
-/**
- * What applying an update to a replica did. `out-of-sequence` means a delta
- * did not continue from the replica's tick (a message was missed or the
- * replica is fresh): the replica is untouched and needs a full state.
- * `malformed` means the update was not a world state or delta at all.
- */
-export type WorldStateApplyResult = 'applied' | 'out-of-sequence' | 'malformed';
 
 /** The current world state of a sim or a replica. */
 export function worldState(handle: SimHandle): WorldState {
@@ -120,52 +110,14 @@ export function applyWorldStateDelta(state: WorldState, delta: WorldStateDelta):
 }
 
 /**
- * Writes a world state or delta into a replica. This is where network data
- * enters the sim: the update is checked field by field, and anything that is
- * not a valid entity id, a known component or a finite number is skipped.
- * A full state replaces everything the replica had, whatever its tick (the
- * server may have restarted). A delta applies only when it continues from
- * the replica's tick.
- */
-export function applyWorldState(handle: SimHandle, update: WorldStateUpdate): WorldStateApplyResult {
-  const replica = asReplica(handle);
-  const read = readWorldStateUpdate(update);
-  if (!read) return 'malformed';
-  // New ids are allocated in one pass per message (ensureEntitiesExist), so a
-  // message costs O(capacity + entries) whatever order its ids come in.
-  if (read.kind === 'full') {
-    const keep = ensureEntitiesExist(replica, read.entities.map((entity) => entity.id));
-    for (const entity of read.entities) {
-      if (keep.has(entity.id)) restoreEntity(replica, entity.id, entity.components);
-    }
-    for (const eid of [...getAllEntities(replica.world)]) {
-      if (!keep.has(eid)) removeEntity(replica.world, eid);
-    }
-    replica.tick = read.tick;
-    return 'applied';
-  }
-  if (read.fromTick !== replica.tick) return 'out-of-sequence';
-  for (const id of read.removed) {
-    if (isEntityId(id, replica.capacity) && entityExists(replica.world, id)) removeEntity(replica.world, id);
-  }
-  const changed = ensureEntitiesExist(replica, read.changed.map((change) => change.id));
-  for (const change of read.changed) {
-    if (!changed.has(change.id)) continue;
-    removeEntityComponents(replica, change.id, change.removedComponents);
-    writeEntityComponents(replica, change.id, change.components);
-  }
-  replica.tick = read.tick;
-  return 'applied';
-}
-
-/**
  * The update behind an arbitrary value, with the shape every reader relies
  * on: a kind, integer ticks, arrays of entries whose ids are positive
  * integers and whose components are plain objects. Entries that are not get
  * dropped; anything else wrong makes the whole value undefined. Component
  * names and field values are checked where they are written (restore.ts).
+ * Used by `applyWorldState` (replica.ts) and `applyWorldStateDelta`.
  */
-function readWorldStateUpdate(value: unknown): WorldStateUpdate | undefined {
+export function readWorldStateUpdate(value: unknown): WorldStateUpdate | undefined {
   if (!isRecord(value) || !isTick(value['tick'])) return undefined;
   if (value['kind'] === 'full') {
     if (!Array.isArray(value['entities'])) return undefined;

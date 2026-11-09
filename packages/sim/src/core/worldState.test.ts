@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { findPlayerEntity } from '../features/player/queries';
 import type { Command } from './commands';
 import { createReplica, createSim } from './create';
-import { applyWorldState, applyWorldStateDelta, diffWorldState, worldState, type WorldState, type WorldStateDelta } from './worldState';
+import { applyWorldState } from './replica';
+import { applyWorldStateDelta, diffWorldState, worldState, type WorldState, type WorldStateDelta } from './worldState';
 
 describe('worldState', () => {
   it('is the entities of the snapshot plus the tick, with no physics and no rng', async () => {
@@ -66,6 +67,12 @@ describe('diffWorldState and applyWorldStateDelta', () => {
       removed: [3],
     });
     expect(applyWorldStateDelta(previous, delta)).toEqual(next);
+  });
+
+  it('keeps components and fields in name order, so two routes to the same state serialise the same', () => {
+    const state = stateAt(5, [entity(1, { Position: { x: 1, y: 2 } })]);
+    const next = applyWorldStateDelta(state, { kind: 'delta', fromTick: 5, tick: 6, changed: [{ id: 1, components: { Facing: { y: 1, x: 0 } } }], removed: [] });
+    expect(JSON.stringify(next)).toBe(JSON.stringify(stateAt(6, [entity(1, { Facing: { x: 0, y: 1 }, Position: { x: 1, y: 2 } })])));
   });
 
   it('does not touch the state it is given', () => {

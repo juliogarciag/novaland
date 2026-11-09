@@ -4,9 +4,13 @@ import { DEFAULT_CAPACITY, FIXED_DT, MAX_CAPACITY } from '../content/tuning';
 import { findPlayerEntity, getHeading } from '../features/player/queries';
 import type { Command } from './commands';
 import { __testing__, createReplica, createSim } from './create';
+import { asEntityWorld } from './entityWorld';
+import { applyWorldState, type ReplicaHandle } from './replica';
 import type { SimHandle } from './sim';
+import { DefRef } from './transform';
 import { getRenderables } from './view';
-import { applyWorldState, diffWorldState, worldState, type WorldState, type WorldStateUpdate } from './worldState';
+import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE } from './wire';
+import { diffWorldState, worldState, type WorldState, type WorldStateUpdate } from './worldState';
 
 describe('a replica fed full world states every tick', () => {
   it('draws exactly what the sim draws, tick after tick, through JSON', async () => {
@@ -24,28 +28,33 @@ describe('a replica fed full world states every tick', () => {
 });
 
 describe('a replica fed deltas at a send rate', () => {
-  it('matches the sim at every send, including joins, leaves and a recycled entity id', async () => {
+  it.each([1, 3])('matches the sim at every send with a delta every %i tick(s), through joins, leaves and a recycled entity id', async (sendEvery) => {
     const sim = await createSim({ seed: 11 });
     const replica = createReplica({ level: sim.level });
     const server = new FakeServer(sim);
     expect(applyWorldState(replica, overTheWire(server.fullState()))).toBe('applied');
     const seen = { joins: 0, leaves: 0 };
+    let leaverEid: number | undefined;
     for (let tick = 0; tick < TICKS; tick += 1) {
       const commands = script(tick);
       seen.joins += commands.filter((command) => command.type === 'player/join').length;
       seen.leaves += commands.filter((command) => command.type === 'player/leave').length;
+      if (commands.some((command) => command.type === 'player/leave')) leaverEid = findPlayerEntity(sim, 1);
       sim.step(commands);
-      if (tick % SEND_EVERY === 0) {
+      if (tick % sendEvery === 0) {
         const delta = server.delta();
         expect(applyWorldState(replica, overTheWire(delta))).toBe('applied');
         expectSameView(replica, sim);
       }
     }
-    // The script makes slot 1 leave and slot 3 join afterwards; bitECS gives the newcomer the freed id.
+    // The script makes slot 1 leave and slot 3 join afterwards; bitECS gives the newcomer the freed id, so the
+    // run really covers a recycled id with a different history on each side.
     expect(seen).toEqual({ joins: 4, leaves: 1 });
+    expect(leaverEid).toBeDefined();
+    expect(findPlayerEntity(sim, 3)).toBe(leaverEid);
     expect(findPlayerEntity(sim, 1)).toBeUndefined();
     expect(findPlayerEntity(replica, 1)).toBeUndefined();
-    expect(findPlayerEntity(replica, 3)).toBe(findPlayerEntity(sim, 3));
+    expect(findPlayerEntity(replica, 3)).toBe(leaverEid);
     sim.destroy();
   });
 
@@ -100,11 +109,14 @@ describe('a replica fed deltas at a send rate', () => {
     const sim = await createSim({ seed: 11 });
     // After tick 150 slot 3 has taken the entity id slot 1 freed, so bitECS iterates it last in the sim.
     for (let tick = 0; tick < 200; tick += 1) sim.step(script(tick));
+    const newcomer = findPlayerEntity(sim, 3) as number;
+    expect(newcomer).toBeLessThan(findPlayerEntity(sim, 2) as number);
     const lateJoiner = createReplica({ level: sim.level });
     expect(applyWorldState(lateJoiner, overTheWire(worldState(sim)))).toBe('applied');
     expectSameView(lateJoiner, sim);
     const eids = getRenderables(lateJoiner).map((renderable) => renderable.eid);
     expect(eids).toEqual([...eids].sort((a, b) => a - b));
+    expect(eids.indexOf(newcomer)).toBeLessThan(eids.indexOf(findPlayerEntity(sim, 2) as number));
     sim.destroy();
   });
 
@@ -131,6 +143,9 @@ describe('createReplica', () => {
     expect(replica.level).toBe(starterLevel);
     expect(replica.capacity).toBe(DEFAULT_CAPACITY);
     expect(replica.dt).toBe(FIXED_DT);
+    expect(replica.seed).toBe(0);
+    expect(replica.isReplica).toBe(true);
+    expect(replica.hasState).toBe(false);
     expect(replica.tick).toBe(0);
     expect(replica.entityCount).toBe(0);
     expect(getRenderables(replica)).toEqual([]);
@@ -153,10 +168,52 @@ describe('createReplica', () => {
     expect(() => replica.step([{ type: 'player/join', slot: 0 }])).toThrow(/cannot step/);
   });
 
-  it('only a replica takes world states; a live sim is refused loudly', async () => {
+  it('only a replica takes world states; a live sim or a foreign object is refused loudly', async () => {
     const sim = await createSim({ seed: 1 });
-    expect(() => applyWorldState(sim, worldState(sim))).toThrow(TypeError);
+    expect(() => applyWorldState(sim as unknown as ReplicaHandle, worldState(sim))).toThrow(TypeError);
+    expect(() => applyWorldState({} as ReplicaHandle, worldState(sim))).toThrow(TypeError);
+    expect(() => getRenderables({} as SimHandle)).toThrow(TypeError);
+    expect(() => asEntityWorld({ tick: 0 } as SimHandle)).toThrow(TypeError);
     sim.destroy();
+  });
+
+  it('needs a full state before it takes deltas', async () => {
+    const sim = await createSim({ seed: 1 });
+    const replica = createReplica({ level: sim.level });
+    sim.step([{ type: 'player/join', slot: 0 }]);
+    const before = worldState(sim);
+    sim.step();
+    const delta = diffWorldState(before, worldState(sim));
+    const stray = { kind: 'delta', fromTick: 0, tick: 1, changed: [{ id: 1, components: { Position: { x: 0, y: 0 } } }], removed: [] } as const;
+    expect(applyWorldState(replica, stray)).toBe('out-of-sequence');
+    expect(replica.hasState).toBe(false);
+    expect(replica.entityCount).toBe(0);
+    expect(applyWorldState(replica, before)).toBe('applied');
+    expect(replica.hasState).toBe(true);
+    expect(applyWorldState(replica, delta)).toBe('applied');
+    expectSameView(replica, sim);
+    sim.destroy();
+  });
+
+  it('a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    sim.step([{ type: 'player/join', slot: 0 }]);
+    const replica = createReplica({ level: sim.level });
+    applyWorldState(replica, worldState(sim));
+    const player = findPlayerEntity(sim, 0) as number;
+    sim.store(DefRef).id[player] = 0;
+    expect(() => getRenderables(sim)).toThrow(/Unknown entity def id 0/);
+    applyWorldState(replica, worldState(sim));
+    expect(getRenderables(replica).some((renderable) => renderable.eid === player)).toBe(false);
+    sim.destroy();
+  });
+});
+
+describe('the wire contract the server and the client are built against', () => {
+  it('pins the message names, the refusal reasons and the default send rate ADR 0004 lists', () => {
+    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move' });
+    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full' });
+    expect(DEFAULT_SEND_RATE).toBe(20);
   });
 });
 
@@ -202,6 +259,10 @@ describe('applyWorldState with data from the network', () => {
     const simView = getRenderables(sim).find((renderable) => renderable.eid === player);
     const replicaView = getRenderables(replica).find((renderable) => renderable.eid === player);
     expect(replicaView).toEqual({ ...simView, x: 2.5 });
+    // 'MoveIntent' was in removedComponents (next to junk), 'Facing' was given as a string and so was not removed.
+    const components = worldState(replica).entities.find((entity) => entity.id === player)?.components ?? {};
+    expect(components['MoveIntent']).toBeUndefined();
+    expect(components['Facing']).toBeDefined();
     expect(getHeading(replica, player)).toBeUndefined();
     expect(findPlayerEntity(replica, 0)).toBe(player);
     expect(({} as Record<string, unknown>)['polluted']).toBeUndefined();
@@ -263,7 +324,6 @@ describe('applyWorldState with data from the network', () => {
 
 const { createSimInternal } = __testing__;
 const TICKS = 300;
-const SEND_EVERY = 3;
 
 /** Four players: join, walk around, one leaves and a newcomer takes the freed entity id. */
 function script(tick: number): Command[] {

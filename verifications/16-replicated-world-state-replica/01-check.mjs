@@ -25,11 +25,16 @@ const names = report ? report.testResults.flatMap((file) => file.assertionResult
 const passing = (pattern) => names.filter((t) => pattern.test(t.name) && t.status === 'passed');
 results.push(check('every test passed, none skipped', report && report.numFailedTests === 0 && report.numPendingTests === 0 && report.numPassedTests === report.numTotalTests && report.numTotalTests > 0, `${report?.numPassedTests} of ${report?.numTotalTests}`));
 results.push(check('a replica fed full states every tick draws what the sim draws', passing(/full world states every tick.*draws exactly what the sim draws/).length === 1));
-results.push(check('a replica fed deltas matches the sim at every send, through joins, leaves and a recycled id', passing(/deltas at a send rate.*matches the sim at every send/).length === 1));
+results.push(check('a replica fed deltas matches the sim at every send, through joins, leaves and a recycled id', passing(/deltas at a send rate.*matches the sim at every send/).length === 2));
 results.push(check('removed entities disappear and an out-of-sequence delta is reported', passing(/removes an entity that left and reports a delta/).length === 1));
 results.push(check('deltas never carry the terrain again', passing(/never sends the terrain again/).length === 1));
 results.push(check('a full state from a restarted server replaces the replica', passing(/replaced whole by a full state/).length === 1));
-results.push(check('replica.step throws and a live sim is refused by applyWorldState', passing(/refuses to step/).length === 1 && passing(/live sim is refused loudly/).length === 1));
+results.push(check('a late joiner from one full state draws in the same order as the sim', passing(/late joiner built from one full state/).length === 1));
+results.push(check('a replica needs a full state before deltas', passing(/needs a full state before it takes deltas/).length === 1));
+results.push(check('a shuffled full state costs one allocation pass per message', passing(/one pass of at most/).length === 1 && passing(/stays within one pass per message/).length === 1));
+results.push(check('the wire names, refusal reasons and send rate are pinned', passing(/pins the message names/).length === 1));
+results.push(check('findLevel resolves the level name a welcome carries', passing(/resolves the name a snapshot or a welcome message carries/).length === 1));
+results.push(check('replica.step throws and a live sim is refused by applyWorldState', passing(/refuses to step/).length === 1 && passing(/foreign object is refused loudly/).length === 1));
 results.push(check('malformed network data is ignored, never thrown on', passing(/applyWorldState with data from the network/).length >= 5));
 results.push(check('a DefRef at no def does not crash the view', passing(/keeps the view alive when an entity points at a def that does not exist/).length === 1));
 results.push(check('diff -> apply rebuilds the next state exactly, through JSON', passing(/rebuilds the later state exactly/).length === 1));

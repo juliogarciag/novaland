@@ -30,7 +30,7 @@ export interface SimHandle {
   readonly level: LevelData;
   readonly capacity: number;
   readonly entityCount: number;
-  /** Advances the sim by exactly one fixed tick, applying `commands` first. */
+  /** Advances the sim by exactly one fixed tick, applying `commands` first. A replica (ADR 0004) throws instead: it never advances by itself. */
   step(commands?: readonly Command[]): void;
   /** Full serializable state. */
   snapshot(): SimSnapshot;
@@ -48,6 +48,7 @@ export interface SimHandle {
  * `await initPhysics()` first.
  */
 export class Sim implements SimHandle, EntityWorld {
+  readonly isReplica = false;
   readonly world: World = createWorld();
   readonly physics: PhysicsWorld;
   readonly rng: Rng;

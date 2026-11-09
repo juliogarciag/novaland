@@ -206,7 +206,12 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "a replica fed deltas at a send rate matches the sim at every send, including joins, leaves and a recycled entity id",
+    "name": "a replica fed deltas at a send rate matches the sim at every send with a delta every 1 tick(s), through joins, leaves and a recycled entity id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "a replica fed deltas at a send rate matches the sim at every send with a delta every 3 tick(s), through joins, leaves and a recycled entity id",
     "status": "passed"
   },
   {
@@ -221,6 +226,11 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
+    "name": "a replica fed deltas at a send rate a late joiner built from one full state sees the same renderables, in the same order, as the sim with its history",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate is replaced whole by a full state, even one from an earlier tick (the server restarted)",
     "status": "passed"
   },
@@ -231,12 +241,32 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
+    "name": "createReplica refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica refuses to step: a replica only shows what the server sent",
     "status": "passed"
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "createReplica only a replica takes world states; a live sim is refused loudly",
+    "name": "createReplica only a replica takes world states; a live sim or a foreign object is refused loudly",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "createReplica needs a full state before it takes deltas",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "createReplica a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "the wire contract the server and the client are built against pins the message names, the refusal reasons and the default send rate ADR 0004 lists",
     "status": "passed"
   },
   {
@@ -251,7 +281,7 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "applyWorldState with data from the network rejects a delta whose ticks do not make sense",
+    "name": "applyWorldState with data from the network rejects a delta whose ticks do not make sense, including ticks beyond the safe integer range",
     "status": "passed"
   },
   {
@@ -262,6 +292,16 @@
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "applyWorldState with data from the network a full state from the network with bad entries keeps the good ones and drops everything else",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/restore.allocation.test.ts",
+    "name": "allocation cost of writing a message into a replica a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/restore.allocation.test.ts",
+    "name": "allocation cost of writing a message into a replica a full state with every id in a bad order stays within one pass per message, and so does a delta",
     "status": "passed"
   },
   {
@@ -287,6 +327,11 @@
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists agrees with a plain model over a long scripted mix of adds, removes and ensures",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/restore.test.ts",
+    "name": "ensureEntitiesExist creates every wanted id in one pass and reports which are alive, dropping invalid ones",
     "status": "passed"
   },
   {
@@ -361,6 +406,11 @@
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
+    "name": "diffWorldState and applyWorldStateDelta keeps components and fields in name order, so two routes to the same state serialise the same",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta does not touch the state it is given",
     "status": "passed"
   },
@@ -371,7 +421,32 @@
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
+    "name": "diffWorldState and applyWorldStateDelta returns undefined for a state that is not a world state, instead of throwing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/worldState.test.ts",
+    "name": "diffWorldState and applyWorldStateDelta validates component names, fields and values exactly like a replica would, so both agree on bad input",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta skips malformed entries of a delta and keeps the rest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name answers undefined for a name it does not know, including prototype names",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name lists every level once, under a unique name",
     "status": "passed"
   },
   {

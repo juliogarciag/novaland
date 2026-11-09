@@ -8,20 +8,11 @@
 export { createReplica, createSim, type ReplicaOptions, type SimOptions } from './core/create';
 export type { SimHandle } from './core/sim';
 export type { Command } from './core/commands';
-export { DEFAULT_SEND_RATE, FIXED_DT, TICK_RATE } from './content/tuning';
+export { FIXED_DT, TICK_RATE } from './content/tuning';
 export { hashSnapshot, type EntitySnapshot, type SimSnapshot } from './core/snapshot';
-export {
-  applyWorldState,
-  applyWorldStateDelta,
-  diffWorldState,
-  worldState,
-  type EntityDelta,
-  type WorldState,
-  type WorldStateApplyResult,
-  type WorldStateDelta,
-  type WorldStateUpdate,
-} from './core/worldState';
-export { WIRE, type MoveMessage, type WelcomeMessage } from './core/wire';
+export { applyWorldStateDelta, diffWorldState, worldState, type EntityDelta, type WorldState, type WorldStateDelta, type WorldStateUpdate } from './core/worldState';
+export { applyWorldState, type ReplicaHandle, type WorldStateApplyResult } from './core/replica';
+export { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, type MoveMessage, type WelcomeMessage } from './core/wire';
 export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
 export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from './content/sprites';

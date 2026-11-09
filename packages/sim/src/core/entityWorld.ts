@@ -13,12 +13,22 @@ export interface EntityWorld {
   readonly world: World;
   /** Maximum live entities; ids run from 1 to capacity. */
   readonly capacity: number;
+  /**
+   * True when the entities were written from the network. A live sim only
+   * holds what its own features wrote, so a value it never produces (a
+   * DefRef at no def) is a bug to surface; on a replica the same value is
+   * bad input to tolerate.
+   */
+  readonly isReplica: boolean;
   /** The per-world data store for a component. Created on first use. */
   store<T extends NumericStore>(def: ComponentDef<T>): T;
   /** Name of the component a store belongs to, or undefined if it is not one of this world's stores. */
   componentName(store: object): string | undefined;
 }
 
+// A registry rather than `instanceof Sim || instanceof Replica`: that check would make this module import both
+// classes at runtime while both import it, a cycle. Only code inside the package can register, since this
+// module is not exported.
 const entityWorldByHandle = new WeakMap<SimHandle, EntityWorld>();
 
 /** Records which EntityWorld a handle gives access to. Called by the Sim and Replica constructors. */

@@ -2,12 +2,17 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (106 of 106)
+PASS  every test passed, none skipped  (121 of 121)
 PASS  a replica fed full states every tick draws what the sim draws
 PASS  a replica fed deltas matches the sim at every send, through joins, leaves and a recycled id
 PASS  removed entities disappear and an out-of-sequence delta is reported
 PASS  deltas never carry the terrain again
 PASS  a full state from a restarted server replaces the replica
+PASS  a late joiner from one full state draws in the same order as the sim
+PASS  a replica needs a full state before deltas
+PASS  a shuffled full state costs one allocation pass per message
+PASS  the wire names, refusal reasons and send rate are pinned
+PASS  findLevel resolves the level name a welcome carries
 PASS  replica.step throws and a live sim is refused by applyWorldState
 PASS  malformed network data is ignored, never thrown on
 PASS  a DefRef at no def does not crash the view
@@ -16,4 +21,4 @@ PASS  ensureEntityExists agrees with a model over 2000 random steps
 PASS  the determinism test still passes
 PASS  the snapshot tests still pass (shared entity snapshot code)
 
-ALL 17 CHECKS PASSED
+ALL 22 CHECKS PASSED

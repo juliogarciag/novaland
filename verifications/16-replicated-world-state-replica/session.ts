@@ -15,6 +15,7 @@ import {
   createSim,
   DEFAULT_SEND_RATE,
   diffWorldState,
+  findLevel,
   findPlayerEntity,
   getHeading,
   getRenderables,
@@ -22,6 +23,7 @@ import {
   worldState,
   type Command,
   type SimHandle,
+  type WelcomeMessage,
   type WorldState,
   type WorldStateUpdate,
 } from '../../packages/sim/src/index.ts';
@@ -36,9 +38,10 @@ const replica = createReplica({ level: sim.level, capacity: sim.capacity });
 
 // The server keeps the last state it sent to this client and diffs against it.
 let lastSent: WorldState = worldState(sim);
-const welcome = JSON.stringify({ seat: 0, level: sim.level.name, capacity: sim.capacity, state: lastSent });
-const welcomeMessage = JSON.parse(welcome) as { state: WorldStateUpdate };
-const welcomeResult = applyWorldState(replica, welcomeMessage.state);
+const welcome = JSON.stringify({ slot: 0, level: sim.level.name, capacity: sim.capacity, state: lastSent } satisfies WelcomeMessage);
+const welcomeMessage = JSON.parse(welcome) as WelcomeMessage;
+const welcomeLevel = findLevel(welcomeMessage.level);
+const welcomeResult = welcomeLevel === sim.level ? applyWorldState(replica, welcomeMessage.state) : 'unknown level';
 
 const deltaBytes: number[] = [];
 let mismatches = 0;
@@ -74,8 +77,9 @@ const afterFirstStep = worldState(sim);
 const dropped = diffWorldState(lastSent, afterFirstStep);
 sim.step();
 const afterDrop = diffWorldState(afterFirstStep, worldState(sim));
+const beforeOutOfSequence = JSON.stringify(worldState(replica));
 const outOfSequence = applyWorldState(replica, JSON.parse(JSON.stringify(afterDrop)) as WorldStateUpdate);
-const untouchedAfterOutOfSequence = replica.tick === dropped.fromTick && compareViews(replica, sim) !== null;
+const untouchedAfterOutOfSequence = replica.tick === dropped.fromTick && JSON.stringify(worldState(replica)) === beforeOutOfSequence;
 const resynced = applyWorldState(replica, JSON.parse(JSON.stringify(worldState(sim))) as WorldStateUpdate);
 const sameAfterResync = compareViews(replica, sim) === null;
 
@@ -101,7 +105,7 @@ for (const message of hostile) {
   }
 }
 const drawnAfterHostile = getRenderables(replica).length;
-const recoveryResult = applyWorldState(replica, worldState(sim));
+const recoveryResult = applyWorldState(replica, JSON.parse(JSON.stringify(worldState(sim))) as WorldStateUpdate);
 const recoveryDifference = compareViews(replica, sim);
 const recoveredAfterHostile = recoveryResult === 'applied' && recoveryDifference === null;
 
