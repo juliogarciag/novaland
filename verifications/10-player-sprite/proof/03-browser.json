@@ -1,0 +1,796 @@
+{
+  "steps": [
+    {
+      "step": "initial",
+      "tick": 13,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -640,
+        "scrollY": -368,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -320,
+          "y": -128,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "x": -13.5,
+      "y": -0.5,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": 1
+      },
+      "spriteCount": 1,
+      "circleCount": 0,
+      "sprite": {
+        "x": -216,
+        "y": -8,
+        "depth": -1.5999999999999996,
+        "texture": "player",
+        "frame": 0,
+        "animation": null,
+        "playing": false,
+        "scaleX": 1,
+        "scaleY": 1,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 16,
+        "displayHeight": 24
+      },
+      "terrainDepth": -9007199254740991,
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
+      }
+    },
+    {
+      "step": "walk-right",
+      "seenFrames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "after": {
+        "tick": 67,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -368,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -128,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -10.083385467529297,
+        "y": -0.5,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -161.33416748046875,
+          "y": -8,
+          "depth": -1.5999999999999996,
+          "texture": "player",
+          "frame": 12,
+          "animation": "player/walk/right",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      },
+      "later": {
+        "tick": 100,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -368,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -128,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -10.083385467529297,
+        "y": -0.5,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -161.33416748046875,
+          "y": -8,
+          "depth": -1.5999999999999996,
+          "texture": "player",
+          "frame": 12,
+          "animation": "player/walk/right",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      }
+    },
+    {
+      "step": "walk-down",
+      "seenFrames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "after": {
+        "tick": 154,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -309.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -69.33333333333331,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -10.083385467529297,
+        "y": 3.166663646697998,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": 1
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -161.33416748046875,
+          "y": 50.66661834716797,
+          "depth": 57.06661834716797,
+          "texture": "player",
+          "frame": 0,
+          "animation": "player/walk/down",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      },
+      "later": {
+        "tick": 184,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -309.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -69.33333333333331,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -10.083385467529297,
+        "y": 3.166663646697998,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": 1
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -161.33416748046875,
+          "y": 50.66661834716797,
+          "depth": 57.06661834716797,
+          "texture": "player",
+          "frame": 0,
+          "animation": "player/walk/down",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      }
+    },
+    {
+      "step": "walk-left",
+      "seenFrames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "after": {
+        "tick": 237,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -309.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -69.33333333333331,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -13.749996185302734,
+        "y": 3.166663646697998,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": -1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -219.99993896484375,
+          "y": 50.66661834716797,
+          "depth": 57.06661834716797,
+          "texture": "player",
+          "frame": 8,
+          "animation": "player/walk/left",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      },
+      "later": {
+        "tick": 267,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -309.3333333333333,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -69.33333333333331,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -13.749996185302734,
+        "y": 3.166663646697998,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": -1,
+          "y": 0
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -219.99993896484375,
+          "y": 50.66661834716797,
+          "depth": 57.06661834716797,
+          "texture": "player",
+          "frame": 8,
+          "animation": "player/walk/left",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      }
+    },
+    {
+      "step": "walk-up",
+      "seenFrames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "after": {
+        "tick": 320,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -368,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -128,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -13.749996185302734,
+        "y": -0.5000001192092896,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": -1
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -219.99993896484375,
+          "y": -8.000001907348633,
+          "depth": -1.6000019073486325,
+          "texture": "player",
+          "frame": 4,
+          "animation": "player/walk/up",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      },
+      "later": {
+        "tick": 350,
+        "camera": {
+          "zoom": 3,
+          "scrollX": -640,
+          "scrollY": -368,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": -320,
+            "y": -240,
+            "width": 640,
+            "height": 480
+          },
+          "worldView": {
+            "x": -320,
+            "y": -128,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "x": -13.749996185302734,
+        "y": -0.5000001192092896,
+        "intent": {
+          "x": 0,
+          "y": 0
+        },
+        "facing": {
+          "x": 0,
+          "y": -1
+        },
+        "spriteCount": 1,
+        "circleCount": 0,
+        "sprite": {
+          "x": -219.99993896484375,
+          "y": -8.000001907348633,
+          "depth": -1.6000019073486325,
+          "texture": "player",
+          "frame": 4,
+          "animation": "player/walk/up",
+          "playing": false,
+          "scaleX": 1,
+          "scaleY": 1,
+          "originX": 0.5,
+          "originY": 0.75,
+          "displayWidth": 16,
+          "displayHeight": 24
+        },
+        "terrainDepth": -9007199254740991,
+        "hud": {
+          "active": true,
+          "drawnAfterWorld": true
+        }
+      }
+    },
+    {
+      "step": "in-front",
+      "tick": 566,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -561.3333333333334,
+        "scrollY": -401.66666666666663,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -241.33333333333337,
+          "y": -161.66666666666663,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "x": -5.083395004272461,
+      "y": -2.6001341342926025,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": -1
+      },
+      "spriteCount": 1,
+      "circleCount": 0,
+      "sprite": {
+        "x": -81.33432006835938,
+        "y": -41.60214614868164,
+        "depth": -35.20214614868164,
+        "texture": "player",
+        "frame": 4,
+        "animation": "player/walk/up",
+        "playing": false,
+        "scaleX": 1,
+        "scaleY": 1,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 16,
+        "displayHeight": 24
+      },
+      "terrainDepth": -9007199254740991,
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
+      },
+      "blockBottomEdgeDepth": -48,
+      "spriteTop": -59.60214614868164,
+      "clip": {
+        "x": 364,
+        "y": 149,
+        "width": 240,
+        "height": 288
+      }
+    },
+    {
+      "step": "behind",
+      "tick": 809,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -558.6666666666666,
+        "scrollY": -446.33333333333337,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -238.66666666666663,
+          "y": -206.33333333333337,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "x": -4.916727066040039,
+      "y": -5.399866104125977,
+      "intent": {
+        "x": 0,
+        "y": 0
+      },
+      "facing": {
+        "x": 0,
+        "y": 1
+      },
+      "spriteCount": 1,
+      "circleCount": 0,
+      "sprite": {
+        "x": -78.66763305664062,
+        "y": -86.39785766601562,
+        "depth": -79.99785766601562,
+        "texture": "player",
+        "frame": 0,
+        "animation": "player/walk/down",
+        "playing": false,
+        "scaleX": 1,
+        "scaleY": 1,
+        "originX": 0.5,
+        "originY": 0.75,
+        "displayWidth": 16,
+        "displayHeight": 24
+      },
+      "terrainDepth": -9007199254740991,
+      "hud": {
+        "active": true,
+        "drawnAfterWorld": true
+      }
+    }
+  ],
+  "content": {
+    "grid": {
+      "columns": 40,
+      "rows": 30,
+      "tileSize": 1
+    },
+    "tiles": [
+      {
+        "id": 200,
+        "name": "grass",
+        "shape": "box",
+        "color": 6069834,
+        "solid": false
+      },
+      {
+        "id": 201,
+        "name": "dirt",
+        "shape": "box",
+        "color": 11570523,
+        "solid": false
+      },
+      {
+        "id": 202,
+        "name": "tree",
+        "shape": "box",
+        "color": 3107642,
+        "solid": true
+      },
+      {
+        "id": 203,
+        "name": "rock",
+        "shape": "box",
+        "color": 9080729,
+        "solid": true
+      }
+    ],
+    "spawn": {
+      "x": -13.5,
+      "y": -0.5
+    },
+    "radius": 0.4,
+    "speed": 5,
+    "sprite": {
+      "key": "player",
+      "frameWidth": 16,
+      "frameHeight": 24,
+      "pixelsPerMetre": 16,
+      "origin": {
+        "x": 0.5,
+        "y": 0.75
+      },
+      "frameRate": 8,
+      "directions": {
+        "down": {
+          "idle": 0,
+          "walk": {
+            "start": 0,
+            "end": 3
+          }
+        },
+        "up": {
+          "idle": 4,
+          "walk": {
+            "start": 4,
+            "end": 7
+          }
+        },
+        "left": {
+          "idle": 8,
+          "walk": {
+            "start": 8,
+            "end": 11
+          }
+        },
+        "right": {
+          "idle": 12,
+          "walk": {
+            "start": 12,
+            "end": 15
+          }
+        }
+      }
+    },
+    "pixelsPerMetre": 16,
+    "block": {
+      "column": 14,
+      "row": 10,
+      "x": -5,
+      "y": -4,
+      "width": 2,
+      "height": 2
+    },
+    "scale": 1
+  },
+  "loaded": {
+    "texture": true,
+    "frames": 17,
+    "scaleMode": 1,
+    "pixelArt": true,
+    "animations": [
+      "player/walk/down",
+      "player/walk/up",
+      "player/walk/left",
+      "player/walk/right"
+    ]
+  },
+  "errors": []
+}

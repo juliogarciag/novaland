@@ -54,7 +54,7 @@ export default defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['*.js', '*.ts', 'packages/server/**/*.ts', 'packages/client/vite.config.ts', 'verifications/**/*.{js,mjs,ts}'],
+    files: ['*.js', '*.ts', 'packages/server/**/*.ts', 'packages/client/vite.config.ts', 'packages/client/tools/**/*.mjs', 'verifications/**/*.{js,mjs,ts}'],
     languageOptions: { globals: globals.node },
   },
   {

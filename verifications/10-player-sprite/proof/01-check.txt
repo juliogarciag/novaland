@@ -1,0 +1,13 @@
+PASS  pnpm install exits 0  (exit 0)
+PASS  pnpm test exits 0  (exit 0)
+PASS  pnpm typecheck exits 0  (exit 0)
+PASS  pnpm lint exits 0  (exit 0)
+PASS  all tests passed, none skipped  (76/76)
+PASS  Facing: spawns facing down
+PASS  Facing: follows the move intent and persists after a stop
+PASS  Facing: unit length, malformed input ignored, in the snapshot, reset on id reuse  (7 facing tests)
+PASS  client pose picking tests passed
+PASS  determinism test still passes with the new component
+PASS  existing movement and snapshot tests still pass
+
+ALL 11 CHECKS PASSED

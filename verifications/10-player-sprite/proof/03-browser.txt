@@ -1,0 +1,47 @@
+PASS  dev server up
+PASS  the player def carries a sprite with four directions
+PASS  the level has a free-standing 2x2 block of solid tiles to stand around  ({"column":14,"row":10,"x":-5,"y":-4,"width":2,"height":2})
+PASS  the sheet is served as a PNG  (200 image/png)
+PASS  the sheet holds 4x4 frames of the def's frame size  (64x96)
+PASS  Phaser loaded the sheet as a texture with 16 frames  (16 frames)
+PASS  the four walk animations are registered  (player/walk/down, player/walk/up, player/walk/left, player/walk/right)
+PASS  the sheet is drawn with nearest-neighbour filtering (pixel art stays crisp)  (scaleMode 1, pixelArt true)
+PASS  the player is drawn as one sprite from the sheet, not a circle  (1 sprite(s), 0 circle(s), texture player)
+PASS  the terrain tilemap is drawn below the sprite  (terrain depth -9007199254740991, sprite depth -1.5999999999999996)
+PASS  the sprite is scaled by 16/16 with the def's origin  (16x24 px)
+PASS  a freshly spawned player stands still on the idle-down frame  (frame 0)
+PASS  the player spawned at the centre of the spawn tile  ((-13.5, -0.5))
+PASS  right: the player/walk/right animation plays while the key is held  (17 moving samples)
+PASS  right: the frame changes while walking, within that direction's row  (frames 12,13,14,15)
+PASS  right: releasing the key leaves the idle frame of that direction  (frame 12)
+PASS  right: the sim facing is the unit vector of the last move  ({"x":1,"y":0})
+PASS  right: the facing frame persists half a second after the release  (frame 12)
+PASS  down: the player/walk/down animation plays while the key is held  (21 moving samples)
+PASS  down: the frame changes while walking, within that direction's row  (frames 0,1,2,3)
+PASS  down: releasing the key leaves the idle frame of that direction  (frame 0)
+PASS  down: the sim facing is the unit vector of the last move  ({"x":0,"y":1})
+PASS  down: the facing frame persists half a second after the release  (frame 0)
+PASS  left: the player/walk/left animation plays while the key is held  (21 moving samples)
+PASS  left: the frame changes while walking, within that direction's row  (frames 8,9,10,11)
+PASS  left: releasing the key leaves the idle frame of that direction  (frame 8)
+PASS  left: the sim facing is the unit vector of the last move  ({"x":-1,"y":0})
+PASS  left: the facing frame persists half a second after the release  (frame 8)
+PASS  up: the player/walk/up animation plays while the key is held  (21 moving samples)
+PASS  up: the frame changes while walking, within that direction's row  (frames 4,5,6,7)
+PASS  up: releasing the key leaves the idle frame of that direction  (frame 4)
+PASS  up: the sim facing is the unit vector of the last move  ({"x":0,"y":-1})
+PASS  up: the facing frame persists half a second after the release  (frame 4)
+PASS  the player stopped against the south face of the block  (y=-2.600, face at -2.60)
+PASS  its sprite overlaps the block and its depth is greater than the block's bottom edge, so it draws in front  (sprite top -59.6, depth -35.2 > block -48.0)
+PASS  the player stopped against the north face of the block  (y=-5.400, face at -5.40)
+PASS  there its depth is below the block's bottom edge (it would sort behind a y-sorted object there), facing down  (sprite depth -80.0 < block -48.0)
+PASS  the sprite sits where the sim says (16 px/m) in 244 samples
+PASS  the sprite depth is its bottom edge in pixels in every sample
+PASS  the HUD is its own scene, drawn after the world, so no depth can cover it
+PASS  the camera zoom is a whole number (3x), so every sprite pixel is 3 screen pixels  (zoom 3)
+PASS  the camera keeps the sprite in the middle of the screen (or against a pinned edge) through 244 samples
+PASS  the sprite was dead centre on both axes in some samples  (152 samples)
+PASS  the camera scrolled on both axes to follow the walk
+PASS  no page or console errors
+
+ALL 45 CHECKS PASSED

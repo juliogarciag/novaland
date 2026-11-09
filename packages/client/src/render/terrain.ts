@@ -8,8 +8,12 @@ export const PLACEHOLDER_TILE_PIXELS = 16;
 const TILESET_TEXTURE_KEY = 'terrain-placeholder-tiles';
 const TILESET_NAME = 'terrain';
 
-/** Draws below every entity. */
-const TERRAIN_DEPTH = -1;
+/**
+ * Draws below every entity. Entities are depth-sorted by their bottom edge in
+ * pixels (render/entities.ts), which is negative north of the level centre, so
+ * the ground has to sit below any pixel coordinate, not just below zero.
+ */
+const TERRAIN_DEPTH = Number.MIN_SAFE_INTEGER;
 
 /**
  * Draws a level as a Phaser tilemap from the same level data the sim builds

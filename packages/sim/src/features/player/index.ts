@@ -7,14 +7,21 @@ import type { Feature } from '../../core/feature';
 import { attachDynamicBall, Body } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents } from '../../core/transform';
-import { MoveIntent, Player } from './components';
-import { PlayerDefId } from './defs';
+import { Facing, MoveIntent, Player } from './components';
+import { MIN_MOVE_INTENT, PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
+
+/** Players spawn looking down the screen (y points down). */
+const SPAWN_FACING = { x: 0, y: 1 } as const;
 
 /**
  * Player-controlled bodies. A `player/join` spawns one at the level spawn
  * point, `player/move` sets its intended direction and every tick the intent
- * becomes a velocity. Terrain stops it through physics, not through code here.
+ * becomes a velocity. A non-zero intent also turns the player to face that
+ * way (the clamped intent, so an oversized command faces its clamped
+ * direction), and the facing outlives the movement so a stopped player keeps
+ * looking where it last walked. Terrain stops it through physics, not through
+ * code here.
  *
  * Handlers are the validation boundary: commands will arrive from the
  * network one day, so anything malformed is ignored, never thrown on.
@@ -41,6 +48,12 @@ export const playerFeature: Feature = {
         const { x, y } = clampToUnit(command.x, command.y);
         intent.x[eid] = x;
         intent.y[eid] = y;
+        if (x !== 0 || y !== 0) {
+          const facing = sim.store(Facing);
+          const length = Math.hypot(x, y);
+          facing.x[eid] = x / length;
+          facing.y[eid] = y / length;
+        }
         return;
       }
     }
@@ -66,15 +79,19 @@ function spawnPlayer(sim: Sim, slot: number): number {
   const eid = sim.createEntity();
   const player = sim.store(Player);
   const intent = sim.store(MoveIntent);
+  const facing = sim.store(Facing);
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);
   addComponent(sim.world, eid, player);
   addComponent(sim.world, eid, intent);
+  addComponent(sim.world, eid, facing);
   addComponent(sim.world, eid, defRef);
   addComponent(sim.world, eid, extents);
   player.slot[eid] = slot;
   intent.x[eid] = 0;
   intent.y[eid] = 0;
+  facing.x[eid] = SPAWN_FACING.x;
+  facing.y[eid] = SPAWN_FACING.y;
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
@@ -87,12 +104,18 @@ function isValidSlot(slot: unknown): slot is number {
   return typeof slot === 'number' && Number.isInteger(slot) && slot >= 0 && slot < MAX_PLAYER_SLOTS;
 }
 
-/** Rejects non-finite input, clamps each component to [-1, 1], then scales anything longer than 1 down to unit length. */
+/**
+ * Rejects non-finite input, clamps each component to [-1, 1], then scales
+ * anything longer than 1 down to unit length. Anything shorter than
+ * MIN_MOVE_INTENT is a stop, so the facing is only ever derived from a
+ * vector long enough to normalise exactly.
+ */
 function clampToUnit(x: unknown, y: unknown): { x: number; y: number } {
   if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return { x: 0, y: 0 };
   const clampedX = Math.min(1, Math.max(-1, x));
   const clampedY = Math.min(1, Math.max(-1, y));
   const length = Math.hypot(clampedX, clampedY);
+  if (length < MIN_MOVE_INTENT) return { x: 0, y: 0 };
   if (length <= 1) return { x: clampedX, y: clampedY };
   return { x: clampedX / length, y: clampedY / length };
 }

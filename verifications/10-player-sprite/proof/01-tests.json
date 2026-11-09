@@ -1,0 +1,1136 @@
+{
+  "numTotalTestSuites": 29,
+  "numPassedTestSuites": 29,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 76,
+  "numPassedTests": 76,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1794194271134,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run drives the sim without a browser and is reproducible",
+          "status": "passed",
+          "title": "drives the sim without a browser and is reproducible",
+          "duration": 210.44512500000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run the stop command really stops the player",
+          "status": "passed",
+          "title": "the stop command really stops the player",
+          "duration": 102.82949999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "server headless run"
+          ],
+          "fullName": "server headless run runs exactly the requested number of ticks",
+          "status": "passed",
+          "title": "runs exactly the requested number of ticks",
+          "duration": 5.529166999999916,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271371,
+      "endTime": 1794194271692.529,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/server/src/headless.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys is zero with nothing pressed",
+          "status": "passed",
+          "title": "is zero with nothing pressed",
+          "duration": 1.432457999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys maps single keys to unit axes, y pointing down",
+          "status": "passed",
+          "title": "maps single keys to unit axes, y pointing down",
+          "duration": 0.5385830000000027,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys cancels opposite keys",
+          "status": "passed",
+          "title": "cancels opposite keys",
+          "duration": 0.14262500000000955,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys reports diagonals raw; the sim normalises them",
+          "status": "passed",
+          "title": "reports diagonals raw; the sim normalises them",
+          "duration": 0.20633300000000077,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromKeys"
+          ],
+          "fullName": "directionFromKeys compares directions by value",
+          "status": "passed",
+          "title": "compares directions by value",
+          "duration": 0.44895800000000463,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271278,
+      "endTime": 1794194271281.449,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/input/direction.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput registers WASD and the arrow keys with the scene",
+          "status": "passed",
+          "title": "registers WASD and the arrow keys with the scene",
+          "duration": 1.3330839999999995,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits nothing while no key is held",
+          "status": "passed",
+          "title": "emits nothing while no key is held",
+          "duration": 1.2374169999999935,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+          "status": "passed",
+          "title": "emits one player/move for the given slot when a key goes down",
+          "duration": 0.26037500000001046,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits only on change: holding a key produces no repeats",
+          "status": "passed",
+          "title": "emits only on change: holding a key produces no repeats",
+          "duration": 0.7167089999999803,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+          "status": "passed",
+          "title": "emits a stop (0, 0) when the last key is released",
+          "duration": 0.19087500000000546,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+          "status": "passed",
+          "title": "treats arrows and WASD as the same direction, so switching between them is silent",
+          "duration": 0.1676249999999868,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+          "status": "passed",
+          "title": "reports diagonals and opposite-key cancellation as the direction mapping does",
+          "duration": 0.20658299999999485,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput collapses a press and release between drains into nothing",
+          "status": "passed",
+          "title": "collapses a press and release between drains into nothing",
+          "duration": 0.3287079999999776,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "createKeyboardInput"
+          ],
+          "fullName": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+          "status": "passed",
+          "title": "produces no commands when the scene has no keyboard plugin",
+          "duration": 0.6415420000000154,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271285,
+      "endTime": 1794194271290.6416,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/input/keyboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "status": "passed",
+          "title": "runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "duration": 1.0360000000000014,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks carries the remainder across frames so no time is lost",
+          "status": "passed",
+          "title": "carries the remainder across frames so no time is lost",
+          "duration": 0.31629099999999255,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs several ticks for a long frame",
+          "status": "passed",
+          "title": "runs several ticks for a long frame",
+          "duration": 0.09020900000000154,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+          "status": "passed",
+          "title": "clamps huge frames (tab switch) instead of spiralling",
+          "duration": 0.19679200000000208,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks ignores negative deltas",
+          "status": "passed",
+          "title": "ignores negative deltas",
+          "duration": 0.35250000000000625,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271278,
+      "endTime": 1794194271279.3525,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/loop/takeWholeTicks.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "snapViewToDevicePixels"
+          ],
+          "fullName": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
+          "status": "passed",
+          "title": "puts the top-left corner of the view on a whole device pixel",
+          "duration": 1.8837090000000103,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapViewToDevicePixels"
+          ],
+          "fullName": "snapViewToDevicePixels moves the scroll by less than one device pixel",
+          "status": "passed",
+          "title": "moves the scroll by less than one device pixel",
+          "duration": 0.5289579999999887,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapViewToDevicePixels"
+          ],
+          "fullName": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
+          "status": "passed",
+          "title": "leaves a scroll alone that is already on the grid",
+          "duration": 0.23333400000001348,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapViewToDevicePixels"
+          ],
+          "fullName": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
+          "status": "passed",
+          "title": "keeps the clamped edges of a level on the grid, so the map edge never drifts",
+          "duration": 0.33945799999997917,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271429,
+      "endTime": 1794194271431.529,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/render/camera.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "poseFromHeading"
+          ],
+          "fullName": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
+          "status": "passed",
+          "title": "walks in the direction of a non-zero move intent, whatever the facing says",
+          "duration": 1.2319580000000059,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "poseFromHeading"
+          ],
+          "fullName": "poseFromHeading stands facing the last direction when the move intent is zero",
+          "status": "passed",
+          "title": "stands facing the last direction when the move intent is zero",
+          "duration": 0.2692909999999955,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "directionFromVector"
+          ],
+          "fullName": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
+          "status": "passed",
+          "title": "picks the dominant axis, horizontal on ties, down for a zero vector",
+          "duration": 0.2929579999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271278,
+      "endTime": 1794194271279.293,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/render/pose.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "wholeZoomFor"
+          ],
+          "fullName": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
+          "status": "passed",
+          "title": "is the largest whole zoom that still shows the minimum metres",
+          "duration": 0.9741250000000008,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "wholeZoomFor"
+          ],
+          "fullName": "wholeZoomFor is always a whole number that shows at least the minimum metres",
+          "status": "passed",
+          "title": "is always a whole number that shows at least the minimum metres",
+          "duration": 7.279332999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "wholeZoomFor"
+          ],
+          "fullName": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
+          "status": "passed",
+          "title": "never goes below 1, even for a window too narrow for the minimum metres",
+          "duration": 0.13366700000000264,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "wholeZoomFor"
+          ],
+          "fullName": "wholeZoomFor is 1 for a width that makes no sense",
+          "status": "passed",
+          "title": "is 1 for a width that makes no sense",
+          "duration": 0.2030419999999964,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271278,
+      "endTime": 1794194271286.2793,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/render/zoom.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "entity definitions"
+          ],
+          "fullName": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+          "status": "passed",
+          "title": "have unique, stable ids inside their feature block and resolve by id",
+          "duration": 3.508666000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "entity definitions"
+          ],
+          "fullName": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+          "status": "passed",
+          "title": "a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+          "duration": 1.7915000000000134,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "entity definitions"
+          ],
+          "fullName": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+          "status": "passed",
+          "title": "terrain colliders come from level data, so a new obstacle is only a character in a row",
+          "duration": 161.61425,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271462,
+      "endTime": 1794194271629.6143,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/content/defs.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism same seed + same commands = identical state, including physics bytes",
+          "status": "passed",
+          "title": "same seed + same commands = identical state, including physics bytes",
+          "duration": 360.56408300000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism two live sims never share component data",
+          "status": "passed",
+          "title": "two live sims never share component data",
+          "duration": 42.68104200000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism different commands diverge",
+          "status": "passed",
+          "title": "different commands diverge",
+          "duration": 55.597332999999935,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "determinism"
+          ],
+          "fullName": "determinism different seeds diverge in the rng state",
+          "status": "passed",
+          "title": "different seeds diverge in the rng state",
+          "duration": 10.639999999999986,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271360,
+      "endTime": 1794194271829.64,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/core/determinism.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot is plain JSON that survives a round trip",
+          "status": "passed",
+          "title": "is plain JSON that survives a round trip",
+          "duration": 249.590333,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot records every component field of every entity plus level, capacity, tick and rng",
+          "status": "passed",
+          "title": "records every component field of every entity plus level, capacity, tick and rng",
+          "duration": 25.676582999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot hashes the same regardless of the order components were attached in",
+          "status": "passed",
+          "title": "hashes the same regardless of the order components were attached in",
+          "duration": 2.530208000000016,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot has a stable hash (known answer)",
+          "status": "passed",
+          "title": "has a stable hash (known answer)",
+          "duration": 1.8729580000000396,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "snapshot"
+          ],
+          "fullName": "snapshot encodes base64 like the standard",
+          "status": "passed",
+          "title": "encodes base64 like the standard",
+          "duration": 0.833041000000037,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271451,
+      "endTime": 1794194271733.833,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/core/snapshot.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) spawns facing down with no move intent",
+          "status": "passed",
+          "title": "spawns facing down with no move intent",
+          "duration": 250.759625,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) turns to face a non-zero move intent and keeps facing it after a stop",
+          "status": "passed",
+          "title": "turns to face a non-zero move intent and keeps facing it after a stop",
+          "duration": 42.079499999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) stores the facing as a unit vector even when the intent is shorter or longer than one",
+          "status": "passed",
+          "title": "stores the facing as a unit vector even when the intent is shorter or longer than one",
+          "duration": 2.9209999999999923,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) treats a malformed or negligible move as a stop and leaves the facing alone",
+          "status": "passed",
+          "title": "treats a malformed or negligible move as a stop and leaves the facing alone",
+          "duration": 3.3857079999999655,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) is part of the snapshot, so it survives serialization and feeds the state hash",
+          "status": "passed",
+          "title": "is part of the snapshot, so it survives serialization and feeds the state hash",
+          "duration": 11.766124999999988,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) resets to facing down when a recycled entity id is reused by a new join",
+          "status": "passed",
+          "title": "resets to facing down when a recycled entity id is reused by a new join",
+          "duration": 3.3616670000000113,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player facing (headless)"
+          ],
+          "fullName": "player facing (headless) has no heading for entities that do not move and face, or do not exist",
+          "status": "passed",
+          "title": "has no heading for entities that do not move and face, or do not exist",
+          "duration": 2.3012919999999895,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271455,
+      "endTime": 1794194271772.3013,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/features/player/facing.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) spawns a player at the level spawn point on join",
+          "status": "passed",
+          "title": "spawns a player at the level spawn point on join",
+          "duration": 91.08920900000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) moves at the def speed for N ticks in open space",
+          "status": "passed",
+          "title": "moves at the def speed for N ticks in open space",
+          "duration": 89.57270799999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) keeps moving with the last intent and stops on a zero move",
+          "status": "passed",
+          "title": "keeps moving with the last intent and stops on a zero move",
+          "duration": 23.823958000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
+          "status": "passed",
+          "title": "normalises diagonal and oversized move vectors to the def speed",
+          "duration": 14.277791999999977,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) treats absurdly large components as full input, not as a stop",
+          "status": "passed",
+          "title": "treats absurdly large components as full input, not as a stop",
+          "duration": 4.68425000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
+          "status": "passed",
+          "title": "is stopped by the forest border (Rapier collision), then slides along it",
+          "duration": 125.56062499999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
+          "status": "passed",
+          "title": "ignores commands for empty or invalid slots and duplicate joins",
+          "duration": 14.203833000000031,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
+          "status": "passed",
+          "title": "drops malformed command values instead of throwing (the network will send garbage)",
+          "duration": 1.8118330000000924,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
+          "status": "passed",
+          "title": "removes the player and its body on leave, and a re-join starts fresh at spawn",
+          "duration": 50.060708999999974,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "player movement (headless)"
+          ],
+          "fullName": "player movement (headless) ignores a join when the sim is full instead of throwing",
+          "status": "passed",
+          "title": "ignores a join when the sim is full instead of throwing",
+          "duration": 10.991084,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271365,
+      "endTime": 1794194271791.991,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/features/player/movement.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+          "status": "passed",
+          "title": "reads ASCII rows through the legend into tile def ids, centred on the origin",
+          "duration": 2.8561670000000277,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+          "status": "passed",
+          "title": "rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+          "duration": 1.5413750000000164,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids a bad level fails when the sim is created, never inside a command handler",
+          "status": "passed",
+          "title": "a bad level fails when the sim is created, never inside a command handler",
+          "duration": 240.18341700000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids reads a level object once and hands back the same grid",
+          "status": "passed",
+          "title": "reads a level object once and hands back the same grid",
+          "duration": 10.594415999999967,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+          "status": "passed",
+          "title": "merges horizontal runs so a whole row of trees is one rectangle",
+          "duration": 0.3644170000000031,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+          "status": "passed",
+          "title": "stacks identical runs vertically and keeps different ones apart",
+          "duration": 0.3469169999999622,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+          "status": "passed",
+          "title": "treats rocks and trees alike (solid) and leaves grass and dirt out",
+          "duration": 0.18395900000001575,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging covers every solid tile exactly once",
+          "status": "passed",
+          "title": "covers every solid tile exactly once",
+          "duration": 11.47520800000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+          "status": "passed",
+          "title": "spawns one static collider per merged rectangle and none of them is drawn",
+          "duration": 9.781875000000014,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) places each collider box over its tiles in metres",
+          "status": "passed",
+          "title": "places each collider box over its tiles in metres",
+          "duration": 12.908165999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+          "status": "passed",
+          "title": "the starter level spawns the player on a dirt path inside the forest",
+          "duration": 4.163833000000011,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) a player walks freely along a path and over grass",
+          "status": "passed",
+          "title": "a player walks freely along a path and over grass",
+          "duration": 18.34408400000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+          "status": "passed",
+          "title": "trees block the player: walking into the forest border stops at the first tree face",
+          "duration": 69.10416600000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+          "status": "passed",
+          "title": "a rock blocks the player too, and nothing escapes the level",
+          "duration": 42.225625000000036,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794194271454,
+      "endTime": 1794194271881.2256,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/features/terrain/terrain.test.ts"
+    }
+  ]
+}

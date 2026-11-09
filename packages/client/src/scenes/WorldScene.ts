@@ -4,6 +4,7 @@ import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { LevelCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
+import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
 import { drawTerrain } from '../render/terrain';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
@@ -29,7 +30,12 @@ export class WorldScene extends Phaser.Scene {
     super('world');
   }
 
+  preload(): void {
+    loadSpriteSheets(this);
+  }
+
   create(): void {
+    createSpriteAnimations(this);
     this.levelCamera = new LevelCamera(this.cameras.main, this.sim.level);
     this.levelCamera.fitZoomTo(this.scale.width);
     this.scale.on(Phaser.Scale.Events.RESIZE, (gameSize: Phaser.Structs.Size) => this.levelCamera.fitZoomTo(gameSize.width));
