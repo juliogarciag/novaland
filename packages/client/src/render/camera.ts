@@ -1,4 +1,4 @@
-import type { LevelData } from '@novaland/sim';
+import { readTileGrid, type LevelData } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { PIXELS_PER_METRE, toPixels } from './units';
 import { wholeZoomFor } from './zoom';
@@ -35,7 +35,8 @@ export class LevelCamera {
     private readonly camera: Phaser.Cameras.Scene2D.Camera,
     level: LevelData,
   ) {
-    camera.setBounds(toPixels(-level.width / 2), toPixels(-level.height / 2), toPixels(level.width), toPixels(level.height));
+    const { width, height } = readTileGrid(level);
+    camera.setBounds(toPixels(-width / 2), toPixels(-height / 2), toPixels(width), toPixels(height));
   }
 
   /** Picks the zoom for a canvas this many device pixels wide. Call again whenever the canvas changes size. */

@@ -5,6 +5,7 @@ import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { LevelCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
 import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
+import { drawTerrain } from '../render/terrain';
 
 /** Seat of the local player. Multiplayer will assign this from the server. */
 const LOCAL_SLOT = 0;
@@ -38,6 +39,7 @@ export class WorldScene extends Phaser.Scene {
     this.levelCamera = new LevelCamera(this.cameras.main, this.sim.level);
     this.levelCamera.fitZoomTo(this.scale.width);
     this.scale.on(Phaser.Scale.Events.RESIZE, (gameSize: Phaser.Structs.Size) => this.levelCamera.fitZoomTo(gameSize.width));
+    drawTerrain(this, this.sim.level);
     this.entityRenderer = new EntityRenderer(this);
     this.keyboard = createKeyboardInput(this, LOCAL_SLOT);
     this.pendingCommands.push({ type: 'player/join', slot: LOCAL_SLOT });

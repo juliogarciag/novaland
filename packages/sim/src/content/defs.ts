@@ -9,15 +9,16 @@
  * Each feature owns its defs in `features/<feature>/defs.ts` and a block of
  * ids, so parallel work never collides on this file:
  *
- *   player  1-99
- *   walls   100-199
+ *   player   1-99
+ *   walls    100-199  (retired in #9: walls became terrain tiles; the ids stay reserved)
+ *   terrain  200-299
  *   (next feature: claim the next block of 100 here)
  *
  * Ids are stable forever: they end up in save files. Never reuse or renumber.
  * See docs/decisions/0001-ecs.md.
  */
 import { PlayerDefId, playerDefs } from '../features/player/defs';
-import { WallDefId, wallDefs } from '../features/walls/defs';
+import { TerrainDefId, terrainDefs } from '../features/terrain/defs';
 import type { SpriteDef } from './sprites';
 
 export type DefShape = 'circle' | 'box';
@@ -37,9 +38,9 @@ export interface EntityDef {
   readonly sprite?: SpriteDef;
 }
 
-export const DefId = { ...PlayerDefId, ...WallDefId } as const;
+export const DefId = { ...PlayerDefId, ...TerrainDefId } as const;
 
-export const entityDefs: readonly EntityDef[] = [...playerDefs, ...wallDefs];
+export const entityDefs: readonly EntityDef[] = [...playerDefs, ...terrainDefs];
 
 const byId: ReadonlyMap<number, EntityDef> = new Map(entityDefs.map((def) => [def.id, def]));
 

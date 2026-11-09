@@ -1,0 +1,33 @@
+PASS  dev server up
+PASS  a Phaser tilemap layer is on the scene
+PASS  the tilemap has one cell per level tile  (40x30)
+PASS  every cell shows the tile of its def (grid and tilemap agree cell for cell)
+PASS  placeholder tiles are 16x16, one per terrain def, in a generated strip
+PASS  the layer is scaled to one tile = TILE_SIZE metres and centred on the origin  (scale 1, at (-320, -240))
+PASS  the terrain draws below the player
+PASS  tile kinds: grass, dirt, tree, rock  (grass, dirt, tree, rock)
+PASS  every edge tile is a tree (the forest border)
+PASS  grass inside, dirt paths and a few rocks  (grass 628, dirt 216, rock 11, tree 345)
+PASS  Phaser canvas is on the page
+PASS  the player spawned on the level spawn tile  ({"column":6,"row":14})
+PASS  the spawn tile is a dirt path
+PASS  the drawn tile under the player is that dirt tile
+PASS  only merged terrain colliders and the player exist (no entity per tile)  (45 entities for 356 solid tiles)
+PASS  ArrowRight moves the player east at the def speed, unblocked on the path  (1.58m over 19 ticks, expected 1.58m; 8.58m in all)
+PASS  the player moves only on the x axis
+PASS  it is still on the dirt path  ({"column":15,"row":14})
+PASS  the drawn tile under it is dirt
+PASS  a tree tile stops the player at its face (Rapier collision, derived from the grid)  (y=-2.602, face at -3.00, stop at -2.60)
+PASS  it walked north before being blocked
+PASS  the player stays put while still pushing into it (sampled with the key still held)  (341 -> 359 ticks, y -2.602 -> -2.602)
+PASS  the blocker is a tree
+PASS  the rendered player matches the sim position (16 px/m) in 3 samples  ({"x":-78.66763305664062,"y":-41.60518264770508})
+PASS  the camera is bounded by the tile grid, so it never shows past the forest border  ({"x":-320,"y":-240,"width":640,"height":480})
+PASS  the camera zoom is a whole number, so the 16 px tiles stay crisp  (zoom 3)
+PASS  the level is bigger than the screen, so the camera has to travel  (40x30 m level, 20x15 m visible)
+PASS  the camera keeps the player on screen after the walk  (player at (-78.66763305664062, -41.60518264770508), view {"x":-238.66666666666663,"y":-161.66666666666663,"width":320,"height":240})
+PASS  at the spawn the view is clamped against an edge of the level, so the forest border is on screen (screenshot 1)  ({"x":-320,"y":-128,"width":320,"height":240})
+PASS  the camera travelled with the player during the walk  (view moved from (-320, -128) to (-238.66666666666663, -161.66666666666663))
+PASS  no page or console errors
+
+ALL 31 CHECKS PASSED

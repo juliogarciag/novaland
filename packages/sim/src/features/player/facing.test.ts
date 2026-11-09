@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DefId } from '../../content/defs';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
-import { getRenderables } from '../../core/view';
 import { findPlayerEntity, getHeading } from './queries';
 
 describe('player facing (headless)', () => {
@@ -78,9 +76,9 @@ describe('player facing (headless)', () => {
   it('has no heading for entities that do not move and face, or do not exist', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
-    const wall = getRenderables(sim).find((renderable) => renderable.defId === DefId.Wall);
-    expect(wall).toBeDefined();
-    expect(getHeading(sim, wall!.eid)).toBeUndefined();
+    const terrainCollider = sim.snapshot().entities.find((entity) => entity.components['TerrainCollider'] !== undefined);
+    expect(terrainCollider).toBeDefined();
+    expect(getHeading(sim, terrainCollider!.id)).toBeUndefined();
     expect(getHeading(sim, 0)).toBeUndefined();
     expect(getHeading(sim, -1)).toBeUndefined();
     expect(getHeading(sim, 1.5)).toBeUndefined();

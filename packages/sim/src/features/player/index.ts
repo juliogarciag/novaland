@@ -1,5 +1,6 @@
 import { addComponent, query } from 'bitecs';
 import { getDef } from '../../content/defs';
+import { spawnPoint } from '../../content/levels/grid';
 import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
@@ -19,7 +20,7 @@ const SPAWN_FACING = { x: 0, y: 1 } as const;
  * becomes a velocity. A non-zero intent also turns the player to face that
  * way (the clamped intent, so an oversized command faces its clamped
  * direction), and the facing outlives the movement so a stopped player keeps
- * looking where it last walked. Walls stop it through physics, not through
+ * looking where it last walked. Terrain stops it through physics, not through
  * code here.
  *
  * Handlers are the validation boundary: commands will arrive from the
@@ -94,7 +95,8 @@ function spawnPlayer(sim: Sim, slot: number): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  attachDynamicBall(sim, eid, { x: sim.level.spawn.x, y: sim.level.spawn.y, radius });
+  const spawn = spawnPoint(sim.level);
+  attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
 }
 
