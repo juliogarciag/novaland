@@ -1,4 +1,4 @@
-import { findPlayerEntity, type Command, type SimHandle } from '@novaland/sim';
+import { type Command, type SimHandle, findPlayerEntity } from '@novaland/sim';
 import Phaser from 'phaser';
 import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
@@ -6,9 +6,7 @@ import { LevelCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
 import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
 import { drawTerrain } from '../render/terrain';
-
-/** Seat of the local player. Multiplayer will assign this from the server. */
-const LOCAL_SLOT = 0;
+import { firstEmptySeat, LOCAL_SLOT } from '../seats';
 
 /** Never simulate more than this much real time per frame (tab switches, hitches). */
 const MAX_FRAME_SECONDS = 0.25;
@@ -42,7 +40,9 @@ export class WorldScene extends Phaser.Scene {
     drawTerrain(this, this.sim.level);
     this.entityRenderer = new EntityRenderer(this);
     this.keyboard = createKeyboardInput(this, LOCAL_SLOT);
-    this.pendingCommands.push({ type: 'player/join', slot: LOCAL_SLOT });
+    this.enqueueCommand({ type: 'player/join', slot: LOCAL_SLOT });
+    // Dev builds seat extra players with J so one browser can see several avatars; the server will do this for real.
+    if (import.meta.env.DEV) this.input.keyboard?.on('keydown-J', () => this.joinAnotherSeat());
     this.entityRenderer.sync(this.sim);
     this.followLocalPlayer();
   }
@@ -62,6 +62,17 @@ export class WorldScene extends Phaser.Scene {
     }
     this.entityRenderer.sync(this.sim);
     this.followLocalPlayer();
+  }
+
+  /** Queues a command for the next earned tick, the same way keyboard input reaches the sim. */
+  enqueueCommand(command: Command): void {
+    this.pendingCommands.push(command);
+  }
+
+  /** Queues a join for the lowest empty seat; nothing happens when every seat is taken. */
+  joinAnotherSeat(): void {
+    const slot = firstEmptySeat(this.sim, this.pendingCommands);
+    if (slot !== undefined) this.enqueueCommand({ type: 'player/join', slot });
   }
 
   private followLocalPlayer(): void {

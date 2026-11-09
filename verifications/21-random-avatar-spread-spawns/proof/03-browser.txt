@@ -1,0 +1,29 @@
+PASS  dev server up
+PASS  the defs declare at least 8 player avatars, each with its own sprite key and the same speed and radius  (8 avatars)
+PASS  every avatar sheet is served as a PNG  (player-sky:200 player-rose:200 player-moss:200 player-sun:200 player-plum:200 player-ember:200 player-teal:200 player-slate:200)
+PASS  Phaser loaded every sheet as a 16-frame texture with four walk animations
+PASS  the local player joined seat 0 wearing one of the avatar defs, chosen by the sim (the join carries no avatar)  (player-ember)
+PASS  the first arrival stands on the spawn tile
+PASS  it is drawn as one sprite from its avatar's sheet, no flat circle  (player-ember)
+PASS  the HUD names the local avatar and counts one player  (WASD / arrows to move   tick 13 | you: player-ember   players: 1 | J: seat another player (dev))
+PASS  five players are seated in slots 0-4  (0,1,2,3,4)
+PASS  they wear five different avatars  (player-ember, player-sun, player-slate, player-plum, player-rose)
+PASS  they stand on five different tiles  ((6,14) (7,15) (6,13) (5,15) (6,15))
+PASS  every tile is walkable and touches the spawn tile (ring 0 or 1)  (ring 0, ring 1, ring 1, ring 1, ring 1)
+PASS  they are spread on both axes, not queued in a line
+PASS  each stands at the centre of its tile, so no two bodies overlap
+PASS  each is drawn as a sprite from its own avatar's sheet  (player-slate, player-ember, player-sun, player-plum, player-rose)
+PASS  the HUD counts five players  (WASD / arrows to move   tick 21 | you: player-ember   players: 5 | J: seat another player (dev))
+PASS  a neighbour stands straight ahead on open ground (needed for the walk-through)  (player-slate to the up)
+PASS  the local player walked straight through the neighbour and is now well past it  (1.58 m past its centre (bodies are 0.8 m across))
+PASS  the neighbour was not pushed at all
+PASS  it never slowed down or bounced while crossing (every sample moved forward)  (13 steps)
+PASS  it stayed on its line (no sideways deflection)
+PASS  terrain still blocks: the walker stopped against the first tree face ahead  (-11.600 vs face -11.600)
+PASS  the other players never moved
+PASS  pressing J seats a sixth player in slot 5 with a valid avatar on a walkable tile  (player-moss at (6,14))
+PASS  all six are drawn, each from the sheet of its own avatar
+PASS  the camera zoom is a whole number, so every sprite pixel is crisp  (zoom 3)
+PASS  no page or console errors
+
+ALL 27 CHECKS PASSED

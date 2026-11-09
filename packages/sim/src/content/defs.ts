@@ -9,7 +9,7 @@
  * Each feature owns its defs in `features/<feature>/defs.ts` and a block of
  * ids, so parallel work never collides on this file:
  *
- *   player   1-99
+ *   player   1-99     (one id per avatar; features/player/defs.ts)
  *   walls    100-199  (retired in #9: walls became terrain tiles; the ids stay reserved)
  *   terrain  200-299
  *   (next feature: claim the next block of 100 here)

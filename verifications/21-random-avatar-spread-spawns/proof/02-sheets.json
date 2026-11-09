@@ -1,0 +1,809 @@
+{
+  "avatarKeys": [
+    "player-sky",
+    "player-rose",
+    "player-moss",
+    "player-sun",
+    "player-plum",
+    "player-ember",
+    "player-teal",
+    "player-slate"
+  ],
+  "paletteKeys": [
+    "player-sky",
+    "player-rose",
+    "player-moss",
+    "player-sun",
+    "player-plum",
+    "player-ember",
+    "player-teal",
+    "player-slate"
+  ],
+  "layout": {
+    "frameWidth": 16,
+    "frameHeight": 24,
+    "pixelsPerMetre": 16,
+    "directions": {
+      "down": {
+        "idle": 0,
+        "walk": {
+          "start": 0,
+          "end": 3
+        }
+      },
+      "up": {
+        "idle": 4,
+        "walk": {
+          "start": 4,
+          "end": 7
+        }
+      },
+      "left": {
+        "idle": 8,
+        "walk": {
+          "start": 8,
+          "end": 11
+        }
+      },
+      "right": {
+        "idle": 12,
+        "walk": {
+          "start": 12,
+          "end": 15
+        }
+      }
+    }
+  },
+  "sheets": {
+    "player-sky": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "1eed2881"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "e5ce7ea9"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "55339b51"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "efaa9d9d"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "026e0f95"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "65fc2349"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "2bf187a5"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "1a4b2ef5"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "66a60421"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "e4aa44d5"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "14843763"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "75b58935"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "ce7f4e39"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "df0833f5"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "7ec1fabb"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "e72af0d5"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1f1a17",
+        "#1f2937",
+        "#2a5fc0",
+        "#374151",
+        "#3b82f6",
+        "#6b3e1e",
+        "#f1c27d"
+      ]
+    },
+    "player-rose": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "d52a3bf9"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "45e1ef06"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "ab23b1f5"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "5ed6a44e"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "77e4d42d"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "0b5db7c2"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "a2a1b329"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "09d1be0a"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "fa65a67a"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "93a2ff7e"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "a4823105"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "293a5956"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "34c4c7d2"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "034f4ef6"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "64409d8d"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "5da1cdde"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1e293b",
+        "#1f1a17",
+        "#1f2937",
+        "#8d5524",
+        "#be123c",
+        "#e11d48"
+      ]
+    },
+    "player-moss": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "56adbf91"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "849cb028"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "3fbe2691"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "f73886e4"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "85eddad5"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "ce546230"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "3f764065"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "4c5909b4"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "8b3ead05"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "4e78b461"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "cdf6e08a"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "bc095445"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "035c9045"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "a40529d5"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "e619754a"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "5fbf2571"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#15803d",
+        "#16a34a",
+        "#1f1a17",
+        "#1f2937",
+        "#57534e",
+        "#d97706",
+        "#ffdbac"
+      ]
+    },
+    "player-sun": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "81af50d5"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "3dc89381"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "527935e5"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "b0a39289"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "bef502dd"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "008473d1"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "6a0ef04d"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "e37c90e9"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "e8b508f7"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "75318dff"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "70cb3a9d"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "0678cadf"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "2e3d4eeb"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "d9b6c9b3"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "b7bfe289"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "9c7c40d3"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1f1a17",
+        "#1f2937",
+        "#374151",
+        "#c68642",
+        "#d97706",
+        "#f59e0b"
+      ]
+    },
+    "player-plum": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "c7bb352d"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "f36e08f1"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "29a24515"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "f4f8c9d9"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "0bfed245"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "c70a00a1"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "84923f0d"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "76d1fb19"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "e121cf69"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "0c9fb8a5"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "72103dfc"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "fa6ceea1"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "4509a865"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "f0aae715"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "d5fe7f08"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "e7596039"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1f1a17",
+        "#1f2937",
+        "#2f2f3f",
+        "#6d28d9",
+        "#7c3aed",
+        "#f1c27d",
+        "#f3e5ab"
+      ]
+    },
+    "player-ember": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "982f3c3d"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "cef56300"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "233c6f2d"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "06003e84"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "4bbea9cd"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "028ec344"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "228b6a7d"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "df6e7a10"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "e488c05d"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "2dae3615"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "41e2cd37"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "3e2a1cfd"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "39b99d69"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "8d773971"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "35df5ee3"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "dedc36c9"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1f1a17",
+        "#1f2937",
+        "#3b2f2f",
+        "#44403c",
+        "#c2410c",
+        "#e0ac69",
+        "#ea580c"
+      ]
+    },
+    "player-teal": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "effbe525"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "0fa92866"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "2271cbc5"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "42ca8172"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "04dc2c9d"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "defabd9a"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "7078c27d"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "e100072e"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "25dd5288"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "cdfa1224"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "bb0550b9"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "f791828c"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "7c709a04"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "895a2cd0"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "c98bd5b5"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "50460f88"
+        }
+      ],
+      "idleDownColours": [
+        "#0d9488",
+        "#0f766e",
+        "#14121a",
+        "#1f1a17",
+        "#1f2937",
+        "#4b3a2f",
+        "#6b7280",
+        "#ffdbac"
+      ]
+    },
+    "player-slate": {
+      "frames": [
+        {
+          "index": 0,
+          "opaque": 186,
+          "hash": "c2648ea1"
+        },
+        {
+          "index": 1,
+          "opaque": 181,
+          "hash": "bcf24396"
+        },
+        {
+          "index": 2,
+          "opaque": 194,
+          "hash": "4230befd"
+        },
+        {
+          "index": 3,
+          "opaque": 181,
+          "hash": "8ca0d32e"
+        },
+        {
+          "index": 4,
+          "opaque": 186,
+          "hash": "95875f65"
+        },
+        {
+          "index": 5,
+          "opaque": 181,
+          "hash": "e100ab12"
+        },
+        {
+          "index": 6,
+          "opaque": 194,
+          "hash": "b02ae981"
+        },
+        {
+          "index": 7,
+          "opaque": 181,
+          "hash": "68e8cf12"
+        },
+        {
+          "index": 8,
+          "opaque": 162,
+          "hash": "e998b530"
+        },
+        {
+          "index": 9,
+          "opaque": 174,
+          "hash": "c88224a8"
+        },
+        {
+          "index": 10,
+          "opaque": 168,
+          "hash": "30c152a7"
+        },
+        {
+          "index": 11,
+          "opaque": 162,
+          "hash": "dd6e1500"
+        },
+        {
+          "index": 12,
+          "opaque": 162,
+          "hash": "5428754c"
+        },
+        {
+          "index": 13,
+          "opaque": 162,
+          "hash": "faddc93c"
+        },
+        {
+          "index": 14,
+          "opaque": 168,
+          "hash": "f25afb33"
+        },
+        {
+          "index": 15,
+          "opaque": 174,
+          "hash": "ee305324"
+        }
+      ],
+      "idleDownColours": [
+        "#14121a",
+        "#1e293b",
+        "#1f1a17",
+        "#1f2937",
+        "#334155",
+        "#475569",
+        "#8d5524",
+        "#b45309"
+      ]
+    }
+  }
+}

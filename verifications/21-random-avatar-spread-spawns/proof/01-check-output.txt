@@ -1,0 +1,69 @@
+
+$ pnpm install --frozen-lockfile
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 509ms using pnpm v10.9.0
+(node:3696) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+(exit 0)
+
+$ pnpm exec vitest run --reporter=default --reporter=json --outputFile.json=<repo>/verifications/21-random-avatar-spread-spawns/proof/01-tests.json
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/input/direction.test.ts (5 tests) 4ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 4ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 4ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 17ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 3ms
+ ✓ |client| src/seats.test.ts (3 tests) 86ms
+ ✓ |server| src/headless.test.ts (3 tests) 212ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 214ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 240ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 340ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 378ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 387ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 345ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 421ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 161ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 55ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 125ms
+
+ Test Files  17 passed (17)
+      Tests  96 passed (96)
+   Start at  15:25:01
+   Duration  816ms (tests 66%, import 16%, transform 15%, worker 2%)
+
+JSON report written to <repo>/verifications/21-random-avatar-spread-spawns/proof/01-tests.json
+
+(exit 0)
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:3747) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+(exit 0)
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+(exit 0)

@@ -1,5 +1,6 @@
-import type { SimHandle } from '@novaland/sim';
+import { findPlayerEntity, getDef, getRenderables, isAvatarDefId, type SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
+import { LOCAL_SLOT } from '../seats';
 
 /** CSS pixels, so the text reads the same on every screen. */
 const HUD_MARGIN = 12;
@@ -25,7 +26,9 @@ export class HudScene extends Phaser.Scene {
   }
 
   override update(): void {
-    this.text.setText(`WASD / arrows to move   tick ${this.sim.tick}`);
+    const lines = [`WASD / arrows to move   tick ${this.sim.tick}`, `you: ${localAvatarName(this.sim) ?? 'joining...'}   players: ${playerCount(this.sim)}`];
+    if (import.meta.env.DEV) lines.push('J: seat another player (dev)');
+    this.text.setText(lines);
   }
 
   /** The canvas is zoomed by 1 / pixelRatio (render/viewport.ts), so device pixels per CSS pixel is the inverse. */
@@ -34,4 +37,15 @@ export class HudScene extends Phaser.Scene {
     this.text.setFontSize(Math.round(HUD_FONT_SIZE * pixelRatio));
     this.text.setPosition(HUD_MARGIN * pixelRatio, HUD_MARGIN * pixelRatio);
   }
+}
+
+/** Name of the avatar the local player wears, or undefined before the join lands. */
+function localAvatarName(sim: SimHandle): string | undefined {
+  const eid = findPlayerEntity(sim, LOCAL_SLOT);
+  const renderable = eid === undefined ? undefined : getRenderables(sim).find((candidate) => candidate.eid === eid);
+  return renderable ? getDef(renderable.defId).name : undefined;
+}
+
+function playerCount(sim: SimHandle): number {
+  return getRenderables(sim).filter((renderable) => isAvatarDefId(renderable.defId)).length;
 }

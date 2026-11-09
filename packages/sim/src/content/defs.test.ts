@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { __testing__ } from '../core/create';
 import { getRenderables } from '../core/view';
+import { avatarDefIds, isAvatarDefId } from '../features/player/defs';
 import { getTileDef, terrainDefs } from '../features/terrain/defs';
 import { DefId, entityDefs, getDef } from './defs';
 import { starterLevel } from './levels/starter';
@@ -9,8 +10,14 @@ describe('entity definitions', () => {
   it('have unique, stable ids inside their feature block and resolve by id', () => {
     const ids = entityDefs.map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(getDef(DefId.Player).name).toBe('player');
-    expect(DefId.Player).toBeLessThan(100);
+    expect(getDef(DefId.Sky).name).toBe('player-sky');
+    for (const avatarDefId of avatarDefIds) {
+      expect(avatarDefId).toBeGreaterThanOrEqual(1);
+      expect(avatarDefId).toBeLessThan(100);
+      expect(isAvatarDefId(avatarDefId)).toBe(true);
+    }
+    expect(avatarDefIds.length).toBeGreaterThanOrEqual(8);
+    expect(isAvatarDefId(DefId.Tree)).toBe(false);
     expect(DefId.Tree).toBeGreaterThanOrEqual(200);
     expect(DefId.Tree).toBeLessThan(300);
     expect(getTileDef(DefId.Tree).solid).toBe(true);
