@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@dimforge/rapier2d-deterministic-compat": "catalog:",
-    "bitecs": "catalog:"
+    "bitecs": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",

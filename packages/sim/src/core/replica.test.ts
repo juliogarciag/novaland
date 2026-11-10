@@ -259,43 +259,105 @@ describe('applyWorldState with data from the network', () => {
     sim.destroy();
   });
 
-  it('drops bad entries, unknown components, unknown fields and non-numbers but applies the rest', async () => {
+  it('refuses a whole delta when one entry is malformed, and leaves the replica untouched', async () => {
     const { replica, sim } = await replicaInSync();
     const player = findPlayerEntity(sim, 0) as number;
     const tick = replica.tick;
-    const result = applyWorldState(replica, {
-      kind: 'delta',
-      fromTick: tick,
-      tick: tick + 1,
-      changed: [
-        null,
-        'x',
-        { id: 0, components: { Position: { x: 1, y: 1 } } },
-        { id: -3, components: { Position: { x: 1, y: 1 } } },
-        { id: 1.5, components: { Position: { x: 1, y: 1 } } },
-        { id: replica.capacity + 1, components: { Position: { x: 1, y: 1 } } },
-        { id: 2 ** 40, components: { Position: { x: 1, y: 1 } } },
-        { id: player, components: 'nope' },
-        { id: player, components: { Nonsense: { x: 1 }, __proto__: { polluted: 1 }, constructor: { x: 1 } } },
-        { id: player, components: { Position: [1, 2], Facing: null } },
-        { id: player, components: { Position: { x: 'far', y: null, z: 9 }, MoveIntent: { x: Infinity, y: NaN } } },
-        { id: player, components: { Position: { x: 2.5 } }, removedComponents: 'Facing' },
-        { id: player, components: {}, removedComponents: [3, null, 'Nonsense', 'MoveIntent'] },
-      ],
-      removed: ['x', 0, 1.5, replica.capacity + 99, { id: player }],
-    } as unknown as WorldStateUpdate);
-    expect(result).toBe('applied');
+    const before = worldState(replica);
+    const good = { id: player, components: { Position: { x: 2.5, y: 2.5 } } };
+    const badEntries: unknown[] = [
+      null,
+      'x',
+      { id: 0, components: {} },
+      { id: -3, components: {} },
+      { id: 1.5, components: {} },
+      { id: 2 ** 53, components: {} },
+      { id: player },
+      { id: player, components: 'nope' },
+      { id: player, components: { Position: [1, 2] } },
+      { id: player, components: { Facing: null } },
+      { id: player, components: { Position: { x: 'far', y: 1 } } },
+      { id: player, components: { MoveIntent: { x: Infinity, y: 0 } } },
+      { id: player, components: { MoveIntent: { x: NaN, y: 0 } } },
+      { id: player, components: {}, removedComponents: 'Facing' },
+      { id: player, components: {}, removedComponents: [3, 'Facing'] },
+    ];
+    for (const bad of badEntries) {
+      const delta = { kind: 'delta', fromTick: tick, tick: tick + 1, changed: [good, bad], removed: [] };
+      expect(applyWorldState(replica, delta as unknown as WorldStateUpdate), JSON.stringify(bad)).toBe('malformed');
+    }
+    for (const bad of ['x', 0, -1, 1.5, null, { id: player }]) {
+      const delta = { kind: 'delta', fromTick: tick, tick: tick + 1, changed: [good], removed: [bad] };
+      expect(applyWorldState(replica, delta as unknown as WorldStateUpdate), JSON.stringify(bad)).toBe('malformed');
+    }
+    expect(replica.tick).toBe(tick);
+    expect(worldState(replica)).toEqual(before);
+    expectSameView(replica, sim);
+    sim.destroy();
+  });
+
+  it('skips what depends on the world: ids beyond its capacity, unknown components and unknown fields', async () => {
+    const { replica, sim } = await replicaInSync();
+    const player = findPlayerEntity(sim, 0) as number;
+    const tick = replica.tick;
+    // Parsed from JSON, so `__proto__` is an own key as it would be off the wire.
+    const delta: unknown = JSON.parse(
+      JSON.stringify({
+        kind: 'delta',
+        fromTick: tick,
+        tick: tick + 1,
+        changed: [
+          { id: replica.capacity + 1, components: { Position: { x: 1, y: 1 } } },
+          { id: 2 ** 40, components: { Position: { x: 1, y: 1 } } },
+          { id: player, components: { Nonsense: { x: 1 }, constructor: { x: 1 }, Position: { x: 2.5, z: 9 } } },
+          { id: player, components: {}, removedComponents: ['Nonsense', 'MoveIntent'] },
+        ],
+        removed: [replica.capacity + 99],
+      }).replace('"Nonsense":{"x":1}', '"Nonsense":{"x":1},"__proto__":{"polluted":1}'),
+    );
+    expect(JSON.stringify(delta)).toContain('__proto__');
+    expect(applyWorldState(replica, delta as WorldStateUpdate)).toBe('applied');
     expect(replica.tick).toBe(tick + 1);
     const simView = getRenderables(sim).find((renderable) => renderable.eid === player);
     const replicaView = getRenderables(replica).find((renderable) => renderable.eid === player);
     expect(replicaView).toEqual({ ...simView, x: 2.5 });
-    // 'MoveIntent' was in removedComponents (next to junk), 'Facing' was given as a string and so was not removed.
     const components = worldState(replica).entities.find((entity) => entity.id === player)?.components ?? {};
     expect(components['MoveIntent']).toBeUndefined();
     expect(components['Facing']).toBeDefined();
+    expect(components['Nonsense']).toBeUndefined();
     expect(getHeading(replica, player)).toBeUndefined();
     expect(findPlayerEntity(replica, 0)).toBe(player);
+    expect(worldState(replica).entities.length).toBe(worldState(sim).entities.length);
     expect(({} as Record<string, unknown>)['polluted']).toBeUndefined();
+    expect(Object.getPrototypeOf(components)).toBe(Object.prototype);
+    expect(Object.values(components).every((fields) => Object.getPrototypeOf(fields) === Object.prototype && !('polluted' in fields))).toBe(true);
+    expect('polluted' in components).toBe(false);
+    sim.destroy();
+  });
+
+  it('drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had', async () => {
+    const { replica, sim } = await replicaInSync();
+    const player = findPlayerEntity(sim, 0) as number;
+    const tick = replica.tick;
+    const positionBefore = worldState(replica).entities.find((entity) => entity.id === player)?.components['Position'];
+    const wire = JSON.stringify({ kind: 'delta', fromTick: tick, tick: tick + 1, changed: [{ id: player, components: { Position: { x: Number.NaN, y: 2.5 } } }], removed: [] });
+    expect(wire).toContain('"x":null');
+    expect(applyWorldState(replica, JSON.parse(wire) as WorldStateUpdate)).toBe('applied');
+    const positionAfter = worldState(replica).entities.find((entity) => entity.id === player)?.components['Position'];
+    expect(positionAfter).toEqual({ x: positionBefore?.['x'], y: 2.5 });
+    sim.destroy();
+  });
+
+  it('refuses lists longer than MAX_CAPACITY before touching the replica', async () => {
+    const { replica, sim } = await replicaInSync();
+    const before = worldState(replica);
+    const tooMany = MAX_CAPACITY + 1;
+    const entities = Array.from({ length: tooMany }, (_, index) => ({ id: index + 1, components: {} }));
+    expect(applyWorldState(replica, { kind: 'full', tick: 1, entities })).toBe('malformed');
+    const delta = { kind: 'delta', fromTick: replica.tick, tick: replica.tick + 1 } as const;
+    expect(applyWorldState(replica, { ...delta, changed: entities, removed: [] })).toBe('malformed');
+    expect(applyWorldState(replica, { ...delta, changed: [], removed: entities.map((entity) => entity.id) })).toBe('malformed');
+    expect(worldState(replica)).toEqual(before);
     sim.destroy();
   });
 
@@ -335,14 +397,16 @@ describe('applyWorldState with data from the network', () => {
     sim.destroy();
   });
 
-  it('a full state from the network with bad entries keeps the good ones and drops everything else', async () => {
+  it('refuses a full state with a malformed entry whole, and drops only an entity whose id is beyond the capacity', async () => {
     const { replica, sim } = await replicaInSync();
+    const before = worldState(replica);
     const good = worldState(sim).entities.slice(0, 3);
-    const result = applyWorldState(replica, {
-      kind: 'full',
-      tick: 7,
-      entities: [...good, { id: 'a', components: {} }, { id: 5, components: 4 }, 12, { id: replica.capacity + 1, components: {} }],
-    } as unknown as WorldState);
+    for (const bad of [{ id: 'a', components: {} }, { id: 5, components: 4 }, 12]) {
+      const state = { kind: 'full', tick: 7, entities: [...good, bad] };
+      expect(applyWorldState(replica, state as unknown as WorldState), JSON.stringify(bad)).toBe('malformed');
+    }
+    expect(worldState(replica)).toEqual(before);
+    const result = applyWorldState(replica, { kind: 'full', tick: 7, entities: [...good, { id: replica.capacity + 1, components: {} }] });
     expect(result).toBe('applied');
     expect(replica.tick).toBe(7);
     expect(worldState(replica).entities).toEqual(good);
