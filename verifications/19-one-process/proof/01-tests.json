@@ -95,6 +95,91 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames clamps alpha to [0, 1]",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames takes the newer frame's headings",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is 1 for a width that makes no sense",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/online/OnlineWorld.test.ts",
     "name": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
     "status": "passed"
@@ -280,91 +365,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames clamps alpha to [0, 1]",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames takes the newer frame's headings",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is 1 for a width that makes no sense",
-    "status": "passed"
-  },
-  {
     "file": "packages/server/src/headless.test.ts",
     "name": "server headless run drives the sim without a browser and is reproducible",
     "status": "passed"
@@ -406,6 +406,16 @@
   },
   {
     "file": "packages/server/src/http/oneProcess.test.ts",
+    "name": "one process: the client files, /healthz and the origin check in front of the world room closes the file when the browser gives up mid-download: no descriptor is left open",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/http/oneProcess.test.ts",
+    "name": "one process: the client files, /healthz and the origin check in front of the world room opens no file for a browser that left before the lookup finished, and does not crash on it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/http/oneProcess.test.ts",
     "name": "one process: the client files, /healthz and the origin check in front of the world room answers /healthz with the room in it",
     "status": "passed"
   },
@@ -425,13 +435,18 @@
     "status": "passed"
   },
   {
+    "file": "packages/server/src/http/oneProcess.test.ts",
+    "name": "serveClientFiles with a client directory whose own path contains \"assets\" still caches only the files under the build's assets/ folder for a year",
+    "status": "passed"
+  },
+  {
     "file": "packages/server/src/http/origins.test.ts",
     "name": "isOriginAllowed lets a request without an Origin through: it did not come from a browser",
     "status": "passed"
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "isOriginAllowed allows the origin the page was served from, whatever the scheme (a proxy may terminate TLS)",
+    "name": "isOriginAllowed allows the origin the page was served from, whatever the scheme (a proxy may terminate TLS) and whether the default port is spelled out",
     "status": "passed"
   },
   {
@@ -446,12 +461,17 @@
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "isOriginAllowed lets a loopback page reach a loopback server with nothing configured (dev: Vite on one port, the room on another)",
+    "name": "isOriginAllowed lets a loopback page reach a loopback server with nothing configured (dev: Vite on one port, the room on another), in any loopback spelling",
     "status": "passed"
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "isOriginAllowed does not let a loopback page reach a deployed server, nor a remote page reach a loopback server",
+    "name": "isOriginAllowed does not let a loopback page reach a deployed server, nor a remote page reach a loopback server, nor a name that merely starts with 127.",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/http/origins.test.ts",
+    "name": "isOriginAllowed turns the loopback rule off in production: a proxy may present a loopback Host, and a localhost page is then a stranger",
     "status": "passed"
   },
   {
@@ -461,17 +481,17 @@
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "readAllowedOrigins is same-origin only when unset or empty",
+    "name": "readOriginPolicy is same-origin only when unset or empty",
     "status": "passed"
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "readAllowedOrigins normalises the listed origins",
+    "name": "readOriginPolicy normalises the listed origins: case, a trailing slash, a spelled-out default port",
     "status": "passed"
   },
   {
     "file": "packages/server/src/http/origins.test.ts",
-    "name": "readAllowedOrigins refuses entries that are not bare origins, so a typo stops the boot",
+    "name": "readOriginPolicy refuses entries that are not bare http(s) origins, so a typo stops the boot instead of refusing every player",
     "status": "passed"
   },
   {
@@ -900,76 +920,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads a level object once and hands back the same grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging covers every solid tile exactly once",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) places each collider box over its tiles in metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely along a path and over grass",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
-    "status": "passed"
-  },
-  {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) spawns facing down with no move intent",
     "status": "passed"
@@ -1052,6 +1002,76 @@
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads a level object once and hands back the same grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile exactly once",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each collider box over its tiles in metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
     "status": "passed"
   }
 ]

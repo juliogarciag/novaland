@@ -8,14 +8,15 @@
     "tickRate": 60,
     "sendRate": 20,
     "clientDirectory": "<repo>/packages/client/dist",
-    "allowedOrigins": []
+    "allowedOrigins": [],
+    "loopbackOrigins": true
   },
   "health": {
     "ok": true,
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 2
+    "tick": 3
   },
   "indexHeaders": {
     "cache-control": "no-cache",
@@ -23,8 +24,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Mon, 09 Nov 2026 23:35:02 GMT",
-    "etag": "W/\"383-1a1c2aa4883\"",
+    "date": "Tue, 10 Nov 2026 00:07:25 GMT",
+    "etag": "W/\"383-1a1c2c7ee44\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -61,7 +62,7 @@
         "slot": 1,
         "eid": 46,
         "x": -13.5,
-        "y": -0.206,
+        "y": -0.18,
         "intentX": 0,
         "intentY": 0
       }
@@ -84,7 +85,7 @@
         "status": 200
       },
       {
-        "url": "blob:/f9c4122e-c5b3-4059-a27f-85d274542549",
+        "url": "blob:/65c57471-793b-4566-a98c-45459a4aeece",
         "status": 200
       }
     ],

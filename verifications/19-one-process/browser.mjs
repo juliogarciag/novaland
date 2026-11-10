@@ -121,12 +121,12 @@ export function mean(values) {
   return values.length === 0 ? 0 : values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-/** The status of a WebSocket upgrade to `port` on 127.0.0.1 carrying `origin` (none when undefined): 101 when accepted, else what refused it. */
+/** The status of a WebSocket upgrade to `port` carrying `origin` (none when undefined), with the `Host` a browser at `http://localhost:<port>` would send: 101 when accepted, else what refused it. */
 export function upgradeStatus(port, origin) {
   return import('node:http').then(
     ({ default: http }) =>
       new Promise((resolve, reject) => {
-        const headers = { connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==' };
+        const headers = { host: `localhost:${port}`, connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==' };
         if (origin !== undefined) headers.origin = origin;
         const request = http.request({ host: '127.0.0.1', port, path: '/world', method: 'GET', headers });
         request.on('upgrade', (response, socket) => {

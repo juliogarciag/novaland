@@ -2,11 +2,12 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (211 of 211)
-PASS  the origin policy: no Origin passes, same origin passes whatever the scheme, foreign hosts/ports/null/junk are refused, the allow-list and * work, loopback to loopback passes but not loopback to a deployed host
-PASS  ALLOWED_ORIGINS is parsed strictly: unset is same-origin only, entries are normalised, anything that is not a bare origin throws
-PASS  one process: index.html with security headers, immutable hashed assets, ETag/HEAD, no escape from the directory, hand-over to Colyseus, /healthz, 403 for foreign matchmaking and upgrades, files and health still open to everyone
+PASS  every test passed, none skipped  (215 of 215)
+PASS  the origin policy: no Origin passes, same origin passes whatever the scheme or default-port spelling, foreign hosts/ports/null/junk are refused, the allow-list and * work, loopback to loopback passes outside production but not loopback to a deployed host nor a name that merely starts with 127.
+PASS  ALLOWED_ORIGINS is parsed strictly: unset is same-origin only, entries are normalised, anything that is not a bare http(s) origin throws
+PASS  one process: index.html with security headers, immutable hashed assets, ETag/HEAD, no escape from the directory, hand-over to Colyseus, no descriptor left open by an aborted or abandoned download, /healthz, 403 for foreign matchmaking and upgrades, files and health still open to everyone
+PASS  a client directory with "assets" in its own path still caches only the files under assets/
 PASS  the client picks the server: VITE_SERVER_URL when set, the page origin in production, solo in dev
 PASS  the sim, replica, world room and client online tests still pass
 
-ALL 10 CHECKS PASSED
+ALL 11 CHECKS PASSED

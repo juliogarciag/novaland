@@ -8,14 +8,15 @@
     "tickRate": 60,
     "sendRate": 20,
     "clientDirectory": "/app/packages/client/dist",
-    "allowedOrigins": []
+    "allowedOrigins": [],
+    "loopbackOrigins": false
   },
   "health": {
     "ok": true,
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 1
+    "tick": 3
   },
   "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+auth @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @pm2+io @standard-schema+spec @types+jsonwebtoken @types+ms @types+node @types+ws accepts asn1.js async bn.js body-parser brorand buffer-equal-constant-time bytes call-bind-apply-helpers call-bound connect-redis content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ecdsa-sig-formatter ee-first elliptic encodeurl es-define-property es-errors es-object-atoms escape-html etag eventemitter2 express express-jwt express-session express-unless finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd grant has-symbols hash.js hasown hmac-drbg http-errors iconv-lite inherits ipaddr.js is-core-module is-promise jsonwebtoken jwa jwk-to-pem jws lock.yaml lodash lodash.includes lodash.isboolean lodash.isinteger lodash.isnumber lodash.isplainobject lodash.isstring lodash.once lru-cache math-intrinsics media-typer merge-descriptors mime-db mime-types minimalistic-assert minimalistic-crypto-utils module-details-from-path ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules oauth-sign object-inspect on-finished on-headers once parseurl path-parse path-to-regexp proxy-addr qs random-bytes range-parser raw-body request-compose request-oauth require-in-the-middle resolve rou3 router safe-buffer safer-buffer semver send serve-static set-cookie-parser setprototypeof shimmer side-channel side-channel-list side-channel-map side-channel-weakmap signal-exit statuses supports-preserve-symlinks-flag toidentifier tslib type-is typescript uid-safe undici-types unpipe uuid vary wrappy ws yallist zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map \n",
   "upgrades": {
@@ -40,7 +41,7 @@
         "slot": 1,
         "eid": 46,
         "x": -13.5,
-        "y": 0.235,
+        "y": 0.292,
         "intentX": 0,
         "intentY": 0
       },
@@ -48,7 +49,7 @@
         "slot": 2,
         "eid": 47,
         "x": -13.5,
-        "y": -0.525,
+        "y": -0.505,
         "intentX": 0,
         "intentY": 0
       }
@@ -66,12 +67,12 @@
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -9.167,
+        "x": -8.917,
         "y": 0.3,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.333
+      "distance": 4.583
     },
     "bWalk": {
       "slot": 2,
@@ -87,22 +88,22 @@
         "slot": 2,
         "eid": 47,
         "x": -13.5,
-        "y": 4,
+        "y": 4.25,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.5
+      "distance": 4.75
     },
     "quietFrames": {
       "count": 20,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 19,
-      "meanBytes": 136.57894736842104
+      "count": 21,
+      "meanBytes": 132.61904761904762
     },
     "aQuietFrames": {
-      "count": 20,
+      "count": 19,
       "meanBytes": 65
     },
     "aFramesDuringBWalk": {
@@ -131,12 +132,12 @@
         "contentType": "image/png"
       },
       {
-        "url": "blob:/72c5cb4d-fb1e-4231-b938-b5aab789b293",
+        "url": "blob:/25e1effd-524c-43a3-887e-772bb429a820",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/a81ad263-ad72-4074-b589-07b97d5e6af8",
+        "url": "blob:/a2219493-4668-40b6-a3e8-1b1aace493f5",
         "status": 200,
         "contentType": "image/png"
       }
@@ -145,5 +146,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.149
+  "stopSeconds": 0.154
 }
