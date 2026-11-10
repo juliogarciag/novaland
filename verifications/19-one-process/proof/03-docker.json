@@ -16,9 +16,9 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 0
+    "tick": 3
   },
-  "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+auth @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @pm2+io @standard-schema+spec @types+jsonwebtoken @types+ms @types+node @types+ws accepts asn1.js async bn.js body-parser brorand buffer-equal-constant-time bytes call-bind-apply-helpers call-bound connect-redis content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ecdsa-sig-formatter ee-first elliptic encodeurl es-define-property es-errors es-object-atoms escape-html etag eventemitter2 express express-jwt express-session express-unless finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd grant has-symbols hash.js hasown hmac-drbg http-errors iconv-lite inherits ipaddr.js is-core-module is-promise jsonwebtoken jwa jwk-to-pem jws lock.yaml lodash lodash.includes lodash.isboolean lodash.isinteger lodash.isnumber lodash.isplainobject lodash.isstring lodash.once lru-cache math-intrinsics media-typer merge-descriptors mime-db mime-types minimalistic-assert minimalistic-crypto-utils module-details-from-path ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules oauth-sign object-inspect on-finished on-headers once parseurl path-parse path-to-regexp proxy-addr qs random-bytes range-parser raw-body request-compose request-oauth require-in-the-middle resolve rou3 router safe-buffer safer-buffer semver send serve-static set-cookie-parser setprototypeof shimmer side-channel side-channel-list side-channel-map side-channel-weakmap signal-exit statuses supports-preserve-symlinks-flag toidentifier tslib type-is typescript uid-safe undici-types unpipe uuid vary wrappy ws yallist zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map \n",
+  "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map \n",
   "sprites": [
     {
       "name": "player-ember.png",
@@ -91,7 +91,7 @@
         "slot": 1,
         "eid": 46,
         "x": -14.5,
-        "y": -1.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
@@ -110,19 +110,19 @@
         "slot": 1,
         "eid": 46,
         "x": -14.5,
-        "y": -1.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -10.167,
-        "y": -1.5,
+        "x": -9.833,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.333
+      "distance": 4.667
     },
     "bWalk": {
       "slot": 2,
@@ -145,12 +145,12 @@
       "distance": 4.417
     },
     "quietFrames": {
-      "count": 20,
+      "count": 19,
       "meanBytes": 65
     },
     "walkingFrames": {
       "count": 20,
-      "meanBytes": 117.4
+      "meanBytes": 117.3
     },
     "aQuietFrames": {
       "count": 20,
@@ -158,7 +158,7 @@
     },
     "aFramesDuringBWalk": {
       "count": 20,
-      "meanBytes": 114.8
+      "meanBytes": 116.5
     },
     "responses": [
       {
@@ -167,7 +167,7 @@
         "contentType": "text/html; charset=utf-8"
       },
       {
-        "url": "/assets/index-D874Jtws.js",
+        "url": "/assets/index-BqjP-Dcp.js",
         "status": 200,
         "contentType": "text/javascript; charset=utf-8"
       },
@@ -177,12 +177,17 @@
         "contentType": "application/json"
       },
       {
-        "url": "/sprites/player-sky.png",
+        "url": "/sprites/player-moss.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-moss.png",
+        "url": "/sprites/player-rose.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-sky.png",
         "status": 200,
         "contentType": "image/png"
       },
@@ -207,92 +212,87 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-rose.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
         "url": "/sprites/player-slate.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/0f976a6b-366f-4aa2-b23d-c497f68c8468",
+        "url": "blob:/68a10b50-d7f9-452d-b621-344f9793aab6",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/b912d4d1-c8e3-4209-806c-f19365385f90",
+        "url": "blob:/816df424-40c0-4954-8fde-57479923c31d",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/66c614c1-1c60-4fd5-a244-0c1bd0e0a512",
+        "url": "blob:/dc51d85e-c67c-4037-9cd2-4e64ab1f4e89",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/27cd8e80-e377-4e5c-a852-e0431e619a20",
+        "url": "blob:/893ebf89-cc2d-44be-b0d1-c11f1af9b3df",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/3699af8c-2579-4232-871f-8acb61bd459d",
+        "url": "blob:/82aa9e79-5b69-4a6d-9931-b51a25fd1eb6",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/f2e8325e-f798-4763-a4d2-48c2d4b86ef9",
+        "url": "blob:/b35ce173-9764-46e4-94ed-9928d6cfdadf",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/2ab0b5e9-4629-4cb6-ab57-2181df4cb5f8",
+        "url": "blob:/d919f7a3-2d26-4fc3-b824-d3df45c5c241",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/fafc0934-29c6-4c69-99f5-01dccf643649",
+        "url": "blob:/43a84224-e1a5-4a6f-a025-e6c2d2d553c0",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/3ac4eda6-5f52-4e2a-af62-79651df8667b",
+        "url": "blob:/8a540e42-41c3-4995-a429-15299d050cce",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/445e62c6-4246-4795-9789-824e15613a2e",
+        "url": "blob:/650c8cef-edf0-4d37-b2bd-0cb61e137b60",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/305c5adb-9f07-44e4-8511-e0b51232bd63",
+        "url": "blob:/fa2c113d-c895-456e-be89-28a515551565",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/c6d5b381-87e1-4235-a4fb-93155cdcd84c",
+        "url": "blob:/717af9b2-d6fd-418b-ac38-542367115852",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/a64f81f7-5574-43dd-8472-f3fbfe283163",
+        "url": "blob:/8f623415-d8fc-4a0b-b48f-abeebffec30f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/2119a3d2-f684-451d-8b2b-538982094cd4",
+        "url": "blob:/85398c57-feb7-46e9-8801-e1de2419e772",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/e946a192-7897-422f-ae32-7581425e5ac2",
+        "url": "blob:/c4e0f639-9328-4c2c-81ad-eff3741a56b9",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/745da007-fc52-4186-834f-c07664503651",
+        "url": "blob:/35b41808-c771-4fc0-81d5-32f40e141dcc",
         "status": 200,
         "contentType": "image/png"
       }
@@ -301,5 +301,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.185
+  "stopSeconds": 0.159
 }

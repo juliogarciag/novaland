@@ -24,8 +24,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Tue, 10 Nov 2026 01:42:42 GMT",
-    "etag": "W/\"383-1a1c31f2982\"",
+    "date": "Tue, 10 Nov 2026 18:14:30 GMT",
+    "etag": "W/\"383-1a1c6ab2d7c\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -33,11 +33,11 @@
   },
   "assets": [
     {
-      "path": "/assets/index-D874Jtws.js",
+      "path": "/assets/index-BqjP-Dcp.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
       "cacheControl": "public, max-age=31536000, immutable",
-      "bytes": 5032646
+      "bytes": 5124121
     }
   ],
   "sprites": [
@@ -123,7 +123,7 @@
         "status": 200
       },
       {
-        "url": "/assets/index-D874Jtws.js",
+        "url": "/assets/index-BqjP-Dcp.js",
         "status": 200
       },
       {
@@ -163,35 +163,35 @@
         "status": 200
       },
       {
-        "url": "blob:/15d0fef3-97bf-4d13-9a4b-ea5ff401b837",
+        "url": "blob:/bf546ecb-6037-4434-884a-554bdddc5461",
         "status": 200
       },
       {
-        "url": "blob:/f918bbd2-0418-440f-83e4-d601f662cbbd",
+        "url": "blob:/7e46854c-ad36-41c7-bff4-d6e3aee123d5",
         "status": 200
       },
       {
-        "url": "blob:/1c278030-20d3-44da-a25f-3109fde9a243",
+        "url": "blob:/cf907108-dddc-4581-bf9a-355d795c7891",
         "status": 200
       },
       {
-        "url": "blob:/afd8c4e9-307d-4da4-bea4-cd485465b792",
+        "url": "blob:/d0315281-e65b-40b1-b5ef-3a4b11c6058e",
         "status": 200
       },
       {
-        "url": "blob:/d6a20b02-b7f7-4250-b39e-56cae4e94565",
+        "url": "blob:/b1e5c6cc-d54c-43b4-889e-bbe4256e0a9a",
         "status": 200
       },
       {
-        "url": "blob:/7ee967e1-3871-4b18-a65e-3efc2c11454f",
+        "url": "blob:/43f69001-d9fe-44d9-8e46-7cc253a03b71",
         "status": 200
       },
       {
-        "url": "blob:/486a694e-b8df-4420-8726-e10c57eb788a",
+        "url": "blob:/92cf1d19-22d9-4066-aa72-38a80d75f882",
         "status": 200
       },
       {
-        "url": "blob:/5639afbb-02de-465f-a76c-da8632e63543",
+        "url": "blob:/ab804ef6-8f57-4921-9c77-3144083f2638",
         "status": 200
       }
     ],

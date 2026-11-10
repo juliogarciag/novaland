@@ -1,17 +1,16 @@
 $ docker build -t novaland:19-verify . (exit 0)
-#19 [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
 #19 CACHED
 
-#20 [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
+#20 [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
 #20 CACHED
 
-#21 [runtime 2/7] WORKDIR /app
+#21 [base 3/7] WORKDIR /app
 #21 CACHED
 
-#22 [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
+#22 [runtime 2/7] WORKDIR /app
 #22 CACHED
 
-#23 [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+#23 [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
 #23 CACHED
 
 #24 [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
@@ -19,19 +18,20 @@ $ docker build -t novaland:19-verify . (exit 0)
 
 #25 exporting to image
 #25 exporting layers done
-#25 exporting manifest sha256:8300cbf5049a43b5f9bdc0a041aaa24d6de0d5c4bb65f743adb74e311e8332be done
-#25 exporting config sha256:a142aa65e880183b93acde5bf3e3888a588a3d02d004e76245b21eb60ec9d97c done
-#25 exporting attestation manifest sha256:6c0e4fa9795b088172b40f5e1c18a7a3cd37b2b212cbf4c7dc134962a101b199 done
-#25 exporting manifest list sha256:3df6a047943f13b27af4380fc0759c66d5dbde8106f7a3c31141811ba2249991 done
+#25 exporting manifest sha256:57b62bca016ec6849ad25e027c292636b950a34accf184762cc334fac4565cbf done
+#25 exporting config sha256:4e1917f5757ba18a3fbb4f700e4ee1759dea890da24dece500e51a980c9a9196 done
+#25 exporting attestation manifest sha256:1d472b6daf4b713c263968418a911a57abe9b4a121088abe0d9efdc6bca468be done
+#25 exporting manifest list sha256:d52c1ec3c2abc0deb429870a2f37d0e06a5ee7c00fb8295331941962d8f51dfa
+#25 exporting manifest list sha256:d52c1ec3c2abc0deb429870a2f37d0e06a5ee7c00fb8295331941962d8f51dfa done
 #25 naming to docker.io/library/novaland:19-verify done
 #25 unpacking to docker.io/library/novaland:19-verify done
 #25 DONE 0.0s
 
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/lmlsnfjg558qhlj3srqcouxpr
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/itz8is395rv73s0r7oz0rskbb
 
 
 $ docker run -d --rm --name novaland-19-verify -e PORT=5419 -p 5419:5419 novaland:19-verify (exit 0)
-489d257eeb076e01c773a503e4003878b47751336390fb3e18af7a6d10abb992
+4b9488080a55015c180c802e6d3a5a00f0b98c5726e4b81f86d0c3dcc318e573
 
 
 $ docker exec novaland-19-verify sh -c ... (exit 0)
@@ -39,9 +39,9 @@ node
 NODE_ENV=production
 v24.22.2
 server deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport 
-store: @better-auth+utils @better-fetch+fetch @colyseus+auth @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @pm2+io @standard-schema+spec @types+jsonwebtoken @types+ms @types+node @types+ws accepts asn1.js async bn.js body-parser brorand buffer-equal-constant-time bytes call-bind-apply-helpers call-bound connect-redis content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ecdsa-sig-formatter ee-first elliptic encodeurl es-define-property es-errors es-object-atoms escape-html etag eventemitter2 express express-jwt express-session express-unless finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd grant has-symbols hash.js hasown hmac-drbg http-errors iconv-lite inherits ipaddr.js is-core-module is-promise jsonwebtoken jwa jwk-to-pem jws lock.yaml lodash lodash.includes lodash.isboolean lodash.isinteger lodash.isnumber lodash.isplainobject lodash.isstring lodash.once lru-cache math-intrinsics media-typer merge-descriptors mime-db mime-types minimalistic-assert minimalistic-crypto-utils module-details-from-path ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules oauth-sign object-inspect on-finished on-headers once parseurl path-parse path-to-regexp proxy-addr qs random-bytes range-parser raw-body request-compose request-oauth require-in-the-middle resolve rou3 router safe-buffer safer-buffer semver send serve-static set-cookie-parser setprototypeof shimmer side-channel side-channel-list side-channel-map side-channel-weakmap signal-exit statuses supports-preserve-symlinks-flag toidentifier tslib type-is typescript uid-safe undici-types unpipe uuid vary wrappy ws yallist zod 
+store: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod 
 files: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map 
 
 
 container logs before stop:
-{"event":"world-room-listening","port":5419,"roomId":"world","seed":1423787690,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[],"loopbackOrigins":false}
+{"event":"world-room-listening","port":5419,"roomId":"world","seed":1619267868,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[],"loopbackOrigins":false}
