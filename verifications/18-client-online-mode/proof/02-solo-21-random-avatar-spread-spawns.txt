@@ -5,7 +5,7 @@ PASS  Phaser loaded every sheet as a 16-frame texture with four walk animations
 PASS  the local player joined seat 0 wearing one of the avatar defs, chosen by the sim (the join carries no avatar)  (player-ember)
 PASS  the first arrival stands on the spawn tile
 PASS  it is drawn as one sprite from its avatar's sheet, no flat circle  (player-ember)
-PASS  the HUD names the local avatar and counts one player  (WASD / arrows to move   tick 13 | you: player-ember   players: 1 | J: seat another player (dev))
+PASS  the HUD names the local avatar and counts one player  (WASD / arrows to move   tick 12 | you: player-ember   players: 1 | J: seat another player (dev))
 PASS  five players are seated in slots 0-4  (0,1,2,3,4)
 PASS  they wear five different avatars  (player-ember, player-sun, player-slate, player-plum, player-rose)
 PASS  they stand on five different tiles  ((6,14) (7,15) (6,13) (5,15) (6,15))
