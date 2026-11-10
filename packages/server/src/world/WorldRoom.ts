@@ -14,7 +14,7 @@ import {
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
 import { MessageBudget, payloadLength, readMoveMessage } from './inbound';
 import { IDLE_KICK } from './kicks';
-import { Seats } from './seats';
+import { RoomSeats } from './roomSeats';
 import { takeWholeTicks } from './takeWholeTicks';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
@@ -99,7 +99,7 @@ export class WorldRoom extends Room {
   /** Not Colyseus's `clock` (a timer scheduler): only where the room reads the time. */
   private time: Clock = { now: () => performance.now() };
   private idleTimeoutMs = IDLE_TIMEOUT_MS;
-  private readonly seats = new Seats(MAX_SEATS);
+  private readonly seats = new RoomSeats(MAX_SEATS);
   private readonly sessions = new Map<string, Session>();
   private pendingCommands: Command[] = [];
   private tickWaiters: Array<(ticked: boolean) => void> = [];

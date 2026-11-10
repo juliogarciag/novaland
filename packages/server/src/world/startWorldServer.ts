@@ -65,17 +65,27 @@ export async function startWorldServer({ port, seed, idleTimeoutMs, clock }: Wor
  * cut short. So the body is read here first, the way Colyseus's own
  * `prereadRequestBodies` does, but capped: a request that declares or streams
  * more than `maxBytes` is answered 413 and its connection closed, and Colyseus
- * never sees it. Everything else reaches Colyseus's handlers with `body`
- * already set, which its router honours. Installed after `listen`, which is
- * when Colyseus binds its routes.
+ * never sees it. Everything else reaches Colyseus's router with `body`
+ * already set, which the router honours.
+ *
+ * Installed after `listen`, which is when Colyseus binds its routes. Colyseus
+ * serves every HTTP route (matchmaking, health check, and Express when that
+ * option is used) from one `request` listener; WebSocket connections arrive
+ * on `upgrade` and never pass through here. That one listener is the only one
+ * wrapped, and the server refuses to boot if it finds any other number: a
+ * second listener would either be wrapped without expecting a pre-read body
+ * or, added later, bypass the cap. New HTTP routes go through Colyseus's
+ * router, never `httpServer.on('request')`.
  */
 function refuseLargeRequestBodies(httpServer: HttpServer, maxBytes: number): void {
-  const colyseusHandlers = httpServer.listeners('request') as Array<(request: IncomingMessage, response: ServerResponse) => void>;
-  httpServer.removeAllListeners('request');
+  const requestListeners = httpServer.listeners('request');
+  if (requestListeners.length !== 1) {
+    throw new Error(`expected Colyseus's router to be the only HTTP request listener, found ${requestListeners.length}`);
+  }
+  const colyseusRouter = requestListeners[0] as (request: IncomingMessage, response: ServerResponse) => void;
+  httpServer.removeListener('request', colyseusRouter);
   httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    const handOver = () => {
-      for (const handler of colyseusHandlers) handler.call(httpServer, request, response);
-    };
+    const handOver = () => colyseusRouter.call(httpServer, request, response);
     const refuse = () => {
       response.writeHead(413, { connection: 'close', 'content-length': '0' });
       response.end();
@@ -113,3 +123,5 @@ function refuseLargeRequestBodies(httpServer: HttpServer, maxBytes: number): voi
     });
   });
 }
+
+export const __testing__ = { refuseLargeRequestBodies };
