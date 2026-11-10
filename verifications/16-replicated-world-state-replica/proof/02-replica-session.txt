@@ -1,0 +1,13 @@
+PASS  the session script exits 0 and prints a report
+PASS  five players joined (one left and came back) over 1200 ticks at 60 Hz  (6 joins, 1 leave, 5 players at the end)
+PASS  the welcome message named a level findLevel resolves and carried a full state the replica applied  (8279 bytes)
+PASS  deltas went out at 20 per second (400 sends)
+PASS  the replica matched the sim at every send: renderables, world state, player entities, headings  (no mismatch)
+PASS  a delta with five moving players is a few hundred bytes; the full state is far bigger  (delta min/mean/max 68/316/609 bytes, full state 9738 bytes for 49 entities)
+PASS  a dropped delta is reported as out-of-sequence and leaves the replica byte-for-byte untouched
+PASS  a full state (world/resync) brings the replica back in step
+PASS  11 hostile messages never threw, and the view queries kept working  (malformed, malformed, malformed, malformed, malformed, malformed, malformed, malformed, malformed, out-of-sequence, malformed)
+PASS  the replica recovered from hostile input with one full state
+PASS  replica.step() throws; its snapshot has no physics and no rng
+
+ALL 11 CHECKS PASSED

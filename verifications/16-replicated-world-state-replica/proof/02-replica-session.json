@@ -1,0 +1,54 @@
+{
+  "ticks": 1200,
+  "tickRate": 60,
+  "sendRate": 20,
+  "seats": 5,
+  "joins": 6,
+  "leaves": 1,
+  "playersAtEnd": 5,
+  "welcomeBytes": 8279,
+  "welcomeResult": "applied",
+  "sends": 400,
+  "mismatches": 0,
+  "firstMismatch": null,
+  "fullStateBytes": 9738,
+  "deltaBytes": {
+    "min": 68,
+    "max": 609,
+    "mean": 316
+  },
+  "entitiesInFullState": 49,
+  "resync": {
+    "outOfSequence": "out-of-sequence",
+    "untouchedAfterOutOfSequence": true,
+    "resynced": "applied",
+    "sameAfterResync": true
+  },
+  "hostile": {
+    "messages": 11,
+    "throws": 0,
+    "results": [
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "malformed",
+      "out-of-sequence",
+      "malformed"
+    ],
+    "drawnAfterHostile": 5,
+    "recoveredAfterHostile": true,
+    "recoveryResult": "applied",
+    "recoveryDifference": null
+  },
+  "stepThrew": true,
+  "replicaSnapshot": {
+    "physics": "",
+    "rng": 0,
+    "tick": 1202
+  }
+}
