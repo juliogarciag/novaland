@@ -34,6 +34,7 @@ results.push(check('world/resync answers with one full state, and a resync flood
 results.push(check('a session flooding unknown message types is closed once its budget is spent', passing(/floods unknown message types/).length === 1));
 results.push(check('a connection that never acknowledges its join is closed and its seat freed', passing(/never acknowledges its join/).length === 1));
 results.push(check('an oversized HTTP request body is refused before it is read', passing(/oversized HTTP request/).length === 1));
+results.push(check("the body cap wraps Colyseus's one request listener and refuses to boot beside any other", passing(/^the request body cap /).length === 3));
 results.push(check('a client leaving during its own join frees the seat; a dispose fails a waiting join instead of hanging it', passing(/leaves while its join is waiting/).length === 1 && passing(/waiting for a tick when the room is disposed/).length === 1));
 results.push(check('the inbound gate is unit tested (exact shape, finite numbers, never throws, budget)', passing(/^readMoveMessage /).length >= 5 && passing(/^MessageBudget /).length >= 2 && passing(/^payloadLength /).length === 1));
 results.push(check('seats hand out the lowest free slot', passing(/^RoomSeats /).length === 3));

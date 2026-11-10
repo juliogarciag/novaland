@@ -1,30 +1,30 @@
-$ tsx clients.ts 57772 (exit 0)
-[t+   48ms] player-0 welcomed: slot 0, level "starter", capacity 1024, state at tick 37 with 45 entities; own entity 45
-[t+   74ms] player-1 welcomed: slot 1, level "starter", capacity 1024, state at tick 39 with 46 entities; own entity 46
-[t+   87ms] player-2 welcomed: slot 2, level "starter", capacity 1024, state at tick 40 with 47 entities; own entity 47
-[t+  103ms] player-3 welcomed: slot 3, level "starter", capacity 1024, state at tick 41 with 48 entities; own entity 48
-[t+  122ms] player-4 welcomed: slot 4, level "starter", capacity 1024, state at tick 42 with 49 entities; own entity 49
-[t+  123ms] the last welcome shows 5 players wearing 5 distinct avatars on 5 distinct tiles (6,14 7,15 5,15 5,14 5,13)
-[t+  578ms] after 11 deltas every player sees all 5 avatars moving: true; the five replicas draw the same thing: true
-[t+  639ms] sixth join refused: MatchMakeError code 522 "room "world" is locked"
-[t+  649ms] other matchmaking methods: {"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\"","reconnect":"invalid method \"reconnect\""}
-[t+  685ms] player-2 left (code 4000); slot 2 empty on every replica, entity 47 no longer drawn: true
-[t+  725ms] player-5 joined into the freed seat: slot 2; everyone draws it again
-[t+ 1028ms] 12 junk messages: neither the sender (true) nor the slot named in a payload (true) was told to move
-[t+ 2757ms] a flood of 55 moves (budget 40): the world advanced 121 ticks, nobody was disconnected: true; a good move from the same sender still works
-[t+ 2804ms] a 4 KB frame closed only its own connection (code 1009); the others keep playing and no longer see slot 0
-[t+ 2848ms] player-1 asked for a resync and got a full state at tick 205
-{"port":57772,"seats":5,"slots":[0,1,2,3,4],"everyoneInLastWelcome":true,"spawns":{"players":5,"distinctAvatars":5,"distinctSpawnTiles":5},"everyoneSeesEveryoneMove":true,"replicasAgree":true,"refusal":{"name":"MatchMakeError","code":522,"message":"room \"world\" is locked"},"otherMethods":{"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\"","reconnect":"invalid method \"reconnect\""},"leaver":{"slot":2,"code":4000,"avatarGone":true,"newcomerSlot":2},"junk":{"messages":12,"junkDropped":true,"senderIntent":"{\"moveIntent\":{\"x\":0,\"y\":0}}","targetIntent":"{\"moveIntent\":{\"x\":0,\"y\":0}}","flood":55,"worldKeptRunning":true,"oversizedCloseCode":1009},"chained":[{"name":"player-0","updates":54,"applied":true},{"name":"player-1","updates":55,"applied":true},{"name":"player-5","updates":43,"applied":true},{"name":"player-3","updates":55,"applied":true},{"name":"player-4","updates":54,"applied":true}],"deltaBytes":{"count":260,"min":66,"max":734},"welcomeBytes":8498}
+$ tsx clients.ts 58509 (exit 0)
+[t+   44ms] player-0 welcomed: slot 0, level "starter", capacity 1024, state at tick 34 with 45 entities; own entity 45
+[t+   69ms] player-1 welcomed: slot 1, level "starter", capacity 1024, state at tick 36 with 46 entities; own entity 46
+[t+   84ms] player-2 welcomed: slot 2, level "starter", capacity 1024, state at tick 37 with 47 entities; own entity 47
+[t+  101ms] player-3 welcomed: slot 3, level "starter", capacity 1024, state at tick 38 with 48 entities; own entity 48
+[t+  118ms] player-4 welcomed: slot 4, level "starter", capacity 1024, state at tick 39 with 49 entities; own entity 49
+[t+  118ms] the last welcome shows 5 players wearing 5 distinct avatars on 5 distinct tiles (6,14 6,13 7,15 6,15 7,14)
+[t+  576ms] after 11 deltas every player sees all 5 avatars moving: true; the five replicas draw the same thing: true
+[t+  625ms] sixth join refused: MatchMakeError code 522 "room "world" is locked"
+[t+  634ms] other matchmaking methods: {"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\"","reconnect":"invalid method \"reconnect\""}
+[t+  669ms] player-2 left (code 4000); slot 2 empty on every replica, entity 47 no longer drawn: true
+[t+  726ms] player-5 joined into the freed seat: slot 2; everyone draws it again
+[t+ 1027ms] 12 junk messages: neither the sender (true) nor the slot named in a payload (true) was told to move
+[t+ 2731ms] a flood of 55 moves (budget 40): the world advanced 121 ticks, nobody was disconnected: true; a good move from the same sender still works
+[t+ 2791ms] a 4 KB frame closed only its own connection (code 1009); the others keep playing and no longer see slot 0
+[t+ 2834ms] player-1 asked for a resync and got a full state at tick 202
+{"port":58509,"seats":5,"slots":[0,1,2,3,4],"everyoneInLastWelcome":true,"spawns":{"players":5,"distinctAvatars":5,"distinctSpawnTiles":5},"everyoneSeesEveryoneMove":true,"replicasAgree":true,"refusal":{"name":"MatchMakeError","code":522,"message":"room \"world\" is locked"},"otherMethods":{"joinOrCreate":"invalid method \"joinOrCreate\"","create":"invalid method \"create\"","join":"invalid method \"join\"","reconnect":"invalid method \"reconnect\""},"leaver":{"slot":2,"code":4000,"avatarGone":true,"newcomerSlot":2},"junk":{"messages":12,"junkDropped":true,"senderIntent":"{\"moveIntent\":{\"x\":0,\"y\":0}}","targetIntent":"{\"moveIntent\":{\"x\":0,\"y\":0}}","flood":55,"worldKeptRunning":true,"oversizedCloseCode":1009},"chained":[{"name":"player-0","updates":54,"applied":true},{"name":"player-1","updates":55,"applied":true},{"name":"player-5","updates":43,"applied":true},{"name":"player-3","updates":55,"applied":true},{"name":"player-4","updates":54,"applied":true}],"deltaBytes":{"count":260,"min":66,"max":735},"welcomeBytes":8498}
 
 
 server output:
-(node:76155) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:78565) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 > @novaland/server@0.0.0 dev <repo>/packages/server
 > tsx src/index.ts
 
-{"event":"world-room-listening","port":57772,"roomId":"world","seed":1168247342,"seats":5,"tickRate":60,"sendRate":20}
+{"event":"world-room-listening","port":58509,"roomId":"world","seed":1434748845,"seats":5,"tickRate":60,"sendRate":20}
 Max payload size exceeded
 RangeError: Max payload size exceeded
     at Receiver.haveLength (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:442:28)
@@ -37,4 +37,4 @@ RangeError: Max payload size exceeded
     at Socket.socketOnData (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/websocket.js:1407:35)
     at Socket.emit (node:events:507:28)
     at addChunk (node:internal/streams/readable:559:12)
-{"event":"world-room-stopping","signal":"SIGTERM","tick":208,"seatsTaken":0,"dropped":{"unknownType":2,"oversized":1,"malformed":9,"overBudget":15}}
+{"event":"world-room-stopping","signal":"SIGTERM","tick":205,"seatsTaken":0,"dropped":{"unknownType":2,"oversized":1,"malformed":9,"overBudget":15}}
