@@ -29,4 +29,13 @@ export interface PlayableWorld {
    * frame is a point along the buffered server states.
    */
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame;
+  /** Hands over one command outside the keyboard (dev hooks), the same way the keyboard's commands go. */
+  queueCommand(command: Command): void;
+  /**
+   * Dev only: queues a join for the lowest empty seat so one browser can see
+   * several avatars. Only a world that picks its own seats has it: solo yes,
+   * online no, because the server assigns seats. Nothing happens when every
+   * seat is taken.
+   */
+  joinAnotherSeat?(): void;
 }

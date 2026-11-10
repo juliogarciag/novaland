@@ -35,6 +35,8 @@ export class WorldScene extends Phaser.Scene {
     this.entityRenderer = new EntityRenderer(this);
     // The slot travels inside the commands; online it is dropped and the server stamps the seat.
     this.keyboard = createKeyboardInput(this, this.world.localSlot);
+    // Dev builds seat extra players with J so one browser can see several avatars; only a world that picks its own seats offers it.
+    if (import.meta.env.DEV && this.world.joinAnotherSeat) this.input.keyboard?.on('keydown-J', () => this.world.joinAnotherSeat?.());
     this.entityRenderer.sync(this.world.sim);
     this.followLocalPlayer();
   }

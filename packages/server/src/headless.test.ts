@@ -1,4 +1,4 @@
-import { DefId, FIXED_DT, getDef, spawnPoint, starterLevel } from '@novaland/sim';
+import { avatarDefIds, FIXED_DT, getDef, spawnPoint, starterLevel } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { __testing__, runHeadless } from './headless';
 
@@ -29,5 +29,5 @@ describe('server headless run', () => {
 // ---- Helpers (below the tests so the behaviour reads first) ----
 
 const { SCRIPT } = __testing__;
-const SPEED = getDef(DefId.Player).speed ?? 0;
+const SPEED = getDef(avatarDefIds[0] as number).speed ?? 0;
 const SPAWN = spawnPoint(starterLevel);

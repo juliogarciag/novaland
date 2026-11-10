@@ -30,7 +30,7 @@
             "y": 0
           }
         },
-        "tick": 80,
+        "tick": 69,
         "isReplica": true,
         "players": [
           {
@@ -48,10 +48,10 @@
           {
             "x": -216,
             "y": -8,
-            "texture": "player"
+            "texture": "player-plum"
           }
         ],
-        "hud": "WASD / arrows to move   tick 77   1/5 online",
+        "hud": "WASD / arrows to move   tick 66   1/5 online\nyou: player-plum   players: 1",
         "screen": null
       },
       "stepped": "Error: A replica cannot step: it only shows what the authoritative sim sent. Use applyWorldState."
@@ -68,20 +68,20 @@
           "eid": 45,
           "slot": 0,
           "x": -13.5,
-          "y": -0.77696692943573,
+          "y": -0.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 120,
+        "tick": 126,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -0.77696692943573,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -90,8 +90,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.5,
-            "y": -0.2230330854654312,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -101,16 +101,16 @@
         "sprites": [
           {
             "x": -216,
-            "y": -8.374964909532107,
-            "texture": "player"
+            "y": -8,
+            "texture": "player-plum"
           },
           {
-            "x": -216,
-            "y": -6.869266510009766,
-            "texture": "player"
+            "x": -200,
+            "y": 8,
+            "texture": "player-slate"
           }
         ],
-        "hud": "WASD / arrows to move   tick 117   2/5 online",
+        "hud": "WASD / arrows to move   tick 123   2/5 online\nyou: player-plum   players: 2",
         "screen": null
       },
       "bTwo": {
@@ -122,21 +122,21 @@
         "ownEntity": {
           "eid": 46,
           "slot": 1,
-          "x": -13.5,
-          "y": -0.1796308308839798,
+          "x": -12.5,
+          "y": 0.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 123,
+        "tick": 126,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -0.8203691840171814,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -145,8 +145,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.5,
-            "y": -0.1796308308839798,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -156,107 +156,527 @@
         "sprites": [
           {
             "x": -216,
-            "y": -9.54910488128662,
-            "texture": "player"
+            "y": -8,
+            "texture": "player-plum"
           },
           {
-            "x": -216,
-            "y": -6.450895118713379,
-            "texture": "player"
+            "x": -200,
+            "y": 8,
+            "texture": "player-slate"
           }
         ],
-        "hud": "WASD / arrows to move   tick 120   2/5 online",
+        "hud": "WASD / arrows to move   tick 123   2/5 online\nyou: player-slate   players: 2",
         "screen": null
       },
       "speed": 5,
-      "sampledSeconds": 0.704,
-      "sampleCount": 93,
-      "distinctSpriteX": 43,
-      "distinctReplicaX": 15,
+      "sampledSeconds": 0.719,
+      "sampleCount": 42,
+      "distinctSpriteX": 32,
+      "distinctReplicaX": 13,
       "samples": [
         {
-          "tick": 138,
-          "replicaX": -12.332995414733887,
-          "spriteX": -207.52239229448224,
+          "tick": 167,
+          "replicaX": -12.333351135253906,
+          "spriteX": -207.66675823335916,
           "intentX": 1,
-          "animation": "player/walk/right",
+          "animation": "player-plum/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 141,
-          "replicaX": -12.082999229431152,
-          "spriteX": -200.63264350701675,
+          "tick": 176,
+          "replicaX": -11.583362579345703,
+          "spriteX": -195.50312511083666,
           "intentX": 1,
-          "animation": "player/walk/right",
+          "animation": "player-plum/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 147,
-          "replicaX": -11.583006858825684,
-          "spriteX": -194.97563443365246,
+          "tick": 182,
+          "replicaX": -11.083370208740234,
+          "spriteX": -187.09516373980122,
           "intentX": 1,
-          "animation": "player/walk/right",
+          "animation": "player-plum/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 153,
-          "replicaX": -11.083014488220215,
-          "spriteX": -187.50521033004236,
+          "tick": 188,
+          "replicaX": -10.583377838134766,
+          "spriteX": -178.87989916329116,
           "intentX": 1,
-          "animation": "player/walk/right",
+          "animation": "player-plum/walk/right",
           "pixelsPerMetre": 16
         },
         {
-          "tick": 156,
-          "replicaX": -10.83301830291748,
-          "spriteX": -180.94562050073833,
+          "tick": 207,
+          "replicaX": -9.000068664550781,
+          "spriteX": -154.40141993408204,
           "intentX": 1,
-          "animation": "player/walk/right",
-          "pixelsPerMetre": 16
-        },
-        {
-          "tick": 162,
-          "replicaX": -10.333025932312012,
-          "spriteX": -175.87219304353005,
-          "intentX": 1,
-          "animation": "player/walk/right",
-          "pixelsPerMetre": 16
-        },
-        {
-          "tick": 165,
-          "replicaX": -10.083029747009277,
-          "spriteX": -170.47686770390695,
-          "intentX": 1,
-          "animation": "player/walk/right",
-          "pixelsPerMetre": 16
-        },
-        {
-          "tick": 168,
-          "replicaX": -9.833033561706543,
-          "spriteX": -165.2004703662438,
-          "intentX": 1,
-          "animation": "player/walk/right",
-          "pixelsPerMetre": 16
-        },
-        {
-          "tick": 174,
-          "replicaX": -9.333041191101074,
-          "spriteX": -158.5687118768587,
-          "intentX": 1,
-          "animation": "player/walk/right",
-          "pixelsPerMetre": 16
-        },
-        {
-          "tick": 177,
-          "replicaX": -9.08304500579834,
-          "spriteX": -152.07049700873216,
-          "intentX": 1,
-          "animation": "player/walk/right",
+          "animation": "player-plum/walk/right",
           "pixelsPerMetre": 16
         }
       ],
-      "meanLag": 8.78163666335864,
+      "meanLag": 10.27272691836167,
       "expectedLag": 8
+    },
+    {
+      "step": "avatars",
+      "avatarsByPage": [
+        {
+          "sheets": [
+            {
+              "key": "player-sky",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-rose",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-moss",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-sun",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-plum",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-ember",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-teal",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-slate",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            }
+          ],
+          "players": [
+            {
+              "slot": 0,
+              "defId": 5,
+              "name": "player-plum",
+              "sheet": "player-plum",
+              "drawnWith": "player-plum"
+            },
+            {
+              "slot": 1,
+              "defId": 8,
+              "name": "player-slate",
+              "sheet": "player-slate",
+              "drawnWith": "player-slate"
+            },
+            {
+              "slot": 2,
+              "defId": 7,
+              "name": "player-teal",
+              "sheet": "player-teal",
+              "drawnWith": "player-teal"
+            },
+            {
+              "slot": 3,
+              "defId": 6,
+              "name": "player-ember",
+              "sheet": "player-ember",
+              "drawnWith": "player-ember"
+            },
+            {
+              "slot": 4,
+              "defId": 2,
+              "name": "player-rose",
+              "sheet": "player-rose",
+              "drawnWith": "player-rose"
+            }
+          ],
+          "hudYou": "you: player-plum   players: 5",
+          "hudNamesOwn": true
+        },
+        {
+          "sheets": [
+            {
+              "key": "player-sky",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-rose",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-moss",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-sun",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-plum",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-ember",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-teal",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-slate",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            }
+          ],
+          "players": [
+            {
+              "slot": 0,
+              "defId": 5,
+              "name": "player-plum",
+              "sheet": "player-plum",
+              "drawnWith": "player-plum"
+            },
+            {
+              "slot": 1,
+              "defId": 8,
+              "name": "player-slate",
+              "sheet": "player-slate",
+              "drawnWith": "player-slate"
+            },
+            {
+              "slot": 2,
+              "defId": 7,
+              "name": "player-teal",
+              "sheet": "player-teal",
+              "drawnWith": "player-teal"
+            },
+            {
+              "slot": 3,
+              "defId": 6,
+              "name": "player-ember",
+              "sheet": "player-ember",
+              "drawnWith": "player-ember"
+            },
+            {
+              "slot": 4,
+              "defId": 2,
+              "name": "player-rose",
+              "sheet": "player-rose",
+              "drawnWith": "player-rose"
+            }
+          ],
+          "hudYou": "you: player-slate   players: 5",
+          "hudNamesOwn": true
+        },
+        {
+          "sheets": [
+            {
+              "key": "player-sky",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-rose",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-moss",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-sun",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-plum",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-ember",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-teal",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-slate",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            }
+          ],
+          "players": [
+            {
+              "slot": 0,
+              "defId": 5,
+              "name": "player-plum",
+              "sheet": "player-plum",
+              "drawnWith": "player-plum"
+            },
+            {
+              "slot": 1,
+              "defId": 8,
+              "name": "player-slate",
+              "sheet": "player-slate",
+              "drawnWith": "player-slate"
+            },
+            {
+              "slot": 2,
+              "defId": 7,
+              "name": "player-teal",
+              "sheet": "player-teal",
+              "drawnWith": "player-teal"
+            },
+            {
+              "slot": 3,
+              "defId": 6,
+              "name": "player-ember",
+              "sheet": "player-ember",
+              "drawnWith": "player-ember"
+            },
+            {
+              "slot": 4,
+              "defId": 2,
+              "name": "player-rose",
+              "sheet": "player-rose",
+              "drawnWith": "player-rose"
+            }
+          ],
+          "hudYou": "you: player-teal   players: 5",
+          "hudNamesOwn": true
+        },
+        {
+          "sheets": [
+            {
+              "key": "player-sky",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-rose",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-moss",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-sun",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-plum",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-ember",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-teal",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-slate",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            }
+          ],
+          "players": [
+            {
+              "slot": 0,
+              "defId": 5,
+              "name": "player-plum",
+              "sheet": "player-plum",
+              "drawnWith": "player-plum"
+            },
+            {
+              "slot": 1,
+              "defId": 8,
+              "name": "player-slate",
+              "sheet": "player-slate",
+              "drawnWith": "player-slate"
+            },
+            {
+              "slot": 2,
+              "defId": 7,
+              "name": "player-teal",
+              "sheet": "player-teal",
+              "drawnWith": "player-teal"
+            },
+            {
+              "slot": 3,
+              "defId": 6,
+              "name": "player-ember",
+              "sheet": "player-ember",
+              "drawnWith": "player-ember"
+            },
+            {
+              "slot": 4,
+              "defId": 2,
+              "name": "player-rose",
+              "sheet": "player-rose",
+              "drawnWith": "player-rose"
+            }
+          ],
+          "hudYou": "you: player-ember   players: 5",
+          "hudNamesOwn": true
+        },
+        {
+          "sheets": [
+            {
+              "key": "player-sky",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-rose",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-moss",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-sun",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-plum",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-ember",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-teal",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            },
+            {
+              "key": "player-slate",
+              "texture": true,
+              "frames": 17,
+              "animations": true
+            }
+          ],
+          "players": [
+            {
+              "slot": 0,
+              "defId": 5,
+              "name": "player-plum",
+              "sheet": "player-plum",
+              "drawnWith": "player-plum"
+            },
+            {
+              "slot": 1,
+              "defId": 8,
+              "name": "player-slate",
+              "sheet": "player-slate",
+              "drawnWith": "player-slate"
+            },
+            {
+              "slot": 2,
+              "defId": 7,
+              "name": "player-teal",
+              "sheet": "player-teal",
+              "drawnWith": "player-teal"
+            },
+            {
+              "slot": 3,
+              "defId": 6,
+              "name": "player-ember",
+              "sheet": "player-ember",
+              "drawnWith": "player-ember"
+            },
+            {
+              "slot": 4,
+              "defId": 2,
+              "name": "player-rose",
+              "sheet": "player-rose",
+              "drawnWith": "player-rose"
+            }
+          ],
+          "hudYou": "you: player-rose   players: 5",
+          "hudNamesOwn": true
+        }
+      ]
     },
     {
       "step": "full",
@@ -269,21 +689,21 @@
         "ownEntity": {
           "eid": 45,
           "slot": 0,
-          "x": -8.333056449890137,
-          "y": -0.8433108329772949,
+          "x": -7.0000762939453125,
+          "y": -0.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 336,
+        "tick": 411,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333056449890137,
-            "y": -0.8433108329772949,
+            "x": -7.0000762939453125,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -292,8 +712,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.50129508972168,
-            "y": 0.7632967829704285,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -302,8 +722,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.498929977416992,
-            "y": -1.5912072658538818,
+            "x": -13.5,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -312,8 +732,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.500333786010742,
-            "y": -0.017485477030277252,
+            "x": -14.5,
+            "y": -1.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -322,8 +742,8 @@
           {
             "eid": 49,
             "slot": 4,
-            "x": -13.499805450439453,
-            "y": -0.8112928867340088,
+            "x": -14.5,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -332,32 +752,32 @@
         ],
         "sprites": [
           {
-            "x": -215.9833289098913,
-            "y": -25.072700044705492,
-            "texture": "player"
+            "x": -232,
+            "y": -24,
+            "texture": "player-ember"
           },
           {
-            "x": -133.3289031982422,
-            "y": -13.492973327636719,
-            "texture": "player"
+            "x": -112.001220703125,
+            "y": -8,
+            "texture": "player-plum"
           },
           {
-            "x": -215.99688720703125,
-            "y": -12.901173573971526,
-            "texture": "player"
+            "x": -216,
+            "y": -8,
+            "texture": "player-teal"
           },
           {
-            "x": -216.00534057617188,
-            "y": -0.37451290600320997,
-            "texture": "player"
+            "x": -232,
+            "y": -8,
+            "texture": "player-rose"
           },
           {
-            "x": -216.0202874231165,
-            "y": 11.841365925675072,
-            "texture": "player"
+            "x": -200,
+            "y": 8,
+            "texture": "player-slate"
           }
         ],
-        "hud": "WASD / arrows to move   tick 336   5/5 online",
+        "hud": "WASD / arrows to move   tick 411   5/5 online\nyou: player-plum   players: 5",
         "screen": null
       },
       "fFull": {
@@ -376,8 +796,8 @@
     {
       "step": "leave",
       "eSlot": 4,
-      "goneAfterMs": 112,
-      "drawnGoneAfterMs": 134,
+      "goneAfterMs": 82,
+      "drawnGoneAfterMs": 151,
       "aFour": {
         "status": {
           "kind": "online",
@@ -387,21 +807,21 @@
         "ownEntity": {
           "eid": 45,
           "slot": 0,
-          "x": -8.333056449890137,
-          "y": -0.8433108329772949,
+          "x": -7.0000762939453125,
+          "y": -0.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 471,
+        "tick": 562,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333056449890137,
-            "y": -0.8433108329772949,
+            "x": -7.0000762939453125,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -410,8 +830,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.501306533813477,
-            "y": 0.7858274579048157,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -420,8 +840,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.498920440673828,
-            "y": -1.6141687631607056,
+            "x": -13.5,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -430,8 +850,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.500333786010742,
-            "y": -0.014171254821121693,
+            "x": -14.5,
+            "y": -1.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -440,27 +860,27 @@
         ],
         "sprites": [
           {
-            "x": -215.98272705078125,
-            "y": -25.82670021057129,
-            "texture": "player"
+            "x": -232,
+            "y": -24,
+            "texture": "player-ember"
           },
           {
-            "x": -133.3289031982422,
-            "y": -13.492973327636719,
-            "texture": "player"
+            "x": -112.001220703125,
+            "y": -8,
+            "texture": "player-plum"
           },
           {
-            "x": -216.00534057617188,
-            "y": -0.22673651303159872,
-            "texture": "player"
+            "x": -216,
+            "y": -8,
+            "texture": "player-teal"
           },
           {
-            "x": -216.02090454101562,
-            "y": 12.57323932647705,
-            "texture": "player"
+            "x": -200,
+            "y": 8,
+            "texture": "player-slate"
           }
         ],
-        "hud": "WASD / arrows to move   tick 471   4/5 online",
+        "hud": "WASD / arrows to move   tick 562   4/5 online\nyou: player-plum   players: 4",
         "screen": null
       },
       "fIn": {
@@ -472,21 +892,21 @@
         "ownEntity": {
           "eid": 49,
           "slot": 4,
-          "x": -13.499897003173828,
-          "y": -0.653708279132843,
+          "x": -12.5,
+          "y": -0.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 776,
+        "tick": 859,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
-            "x": -8.333056449890137,
-            "y": -0.8433108329772949,
+            "x": -7.0000762939453125,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -495,8 +915,8 @@
           {
             "eid": 46,
             "slot": 1,
-            "x": -13.50137996673584,
-            "y": 0.8430570960044861,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -505,8 +925,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.498920440673828,
-            "y": -1.6141687631607056,
+            "x": -13.5,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -515,8 +935,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.5003662109375,
-            "y": 0.0823066309094429,
+            "x": -14.5,
+            "y": -1.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -525,8 +945,8 @@
           {
             "eid": 49,
             "slot": 4,
-            "x": -13.499897003173828,
-            "y": -0.653708279132843,
+            "x": -12.5,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -541,16 +961,16 @@
         "localSlot": 4,
         "seatFromServer": 4,
         "own": {
-          "x": -144.23112079850756,
-          "y": -10.970286432060819
+          "x": -128.0010986328125,
+          "y": -8
         },
         "centre": {
-          "x": -144.33333333333326,
-          "y": -11
+          "x": -128,
+          "y": -8
         },
         "worldView": {
-          "x": -304.33333333333326,
-          "y": -131,
+          "x": -288,
+          "y": -128,
           "width": 320,
           "height": 240
         },
@@ -566,7 +986,7 @@
     },
     {
       "step": "restart",
-      "tickBeforeKill": 879,
+      "tickBeforeKill": 967,
       "aDown": {
         "screen": "disconnected",
         "text": "Disconnected from the world. Retrying in 1s…",
@@ -583,35 +1003,35 @@
       "twoMore": {
         "status": {
           "kind": "disconnected",
-          "retryAt": 1794266063106,
+          "retryAt": 1794274105974,
           "attempt": 3
         },
-        "retryIn": 3957
+        "retryIn": 3956
       },
       "aBack": {
         "status": {
           "kind": "online",
-          "slot": 4
+          "slot": 2
         },
-        "localSlot": 4,
+        "localSlot": 2,
         "ownEntity": {
-          "eid": 49,
-          "slot": 4,
-          "x": -13.5,
-          "y": -0.6015291213989258,
+          "eid": 47,
+          "slot": 2,
+          "x": -12.5,
+          "y": -1.5,
           "intent": {
             "x": 0,
             "y": 0
           }
         },
-        "tick": 201,
+        "tick": 212,
         "isReplica": true,
         "players": [
           {
             "eid": 45,
             "slot": 0,
             "x": -13.5,
-            "y": -1.2784128189086914,
+            "y": -0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -621,7 +1041,7 @@
             "eid": 46,
             "slot": 1,
             "x": -13.5,
-            "y": 0.24577696621418,
+            "y": -1.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -630,8 +1050,8 @@
           {
             "eid": 47,
             "slot": 2,
-            "x": -13.5,
-            "y": -0.79477858543396,
+            "x": -12.5,
+            "y": -1.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -640,8 +1060,8 @@
           {
             "eid": 48,
             "slot": 3,
-            "x": -13.5,
-            "y": -0.0710567831993103,
+            "x": -12.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -650,8 +1070,8 @@
           {
             "eid": 49,
             "slot": 4,
-            "x": -13.5,
-            "y": -0.6015291213989258,
+            "x": -14.5,
+            "y": 0.5,
             "intent": {
               "x": 0,
               "y": 0
@@ -661,67 +1081,67 @@
         "sprites": [
           {
             "x": -216,
-            "y": -15.671383846933654,
-            "texture": "player"
+            "y": -24,
+            "texture": "player-rose"
+          },
+          {
+            "x": -200,
+            "y": -24,
+            "texture": "player-sky"
           },
           {
             "x": -216,
-            "y": -10.735353473344535,
-            "texture": "player"
+            "y": -8,
+            "texture": "player-plum"
           },
           {
-            "x": -216,
-            "y": -8.925672666317503,
-            "texture": "player"
+            "x": -200,
+            "y": 8,
+            "texture": "player-slate"
           },
           {
-            "x": -216,
-            "y": -4.154225151374511,
-            "texture": "player"
-          },
-          {
-            "x": -216,
-            "y": -0.5133708831266682,
-            "texture": "player"
+            "x": -232,
+            "y": 8,
+            "texture": "player-ember"
           }
         ],
-        "hud": "WASD / arrows to move   tick 201   5/5 online",
+        "hud": "WASD / arrows to move   tick 212   5/5 online\nyou: player-sky   players: 5",
         "screen": null
       },
       "bBackStart": {
-        "eid": 49,
-        "slot": 4,
-        "x": -13.5,
-        "y": -0.6015291213989258,
+        "eid": 47,
+        "slot": 2,
+        "x": -12.5,
+        "y": -1.5,
         "intent": {
           "x": 0,
           "y": 0
         }
       },
       "bBackEnd": {
-        "eid": 49,
-        "slot": 4,
-        "x": -13.5,
-        "y": 0.2861119210720062,
+        "eid": 47,
+        "slot": 2,
+        "x": -12.5,
+        "y": 1.5000011920928955,
         "intent": {
           "x": 0,
           "y": 0
         }
       },
       "aBackCamera": {
-        "localSlot": 4,
-        "seatFromServer": 4,
+        "localSlot": 2,
+        "seatFromServer": 2,
         "own": {
-          "x": -142.66778564453125,
-          "y": 4.541965961456299
+          "x": -125.33441162109375,
+          "y": 24.000019073486328
         },
         "centre": {
-          "x": -142.66666666666674,
-          "y": 4.666666666666686
+          "x": -125.33333333333326,
+          "y": 24
         },
         "worldView": {
-          "x": -302.66666666666674,
-          "y": -115.33333333333331,
+          "x": -285.33333333333326,
+          "y": -96,
           "width": 320,
           "height": 240
         },
@@ -743,16 +1163,16 @@
       "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "F: Failed to load resource: the server responded with a status of 522 (unknown)",
       "F: Failed to load resource: the server responded with a status of 522 (unknown)",
-      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
       "F: Failed to load resource: net::ERR_CONNECTION_REFUSED",
-      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED"
+      "D: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "A: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "B: Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "C: Failed to load resource: net::ERR_CONNECTION_REFUSED"
     ]
   }
 }

@@ -3,8 +3,8 @@
  * V2: solo mode is unchanged. `pnpm dev` with no VITE_SERVER_URL boots the
  * local sim: no connection screen, no online status, a live sim that ticks
  * and a player that walks on a key press. Then the browser verification of
- * ticket #10 (the player sprite) is run as it is against this branch, since
- * every existing verification must keep passing.
+ * ticket #21 (random avatars, the dev J key and the debug hooks that seat
+ * extra players) is run as it is against this branch.
  */
 import { chromium } from 'playwright';
 import { copyFileSync, cpSync, existsSync, readdirSync, rmSync } from 'node:fs';
@@ -60,28 +60,40 @@ try {
   server.stop();
 }
 
-// The existing browser verification of #10, unchanged, against this branch. It writes into its own proof folder,
-// which this ticket must not change: that folder is set aside first and put back as it was, whatever happens.
-const tenDir = path.join(ROOT, 'verifications/10-player-sprite');
-const tenProof = path.join(tenDir, 'proof');
-const setAside = path.join(os.tmpdir(), `novaland-10-proof-${process.pid}`);
-cpSync(tenProof, setAside, { recursive: true });
-let ten;
-try {
-  if (!existsSync(path.join(tenDir, 'node_modules'))) await run('pnpm', ['install', '--ignore-workspace', '--frozen-lockfile'], { cwd: tenDir });
-  ten = await run('node', ['03-browser.mjs'], { cwd: tenDir, env: { VITE_SERVER_URL: undefined } });
-  writeProof('02-solo-10-player-sprite.txt', ten.output);
-  for (const file of readdirSync(tenProof).filter((name) => name.startsWith('03-browser') && name.endsWith('.png'))) {
-    copyFileSync(path.join(tenProof, file), path.join(PROOF, `02-solo-10-${file}`));
-  }
-} finally {
-  rmSync(tenProof, { recursive: true, force: true });
-  cpSync(setAside, tenProof, { recursive: true });
-  rmSync(setAside, { recursive: true, force: true });
+// The existing browser verification of #21 (random avatars, every sheet drawn, the dev J key), unchanged, against this
+// branch. It writes into its own proof folder, which this ticket must not change: that folder is set aside first and
+// put back as it was, whatever happens. #10's script is not rerun any more: it looks up a def named `player`, which
+// #21 replaced with one def per avatar, so it fails on main itself; #21's script checks the sprites in its place.
+for (const { ticket, folder } of [{ ticket: '#21', folder: '21-random-avatar-spread-spawns' }]) {
+  const rerun = await rerunBrowserVerification(folder);
+  const summary = rerun.output.split('\n').find((line) => /CHECKS (PASSED|FAILED)/.test(line));
+  results.push(check(`ticket ${ticket}'s browser verification still passes on this branch`, rerun.code === 0 && /ALL \d+ CHECKS PASSED/.test(rerun.output), summary));
+  report[folder] = { code: rerun.code, summary };
 }
-const tenSummary = ten.output.split('\n').find((line) => /CHECKS (PASSED|FAILED)/.test(line));
-results.push(check("ticket #10's browser verification still passes on this branch", ten.code === 0 && /ALL \d+ CHECKS PASSED/.test(ten.output), tenSummary));
-report.tenPlayerSprite = { code: ten.code, summary: tenSummary };
 
 writeProof('02-solo.json', report);
 process.exit(summarize(results) ? 0 : 1);
+
+// ---- Helpers ----
+
+/** Runs `verifications/<folder>/03-browser.mjs` in solo mode, copies its screenshots here, and leaves its own proof folder as it was. */
+async function rerunBrowserVerification(folder) {
+  const dir = path.join(ROOT, 'verifications', folder);
+  const proof = path.join(dir, 'proof');
+  const setAside = path.join(os.tmpdir(), `novaland-${folder}-proof-${process.pid}`);
+  cpSync(proof, setAside, { recursive: true });
+  const prefix = folder.split('-')[0];
+  try {
+    if (!existsSync(path.join(dir, 'node_modules'))) await run('pnpm', ['install', '--ignore-workspace', '--frozen-lockfile'], { cwd: dir });
+    const rerun = await run('node', ['03-browser.mjs'], { cwd: dir, env: { VITE_SERVER_URL: undefined } });
+    writeProof(`02-solo-${folder}.txt`, rerun.output);
+    for (const file of readdirSync(proof).filter((name) => name.startsWith('03-browser') && name.endsWith('.png'))) {
+      copyFileSync(path.join(proof, file), path.join(PROOF, `02-solo-${prefix}-${file}`));
+    }
+    return rerun;
+  } finally {
+    rmSync(proof, { recursive: true, force: true });
+    cpSync(setAside, proof, { recursive: true });
+    rmSync(setAside, { recursive: true, force: true });
+  }
+}

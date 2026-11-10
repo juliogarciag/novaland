@@ -138,6 +138,15 @@ try {
   await waitFor(() => stateOf(a.page), (state) => state.players.length === SEATS, 'A sees five players');
   const aFive = await stateOf(a.page);
   results.push(check('five contexts are seated in five different seats and the HUD reads 5/5 online', new Set(aFive.players.map((player) => player.slot)).size === SEATS && /5\/5 online/.test(aFive.hud), aFive.hud));
+  // #21: the server's sim picks each avatar; the replicas carry the defIds and every sheet loads online too.
+  await a.page.waitForTimeout(400); // the drawn frame catches up with the last join
+  const avatarsByPage = await Promise.all([a, b, c, d, e].map((player) => avatarsOf(player.page)));
+  const aAvatars = avatarsByPage[0];
+  results.push(check(`every avatar sheet (${aAvatars.sheets.length}) is loaded in online mode with its frames and walk animations`, avatarsByPage.every((avatars) => avatars.sheets.every((sheet) => sheet.texture && sheet.frames > 1 && sheet.animations)), JSON.stringify(aAvatars.sheets)));
+  results.push(check('the five players wear five different avatars, each drawn from its own sheet', new Set(aAvatars.players.map((player) => player.defId)).size === SEATS && aAvatars.players.every((player) => player.drawnWith === player.sheet), JSON.stringify(aAvatars.players)));
+  const agree = avatarsByPage.every((avatars) => JSON.stringify(avatars.players.map(({ slot, defId }) => ({ slot, defId }))) === JSON.stringify(aAvatars.players.map(({ slot, defId }) => ({ slot, defId }))));
+  results.push(check('all five pages agree on who wears which avatar, and each HUD names its own', agree && avatarsByPage.every((avatars) => avatars.hudNamesOwn), avatarsByPage.map((avatars) => avatars.hudYou).join(' | ')));
+  report.steps.push({ step: 'avatars', avatarsByPage });
   await a.page.screenshot({ path: path.join(PROOF, '03-online-4-five-online.png') });
   const f = await open('F');
   await f.page.waitForSelector('#screen[data-screen="full"]', { timeout: 15000 });
@@ -265,6 +274,34 @@ function stateOf(page) {
       hud: hud ? hud.text : null,
       screen: screen && !screen.hidden ? screen.dataset.screen : null,
     };
+  });
+}
+
+/** The avatar sheets as loaded on a page, and each player's avatar as the replica says and as it is drawn. */
+function avatarsOf(page) {
+  return page.evaluate(() => {
+    const api = window.__novaland;
+    const scene = api.game.scene.getScene('world');
+    const defOf = (defId) => api.defs.find((def) => def.id === defId);
+    const sheets = api.avatarDefIds.map((defId) => {
+      const key = defOf(defId).sprite.key;
+      return { key, texture: api.game.textures.exists(key), frames: api.game.textures.exists(key) ? api.game.textures.get(key).frameTotal : 0, animations: scene.anims.exists(`${key}/walk/down`) };
+    });
+    const sprites = scene.children.list.filter((object) => object.type === 'Sprite');
+    const players = api.snapshot().entities
+      .filter((entity) => entity.components.Player)
+      .map((entity) => {
+        const x = entity.components.Position.x * api.pixelsPerMetre;
+        const y = entity.components.Position.y * api.pixelsPerMetre;
+        const nearest = sprites.map((sprite) => ({ sprite, distance: Math.hypot(sprite.x - x, sprite.y - y) })).sort((left, right) => left.distance - right.distance)[0];
+        const def = defOf(entity.components.DefRef.id);
+        return { slot: entity.components.Player.slot, defId: def.id, name: def.name, sheet: def.sprite.key, drawnWith: nearest ? nearest.sprite.texture.key : null };
+      })
+      .sort((left, right) => left.slot - right.slot);
+    const hudText = api.game.scene.getScene('hud').children.list[0].text;
+    const own = players.find((player) => player.slot === api.localSlot());
+    const hudYou = (hudText.split('\n').find((line) => line.startsWith('you:')) ?? '').trim();
+    return { sheets, players, hudYou, hudNamesOwn: own !== undefined && hudYou.startsWith(`you: ${own.name}`) };
   });
 }
 

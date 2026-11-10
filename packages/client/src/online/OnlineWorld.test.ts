@@ -4,6 +4,7 @@ import type { ConnectionStatus } from './connection';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
 import { __testing__, OnlineWorld } from './OnlineWorld';
 import { INTERPOLATION_BUFFER_TICKS, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
+import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 const { readWelcome } = __testing__;
 const FRAME = 1 / 60;
@@ -113,6 +114,15 @@ describe('OnlineWorld', () => {
     const { world, room } = await seated(3);
     world.nextFrame([{ type: 'player/move', slot: 3, x: 0, y: -1 }, { type: 'player/join', slot: 3 }], FRAME);
     expect(room.sent).toEqual([{ type: WIRE.move, payload: { x: 0, y: -1 } }]);
+  });
+
+  it('sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)', async () => {
+    const { world, room } = await seated(3);
+    world.queueCommand({ type: 'player/join', slot: 4 });
+    world.queueCommand({ type: 'player/move', slot: 3, x: 1, y: 0 });
+    expect(room.sent).toEqual([{ type: WIRE.move, payload: { x: 1, y: 0 } }]);
+    const playable: PlayableWorld = world;
+    expect(playable.joinAnotherSeat).toBeUndefined();
   });
 
   it('after a drop takes the new seat and the new state from the next welcome, and repeats the move still held', async () => {

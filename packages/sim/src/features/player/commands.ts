@@ -1,4 +1,8 @@
-/** A player joins the world in the given slot (0-based seat number). Ignored if the slot is taken or the sim is full. */
+/**
+ * A player joins the world in the given slot (0-based seat number). Ignored if
+ * the slot is taken or the sim is full. It carries no avatar and no position:
+ * the sim picks both, so a client can neither choose its look nor its spawn.
+ */
 export interface JoinCommand {
   readonly type: 'player/join';
   readonly slot: number;
