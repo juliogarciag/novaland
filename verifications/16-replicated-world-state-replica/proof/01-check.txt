@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (146 of 146)
+PASS  every test passed, none skipped  (148 of 148)
 PASS  a replica fed full states every tick draws what the sim draws
 PASS  a replica fed deltas matches the sim at every send, through joins, leaves and a recycled id
 PASS  removed entities disappear and an out-of-sequence delta is reported

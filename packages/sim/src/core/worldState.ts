@@ -20,8 +20,18 @@ const tickSchema = z.int().nonnegative();
 /** Whether the id fits a world's capacity is checked where it is written (restore.ts): the capacity is not known here. */
 const entityIdSchema = z.int().positive();
 
-/** Component name to field name to value. Unknown names pass here and are skipped where they are written (restore.ts). */
-const componentsSchema = z.record(z.string(), z.record(z.string(), z.number()));
+/**
+ * Field name to value. A null is dropped rather than refused: it is how JSON
+ * writes NaN and Infinity, so one non-finite value on the server must cost
+ * that field (the replica keeps what it had) and not every message from then
+ * on, resyncs included. Any other non-number refuses the message.
+ */
+const fieldsSchema = z
+  .record(z.string(), z.number().nullable())
+  .transform((fields) => Object.fromEntries(Object.entries(fields).filter((entry): entry is [string, number] => entry[1] !== null)));
+
+/** Component name to fields. Unknown names pass here and are skipped where they are written (restore.ts). */
+const componentsSchema = z.record(z.string(), fieldsSchema);
 
 const worldStateSchema = z
   .object({
@@ -140,8 +150,9 @@ export function applyWorldStateDelta(state: WorldState, delta: WorldStateDelta):
 /**
  * The update behind an arbitrary value, or undefined when it does not match
  * the schemas above: a kind, safe-integer ticks with `fromTick <= tick`,
- * positive safe-integer ids, components of finite numbers, at most
- * MAX_CAPACITY entries per list. One bad entry rejects the whole value,
+ * positive safe-integer ids, component fields that are finite numbers (or
+ * null, which is dropped: see `fieldsSchema`), at most MAX_CAPACITY entries,
+ * changes and removed ids. One bad entry rejects the whole value,
  * because applying part of a state would silently desync a replica; the
  * client asks for a full state instead. The result is a frozen copy. What
  * depends on the world (ids within its capacity, known component and field

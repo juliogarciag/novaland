@@ -45,31 +45,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
@@ -137,6 +112,31 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
@@ -317,6 +317,16 @@
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "applyWorldState with data from the network skips what depends on the world: ids beyond its capacity, unknown components and unknown fields",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network refuses lists longer than MAX_CAPACITY before touching the replica",
     "status": "passed"
   },
   {

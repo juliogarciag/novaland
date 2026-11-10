@@ -3,8 +3,8 @@ Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
 Already up to date
 
-Done in 504ms using pnpm v10.9.0
-(node:58326) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 491ms using pnpm v10.9.0
+(node:59902) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -16,11 +16,11 @@ $ pnpm typecheck
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/server typecheck$ tsc -p tsconfig.json
 packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:58354) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:59930) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -35,39 +35,41 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/render/pose.test.ts (3 tests) 3ms
- ✓ |client| src/input/direction.test.ts (5 tests) 3ms
- ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
  ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
- ✓ |client| src/render/zoom.test.ts (4 tests) 17ms
- ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 11ms
- ✓ |client| src/render/camera.test.ts (4 tests) 11ms
- ✓ |client| src/seats.test.ts (3 tests) 125ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 388ms
- ✓ |server| src/headless.test.ts (3 tests) 422ms
-   ✓ server headless run (3)
-     ✓ drives the sim without a browser and is reproducible 354ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 488ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 4ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 3ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 11ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 6ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 12ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 10ms
+ ✓ |client| src/seats.test.ts (3 tests) 153ms
+ ✓ |server| src/headless.test.ts (3 tests) 380ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 397ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 541ms
+   ✓ diffWorldState and applyWorldStateDelta (9)
+     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 389ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 559ms
    ✓ determinism (4)
-     ✓ same seed + same commands = identical state, including physics bytes 384ms
- ✓ |sim| src/core/worldState.test.ts (10 tests) 508ms
- ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 277ms
- ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 594ms
- ✓ |sim| src/features/player/avatars.test.ts (7 tests) 383ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 300ms
- ✓ |sim| src/core/restore.test.ts (11 tests) 33ms
- ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 138ms
- ✓ |sim| src/content/levels/levels.test.ts (3 tests) 67ms
- ✓ |sim| src/features/player/spawn.test.ts (7 tests) 122ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 121ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 67ms
- ✓ |sim| src/core/replica.test.ts (21 tests) 1191ms
+     ✓ same seed + same commands = identical state, including physics bytes 500ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 572ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 434ms
+   ✓ snapshot (5)
+     ✓ is plain JSON that survives a round trip 353ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 474ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 305ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 162ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 148ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 42ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 71ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 88ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 159ms
+ ✓ |sim| src/core/replica.test.ts (23 tests) 1299ms
    ✓ a replica fed full world states every tick (1)
-     ✓ draws exactly what the sim draws, tick after tick, through JSON 935ms
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 1014ms
 
  Test Files  23 passed (23)
-      Tests  146 passed (146)
-   Start at  12:57:51
-   Duration  1.62s (tests 60%, import 29%, transform 9%, worker 1%)
+      Tests  148 passed (148)
+   Start at  13:02:38
+   Duration  1.79s (tests 61%, import 30%, transform 7%, worker 2%)
 
 JSON report written to <repo>/verifications/16-replicated-world-state-replica/proof/01-tests-report.json

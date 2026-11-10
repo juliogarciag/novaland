@@ -329,6 +329,35 @@ describe('applyWorldState with data from the network', () => {
     expect(findPlayerEntity(replica, 0)).toBe(player);
     expect(worldState(replica).entities.length).toBe(worldState(sim).entities.length);
     expect(({} as Record<string, unknown>)['polluted']).toBeUndefined();
+    expect(Object.getPrototypeOf(components)).toBe(Object.prototype);
+    expect(Object.values(components).every((fields) => Object.getPrototypeOf(fields) === Object.prototype && !('polluted' in fields))).toBe(true);
+    expect('polluted' in components).toBe(false);
+    sim.destroy();
+  });
+
+  it('drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had', async () => {
+    const { replica, sim } = await replicaInSync();
+    const player = findPlayerEntity(sim, 0) as number;
+    const tick = replica.tick;
+    const positionBefore = worldState(replica).entities.find((entity) => entity.id === player)?.components['Position'];
+    const wire = JSON.stringify({ kind: 'delta', fromTick: tick, tick: tick + 1, changed: [{ id: player, components: { Position: { x: Number.NaN, y: 2.5 } } }], removed: [] });
+    expect(wire).toContain('"x":null');
+    expect(applyWorldState(replica, JSON.parse(wire) as WorldStateUpdate)).toBe('applied');
+    const positionAfter = worldState(replica).entities.find((entity) => entity.id === player)?.components['Position'];
+    expect(positionAfter).toEqual({ x: positionBefore?.['x'], y: 2.5 });
+    sim.destroy();
+  });
+
+  it('refuses lists longer than MAX_CAPACITY before touching the replica', async () => {
+    const { replica, sim } = await replicaInSync();
+    const before = worldState(replica);
+    const tooMany = MAX_CAPACITY + 1;
+    const entities = Array.from({ length: tooMany }, (_, index) => ({ id: index + 1, components: {} }));
+    expect(applyWorldState(replica, { kind: 'full', tick: 1, entities })).toBe('malformed');
+    const delta = { kind: 'delta', fromTick: replica.tick, tick: replica.tick + 1 } as const;
+    expect(applyWorldState(replica, { ...delta, changed: entities, removed: [] })).toBe('malformed');
+    expect(applyWorldState(replica, { ...delta, changed: [], removed: entities.map((entity) => entity.id) })).toBe('malformed');
+    expect(worldState(replica)).toEqual(before);
     sim.destroy();
   });
 
