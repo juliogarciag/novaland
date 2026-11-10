@@ -33,7 +33,7 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
 - Rapier 2D (`@dimforge/rapier2d-deterministic-compat`): all physics, in `packages/sim`. Phaser Arcade/Matter physics are never used.
 - bitECS: entities and components, in `packages/sim`.
 - Vitest: all tests. They run headless in Node.
-- Colyseus: future multiplayer server in `packages/server`. Not implemented yet; the package exists so the sim already runs there.
+- Colyseus 0.18 (`@colyseus/core` and `@colyseus/ws-transport` on the server, `@colyseus/sdk` for clients): the authoritative multiplayer server in `packages/server`. One `WorldRoom` owns the only live sim and steps it; browsers hold a replica (ADR 0004, 0005). `PORT=<n> pnpm --filter @novaland/server dev` runs it.
 
 **Repository layout**
 
@@ -48,8 +48,9 @@ packages/
       features/index.ts   The list of features the sim runs (one line per feature).
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
-  server/     Placeholder for the authoritative Colyseus server. Runs the same sim headlessly.
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 before touching replication or networking.
+  server/     The authoritative Colyseus server: one world room (5 seats, joined by id) that owns the only live sim,
+              steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking.
 verifications/    One folder per ticket with its verification scripts and proof.
 ```
 
@@ -60,7 +61,7 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 1. The sim is the single source of truth. The client is a view; it never decides anything about the game.
 2. Input reaches the sim only as serializable commands (`Command` in `sim/src/core/commands.ts`). No callbacks, no direct mutation of sim state from outside the sim. Views and servers only ever hold a `SimHandle` (`step`, `snapshot`, read-only fields); the `Sim` class with components, physics and rng is internal to `packages/sim`.
 3. State is serializable. `sim.snapshot()` must keep capturing everything: never keep game state outside components, the physics world and the rng.
-4. The sim advances only through `step(commands)`, one fixed tick of `FIXED_DT` at a time. The client turns real time into whole ticks with `takeWholeTicks` (`client/src/loop/takeWholeTicks.ts`) and carries the leftover to the next frame; commands wait in a buffer until the next earned tick. Nothing else may call `step`.
+4. The sim advances only through `step(commands)`, one fixed tick of `FIXED_DT` at a time. The client's `WorldScene` (offline) and the server's `WorldRoom` (online) turn real time into whole ticks with `takeWholeTicks` (`client/src/loop/takeWholeTicks.ts`, mirrored in `server/src/world/takeWholeTicks.ts` until #25 lifts it into the sim) and carry the leftover to the next frame; commands wait in a buffer until the next earned tick. Nothing else may call `step`.
 5. Determinism: same seed + same commands = identical state. In `packages/sim` there is no `Math.random`, `Date`, `crypto`, timers, Node modules or I/O. Randomness goes through `sim.rng`. Lint enforces this.
 6. Components hold numeric, mutable, per-entity state only (typed arrays). Static or rich data (names, sprites, stats, effects, speeds) lives in definition files keyed by a numeric `defId`; entities reference it through the `DefRef` component. See `docs/decisions/0001-ecs.md`.
 7. Content is data: entities, levels and tuning values live in data files (`sim/src/content/`, `features/<feature>/defs.ts`), not in logic.
@@ -92,6 +93,7 @@ pnpm typecheck    # tsc for every package
 pnpm lint         # eslint, including the boundary rules
 pnpm check        # test + typecheck + lint, what CI runs
 pnpm sim:headless # runs the sim in the server package for 5 simulated seconds and prints a state hash
+PORT=<n> pnpm --filter @novaland/server dev   # the world room server (default port 2567); clients join room id `world`
 ```
 
 Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` must pass.

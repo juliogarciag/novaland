@@ -1,0 +1,18 @@
+PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":58509,"roomId":"world","seed":1434748845,"seats":5,"tickRate":60,"sendRate":20})
+PASS  the test clients ran to the end
+PASS  five players joined by id and got seats 0..4
+PASS  the last welcome already holds every player's entity
+PASS  the five players wear five distinct sim-picked avatars on five distinct spawn tiles  ({"players":5,"distinctAvatars":5,"distinctSpawnTiles":5})
+PASS  every player saw every other player move, and all five replicas agree
+PASS  the sixth join was refused because the room is locked (full)  (522 room "world" is locked)
+PASS  create / join / joinOrCreate / reconnect are not exposed
+PASS  a leaver's seat was freed, its avatar vanished for the others, the next joiner took the seat
+PASS  oversized, unknown, slot-carrying and malformed messages were dropped: neither the sender nor the named slot moved  ({"moveIntent":{"x":0,"y":0}} {"moveIntent":{"x":0,"y":0}})
+PASS  a move flood was absorbed: the world kept running and nobody was disconnected  (55 moves)
+PASS  a frame over the transport limit closed only its own connection (1009)
+PASS  every delta chained: no replica ever reported out-of-sequence or malformed
+PASS  deltas stay small next to the welcome  (deltas 66-735 bytes, welcome 8498 bytes)
+PASS  SIGTERM stops the server cleanly  (0)
+PASS  the server's own counters agree: junk dropped by reason and the flood's excess over budget  ({"unknownType":2,"oversized":1,"malformed":9,"overBudget":15})
+
+ALL 16 CHECKS PASSED

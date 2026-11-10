@@ -8,7 +8,7 @@ import tseslint from 'typescript-eslint';
  *
  * sim    -> may import: bitecs, rapier. Never phaser, DOM, client, server, colyseus.
  * client -> may import: phaser, @novaland/sim (package entry only). Never rapier, bitecs, server.
- * server -> may import: @novaland/sim (package entry only), colyseus (later). Never phaser, client.
+ * server -> may import: @novaland/sim (package entry only), colyseus. Never phaser, client.
  *
  * Violations fail `pnpm lint`. Keep the lists below in sync with AGENTS.md.
  */

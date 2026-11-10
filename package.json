@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check": "pnpm test && pnpm typecheck && pnpm lint",
-    "sim:headless": "pnpm --filter @novaland/server start"
+    "sim:headless": "pnpm --filter @novaland/server headless"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
