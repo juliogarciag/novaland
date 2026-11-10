@@ -42,6 +42,7 @@ if (boot) {
   if (summary) {
     results.push(check('five players joined by id and got seats 0..4', JSON.stringify(summary.slots) === '[0,1,2,3,4]'));
     results.push(check("the last welcome already holds every player's entity", summary.everyoneInLastWelcome === true));
+    results.push(check('the five players wear five distinct sim-picked avatars on five distinct spawn tiles', summary.spawns?.players === 5 && summary.spawns.distinctAvatars === 5 && summary.spawns.distinctSpawnTiles === 5, JSON.stringify(summary.spawns)));
     results.push(check('every player saw every other player move, and all five replicas agree', summary.everyoneSeesEveryoneMove === true && summary.replicasAgree === true));
     results.push(check('the sixth join was refused because the room is locked (full)', summary.refusal?.code === 522 && /locked/.test(summary.refusal?.message ?? ''), `${summary.refusal?.code} ${summary.refusal?.message}`));
     results.push(check('create / join / joinOrCreate / reconnect are not exposed', Object.keys(summary.otherMethods).length === 4 && Object.values(summary.otherMethods).every((message) => /invalid method/.test(message))));
