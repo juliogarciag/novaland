@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (149 of 149)
+PASS  every test passed, none skipped  (173 of 173)
 PASS  five players join by room id and are welcomed into the world
 PASS  every player sees the others move through chained deltas
 PASS  the sixth player is refused, as are create / join / joinOrCreate
@@ -18,6 +18,6 @@ PASS  the inbound gate is unit tested (exact shape, finite numbers, never throws
 PASS  seats hand out the lowest free slot
 PASS  the server tick helper caps the catch-up
 PASS  the sim, replica and client tests still pass
-PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (2e110fbf)
+PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (50b21d74)
 
 ALL 21 CHECKS PASSED

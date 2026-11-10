@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (216 of 216)
+PASS  every test passed, none skipped  (217 of 217)
 PASS  the connection joins, goes online on the welcome and forwards updates only from then on
 PASS  a full world is shown and asked again, by itself and on retryNow
 PASS  an unreachable or booting server is retried with a growing wait

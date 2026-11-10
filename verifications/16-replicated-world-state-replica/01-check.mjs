@@ -30,6 +30,7 @@ results.push(check('removed entities disappear and an out-of-sequence delta is r
 results.push(check('deltas never carry the terrain again', passing(/never sends the terrain again/).length === 1));
 results.push(check('a full state from a restarted server replaces the replica', passing(/replaced whole by a full state/).length === 1));
 results.push(check('a late joiner from one full state draws in the same order as the sim', passing(/late joiner built from one full state/).length === 1));
+results.push(check('a replica shows each player in the avatar and at the spread spawn the sim gave it (#21)', passing(/avatar and at the spread spawn the sim gave it/).length === 1));
 results.push(check('a replica needs a full state before deltas', passing(/needs a full state before it takes deltas/).length === 1));
 results.push(check('a shuffled full state costs one allocation pass per message', passing(/one pass of at most/).length === 1 && passing(/stays within one pass per message/).length === 1));
 results.push(check('the wire names, refusal reasons and send rate are pinned', passing(/pins the message names/).length === 1));
