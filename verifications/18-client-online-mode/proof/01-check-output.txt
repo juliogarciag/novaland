@@ -3,8 +3,8 @@ Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
 Already up to date
 
-Done in 501ms using pnpm v10.9.0
-(node:66863) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 532ms using pnpm v10.9.0
+(node:80417) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -20,7 +20,7 @@ packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck$ tsc -p tsconfig.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:66887) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:80504) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -35,58 +35,60 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/input/keyboard.test.ts (9 tests) 4ms
- ✓ |client| src/render/zoom.test.ts (4 tests) 10ms
- ✓ |client| src/input/direction.test.ts (5 tests) 4ms
- ✓ |client| src/render/pose.test.ts (3 tests) 4ms
- ✓ |client| src/online/frameBuffer.test.ts (7 tests) 12ms
- ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 26ms
- ✓ |client| src/render/viewFrame.test.ts (6 tests) 115ms
- ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 4ms
- ✓ |client| src/online/connection.test.ts (14 tests) 27ms
- ✓ |client| src/seats.test.ts (3 tests) 156ms
- ✓ |client| src/worlds/LocalWorld.test.ts (3 tests) 161ms
- ✓ |server| src/world/inbound.test.ts (8 tests) 5ms
- ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 3ms
- ✓ |client| src/online/screens.test.ts (1 test) 31ms
- ✓ |server| src/world/seats.test.ts (3 tests) 6ms
- ✓ |client| src/render/camera.test.ts (4 tests) 3ms
- ✓ |server| src/headless.test.ts (3 tests) 301ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 454ms
- ✓ |sim| src/features/player/avatars.test.ts (7 tests) 492ms
- ✓ |sim| src/core/worldState.test.ts (10 tests) 585ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 12ms
+ ✓ |client| src/online/screens.test.ts (1 test) 2ms
+ ✓ |client| src/online/frameBuffer.test.ts (7 tests) 7ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 18ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
+ ✓ |client| src/render/viewFrame.test.ts (6 tests) 108ms
+ ✓ |client| src/online/connection.test.ts (14 tests) 22ms
+ ✓ |client| src/seats.test.ts (3 tests) 127ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 7ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 5ms
+ ✓ |client| src/worlds/LocalWorld.test.ts (3 tests) 144ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 5ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 5ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 9ms
+ ✓ |server| src/world/roomSeats.test.ts (3 tests) 4ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 6ms
+ ✓ |server| src/headless.test.ts (3 tests) 235ms
+ ✓ |server| src/world/startWorldServer.test.ts (3 tests) 4ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 452ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 501ms
    ✓ diffWorldState and applyWorldStateDelta (9)
-     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 387ms
- ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 583ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 624ms
+     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 325ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 455ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 550ms
    ✓ determinism (4)
-     ✓ same seed + same commands = identical state, including physics bytes 521ms
- ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 111ms
- ✓ |sim| src/features/player/spawn.test.ts (7 tests) 196ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 119ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 171ms
- ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 154ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 193ms
+     ✓ same seed + same commands = identical state, including physics bytes 435ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 165ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 293ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 157ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 117ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 225ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 223ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 121ms
  ✓ |sim| src/core/restore.test.ts (11 tests) 28ms
- ✓ |sim| src/content/levels/levels.test.ts (3 tests) 50ms
- ✓ |sim| src/core/replica.test.ts (23 tests) 1387ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 47ms
+ ✓ |sim| src/core/replica.test.ts (23 tests) 1352ms
    ✓ a replica fed full world states every tick (1)
-     ✓ draws exactly what the sim draws, tick after tick, through JSON 1066ms
- ✓ |client| src/online/OnlineWorld.test.ts (13 tests) 2238ms
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 1038ms
+ ✓ |client| src/online/OnlineWorld.test.ts (13 tests) 2211ms
    ✓ OnlineWorld (12)
-     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1014ms
+     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1005ms
      ✓ after a drop refuses a welcome for another world, so the page can reload 1003ms
- ✓ |server| src/world/worldRoom.test.ts (12 tests) 8877ms
+ ✓ |server| src/world/worldRoom.test.ts (12 tests) 8704ms
    ✓ WorldRoom over a real connection (10)
-     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 730ms
-     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 418ms
-     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1258ms
-     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5146ms
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 639ms
+     ✓ shows every player the others moving, through deltas that chain without a gap 330ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 445ms
+     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1216ms
+     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5165ms
 
- Test Files  33 passed (33)
-      Tests  220 passed (220)
-   Start at  13:11:10
-   Duration  9.80s (tests 77%, import 17%, transform 5%, worker 1%)
+ Test Files  34 passed (34)
+      Tests  223 passed (223)
+   Start at  13:44:02
+   Duration  9.66s (tests 75%, import 18%, transform 6%, worker 1%)
 
 JSON report written to <repo>/verifications/18-client-online-mode/proof/01-tests-report.json
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses
@@ -115,5 +117,5 @@ $ pnpm sim:headless (exit 0)
 > tsx src/headlessRun.ts
 
 {"simulatedSeconds":5,"ticks":300,"hash":"50b21d74","player":{"x":-3.583388328552246,"y":4.499997615814209}}
-(node:67317) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:81113) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)

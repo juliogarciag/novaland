@@ -6,7 +6,7 @@ PASS  the local player sits in seat 0, like before
 PASS  the HUD shows the controls and the tick, and no online counter  (WASD / arrows to move   tick 10
 you: player-ember   players: 1
 J: seat another player (dev))
-PASS  holding D walks the player east through the local sim  (-13.50 -> -10.92)
+PASS  holding D walks the player east through the local sim  (-13.50 -> -11.00)
 PASS  no page or console errors
 PASS  ticket #21's browser verification still passes on this branch  (ALL 27 CHECKS PASSED)
 

@@ -15,7 +15,7 @@ PASS  each stands at the centre of its tile, so no two bodies overlap
 PASS  each is drawn as a sprite from its own avatar's sheet  (player-slate, player-ember, player-sun, player-plum, player-rose)
 PASS  the HUD counts five players  (WASD / arrows to move   tick 21 | you: player-ember   players: 5 | J: seat another player (dev))
 PASS  a neighbour stands straight ahead on open ground (needed for the walk-through)  (player-slate to the up)
-PASS  the local player walked straight through the neighbour and is now well past it  (1.58 m past its centre (bodies are 0.8 m across))
+PASS  the local player walked straight through the neighbour and is now well past it  (1.50 m past its centre (bodies are 0.8 m across))
 PASS  the neighbour was not pushed at all
 PASS  it never slowed down or bounced while crossing (every sample moved forward)  (13 steps)
 PASS  it stayed on its line (no sideways deflection)
