@@ -3,8 +3,8 @@ Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
 Already up to date
 
-Done in 508ms using pnpm v10.9.0
-(node:73795) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 506ms using pnpm v10.9.0
+(node:86309) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -16,11 +16,11 @@ $ pnpm typecheck
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:73815) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:86332) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -35,64 +35,63 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| src/online/serverUrl.test.ts (3 tests) 2ms
- ✓ |client| src/render/zoom.test.ts (4 tests) 10ms
- ✓ |client| src/input/keyboard.test.ts (9 tests) 6ms
- ✓ |client| src/online/frameBuffer.test.ts (7 tests) 8ms
- ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 17ms
- ✓ |client| src/render/viewFrame.test.ts (6 tests) 104ms
- ✓ |client| src/worlds/LocalWorld.test.ts (3 tests) 100ms
- ✓ |client| src/seats.test.ts (3 tests) 115ms
- ✓ |client| src/online/screens.test.ts (1 test) 3ms
- ✓ |client| src/online/connection.test.ts (14 tests) 52ms
- ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
- ✓ |client| src/input/direction.test.ts (5 tests) 3ms
- ✓ |client| src/render/pose.test.ts (3 tests) 7ms
- ✓ |server| src/http/origins.test.ts (11 tests) 10ms
- ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 3ms
- ✓ |server| src/world/inbound.test.ts (8 tests) 4ms
- ✓ |server| src/world/seats.test.ts (3 tests) 3ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 9ms
+ ✓ |client| src/online/screens.test.ts (1 test) 2ms
+ ✓ |client| src/online/frameBuffer.test.ts (7 tests) 7ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 11ms
+ ✓ |client| src/render/viewFrame.test.ts (6 tests) 88ms
+ ✓ |client| src/seats.test.ts (3 tests) 93ms
+ ✓ |client| src/worlds/LocalWorld.test.ts (3 tests) 110ms
+ ✓ |client| src/online/connection.test.ts (14 tests) 33ms
  ✓ |client| src/render/camera.test.ts (4 tests) 3ms
- ✓ |server| src/headless.test.ts (3 tests) 198ms
- ✓ |sim| src/features/player/avatars.test.ts (7 tests) 494ms
- ✓ |sim| src/core/worldState.test.ts (10 tests) 530ms
-   ✓ diffWorldState and applyWorldStateDelta (9)
-     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 348ms
- ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 521ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 594ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 4ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 8ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 6ms
+ ✓ |client| src/online/serverUrl.test.ts (3 tests) 3ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 3ms
+ ✓ |server| src/http/origins.test.ts (11 tests) 6ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 4ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |server| src/world/roomSeats.test.ts (3 tests) 7ms
+ ✓ |server| src/world/startWorldServer.test.ts (3 tests) 5ms
+ ✓ |server| src/headless.test.ts (3 tests) 335ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 280ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 418ms
    ✓ determinism (4)
-     ✓ same seed + same commands = identical state, including physics bytes 403ms
- ✓ |server| src/http/oneProcess.test.ts (12 tests) 542ms
- ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 300ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 119ms
- ✓ |sim| src/features/player/spawn.test.ts (7 tests) 157ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 263ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 146ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 336ms
- ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 170ms
- ✓ |sim| src/core/restore.test.ts (11 tests) 44ms
- ✓ |sim| src/content/levels/levels.test.ts (3 tests) 69ms
- ✓ |sim| src/core/replica.test.ts (23 tests) 1414ms
+     ✓ same seed + same commands = identical state, including physics bytes 383ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 452ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 194ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 209ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 269ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 317ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 420ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 81ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 52ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 128ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 121ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 81ms
+ ✓ |sim| src/core/replica.test.ts (23 tests) 1406ms
    ✓ a replica fed full world states every tick (1)
-     ✓ draws exactly what the sim draws, tick after tick, through JSON 902ms
-   ✓ a replica fed deltas at a send rate (7)
-     ✓ matches the sim at every send with a delta every 1 tick(s), through joins, leaves and a recycled entity id 363ms
- ✓ |client| src/online/OnlineWorld.test.ts (13 tests) 2275ms
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 1061ms
+ ✓ |client| src/online/OnlineWorld.test.ts (13 tests) 2313ms
    ✓ OnlineWorld (12)
-     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1007ms
-     ✓ after a drop refuses a welcome for another world, so the page can reload 1005ms
- ✓ |server| src/world/worldRoom.test.ts (12 tests) 8813ms
+     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1049ms
+     ✓ after a drop refuses a welcome for another world, so the page can reload 1003ms
+ ✓ |server| src/http/oneProcess.test.ts (13 tests) 3518ms
+   ✓ serveClientFiles with a client directory whose own path contains "assets" (1)
+     ✓ still caches only the files under the build's assets/ folder for a year 3100ms
+ ✓ |server| src/world/worldRoom.test.ts (12 tests) 8698ms
    ✓ WorldRoom over a real connection (10)
-     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 609ms
-     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 430ms
-     ✓ spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses 336ms
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 581ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 421ms
+     ✓ spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses 323ms
      ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1225ms
-     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5156ms
+     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5142ms
 
- Test Files  36 passed (36)
-      Tests  246 passed (246)
-   Start at  13:14:17
-   Duration  9.90s (tests 75%, import 17%, transform 6%, worker 2%)
+ Test Files  37 passed (37)
+      Tests  250 passed (250)
+   Start at  13:46:01
+   Duration  9.70s (tests 77%, import 16%, transform 5%, worker 1%)
 
 JSON report written to <repo>/verifications/19-one-process/proof/01-tests-report.json
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses

@@ -13,17 +13,17 @@ packages/client build: transforming...
 packages/server build: ✓ 141 modules transformed.
 packages/server build: rendering chunks...
 packages/server build: computing gzip size...
-packages/server build: dist/index.mjs  3,756.60 kB │ gzip: 1,385.22 kB │ map: 4,345.42 kB
-packages/server build: ✓ built in 154ms
+packages/server build: dist/index.mjs  3,757.29 kB │ gzip: 1,385.48 kB │ map: 4,346.26 kB
+packages/server build: ✓ built in 152ms
 packages/server build: Done
 packages/client build: ✓ 203 modules transformed.
 packages/client build: rendering chunks...
 packages/client build: computing gzip size...
 packages/client build: dist/index.html                    0.89 kB │ gzip:     0.54 kB
 packages/client build: dist/assets/index-BqjP-Dcp.js  5,124.12 kB │ gzip: 1,766.67 kB
-packages/client build: ✓ built in 529ms
+packages/client build: ✓ built in 516ms
 packages/client build: Done
-(node:74227) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:86876) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -32,17 +32,17 @@ server output:
 > novaland@0.0.0 start <repo>
 > pnpm --filter @novaland/server start
 
-(node:74310) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:87148) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 > @novaland/server@0.0.0 start <repo>/packages/server
 > node dist/index.mjs
 
-{"event":"world-room-listening","port":5420,"roomId":"world","seed":2021351411,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
+{"event":"world-room-listening","port":5420,"roomId":"world","seed":264719322,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
 
 
 observer output (last lines):
-{"event":"world","tick":219,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0},{"slot":1,"eid":46,"x":-13.5,"y":0.5,"intentX":0,"intentY":0},{"slot":2,"eid":47,"x":-12.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":225,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":231,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":238,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":258,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0},{"slot":1,"eid":46,"x":-14.5,"y":-1.5,"intentX":0,"intentY":0},{"slot":2,"eid":47,"x":-12.5,"y":-1.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":267,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":273,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":277,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}

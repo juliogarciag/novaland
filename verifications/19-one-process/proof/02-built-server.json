@@ -16,7 +16,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 3
+    "tick": 7
   },
   "indexHeaders": {
     "cache-control": "no-cache",
@@ -24,8 +24,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Tue, 10 Nov 2026 18:14:30 GMT",
-    "etag": "W/\"383-1a1c6ab2d7c\"",
+    "date": "Tue, 10 Nov 2026 18:46:14 GMT",
+    "etag": "W/\"383-1a1c6c83958\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -111,8 +111,8 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": 0.5,
+        "x": -14.5,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -151,11 +151,11 @@
         "status": 200
       },
       {
-        "url": "/sprites/player-ember.png",
+        "url": "/sprites/player-teal.png",
         "status": 200
       },
       {
-        "url": "/sprites/player-teal.png",
+        "url": "/sprites/player-ember.png",
         "status": 200
       },
       {
@@ -163,35 +163,35 @@
         "status": 200
       },
       {
-        "url": "blob:/bf546ecb-6037-4434-884a-554bdddc5461",
+        "url": "blob:/ec57f146-ad29-4d46-9516-9251a53882b1",
         "status": 200
       },
       {
-        "url": "blob:/7e46854c-ad36-41c7-bff4-d6e3aee123d5",
+        "url": "blob:/1e17cb72-98a0-4bdb-b94f-e5b5a2e0eb63",
         "status": 200
       },
       {
-        "url": "blob:/cf907108-dddc-4581-bf9a-355d795c7891",
+        "url": "blob:/888ac6c4-6e52-461f-94fe-269d2bc91b33",
         "status": 200
       },
       {
-        "url": "blob:/d0315281-e65b-40b1-b5ef-3a4b11c6058e",
+        "url": "blob:/01f9222d-8650-49ec-b40e-f169689f99a2",
         "status": 200
       },
       {
-        "url": "blob:/b1e5c6cc-d54c-43b4-889e-bbe4256e0a9a",
+        "url": "blob:/d418f7d0-31f8-484d-9f37-3f650e654d4d",
         "status": 200
       },
       {
-        "url": "blob:/43f69001-d9fe-44d9-8e46-7cc253a03b71",
+        "url": "blob:/56230747-4e94-4373-941c-10d8e97401f8",
         "status": 200
       },
       {
-        "url": "blob:/92cf1d19-22d9-4066-aa72-38a80d75f882",
+        "url": "blob:/772dd432-04ef-4f75-830b-0c1f3c418cbd",
         "status": 200
       },
       {
-        "url": "blob:/ab804ef6-8f57-4921-9c77-3144083f2638",
+        "url": "blob:/98f30138-eb1a-4aba-bc07-8e7432618886",
         "status": 200
       }
     ],

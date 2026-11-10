@@ -98,7 +98,7 @@
       {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
+        "x": -13.5,
         "y": 0.5,
         "intentX": 0,
         "intentY": 0
@@ -117,19 +117,19 @@
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -9.833,
+        "x": -9.667,
         "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.667
+      "distance": 4.833
     },
     "bWalk": {
       "slot": 2,
       "start": {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
+        "x": -13.5,
         "y": 0.5,
         "intentX": 0,
         "intentY": 0
@@ -137,28 +137,28 @@
       "end": {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
-        "y": 4.917,
+        "x": -13.5,
+        "y": 5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.417
+      "distance": 4.5
     },
     "quietFrames": {
       "count": 19,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 20,
-      "meanBytes": 117.3
+      "count": 21,
+      "meanBytes": 117.61904761904762
     },
     "aQuietFrames": {
-      "count": 20,
+      "count": 19,
       "meanBytes": 65
     },
     "aFramesDuringBWalk": {
       "count": 20,
-      "meanBytes": 116.5
+      "meanBytes": 115.5
     },
     "responses": [
       {
@@ -177,22 +177,7 @@
         "contentType": "application/json"
       },
       {
-        "url": "/sprites/player-moss.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-rose.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
         "url": "/sprites/player-sky.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-sun.png",
         "status": 200,
         "contentType": "image/png"
       },
@@ -207,6 +192,21 @@
         "contentType": "image/png"
       },
       {
+        "url": "/sprites/player-sun.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-rose.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
         "url": "/sprites/player-teal.png",
         "status": 200,
         "contentType": "image/png"
@@ -217,82 +217,82 @@
         "contentType": "image/png"
       },
       {
-        "url": "blob:/68a10b50-d7f9-452d-b621-344f9793aab6",
+        "url": "blob:/b2e62dbb-7bfb-4ed0-a93c-41be19175157",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/816df424-40c0-4954-8fde-57479923c31d",
+        "url": "blob:/8b78fe14-1078-4c3c-ad63-270f8259f78d",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/dc51d85e-c67c-4037-9cd2-4e64ab1f4e89",
+        "url": "blob:/3399e127-bcb7-4337-9c44-8e780a62edcc",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/893ebf89-cc2d-44be-b0d1-c11f1af9b3df",
+        "url": "blob:/4ecdbb1e-0289-477f-8ded-8dbbe2d220d3",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/82aa9e79-5b69-4a6d-9931-b51a25fd1eb6",
+        "url": "blob:/c8385e49-ef01-4437-8f3f-564ac748d87c",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/b35ce173-9764-46e4-94ed-9928d6cfdadf",
+        "url": "blob:/5c02c5f4-7d45-4b3e-9244-37716c4b9e70",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/d919f7a3-2d26-4fc3-b824-d3df45c5c241",
+        "url": "blob:/8abe82f7-0ca2-4455-a49e-0f140fc50e9e",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/43a84224-e1a5-4a6f-a025-e6c2d2d553c0",
+        "url": "blob:/485557d2-dbd3-43b9-80c0-0ea2c8a68180",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/8a540e42-41c3-4995-a429-15299d050cce",
+        "url": "blob:/cd884bcf-fb04-4071-a44f-e7007c866f4a",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/650c8cef-edf0-4d37-b2bd-0cb61e137b60",
+        "url": "blob:/c8dd4a14-0ec8-4434-81cf-08da9c3b6130",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/fa2c113d-c895-456e-be89-28a515551565",
+        "url": "blob:/f2af6ed6-9de7-4d39-97d0-a5fbd8270eb3",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/717af9b2-d6fd-418b-ac38-542367115852",
+        "url": "blob:/3701f466-165e-4b3e-b600-69c532b2290f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/8f623415-d8fc-4a0b-b48f-abeebffec30f",
+        "url": "blob:/178ccadd-ae8f-4867-ac15-7cd947ebafbd",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/85398c57-feb7-46e9-8801-e1de2419e772",
+        "url": "blob:/b57988bb-81a6-4ec2-9e50-da40ae971c64",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/c4e0f639-9328-4c2c-81ad-eff3741a56b9",
+        "url": "blob:/403de9e2-491c-451a-a72b-dbc73ae08229",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/35b41808-c771-4fc0-81d5-32f40e141dcc",
+        "url": "blob:/e2377d59-3ce5-45f0-b3c4-182ad3f0e3ea",
         "status": 200,
         "contentType": "image/png"
       }
@@ -301,5 +301,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.159
+  "stopSeconds": 0.138
 }
