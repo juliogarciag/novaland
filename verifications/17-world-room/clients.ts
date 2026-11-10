@@ -17,6 +17,9 @@ import {
   findPlayerEntity,
   getHeading,
   getRenderables,
+  isAvatarDefId,
+  readTileGrid,
+  tileAt,
   WIRE,
   type ReplicaHandle,
   type WelcomeMessage,
@@ -55,6 +58,13 @@ for (let i = 0; i < SEATS; i += 1) {
 }
 const slots = players.map((player) => player.welcome.slot);
 const everyoneInLastWelcome = slots.every((slot) => findPlayerEntity(players[SEATS - 1]!.replica, slot) !== undefined);
+// The sim picks each joiner's avatar and a free tile near the spawn.
+const lastReplica = players[SEATS - 1]!.replica;
+const avatarsAtWelcome = getRenderables(lastReplica).filter((renderable) => isAvatarDefId(renderable.defId));
+const spawnTiles = avatarsAtWelcome.map((avatar) => tileAt(readTileGrid(lastReplica.level), avatar.x, avatar.y)).map((tile) => (tile ? `${tile.column},${tile.row}` : 'off-grid'));
+const distinctAvatars = new Set(avatarsAtWelcome.map((avatar) => avatar.defId)).size;
+const distinctSpawnTiles = new Set(spawnTiles).size;
+say(`the last welcome shows ${avatarsAtWelcome.length} players wearing ${distinctAvatars} distinct avatars on ${distinctSpawnTiles} distinct tiles (${spawnTiles.join(' ')})`);
 
 // 2. Each sees the others move: every player walks a different way, every replica must agree with every other.
 await waitForUpdates(players, 2);
@@ -156,6 +166,7 @@ console.log(JSON.stringify({
   seats: SEATS,
   slots,
   everyoneInLastWelcome,
+  spawns: { players: avatarsAtWelcome.length, distinctAvatars, distinctSpawnTiles },
   everyoneSeesEveryoneMove,
   replicasAgree,
   refusal,
