@@ -29,7 +29,8 @@ export interface ReplicaHandle extends SimHandle {
  * What applying an update to a replica did. `out-of-sequence` means a delta
  * did not continue from the replica's tick (a message was missed, or no full
  * state has arrived yet): the replica is untouched and needs a full state.
- * `malformed` means the update was not a world state or delta at all.
+ * `malformed` means the update did not match the world-state schema
+ * (`readWorldStateUpdate`), even in one entry: the replica is untouched.
  */
 export type WorldStateApplyResult = 'applied' | 'out-of-sequence' | 'malformed';
 
@@ -97,8 +98,10 @@ export class Replica implements ReplicaHandle, EntityWorld {
 
 /**
  * Writes a world state or delta into a replica. This is where network data
- * enters the sim: the update is checked field by field, and anything that is
- * not a valid entity id, a known component or a finite number is skipped.
+ * enters the sim. The update must match the world-state schema as a whole
+ * (`readWorldStateUpdate`), or nothing is applied. What depends on this
+ * world is then skipped rather than refused: ids beyond its capacity,
+ * unknown components and unknown fields (restore.ts).
  * A full state replaces everything the replica had, whatever its tick (the
  * server may have restarted). A delta applies only when a full state has
  * been applied before and it continues from the replica's tick. New ids are

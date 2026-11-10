@@ -311,7 +311,12 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "applyWorldState with data from the network drops bad entries, unknown components, unknown fields and non-numbers but applies the rest",
+    "name": "applyWorldState with data from the network refuses a whole delta when one entry is malformed, and leaves the replica untouched",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network skips what depends on the world: ids beyond its capacity, unknown components and unknown fields",
     "status": "passed"
   },
   {
@@ -326,7 +331,7 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "applyWorldState with data from the network a full state from the network with bad entries keeps the good ones and drops everything else",
+    "name": "applyWorldState with data from the network refuses a full state with a malformed entry whole, and drops only an entity whose id is beyond the capacity",
     "status": "passed"
   },
   {
@@ -466,7 +471,7 @@
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
-    "name": "diffWorldState and applyWorldStateDelta skips malformed entries of a delta and keeps the rest",
+    "name": "diffWorldState and applyWorldStateDelta refuses a whole delta when one entry is malformed, and agrees with a replica on it",
     "status": "passed"
   },
   {
