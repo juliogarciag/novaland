@@ -4,7 +4,7 @@
  * what a session sends. Seats are handed out lowest-free-first so a leaver's
  * seat is the next one taken.
  */
-export class Seats {
+export class RoomSeats {
   private readonly slotBySession = new Map<string, number>();
 
   constructor(private readonly maxSeats: number) {}

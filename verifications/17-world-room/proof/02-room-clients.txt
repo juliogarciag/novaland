@@ -1,4 +1,4 @@
-PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":54899,"roomId":"world","seed":1903205101,"seats":5,"tickRate":60,"sendRate":20})
+PASS  the server boots and reports its port, room id and seed  ({"event":"world-room-listening","port":57772,"roomId":"world","seed":1168247342,"seats":5,"tickRate":60,"sendRate":20})
 PASS  the test clients ran to the end
 PASS  five players joined by id and got seats 0..4
 PASS  the last welcome already holds every player's entity

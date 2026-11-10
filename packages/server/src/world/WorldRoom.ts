@@ -13,7 +13,7 @@ import {
 } from '@novaland/sim';
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
 import { MessageBudget, payloadLength, readMoveMessage } from './inbound';
-import { Seats } from './seats';
+import { RoomSeats } from './roomSeats';
 import { takeWholeTicks } from './takeWholeTicks';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
@@ -79,7 +79,7 @@ export class WorldRoom extends Room {
   readonly dropped: DroppedMessages = { unknownType: 0, oversized: 0, malformed: 0, overBudget: 0 };
 
   private sim: SimHandle | undefined;
-  private readonly seats = new Seats(MAX_SEATS);
+  private readonly seats = new RoomSeats(MAX_SEATS);
   private readonly sessions = new Map<string, Session>();
   private pendingCommands: Command[] = [];
   private tickWaiters: Array<(ticked: boolean) => void> = [];
