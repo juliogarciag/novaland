@@ -8,7 +8,7 @@
 export { createReplica, createSim, type ReplicaOptions, type SimOptions } from './core/create';
 export type { SimHandle } from './core/sim';
 export type { Command } from './core/commands';
-export { FIXED_DT, TICK_RATE } from './content/tuning';
+export { FIXED_DT, MAX_PLAYER_SLOTS, TICK_RATE } from './content/tuning';
 export { hashSnapshot, type EntitySnapshot, type SimSnapshot } from './core/snapshot';
 export { applyWorldStateDelta, diffWorldState, worldState, type EntityDelta, type WorldState, type WorldStateDelta, type WorldStateUpdate } from './core/worldState';
 export { applyWorldState, type ReplicaHandle, type WorldStateApplyResult } from './core/replica';
@@ -23,3 +23,4 @@ export { readTileGrid, spawnPoint, tileAt, tileCentre } from './content/levels/g
 export { getTileDef, terrainDefs, TILE_SIZE, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';
+export { avatarDefIds, isAvatarDefId } from './features/player/defs';

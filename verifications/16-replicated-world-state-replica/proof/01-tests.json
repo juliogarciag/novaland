@@ -15,6 +15,61 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats skips seats that are taken in the sim and seats a queued join is about to take",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats reports no seat once every one is spoken for",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
@@ -82,31 +137,6 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
@@ -222,6 +252,11 @@
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate removes an entity that left and reports a delta it cannot continue from",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "a replica fed deltas at a send rate shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five",
     "status": "passed"
   },
   {
@@ -450,6 +485,41 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) picks the same avatars for the same seed and the same joins, and other avatars for another seed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) never hands out an avatar somebody present wears while an unworn one is left",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) falls back to a worn avatar once every one is taken, instead of refusing the join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) frees an avatar when its player leaves, so the next arrival takes the only unworn one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) ignores any avatar a client puts in the join command: the sim chooses",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) keeps the avatar in the snapshot through the DefRef component, so it survives serialization",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) spawns facing down with no move intent",
     "status": "passed"
@@ -532,6 +602,56 @@
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) two players walking at each other cross and each keeps walking at full speed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) puts the first player on the spawn tile itself",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) lands five joins on five distinct, walkable tiles, all next to the spawn tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) chooses the same tiles for the same seed and joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) skips solid tiles and tiles a player stands on, reaching further out when the first ring is full",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) treats a tile a player walked onto as taken and a tile a player left as free again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
     "status": "passed"
   },
   {

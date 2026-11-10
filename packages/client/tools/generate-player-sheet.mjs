@@ -1,17 +1,19 @@
 /**
- * Generates the placeholder player sheet at public/sprites/player.png.
+ * Generates the placeholder avatar sheets at public/sprites/player-<avatar>.png,
+ * one per entry of AVATAR_PALETTES below. The keys must match the sprite keys
+ * of the player avatar defs in packages/sim/src/features/player/defs.ts.
  *
- * The sheet is four rows (down, up, left, right) of four 16x24 frames. Frame 0
- * of each row is the idle pose; the walk cycle plays the whole row:
- * stand, left step, passing pose (body one pixel taller), right step. The frame
- * layout must match the player's `sprite` def in
- * packages/sim/src/features/player/defs.ts.
+ * Every sheet is the same character in another palette (shirt, hair, skin,
+ * pants): four rows (down, up, left, right) of four 16x24 frames. Frame 0 of
+ * each row is the idle pose; the walk cycle plays the whole row: stand, left
+ * step, passing pose (body one pixel taller), right step. The frame layout
+ * must match the avatars' `sprite` def.
  *
  * Plain Node, no dependencies: the figure is painted into an RGBA buffer and
  * written as a PNG by the small encoder at the bottom.
  *
- *   node tools/generate-player-sheet.mjs            # writes public/sprites/player.png
- *   node tools/generate-player-sheet.mjs out.png    # writes somewhere else (used by verifications)
+ *   node tools/generate-player-sheet.mjs                # writes every sheet into public/sprites/
+ *   node tools/generate-player-sheet.mjs --out <dir>    # writes them somewhere else (used by verifications)
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -23,16 +25,23 @@ export const FRAME_HEIGHT = 24;
 export const DIRECTIONS = ['down', 'up', 'left', 'right'];
 export const FRAMES_PER_DIRECTION = 4;
 
-const PALETTE = {
+/** Colours every avatar shares. */
+const COMMON = {
   outline: [0x1f, 0x1a, 0x17],
-  skin: [0xf1, 0xc2, 0x7d],
-  hair: [0x6b, 0x3e, 0x1e],
   eye: [0x14, 0x12, 0x1a],
-  shirt: [0x3b, 0x82, 0xf6],
-  shirtShade: [0x2a, 0x5f, 0xc0],
-  pants: [0x37, 0x41, 0x51],
-  pantsShade: [0x26, 0x2d, 0x3a],
   shoe: [0x1f, 0x29, 0x37],
+};
+
+/** One palette per avatar, keyed by sprite key. The shirt colour is also the def's `color` in the sim. */
+export const AVATAR_PALETTES = {
+  'player-sky': { skin: [0xf1, 0xc2, 0x7d], hair: [0x6b, 0x3e, 0x1e], shirt: [0x3b, 0x82, 0xf6], shirtShade: [0x2a, 0x5f, 0xc0], pants: [0x37, 0x41, 0x51], pantsShade: [0x26, 0x2d, 0x3a] },
+  'player-rose': { skin: [0x8d, 0x55, 0x24], hair: [0x1f, 0x1a, 0x17], shirt: [0xe1, 0x1d, 0x48], shirtShade: [0xbe, 0x12, 0x3c], pants: [0x1e, 0x29, 0x3b], pantsShade: [0x16, 0x1f, 0x2e] },
+  'player-moss': { skin: [0xff, 0xdb, 0xac], hair: [0xd9, 0x77, 0x06], shirt: [0x16, 0xa3, 0x4a], shirtShade: [0x15, 0x80, 0x3d], pants: [0x57, 0x53, 0x4e], pantsShade: [0x3f, 0x3c, 0x38] },
+  'player-sun': { skin: [0xc6, 0x86, 0x42], hair: [0x1f, 0x1a, 0x17], shirt: [0xf5, 0x9e, 0x0b], shirtShade: [0xd9, 0x77, 0x06], pants: [0x37, 0x41, 0x51], pantsShade: [0x26, 0x2d, 0x3a] },
+  'player-plum': { skin: [0xf1, 0xc2, 0x7d], hair: [0xf3, 0xe5, 0xab], shirt: [0x7c, 0x3a, 0xed], shirtShade: [0x6d, 0x28, 0xd9], pants: [0x2f, 0x2f, 0x3f], pantsShade: [0x21, 0x21, 0x2e] },
+  'player-ember': { skin: [0xe0, 0xac, 0x69], hair: [0x3b, 0x2f, 0x2f], shirt: [0xea, 0x58, 0x0c], shirtShade: [0xc2, 0x41, 0x0c], pants: [0x44, 0x40, 0x3c], pantsShade: [0x2f, 0x2c, 0x29] },
+  'player-teal': { skin: [0xff, 0xdb, 0xac], hair: [0x6b, 0x72, 0x80], shirt: [0x0d, 0x94, 0x88], shirtShade: [0x0f, 0x76, 0x6e], pants: [0x4b, 0x3a, 0x2f], pantsShade: [0x35, 0x29, 0x21] },
+  'player-slate': { skin: [0x8d, 0x55, 0x24], hair: [0xb4, 0x53, 0x09], shirt: [0x47, 0x55, 0x69], shirtShade: [0x33, 0x41, 0x55], pants: [0x1e, 0x29, 0x3b], pantsShade: [0x16, 0x1f, 0x2e] },
 };
 
 /** How the body is posed in each of the four frames of a row. `forwardLeg` is from the character's point of view. */
@@ -43,12 +52,13 @@ const POSES = [
   { bob: 0, forwardLeg: 'right' },
 ];
 
-/** The whole sheet as RGBA bytes, rows top to bottom. */
-export function paintPlayerSheet() {
+/** The whole sheet of one avatar as RGBA bytes, rows top to bottom. */
+export function paintPlayerSheet(palette) {
+  const colors = { ...COMMON, ...palette };
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      const frame = paintFrame(direction, pose);
+      const frame = paintFrame(colors, direction, pose);
       blit(sheet, frame, column * FRAME_WIDTH, row * FRAME_HEIGHT);
     });
   });
@@ -58,88 +68,88 @@ export function paintPlayerSheet() {
 /** Last row of the figure. Its outline takes the row below; the bottom row of the frame stays clear. */
 const FEET_ROW = 21;
 
-function paintFrame(direction, pose) {
+function paintFrame(colors, direction, pose) {
   const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   const top = 3 + pose.bob; // first hair row; the rows above hold the outline and a clear margin
   const torsoTop = top + 9; // the neck sits on the row between head and torso
-  paintLegs(frame, { direction, pose, top: torsoTop + 5 });
-  paintTorsoAndArms(frame, { direction, pose, top: torsoTop });
-  paintHead(frame, direction, top);
-  outline(frame, PALETTE.outline);
+  paintLegs(frame, colors, { direction, pose, top: torsoTop + 5 });
+  paintTorsoAndArms(frame, colors, { direction, pose, top: torsoTop });
+  paintHead(frame, colors, direction, top);
+  outline(frame, colors.outline);
   return frame;
 }
 
-function paintHead(frame, direction, top) {
+function paintHead(frame, colors, direction, top) {
   // Skull: 8 wide (columns 4-11), 8 tall, with the top and bottom rows one pixel narrower.
-  rect(frame, 5, top, 6, 1, PALETTE.hair);
-  rect(frame, 4, top + 1, 8, 2, PALETTE.hair);
-  rect(frame, 4, top + 3, 8, 4, PALETTE.skin);
-  rect(frame, 5, top + 7, 6, 1, PALETTE.skin);
+  rect(frame, 5, top, 6, 1, colors.hair);
+  rect(frame, 4, top + 1, 8, 2, colors.hair);
+  rect(frame, 4, top + 3, 8, 4, colors.skin);
+  rect(frame, 5, top + 7, 6, 1, colors.skin);
   switch (direction) {
     case 'down':
-      rect(frame, 4, top + 3, 1, 2, PALETTE.hair);
-      rect(frame, 11, top + 3, 1, 2, PALETTE.hair);
-      pixel(frame, 6, top + 5, PALETTE.eye);
-      pixel(frame, 9, top + 5, PALETTE.eye);
+      rect(frame, 4, top + 3, 1, 2, colors.hair);
+      rect(frame, 11, top + 3, 1, 2, colors.hair);
+      pixel(frame, 6, top + 5, colors.eye);
+      pixel(frame, 9, top + 5, colors.eye);
       break;
     case 'up':
-      rect(frame, 4, top + 3, 8, 4, PALETTE.hair);
-      rect(frame, 5, top + 7, 6, 1, PALETTE.hair);
+      rect(frame, 4, top + 3, 8, 4, colors.hair);
+      rect(frame, 5, top + 7, 6, 1, colors.hair);
       break;
     case 'left':
-      rect(frame, 8, top + 3, 4, 4, PALETTE.hair);
-      rect(frame, 9, top + 7, 2, 1, PALETTE.hair);
-      pixel(frame, 5, top + 5, PALETTE.eye);
+      rect(frame, 8, top + 3, 4, 4, colors.hair);
+      rect(frame, 9, top + 7, 2, 1, colors.hair);
+      pixel(frame, 5, top + 5, colors.eye);
       break;
     case 'right':
-      rect(frame, 4, top + 3, 4, 4, PALETTE.hair);
-      rect(frame, 5, top + 7, 2, 1, PALETTE.hair);
-      pixel(frame, 10, top + 5, PALETTE.eye);
+      rect(frame, 4, top + 3, 4, 4, colors.hair);
+      rect(frame, 5, top + 7, 2, 1, colors.hair);
+      pixel(frame, 10, top + 5, colors.eye);
       break;
   }
 }
 
-function paintTorsoAndArms(frame, { direction, pose, top }) {
-  rect(frame, 7, top - 1, 2, 1, PALETTE.skin); // neck
-  rect(frame, 5, top, 6, 5, direction === 'up' ? PALETTE.shirtShade : PALETTE.shirt);
+function paintTorsoAndArms(frame, colors, { direction, pose, top }) {
+  rect(frame, 7, top - 1, 2, 1, colors.skin); // neck
+  rect(frame, 5, top, 6, 5, direction === 'up' ? colors.shirtShade : colors.shirt);
   const swing = pose.forwardLeg === 'left' ? 1 : pose.forwardLeg === 'right' ? -1 : 0;
   if (direction === 'down' || direction === 'up') {
     // The arm opposite the forward leg swings forward (drawn one pixel lower), the other one back (higher).
     const [leftArm, rightArm] = direction === 'down' ? [11, 4] : [4, 11];
-    paintArm(frame, leftArm, top - swing);
-    paintArm(frame, rightArm, top + swing);
+    paintArm(frame, colors, leftArm, top - swing);
+    paintArm(frame, colors, rightArm, top + swing);
   } else {
     // In profile only the near arm shows, swinging along the walk.
     const column = direction === 'left' ? 7 - swing : 8 + swing;
-    paintArm(frame, column, top);
+    paintArm(frame, colors, column, top);
   }
 }
 
-function paintArm(frame, column, top) {
-  rect(frame, column, top, 1, 3, PALETTE.shirtShade);
-  rect(frame, column, top + 3, 1, 2, PALETTE.skin);
+function paintArm(frame, colors, column, top) {
+  rect(frame, column, top, 1, 3, colors.shirtShade);
+  rect(frame, column, top + 3, 1, 2, colors.skin);
 }
 
-function paintLegs(frame, { direction, pose, top }) {
+function paintLegs(frame, colors, { direction, pose, top }) {
   if (direction === 'down' || direction === 'up') {
     // Front and back view: the lifted leg is one pixel shorter, the planted one keeps its length.
     const [leftColumn, rightColumn] = direction === 'down' ? [8, 5] : [5, 8];
-    paintLeg(frame, { column: leftColumn, top, lift: pose.forwardLeg === 'right' ? 1 : 0, pantsColor: PALETTE.pants });
-    paintLeg(frame, { column: rightColumn, top, lift: pose.forwardLeg === 'left' ? 1 : 0, pantsColor: PALETTE.pants });
+    paintLeg(frame, colors, { column: leftColumn, top, lift: pose.forwardLeg === 'right' ? 1 : 0, pantsColor: colors.pants });
+    paintLeg(frame, colors, { column: rightColumn, top, lift: pose.forwardLeg === 'left' ? 1 : 0, pantsColor: colors.pants });
     return;
   }
   // Profile: the legs spread apart along the walk. The far leg is drawn first and darker.
   const ahead = direction === 'left' ? -1 : 1;
   const spread = pose.forwardLeg === null ? 0 : pose.forwardLeg === 'left' ? ahead : -ahead;
-  paintLeg(frame, { column: 7 - spread, top, lift: 0, pantsColor: PALETTE.pantsShade });
-  paintLeg(frame, { column: 6 + spread, top, lift: 0, pantsColor: PALETTE.pants });
+  paintLeg(frame, colors, { column: 7 - spread, top, lift: 0, pantsColor: colors.pantsShade });
+  paintLeg(frame, colors, { column: 6 + spread, top, lift: 0, pantsColor: colors.pants });
 }
 
 /** A 3-wide leg from `top` down to the feet row: pants then a 2-row shoe, `lift` pixels off the ground. */
-function paintLeg(frame, { column, top, lift, pantsColor }) {
+function paintLeg(frame, colors, { column, top, lift, pantsColor }) {
   const bottom = FEET_ROW - lift;
   rect(frame, column, top, 3, bottom - 1 - top, pantsColor);
-  rect(frame, column, bottom - 1, 3, 2, PALETTE.shoe);
+  rect(frame, column, bottom - 1, 3, 2, colors.shoe);
 }
 
 // ---- Pixel canvas ----
@@ -244,11 +254,21 @@ function concat(parts) {
 // ---- Entry point ----
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_OUTPUT = path.resolve(here, '../public/sprites/player.png');
+const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
+
+/** Writes every avatar sheet into `directory` as `<key>.png` and returns the paths. */
+export function writeAvatarSheets(directory) {
+  mkdirSync(directory, { recursive: true });
+  return Object.entries(AVATAR_PALETTES).map(([key, palette]) => {
+    const file = path.join(directory, `${key}.png`);
+    writeFileSync(file, encodePng(paintPlayerSheet(palette)));
+    return file;
+  });
+}
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const output = process.argv[2] ? path.resolve(process.argv[2]) : DEFAULT_OUTPUT;
-  mkdirSync(path.dirname(output), { recursive: true });
-  writeFileSync(output, encodePng(paintPlayerSheet()));
-  console.log(`wrote ${output}`);
+  const outFlag = process.argv.indexOf('--out');
+  if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheets go to public/sprites');
+  const directory = outFlag >= 0 ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
+  for (const file of writeAvatarSheets(directory)) console.log(`wrote ${file}`);
 }
