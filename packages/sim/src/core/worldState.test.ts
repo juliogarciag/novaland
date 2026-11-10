@@ -95,10 +95,21 @@ describe('diffWorldState and applyWorldStateDelta', () => {
 
   it('returns undefined for a state that is not a world state, instead of throwing', () => {
     const delta: WorldStateDelta = { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] };
-    for (const state of [null, undefined, 4, 'full', {}, { kind: 'full', tick: 0 }, { kind: 'full', tick: 0, entities: null }, { kind: 'delta', fromTick: 0, tick: 0, changed: [], removed: [] }]) {
+    const notStates = [
+      null,
+      undefined,
+      4,
+      'full',
+      {},
+      { kind: 'full', tick: 0 },
+      { kind: 'full', tick: 0, entities: null },
+      { kind: 'full', tick: 0, entities: [null] },
+      { kind: 'delta', fromTick: 0, tick: 0, changed: [], removed: [] },
+    ];
+    for (const state of notStates) {
       expect(applyWorldStateDelta(state as unknown as WorldState, delta)).toBeUndefined();
     }
-    expect(applyWorldStateDelta({ kind: 'full', tick: 0, entities: [null as unknown as WorldState['entities'][number]] }, delta)).toEqual(stateAt(1, []));
+    expect(applyWorldStateDelta(stateAt(0, []), delta)).toEqual(stateAt(1, []));
   });
 
   it('validates component names, fields and values exactly like a replica would, so both agree on bad input', async () => {
@@ -111,7 +122,7 @@ describe('diffWorldState and applyWorldStateDelta', () => {
       fromTick: state.tick,
       tick: state.tick + 1,
       changed: [
-        { id: player, components: { Nonsense: { x: 1 }, Position: { x: 'far', y: 2.5, z: 9 }, MoveIntent: { x: Number.NaN, y: 0.5 } } },
+        { id: player, components: { Nonsense: { x: 1 }, Position: { y: 2.5, z: 9 }, MoveIntent: { y: 0.5 } } },
         { id: player + 1, components: { Facing: { y: 1 }, Bogus: {} } },
       ],
       removed: [],
@@ -129,16 +140,28 @@ describe('diffWorldState and applyWorldStateDelta', () => {
     sim.destroy();
   });
 
-  it('skips malformed entries of a delta and keeps the rest', () => {
+  it('refuses a whole delta when one entry is malformed, and agrees with a replica on it', async () => {
     const state = stateAt(5, [entity(1, { Position: { x: 1, y: 2 } }), entity(2, { Position: { x: 3, y: 4 } })]);
-    const delta = {
-      kind: 'delta',
-      fromTick: 5,
-      tick: 6,
-      changed: [null, { id: 'x' }, { id: 2, components: { Position: { x: 5, y: 6 } }, removedComponents: [1, 'Facing'] }],
-      removed: [1, 'two', -1],
-    } as unknown as WorldStateDelta;
-    expect(applyWorldStateDelta(state, delta)).toEqual(stateAt(6, [entity(2, { Position: { x: 5, y: 6 } })]));
+    const good = { id: 2, components: { Position: { x: 5, y: 6 } } };
+    const deltas = [
+      { changed: [good, null], removed: [] },
+      { changed: [good, { id: 'x' }], removed: [] },
+      { changed: [{ ...good, removedComponents: [1, 'Facing'] }], removed: [] },
+      { changed: [{ id: 2, components: { Position: { x: 'far', y: 6 } } }], removed: [] },
+      { changed: [good], removed: [1, 'two'] },
+      { changed: [good], removed: [-1] },
+    ].map((rest) => ({ kind: 'delta', fromTick: 5, tick: 6, ...rest }) as unknown as WorldStateDelta);
+    const sim = await createSim();
+    const replica = createReplica({ level: sim.level });
+    applyWorldState(replica, state);
+    for (const delta of deltas) {
+      expect(applyWorldStateDelta(state, delta), JSON.stringify(delta)).toBeUndefined();
+      expect(applyWorldState(replica, delta), JSON.stringify(delta)).toBe('malformed');
+    }
+    expect(worldState(replica)).toEqual(state);
+    const valid = { kind: 'delta', fromTick: 5, tick: 6, changed: [good], removed: [1] } as const;
+    expect(applyWorldStateDelta(state, valid)).toEqual(stateAt(6, [entity(2, { Position: { x: 5, y: 6 } })]));
+    sim.destroy();
   });
 });
 

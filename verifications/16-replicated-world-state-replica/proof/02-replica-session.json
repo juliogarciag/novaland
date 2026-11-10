@@ -36,11 +36,11 @@
       "malformed",
       "malformed",
       "malformed",
-      "applied",
-      "applied",
-      "applied"
+      "malformed",
+      "out-of-sequence",
+      "malformed"
     ],
-    "drawnAfterHostile": 0,
+    "drawnAfterHostile": 5,
     "recoveredAfterHostile": true,
     "recoveryResult": "applied",
     "recoveryDifference": null
