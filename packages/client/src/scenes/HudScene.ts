@@ -1,5 +1,6 @@
-import type { SimHandle } from '@novaland/sim';
+import { findPlayerEntity, getDef, getRenderables, isAvatarDefId, type SimHandle } from '@novaland/sim';
 import Phaser from 'phaser';
+import { LOCAL_SLOT } from '../seats';
 
 /** CSS pixels, so the text reads the same on every screen. */
 const HUD_MARGIN = 12;
@@ -25,7 +26,13 @@ export class HudScene extends Phaser.Scene {
   }
 
   override update(): void {
-    this.text.setText(`WASD / arrows to move   tick ${this.sim.tick}`);
+    const renderables = getRenderables(this.sim);
+    const players = renderables.filter((renderable) => isAvatarDefId(renderable.defId));
+    const localEid = findPlayerEntity(this.sim, LOCAL_SLOT);
+    const local = players.find((player) => player.eid === localEid);
+    const lines = [`WASD / arrows to move   tick ${this.sim.tick}`, `you: ${local ? getDef(local.defId).name : 'joining...'}   players: ${players.length}`];
+    if (import.meta.env.DEV) lines.push('J: seat another player (dev)');
+    this.text.setText(lines);
   }
 
   /** The canvas is zoomed by 1 / pixelRatio (render/viewport.ts), so device pixels per CSS pixel is the inverse. */
