@@ -8,6 +8,10 @@
  * is taken, and the dev flow still works: a Vite dev client on another
  * loopback port joins the built server with nothing configured. A bad
  * ALLOWED_ORIGINS stops the boot.
+ *
+ * Rapier loads on demand: the page's bundle carries no physics WASM, the
+ * production page (which only holds a replica) never requests the Rapier
+ * chunk, and a solo dev page still loads it and runs its own sim.
  */
 import { chromium } from 'playwright';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -17,11 +21,13 @@ import { openPlayer, othersSeenBy, rawStatus, startObserver, upgradeStatus, wait
 
 const SERVER_PORT = 5420;
 const DEV_CLIENT_PORT = 5421;
+const SOLO_CLIENT_PORT = 5422;
 const results = [];
 const transcript = [];
 const report = {};
 let server;
 let devClient;
+let soloClient;
 let observer;
 let browser;
 try {
@@ -31,6 +37,12 @@ try {
   const indexHtml = readFileSync(path.join(ROOT, 'packages/client/dist/index.html'), 'utf8');
   const assetPaths = [...indexHtml.matchAll(/(?:src|href)="(\/[^"]+)"/g)].map((match) => match[1]);
   results.push(check('the built index.html references its bundle by an absolute /assets/ path', assetPaths.length > 0 && assetPaths.every((assetPath) => assetPath.startsWith('/assets/')), assetPaths.join(', ')));
+  const builtAssets = readdirSync(path.join(ROOT, 'packages/client/dist/assets')).map((name) => ({ name, bytes: readFileSync(path.join(ROOT, 'packages/client/dist/assets', name)).byteLength }));
+  const rapierChunks = builtAssets.filter((asset) => /^rapier-.*\.js$/.test(asset.name));
+  const pageBundles = assetPaths.map((assetPath) => readFileSync(path.join(ROOT, 'packages/client/dist', assetPath), 'utf8'));
+  const longestInlineBinary = Math.max(0, ...pageBundles.flatMap((bundle) => [...bundle.matchAll(/[A-Za-z0-9+/=]{20000,}/g)].map((match) => match[0].length)));
+  results.push(check('Rapier is a chunk of its own that index.html does not reference, and the bundle the page loads inlines no WASM', rapierChunks.length === 1 && !assetPaths.some((assetPath) => assetPath.includes('rapier')) && longestInlineBinary === 0, JSON.stringify({ builtAssets, pageAssets: assetPaths, longestInlineBinary })));
+  report.builtAssets = builtAssets;
 
   // The built server, started the way the host would (pnpm start → node dist/index.mjs), with nothing but PORT.
   server = start('pnpm', ['start'], { env: { PORT: String(SERVER_PORT), VITE_SERVER_URL: undefined, ALLOWED_ORIGINS: undefined, CLIENT_DIR: undefined } });
@@ -86,6 +98,7 @@ try {
   results.push(check('the production page has no window.__novaland', seated.hasDebugApi === false));
   const pageResponses = production.responses.map((response) => ({ url: response.url.replace(base, ''), status: response.status }));
   results.push(check('every request the page made to its origin succeeded (no missing asset, no wrong path)', production.failedResponses.length === 0 && pageResponses.some((response) => response.url.startsWith('/assets/')), JSON.stringify(production.failedResponses.length ? production.failedResponses : pageResponses)));
+  results.push(check('the production page never requests the Rapier chunk: a replica needs no physics', !pageResponses.some((response) => response.url.includes('rapier')), JSON.stringify(pageResponses.map((response) => response.url))));
   results.push(check('no console errors and no page errors on the production page (the CSP lets the bundle run)', production.consoleErrors.length === 0 && production.pageErrors.length === 0, JSON.stringify([...production.consoleErrors, ...production.pageErrors])));
   report.productionPage = { seated, seenByObserver, responses: pageResponses, consoleErrors: production.consoleErrors, pageErrors: production.pageErrors };
 
@@ -102,6 +115,23 @@ try {
   await production.context.close();
   await dev.context.close();
 
+  // Solo is unchanged: a dev client with no server loads Rapier on demand and runs its own sim, where a walk moves the player.
+  soloClient = start('pnpm', ['dev'], { env: { PORT: String(SOLO_CLIENT_PORT), VITE_SERVER_URL: undefined } });
+  results.push(check(`a solo Vite dev client on ${SOLO_CLIENT_PORT} with no VITE_SERVER_URL starts`, await waitForPort(SOLO_CLIENT_PORT)));
+  const solo = await openPlayer(browser, 'solo page', `http://localhost:${SOLO_CLIENT_PORT}/`);
+  await solo.page.waitForFunction(() => window.__novaland?.camera() !== undefined && window.__novaland.snapshot().entities.some((entity) => entity.components.Player), undefined, { timeout: 30000 });
+  const soloBefore = await solo.page.evaluate(() => ({ online: window.__novaland.online !== undefined, playerX: window.__novaland.snapshot().entities.find((entity) => entity.components.Player).components.Position.x }));
+  await solo.page.keyboard.down('KeyD');
+  await solo.page.waitForTimeout(800);
+  await solo.page.keyboard.up('KeyD');
+  const soloAfter = await solo.page.evaluate(() => window.__novaland.snapshot().entities.find((entity) => entity.components.Player).components.Position.x);
+  await solo.page.screenshot({ path: path.join(PROOF, '02-built-server-solo-page.png') });
+  const soloRapier = solo.responses.filter((response) => response.url.includes('rapier')).map((response) => ({ url: response.url.replace(`http://localhost:${SOLO_CLIENT_PORT}`, ''), status: response.status }));
+  results.push(check('the solo dev page loads Rapier on demand, runs its own sim (not online) and walking right moves the player right', soloBefore.online === false && soloRapier.length > 0 && soloRapier.every((response) => response.status === 200) && soloAfter > soloBefore.playerX + 0.5, JSON.stringify({ soloBefore, soloAfter, soloRapier })));
+  results.push(check('no console errors on the solo page', solo.consoleErrors.length === 0 && solo.pageErrors.length === 0, JSON.stringify([...solo.consoleErrors, ...solo.pageErrors])));
+  report.soloPage = { soloBefore, soloAfter, soloRapier, consoleErrors: solo.consoleErrors, pageErrors: solo.pageErrors };
+  await solo.context.close();
+
   // A malformed allow-list stops the boot.
   const badBoot = await run('node', ['packages/server/dist/index.mjs'], { env: { PORT: '0', ALLOWED_ORIGINS: 'play.example.com' } });
   results.push(check('ALLOWED_ORIGINS with a bare host (no scheme) stops the boot with a message naming the variable', badBoot.code === 1 && /ALLOWED_ORIGINS must list origins/.test(badBoot.output), badBoot.output.trim()));
@@ -114,6 +144,7 @@ try {
   if (browser) await browser.close();
   observer?.stop();
   devClient?.stop();
+  soloClient?.stop();
   server?.stop();
 }
 transcript.push(`server output:\n${server?.output ?? ''}`);
