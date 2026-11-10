@@ -1,12 +1,12 @@
 PASS  IDLE_TIMEOUT_SECONDS=soon stops the boot with a message instead of picking a default
-PASS  the server boots with the 3 s idle timeout from the environment  ({"event":"world-room-listening","port":59089,"roomId":"world","seed":1193491047,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":3})
+PASS  the server boots with the 3 s idle timeout from the environment  ({"event":"world-room-listening","port":63894,"roomId":"world","seed":137860341,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":3})
 PASS  the test clients ran to the end
 PASS  the idle client was closed with code 4100 and reason "idle"  ({"code":4100,"reason":"idle"})
-PASS  the kick came at the timeout: 3 s after the join, within one second  (2.99 s)
-PASS  the client that kept sending moves was still seated when the idle one was kicked, and still seated twice the timeout after its own join  (6.04 s)
+PASS  the kick came at the timeout: 3 s after the join, within one second  (3.01 s)
+PASS  the client that kept sending moves was still seated when the idle one was kicked, and still seated twice the timeout after its own join  (6.02 s)
 PASS  the kicked player's avatar left the world: player/leave reached the sim
 PASS  the kicked client rejoined and got its seat back, and the survivor sees two players again  (slot 0, 2 players seen)
-PASS  once the playing client stopped, it was kicked too, measured from its last move, not from its join  (3.02 s after its last move)
+PASS  once the playing client stopped, it was kicked too, measured from its last move, not from its join  (3.01 s after its last move)
 PASS  every delta the survivors applied chained
 PASS  SIGTERM stops the server cleanly  (0)
 PASS  the server logged one idle-kick line per kick and counts them at stop  (2 kicks, idleSeatsFreed 2)

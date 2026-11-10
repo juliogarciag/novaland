@@ -11,8 +11,8 @@ Already up to date
 │                                                                              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
-Done in 549ms using pnpm v10.9.0
-(node:90630) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 866ms using pnpm v10.9.0
+(node:6518) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -24,11 +24,11 @@ $ pnpm typecheck
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck$ tsc -p tsconfig.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:90650) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:6546) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -44,39 +44,37 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
  RUN  v5.1.0 <repo>
 
  ✓ |client| src/render/pose.test.ts (3 tests) 3ms
- ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 5ms
- ✓ |client| src/input/direction.test.ts (5 tests) 6ms
  ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
- ✓ |client| src/render/zoom.test.ts (4 tests) 13ms
- ✓ |server| src/world/inbound.test.ts (8 tests) 5ms
- ✓ |client| src/render/camera.test.ts (4 tests) 4ms
- ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 10ms
- ✓ |server| src/world/seats.test.ts (3 tests) 2ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 3ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 11ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 2ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 14ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 23ms
  ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 4ms
- ✓ |client| src/seats.test.ts (3 tests) 103ms
- ✓ |sim| src/features/player/spawn.test.ts (7 tests) 322ms
- ✓ |sim| src/core/worldState.test.ts (10 tests) 476ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 518ms
- ✓ |server| src/headless.test.ts (3 tests) 602ms
-   ✓ server headless run (3)
-     ✓ drives the sim without a browser and is reproducible 508ms
- ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 626ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 629ms
+ ✓ |server| src/world/seats.test.ts (3 tests) 4ms
+ ✓ |client| src/seats.test.ts (3 tests) 119ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 241ms
+ ✓ |server| src/headless.test.ts (3 tests) 427ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 490ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 489ms
+   ✓ diffWorldState and applyWorldStateDelta (9)
+     ✓ a delta between two states of a running sim rebuilds the later state exactly, through JSON 347ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 537ms
    ✓ determinism (4)
-     ✓ same seed + same commands = identical state, including physics bytes 503ms
- ✓ |sim| src/features/player/avatars.test.ts (7 tests) 630ms
-   ✓ avatars on join (headless) (7)
-     ✓ dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own 499ms
- ✓ |sim| src/content/levels/levels.test.ts (3 tests) 96ms
- ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 376ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 147ms
- ✓ |sim| src/core/restore.test.ts (11 tests) 33ms
- ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 249ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 266ms
+     ✓ same seed + same commands = identical state, including physics bytes 481ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 560ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 561ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 155ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 75ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 124ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 49ms
  ✓ |sim| src/core/snapshot.test.ts (5 tests) 237ms
- ✓ |sim| src/core/replica.test.ts (19 tests) 1321ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 69ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 179ms
+ ✓ |sim| src/core/replica.test.ts (20 tests) 1170ms
    ✓ a replica fed full world states every tick (1)
-     ✓ draws exactly what the sim draws, tick after tick, through JSON 1064ms
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 911ms
 stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays
 {"event":"world-room-idle-kick","slot":0,"idleSeconds":601}
 
@@ -87,20 +85,19 @@ stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees 
 stdout | src/world/worldRoom.test.ts > WorldRoom driven directly > frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive
 {"event":"world-room-idle-kick","slot":0,"idleSeconds":2}
 
- ✓ |server| src/world/worldRoom.test.ts (14 tests) 9247ms
+ ✓ |server| src/world/worldRoom.test.ts (14 tests) 9389ms
    ✓ WorldRoom over a real connection (11)
-     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 596ms
-     ✓ shows every player the others moving, through deltas that chain without a gap 327ms
-     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 414ms
-     ✓ spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses 323ms
-     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1227ms
-     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5107ms
-     ✓ frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays 456ms
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 761ms
+     ✓ shows every player the others moving, through deltas that chain without a gap 335ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 409ms
+     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1214ms
+     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5140ms
+     ✓ frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays 509ms
 
  Test Files  27 passed (27)
-      Tests  174 passed (174)
-   Start at  20:19:12
-   Duration  10.20s (tests 85%, import 10%, transform 5%, worker 1%)
+      Tests  175 passed (175)
+   Start at  20:38:31
+   Duration  9.96s (tests 86%, import 9%, transform 4%, worker 1%)
 
 JSON report written to <repo>/verifications/22-idle-seats/proof/01-tests-report.json
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses
