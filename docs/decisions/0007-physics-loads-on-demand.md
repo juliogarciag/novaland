@@ -8,13 +8,13 @@ The `compat` build embeds Rapier's WASM as base64 in its JavaScript, so it loads
 
 ## Decision
 
-- `core/physics.ts` imports Rapier's types only. `initPhysics()` loads the module itself with a dynamic `import()`, runs its `init()` and keeps it. The body helpers and `createPhysicsWorld` read it through `loadedRapier()`, which throws if `initPhysics` has not finished. They only run inside a sim, and `createSim` awaits `initPhysics` before it builds one, so in practice they never throw.
-- No other file imports Rapier at runtime. `core/sim.ts` keeps its type-only import.
-- Bundlers split the dynamic import into its own chunk: `assets/rapier-*.js` in the client build and in the server's SSR build. The page's `index.html` does not reference it. A replica-only page never fetches it, and a solo page fetches it when `createSim` first runs.
+- `core/physics.ts` imports Rapier's types only. `initPhysics()` loads the module itself with a dynamic `import()`, runs its `init()` and keeps it. A load that fails is not kept, so the next call tries again. The body helpers and `createPhysicsWorld` read it through `loadedRapier()`, which throws if `initPhysics` has not finished. They only run inside a sim, and `createSim` awaits `initPhysics` before it builds one, so in practice they never throw.
+- No other file imports Rapier at runtime. `core/sim.ts` keeps its type-only import. Lint enforces this: outside `core/physics.ts` and tests, the sim may import Rapier's types only.
+- Bundlers split the dynamic import into its own chunk: `assets/rapier-*.js` in the client build and in the server's SSR build. The page's `index.html` does not reference it. A replica-only page never fetches it. A solo page, which only `pnpm dev` serves, fetches it when `createSim` first runs.
 
 ## Consequences
 
 - The production client bundle drops from 5.1 MB to 1.7 MB, or from 1.77 MB to 0.45 MB gzipped. Solo play pays the same bytes as before, one request later.
 - Determinism is unchanged. The same build runs with the same seed. `pnpm sim:headless` still prints the hash recorded before the change, and `core/determinism.test.ts` passes.
-- The server's `dist/` is now a directory with a chunk, not one file. The Dockerfile already copies the whole directory.
-- A new runtime import of Rapier anywhere in the sim would pull it back into the main bundle. Keep runtime use inside `core/physics.ts`, and import only types elsewhere. Ticket #19's `verifications/19-one-process/02-built-server.mjs` fails if the page's bundle inlines a WASM-sized base64 string again, or if a production page requests the Rapier chunk.
+- The server's `dist/` now holds an `assets/rapier-*.js` chunk next to `index.mjs`. The Dockerfile already copies the whole directory.
+- A new runtime import of Rapier anywhere in the sim would pull it back into the main bundle. Lint refuses a static one. Ticket #19's `verifications/19-one-process/02-built-server.mjs` also fails if the page's bundle inlines a WASM-sized base64 string again, or if a production page requests the Rapier chunk.

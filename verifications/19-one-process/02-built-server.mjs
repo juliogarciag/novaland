@@ -11,7 +11,8 @@
  *
  * Rapier loads on demand: the page's bundle carries no physics WASM, the
  * production page (which only holds a replica) never requests the Rapier
- * chunk, and a solo dev page still loads it and runs its own sim.
+ * chunk, and a solo dev page still loads it and runs its own sim. (Vite dev
+ * pre-bundles Rapier, so that page proves solo still works, not the split.)
  */
 import { chromium } from 'playwright';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -127,7 +128,7 @@ try {
   const soloAfter = await solo.page.evaluate(() => window.__novaland.snapshot().entities.find((entity) => entity.components.Player).components.Position.x);
   await solo.page.screenshot({ path: path.join(PROOF, '02-built-server-solo-page.png') });
   const soloRapier = solo.responses.filter((response) => response.url.includes('rapier')).map((response) => ({ url: response.url.replace(`http://localhost:${SOLO_CLIENT_PORT}`, ''), status: response.status }));
-  results.push(check('the solo dev page loads Rapier on demand, runs its own sim (not online) and walking right moves the player right', soloBefore.online === false && soloRapier.length > 0 && soloRapier.every((response) => response.status === 200) && soloAfter > soloBefore.playerX + 0.5, JSON.stringify({ soloBefore, soloAfter, soloRapier })));
+  results.push(check('the solo dev page loads Rapier, runs its own sim (not online) and walking right moves the player right', soloBefore.online === false && soloRapier.length > 0 && soloRapier.every((response) => response.status === 200) && soloAfter > soloBefore.playerX + 0.5, JSON.stringify({ soloBefore, soloAfter, soloRapier })));
   results.push(check('no console errors on the solo page', solo.consoleErrors.length === 0 && solo.pageErrors.length === 0, JSON.stringify([...solo.consoleErrors, ...solo.pageErrors])));
   report.soloPage = { soloBefore, soloAfter, soloRapier, consoleErrors: solo.consoleErrors, pageErrors: solo.pageErrors };
   await solo.context.close();

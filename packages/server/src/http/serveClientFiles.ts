@@ -59,7 +59,8 @@ function securityHeaders(contentType: string): Record<string, string> {
 /**
  * Scripts and styles come from this origin (the inline `<style>` in
  * `index.html` needs `unsafe-inline`); the sim's physics is WebAssembly
- * inlined in the bundle (`wasm-unsafe-eval`); Phaser builds textures from
+ * inlined in the on-demand `assets/rapier-*.js` chunk, which a page that runs
+ * its own sim loads (`wasm-unsafe-eval`, ADR 0007); Phaser builds textures from
  * `data:` and `blob:` URLs; the world room is reached on this origin (`'self'`
  * matches `ws`/`wss` to the same host).
  */

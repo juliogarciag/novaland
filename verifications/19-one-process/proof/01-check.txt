@@ -2,12 +2,14 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (250 of 250)
+PASS  every test passed, none skipped  (253 of 253)
 PASS  the origin policy: no Origin passes, same origin passes whatever the scheme or default-port spelling, foreign hosts/ports/null/junk are refused, the allow-list and * work, loopback to loopback passes outside production but not loopback to a deployed host nor a name that merely starts with 127.
 PASS  ALLOWED_ORIGINS is parsed strictly: unset is same-origin only, entries are normalised, anything that is not a bare http(s) origin throws
 PASS  one process: index.html with security headers, immutable hashed assets, ETag/HEAD, no escape from the directory, hand-over to Colyseus, no descriptor left open by an aborted or abandoned download, /healthz, 403 for foreign matchmaking and upgrades, files and health still open to everyone, the body cap still in force behind them
 PASS  a client directory with "assets" in its own path still caches only the files under assets/
 PASS  the client picks the server: VITE_SERVER_URL when set, the page origin in production, solo in dev
+PASS  physics loads on demand: a replica works with none loaded, a physics world before initPhysics throws a clear error, and Rapier loads once
 PASS  the sim, replica, world room and client online tests still pass
+PASS  pnpm sim:headless prints the same state hash as before Rapier loaded on demand (recorded in #18's proof)  (50b21d74 vs 50b21d74)
 
-ALL 11 CHECKS PASSED
+ALL 13 CHECKS PASSED

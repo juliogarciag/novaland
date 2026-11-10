@@ -30,10 +30,17 @@ let rapierModule: Rapier | undefined;
  * otherwise download.
  */
 export function initPhysics(): Promise<void> {
-  ready ??= import('@dimforge/rapier2d-deterministic-compat').then(async ({ default: rapier }) => {
-    await rapier.init();
-    rapierModule = rapier;
-  });
+  ready ??= import('@dimforge/rapier2d-deterministic-compat').then(
+    async ({ default: rapier }) => {
+      await rapier.init();
+      rapierModule = rapier;
+    },
+    (error: unknown) => {
+      // A chunk that failed to fetch (offline, a redeploy) is not cached: the next createSim tries again.
+      ready = undefined;
+      throw error;
+    },
+  );
   return ready;
 }
 

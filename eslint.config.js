@@ -7,6 +7,7 @@ import tseslint from 'typescript-eslint';
  * Package boundaries.
  *
  * sim    -> may import: bitecs, rapier. Never phaser, DOM, client, server, colyseus.
+ *           Rapier at runtime only in packages/sim/src/core/physics.ts, which loads it on demand (ADR 0007); types anywhere.
  * client -> may import: phaser, @novaland/sim (package entry only). Never rapier, bitecs, server.
  *           @colyseus/sdk only inside packages/client/src/online: the rest of the client plays a PlayableWorld and does not know the transport.
  * server -> may import: @novaland/sim (package entry only), colyseus. Never phaser, client.
@@ -75,6 +76,16 @@ export default defineConfig([
         { object: 'performance', property: 'now', message: 'Non-deterministic. Use sim.tick instead.' },
       ],
       'no-restricted-syntax': ['error', NEW_DATE],
+    },
+  },
+  // A runtime import of Rapier anywhere but core/physics.ts would pull its WASM back into every client bundle (ADR 0007).
+  {
+    files: ['packages/sim/**/*.ts'],
+    ignores: ['packages/sim/src/core/physics.ts', '**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': ['error', {
+        patterns: [{ group: ['@dimforge/*'], allowTypeImports: true, message: 'Rapier loads on demand in core/physics.ts (ADR 0007). Import its types only, and use the helpers in core/physics.ts.' }],
+      }],
     },
   },
   {

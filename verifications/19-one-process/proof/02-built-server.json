@@ -1,4 +1,14 @@
 {
+  "builtAssets": [
+    {
+      "name": "index-Cu22QIrA.js",
+      "bytes": 1678752
+    },
+    {
+      "name": "rapier-C1NO8tr2.js",
+      "bytes": 3446045
+    }
+  ],
   "boot": {
     "event": "world-room-listening",
     "port": 5420,
@@ -16,7 +26,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 7
+    "tick": 2
   },
   "indexHeaders": {
     "cache-control": "no-cache",
@@ -24,8 +34,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Tue, 10 Nov 2026 18:46:14 GMT",
-    "etag": "W/\"383-1a1c6c83958\"",
+    "date": "Tue, 10 Nov 2026 19:21:33 GMT",
+    "etag": "W/\"383-1a1c6e8931a\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -33,11 +43,11 @@
   },
   "assets": [
     {
-      "path": "/assets/index-BqjP-Dcp.js",
+      "path": "/assets/index-Cu22QIrA.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
       "cacheControl": "public, max-age=31536000, immutable",
-      "bytes": 5124121
+      "bytes": 1678752
     }
   ],
   "sprites": [
@@ -112,7 +122,7 @@
         "slot": 1,
         "eid": 46,
         "x": -14.5,
-        "y": -1.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -123,7 +133,7 @@
         "status": 200
       },
       {
-        "url": "/assets/index-BqjP-Dcp.js",
+        "url": "/assets/index-Cu22QIrA.js",
         "status": 200
       },
       {
@@ -155,43 +165,43 @@
         "status": 200
       },
       {
-        "url": "/sprites/player-ember.png",
-        "status": 200
-      },
-      {
         "url": "/sprites/player-slate.png",
         "status": 200
       },
       {
-        "url": "blob:/ec57f146-ad29-4d46-9516-9251a53882b1",
+        "url": "/sprites/player-ember.png",
         "status": 200
       },
       {
-        "url": "blob:/1e17cb72-98a0-4bdb-b94f-e5b5a2e0eb63",
+        "url": "blob:/120ea32b-4269-4a65-8f00-d831f5518666",
         "status": 200
       },
       {
-        "url": "blob:/888ac6c4-6e52-461f-94fe-269d2bc91b33",
+        "url": "blob:/4d03f335-8715-4f26-ae65-d8e3de77b1ec",
         "status": 200
       },
       {
-        "url": "blob:/01f9222d-8650-49ec-b40e-f169689f99a2",
+        "url": "blob:/77a5fd81-8d2f-487d-a490-6672c5ad149a",
         "status": 200
       },
       {
-        "url": "blob:/d418f7d0-31f8-484d-9f37-3f650e654d4d",
+        "url": "blob:/438c59f6-b4fb-49cf-9b6c-c21ec6485b6e",
         "status": 200
       },
       {
-        "url": "blob:/56230747-4e94-4373-941c-10d8e97401f8",
+        "url": "blob:/ef94ccec-73b8-4990-95da-dc8c69d29953",
         "status": 200
       },
       {
-        "url": "blob:/772dd432-04ef-4f75-830b-0c1f3c418cbd",
+        "url": "blob:/a1498b8f-139b-462b-9c6f-a3d9ac04565c",
         "status": 200
       },
       {
-        "url": "blob:/98f30138-eb1a-4aba-bc07-8e7432618886",
+        "url": "blob:/e998de12-6ada-41ff-9755-cff199ce5709",
+        "status": 200
+      },
+      {
+        "url": "blob:/0aa36cf6-bc28-40f0-bcd3-858f6c1d0b65",
         "status": 200
       }
     ],
@@ -209,6 +219,21 @@
       "kind": "online",
       "slot": 2
     },
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "soloPage": {
+    "soloBefore": {
+      "online": false,
+      "playerX": -13.5
+    },
+    "soloAfter": -9.50006103515625,
+    "soloRapier": [
+      {
+        "url": "/node_modules/.vite/deps/@dimforge_rapier2d-deterministic-compat.js?v=97aac8e3",
+        "status": 200
+      }
+    ],
     "consoleErrors": [],
     "pageErrors": []
   },

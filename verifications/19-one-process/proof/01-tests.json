@@ -415,6 +415,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/online/OnlineWorld.test.ts",
     "name": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
     "status": "passed"
@@ -690,21 +705,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-    "status": "passed"
-  },
-  {
     "file": "packages/sim/src/content/defs.test.ts",
     "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
     "status": "passed"
@@ -737,6 +737,21 @@
   {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism different seeds diverge in the rng state",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/physics.test.ts",
+    "name": "physics loads on demand builds a replica and reads it with no physics loaded",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/physics.test.ts",
+    "name": "physics loads on demand refuses to build a physics world before initPhysics has finished, saying so",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/core/physics.test.ts",
+    "name": "physics loads on demand loads Rapier once however often it is asked, and builds a physics world after",
     "status": "passed"
   },
   {

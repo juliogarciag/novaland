@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 
 /**
- * `pnpm --filter @novaland/server build`: one ESM bundle, `dist/index.mjs`,
- * that `node` runs without tsx. The sim is a workspace package of TypeScript
+ * `pnpm --filter @novaland/server build`: an ESM bundle, `dist/index.mjs`,
+ * that `node` runs without tsx, plus the Rapier chunk it imports on demand
+ * (`dist/assets/rapier-*.js`, ADR 0007). The sim is a workspace package of TypeScript
  * sources, so it and its own dependencies are bundled in; everything the
  * server itself depends on (Colyseus, express, ws) stays in `node_modules`.
  */
