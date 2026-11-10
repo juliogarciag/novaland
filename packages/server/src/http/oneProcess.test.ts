@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { startWorldServer, type WorldServer } from '../world/startWorldServer';
-import { MAX_SEATS } from '../world/tuning';
+import { MAX_REQUEST_BODY_BYTES, MAX_SEATS } from '../world/tuning';
 import { answerHealthChecks } from './answerHealthChecks';
 import { readOriginPolicy } from './origins';
 import { refuseForeignOrigins } from './refuseForeignOrigins';
@@ -127,6 +127,16 @@ describe('one process: the client files, /healthz and the origin check in front 
     expect(page.status).toBe(200);
     const health = await fetch(`${base}/healthz`, { headers: { origin: 'https://evil.example.com' } });
     expect(health.status).toBe(200);
+  });
+
+  it('still refuses an oversized matchmaking body behind these handlers, and a small one still reaches Colyseus', async () => {
+    const url = `${base}/matchmake/joinById/world`;
+    const headers = { origin: base, 'content-type': 'application/json' };
+    const oversized = await fetch(url, { method: 'POST', headers, body: 'x'.repeat(MAX_REQUEST_BODY_BYTES * 4) }).then((response) => response.status, () => 'connection cut');
+    expect([413, 'connection cut']).toContain(oversized);
+    const small = await fetch(url, { method: 'POST', headers, body: '{}' });
+    expect(small.status).toBe(200);
+    expect(await small.json()).toMatchObject({ roomId: 'world' });
   });
 });
 
