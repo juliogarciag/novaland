@@ -1,37 +1,37 @@
 $ docker build -t novaland:19-verify . (exit 0)
-#19 [base 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-#19 CACHED
 
 #20 [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
 #20 CACHED
 
-#21 [runtime 2/7] WORKDIR /app
+#21 [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
 #21 CACHED
 
-#22 [base 3/7] WORKDIR /app
+#22 [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
 #22 CACHED
 
-#23 [build 4/4] RUN pnpm build
-#23 CACHED
+#23 [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
+#23 DONE 0.0s
 
 #24 [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
-#24 CACHED
+#24 DONE 0.0s
 
 #25 exporting to image
-#25 exporting layers done
-#25 exporting manifest sha256:ac5d7b2c7b70e9c56b762f6e0123c2d954e96e3f125084d5df7dc55458f86d6b done
-#25 exporting config sha256:9d624e69624d86b8e1a264c5cb894fd7a9c7716a99dafd5f59bc9e91e713f438 done
-#25 exporting attestation manifest sha256:bc0e048f720a5fa7937678edf310c3e23e55a09415b67b898ab7a49b9d022369 done
-#25 exporting manifest list sha256:3bf8b5f0d5695f1d2412983cfafcf58b4e5b8bb78502f97d419405d64d0916c3 done
+#25 exporting layers
+#25 exporting layers 0.3s done
+#25 exporting manifest sha256:8300cbf5049a43b5f9bdc0a041aaa24d6de0d5c4bb65f743adb74e311e8332be
+#25 exporting manifest sha256:8300cbf5049a43b5f9bdc0a041aaa24d6de0d5c4bb65f743adb74e311e8332be 0.0s done
+#25 exporting config sha256:a142aa65e880183b93acde5bf3e3888a588a3d02d004e76245b21eb60ec9d97c done
+#25 exporting attestation manifest sha256:7083bb35a20b60325a203dfdc7d3b58a08597e141ba7c870ee266a72078dc7f6 done
+#25 exporting manifest list sha256:0642d2c0675eaed51ddaf8a35d1811de9f0345a73c0a6c1d47fff35c1e0fbaeb done
 #25 naming to docker.io/library/novaland:19-verify done
-#25 unpacking to docker.io/library/novaland:19-verify done
-#25 DONE 0.0s
+#25 unpacking to docker.io/library/novaland:19-verify 0.1s done
+#25 DONE 0.4s
 
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/k4dy8awdm2qe0dxchziuwiyt1
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/t867s1z9ii4ok6s2w68cu8i7e
 
 
 $ docker run -d --rm --name novaland-19-verify -e PORT=5419 -p 5419:5419 novaland:19-verify (exit 0)
-e72424e042559140dbb2c2054f6c4e4f8b43e871f56950125c11c8df70af4a32
+b33ed37f7d83ce70f5199e84bbb5337dee8bf87806d2f8deb7202bccc15432fb
 
 
 $ docker exec novaland-19-verify sh -c ... (exit 0)
@@ -44,4 +44,4 @@ files: packages: client server  packages/client/dist: assets index.html sprites 
 
 
 container logs before stop:
-{"event":"world-room-listening","port":5419,"roomId":"world","seed":140537751,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[],"loopbackOrigins":false}
+{"event":"world-room-listening","port":5419,"roomId":"world","seed":1483434532,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[],"loopbackOrigins":false}

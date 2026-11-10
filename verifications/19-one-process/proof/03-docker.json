@@ -16,9 +16,59 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 3
+    "tick": 5
   },
   "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+auth @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @pm2+io @standard-schema+spec @types+jsonwebtoken @types+ms @types+node @types+ws accepts asn1.js async bn.js body-parser brorand buffer-equal-constant-time bytes call-bind-apply-helpers call-bound connect-redis content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ecdsa-sig-formatter ee-first elliptic encodeurl es-define-property es-errors es-object-atoms escape-html etag eventemitter2 express express-jwt express-session express-unless finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd grant has-symbols hash.js hasown hmac-drbg http-errors iconv-lite inherits ipaddr.js is-core-module is-promise jsonwebtoken jwa jwk-to-pem jws lock.yaml lodash lodash.includes lodash.isboolean lodash.isinteger lodash.isnumber lodash.isplainobject lodash.isstring lodash.once lru-cache math-intrinsics media-typer merge-descriptors mime-db mime-types minimalistic-assert minimalistic-crypto-utils module-details-from-path ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules oauth-sign object-inspect on-finished on-headers once parseurl path-parse path-to-regexp proxy-addr qs random-bytes range-parser raw-body request-compose request-oauth require-in-the-middle resolve rou3 router safe-buffer safer-buffer semver send serve-static set-cookie-parser setprototypeof shimmer side-channel side-channel-list side-channel-map side-channel-weakmap signal-exit statuses supports-preserve-symlinks-flag toidentifier tslib type-is typescript uid-safe undici-types unpipe uuid vary wrappy ws yallist zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: index.mjs index.mjs.map \n",
+  "sprites": [
+    {
+      "name": "player-ember.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-moss.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-plum.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-rose.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 699
+    },
+    {
+      "name": "player-sky.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-slate.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-sun.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-teal.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 708
+    }
+  ],
   "upgrades": {
     "foreign": 403,
     "sameOrigin": 101
@@ -40,16 +90,16 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": 0.292,
+        "x": -14.5,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       },
       {
         "slot": 2,
         "eid": 47,
-        "x": -13.5,
-        "y": -0.505,
+        "x": -14.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -59,27 +109,27 @@
       "start": {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": 0.3,
+        "x": -14.5,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       },
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -8.917,
-        "y": 0.3,
+        "x": -9.583,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.583
+      "distance": 4.917
     },
     "bWalk": {
       "slot": 2,
       "start": {
         "slot": 2,
         "eid": 47,
-        "x": -13.5,
+        "x": -14.5,
         "y": -0.5,
         "intentX": 0,
         "intentY": 0
@@ -87,28 +137,28 @@
       "end": {
         "slot": 2,
         "eid": 47,
-        "x": -13.5,
-        "y": 4.25,
+        "x": -14.5,
+        "y": 4.083,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.75
+      "distance": 4.583
     },
     "quietFrames": {
-      "count": 20,
+      "count": 18,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 21,
-      "meanBytes": 132.61904761904762
+      "count": 23,
+      "meanBytes": 113.1304347826087
     },
     "aQuietFrames": {
-      "count": 19,
+      "count": 20,
       "meanBytes": 65
     },
     "aFramesDuringBWalk": {
-      "count": 20,
-      "meanBytes": 119.25
+      "count": 19,
+      "meanBytes": 118.15789473684211
     },
     "responses": [
       {
@@ -117,7 +167,7 @@
         "contentType": "text/html; charset=utf-8"
       },
       {
-        "url": "/assets/index-DWGi6AMj.js",
+        "url": "/assets/index-D874Jtws.js",
         "status": 200,
         "contentType": "text/javascript; charset=utf-8"
       },
@@ -127,17 +177,122 @@
         "contentType": "application/json"
       },
       {
-        "url": "/sprites/player.png",
+        "url": "/sprites/player-sky.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/25e1effd-524c-43a3-887e-772bb429a820",
+        "url": "/sprites/player-teal.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/a2219493-4668-40b6-a3e8-1b1aace493f5",
+        "url": "/sprites/player-sun.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-rose.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-plum.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-ember.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-slate.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/0af6968a-c732-4bb0-bf4b-c8a1e16cb338",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/2b0d6ddf-26ac-42a5-bf10-aed7ec571fa2",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/5c144127-71d5-44e7-b50a-4c5bf4de425f",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/fb732cb4-e377-4f1e-980b-49e781601512",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/68f23c76-a0a5-44a8-8b38-c048cfffd212",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/9be3311d-54db-46e5-b0b2-18c777b95848",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/df776526-c679-44fd-9426-785b38abefb4",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/604dcb22-fc8f-4157-b9be-2e29bfb11b36",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/7c7a9cae-9eb0-4fce-af09-7f7f3178f0d5",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/327e3c78-31b0-4d57-9003-015de260c374",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/1219522f-acc1-42dd-91e7-79775f5333c6",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/f25ef5b6-a782-4cfd-a3f8-57334eb8ad7f",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/74566235-21d3-497d-b967-4de84c9016af",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/f986c273-bfa8-426f-9d12-37d106d80f55",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/3f8ba3de-d4a8-4408-b62a-faf6d9fe5963",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/3cbf3d79-a94f-475c-950c-03e4f4a57d19",
         "status": 200,
         "contentType": "image/png"
       }
@@ -146,5 +301,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.154
+  "stopSeconds": 0.211
 }

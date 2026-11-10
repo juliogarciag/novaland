@@ -10,7 +10,7 @@
  * ALLOWED_ORIGINS stops the boot.
  */
 import { chromium } from 'playwright';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { PROOF, ROOT, check, run, start, summarize, waitForPort, writeProof } from './lib.mjs';
 import { openPlayer, othersSeenBy, rawStatus, startObserver, upgradeStatus, waitFor, waitSeated } from './browser.mjs';
@@ -52,8 +52,13 @@ try {
     assets.push({ path: assetPath, status: response.status, contentType: response.headers.get('content-type'), cacheControl: response.headers.get('cache-control'), bytes: (await response.arrayBuffer()).byteLength });
   }
   results.push(check('every asset the page references is served as JavaScript, immutable for a year, with its full size', assets.every((asset) => asset.status === 200 && /text\/javascript/.test(asset.contentType) && asset.cacheControl === 'public, max-age=31536000, immutable' && asset.bytes > 100000), JSON.stringify(assets)));
-  const sprite = await fetch(`${base}/sprites/player.png`);
-  results.push(check('the sprites come with the page: /sprites/player.png is image/png', sprite.status === 200 && sprite.headers.get('content-type') === 'image/png'));
+  const spriteNames = readdirSync(path.join(ROOT, 'packages/client/dist/sprites')).filter((name) => name.endsWith('.png'));
+  const sprites = [];
+  for (const name of spriteNames) {
+    const response = await fetch(`${base}/sprites/${name}`);
+    sprites.push({ name, status: response.status, contentType: response.headers.get('content-type'), bytes: (await response.arrayBuffer()).byteLength });
+  }
+  results.push(check(`every sprite the build ships is served as image/png (${spriteNames.length}: ${spriteNames.join(', ')})`, spriteNames.length > 0 && sprites.every((sprite) => sprite.status === 200 && sprite.contentType === 'image/png' && sprite.bytes > 0), JSON.stringify(sprites.filter((sprite) => sprite.status !== 200))));
   const traversal = { dotdot: await rawStatus(SERVER_PORT, '/../package.json'), encoded: await rawStatus(SERVER_PORT, '/assets/..%2f..%2f..%2fpackage.json'), dotfile: await rawStatus(SERVER_PORT, '/.env') };
   results.push(check('a path cannot leave the client directory, and dotfiles are not served', Object.values(traversal).every((status) => status !== 200), JSON.stringify(traversal)));
   const upgrades = { foreign: await upgradeStatus(SERVER_PORT, 'https://evil.example.com'), sameOrigin: await upgradeStatus(SERVER_PORT, base), noOrigin: await upgradeStatus(SERVER_PORT, undefined) };
@@ -64,6 +69,7 @@ try {
   report.health = healthBody;
   report.indexHeaders = indexHeaders;
   report.assets = assets;
+  report.sprites = sprites;
   report.traversal = traversal;
   report.upgrades = upgrades;
 

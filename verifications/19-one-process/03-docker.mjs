@@ -50,6 +50,16 @@ try {
   results.push(check('the runtime image holds the server runtime dependencies (Colyseus core, transport, express) and no build tools: no vite, tsx, vitest or phaser in the store (typescript is a peer of @colyseus/schema)', /core/.test(serverDeps) && /ws-transport/.test(serverDeps) && /express/.test(serverDeps) && !/@novaland/.test(serverDeps) && !/\b(vite|tsx|vitest|phaser)\b/.test(store), `${serverDeps} || ${store}`));
   report.inside = inside.output;
 
+  const spriteListing = await run('docker', ['exec', CONTAINER, 'ls', 'packages/client/dist/sprites']);
+  const spriteNames = spriteListing.stdout.split('\n').filter((name) => name.endsWith('.png'));
+  const sprites = [];
+  for (const name of spriteNames) {
+    const response = await fetch(`${base}/sprites/${name}`);
+    sprites.push({ name, status: response.status, contentType: response.headers.get('content-type'), bytes: (await response.arrayBuffer()).byteLength });
+  }
+  results.push(check(`the container serves every sprite in its client build as image/png (${spriteNames.length}: ${spriteNames.join(', ')})`, spriteNames.length >= 8 && sprites.every((sprite) => sprite.status === 200 && sprite.contentType === 'image/png' && sprite.bytes > 0), JSON.stringify(sprites.filter((sprite) => sprite.status !== 200))));
+  report.sprites = sprites;
+
   const upgrades = { foreign: await upgradeStatus(PORT, 'https://evil.example.com'), sameOrigin: await upgradeStatus(PORT, base) };
   results.push(check('from the container: a foreign-origin WebSocket upgrade is refused with 403, same origin is taken', upgrades.foreign === 403 && upgrades.sameOrigin === 101, JSON.stringify(upgrades)));
   report.upgrades = upgrades;

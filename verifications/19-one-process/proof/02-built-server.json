@@ -16,7 +16,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 3
+    "tick": 2
   },
   "indexHeaders": {
     "cache-control": "no-cache",
@@ -24,8 +24,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Tue, 10 Nov 2026 00:07:25 GMT",
-    "etag": "W/\"383-1a1c2c7ee44\"",
+    "date": "Tue, 10 Nov 2026 01:30:12 GMT",
+    "etag": "W/\"383-1a1c313b94e\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -33,11 +33,61 @@
   },
   "assets": [
     {
-      "path": "/assets/index-DWGi6AMj.js",
+      "path": "/assets/index-D874Jtws.js",
       "status": 200,
       "contentType": "text/javascript; charset=utf-8",
       "cacheControl": "public, max-age=31536000, immutable",
-      "bytes": 5030326
+      "bytes": 5032646
+    }
+  ],
+  "sprites": [
+    {
+      "name": "player-ember.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-moss.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-plum.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-rose.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 699
+    },
+    {
+      "name": "player-sky.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-slate.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-sun.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-teal.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 708
     }
   ],
   "traversal": {
@@ -61,8 +111,8 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": -0.18,
+        "x": -14.5,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -73,7 +123,7 @@
         "status": 200
       },
       {
-        "url": "/assets/index-DWGi6AMj.js",
+        "url": "/assets/index-D874Jtws.js",
         "status": 200
       },
       {
@@ -81,11 +131,67 @@
         "status": 200
       },
       {
-        "url": "/sprites/player.png",
+        "url": "/sprites/player-sky.png",
         "status": 200
       },
       {
-        "url": "blob:/65c57471-793b-4566-a98c-45459a4aeece",
+        "url": "/sprites/player-rose.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-sun.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-teal.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-plum.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-ember.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-slate.png",
+        "status": 200
+      },
+      {
+        "url": "blob:/fdb73731-bb6d-47da-ace3-b90f22a2d0ff",
+        "status": 200
+      },
+      {
+        "url": "blob:/85ad07d7-b357-44b8-9117-23233ba41145",
+        "status": 200
+      },
+      {
+        "url": "blob:/0737f2d8-676c-4eeb-91a5-eab166b1467f",
+        "status": 200
+      },
+      {
+        "url": "blob:/31eb9495-0dc3-496c-94fd-cd77623eec43",
+        "status": 200
+      },
+      {
+        "url": "blob:/2f888747-c7c2-40c7-a8fd-278ccb52dba7",
+        "status": 200
+      },
+      {
+        "url": "blob:/b961bb51-8ce4-4958-82f8-e5470061f0d3",
+        "status": 200
+      },
+      {
+        "url": "blob:/ff45b04e-88f5-4e79-9bb7-2c3ac88d3a23",
+        "status": 200
+      },
+      {
+        "url": "blob:/fd644f3b-24f2-4393-a19c-c87508bda2af",
         "status": 200
       }
     ],

@@ -1,370 +1,5 @@
 [
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys is zero with nothing pressed",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys cancels opposite keys",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys compares directions by value",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits nothing while no key is held",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput collapses a press and release between drains into nothing",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames clamps alpha to [0, 1]",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames takes the newer frame's headings",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is 1 for a width that makes no sense",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld never steps: the replica throws, the frame comes from server updates",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld follows deltas and draws between them, two send intervals behind",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld answers a delta that does not chain with one resync request, and is whole again after the full state",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld asks again after enough further misses, in case the server dropped the request",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld counts malformed updates and sends nothing for them",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld sends the move of a player/move command without its slot, and nothing for other commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "OnlineWorld after a drop refuses a welcome for another world, so the page can reload",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/OnlineWorld.test.ts",
-    "name": "readWelcome accepts the wire shape and refuses anything else",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection joins, is online once the welcome is accepted, and forwards updates only from then on",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection sends a move as exactly { x, y } while online, and nothing before",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection shows a full world and asks again by itself, or at once on retryNow",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection abandons a join that never settles and tries again",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection does not let a full world grow the wait of a later connection failure",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection leaves a room whose join settles only after close()",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection stops for good on a welcome the world cannot use",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection leaves and never comes back once closed",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection is given the endpoint it was created for",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "isWorldFullRefusal recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/connection.test.ts",
-    "name": "isWorldFullRefusal does not mistake a booting server, a network failure or junk for a full world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer has nothing to draw before a frame arrives, then draws the first frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer keeps the lag when frames arrive as the clock runs",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer closes a small drift gradually instead of jumping",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer starts over when a frame does not come after the newest one (a full state after a server restart)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/frameBuffer.test.ts",
-    "name": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/screens.test.ts",
-    "name": "describeStatus tells the player what is going on, with the seats of a full world and the seconds until the next try",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/serverUrl.test.ts",
-    "name": "worldServerUrl is the configured server when VITE_SERVER_URL is set, in dev and in production",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/serverUrl.test.ts",
-    "name": "worldServerUrl is the page origin in production when nothing is configured: the server that served the page runs the world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/online/serverUrl.test.ts",
-    "name": "worldServerUrl is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
-    "status": "passed"
-  },
-  {
     "file": "packages/server/src/headless.test.ts",
     "name": "server headless run drives the sim without a browser and is reproducible",
     "status": "passed"
@@ -632,6 +267,421 @@
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom driven directly fails a join that is waiting for a tick when the room is disposed instead of hanging it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats skips seats that are taken in the sim and seats a queued join is about to take",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats reports no seat once every one is spoken for",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys is zero with nothing pressed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys cancels opposite keys",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys compares directions by value",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits nothing while no key is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput collapses a press and release between drains into nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld never steps: the replica throws, the frame comes from server updates",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld follows deltas and draws between them, two send intervals behind",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld answers a delta that does not chain with one resync request, and is whole again after the full state",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld asks again after enough further misses, in case the server dropped the request",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld counts malformed updates and sends nothing for them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld sends the move of a player/move command without its slot, and nothing for other commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld after a drop refuses a welcome for another world, so the page can reload",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "readWelcome accepts the wire shape and refuses anything else",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection joins, is online once the welcome is accepted, and forwards updates only from then on",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection sends a move as exactly { x, y } while online, and nothing before",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection shows a full world and asks again by itself, or at once on retryNow",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection abandons a join that never settles and tries again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection does not let a full world grow the wait of a later connection failure",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection leaves a room whose join settles only after close()",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection stops for good on a welcome the world cannot use",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection leaves and never comes back once closed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection is given the endpoint it was created for",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "isWorldFullRefusal recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "isWorldFullRefusal does not mistake a booting server, a network failure or junk for a full world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer has nothing to draw before a frame arrives, then draws the first frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer keeps the lag when frames arrive as the clock runs",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer closes a small drift gradually instead of jumping",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer starts over when a frame does not come after the newest one (a full state after a server restart)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/frameBuffer.test.ts",
+    "name": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/screens.test.ts",
+    "name": "describeStatus tells the player what is going on, with the seats of a full world and the seconds until the next try",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/serverUrl.test.ts",
+    "name": "worldServerUrl is the configured server when VITE_SERVER_URL is set, in dev and in production",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/serverUrl.test.ts",
+    "name": "worldServerUrl is the page origin in production when nothing is configured: the server that served the page runs the world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/serverUrl.test.ts",
+    "name": "worldServerUrl is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames clamps alpha to [0, 1]",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames takes the newer frame's headings",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is 1 for a width that makes no sense",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
     "status": "passed"
   },
   {
@@ -920,6 +970,41 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) picks the same avatars for the same seed and the same joins, and other avatars for another seed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) never hands out an avatar somebody present wears while an unworn one is left",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) falls back to a worn avatar once every one is taken, instead of refusing the join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) frees an avatar when its player leaves, so the next arrival takes the only unworn one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) ignores any avatar a client puts in the join command: the sim chooses",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/avatars.test.ts",
+    "name": "avatars on join (headless) keeps the avatar in the snapshot through the DefRef component, so it survives serialization",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) spawns facing down with no move intent",
     "status": "passed"
@@ -1002,6 +1087,56 @@
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) two players walking at each other cross and each keeps walking at full speed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/passThrough.test.ts",
+    "name": "players pass through each other (headless) gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) puts the first player on the spawn tile itself",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) lands five joins on five distinct, walkable tiles, all next to the spawn tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) chooses the same tiles for the same seed and joins",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) skips solid tiles and tiles a player stands on, reaching further out when the first ring is full",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) treats a tile a player walked onto as taken and a tile a player left as free again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/spawn.test.ts",
+    "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
     "status": "passed"
   },
   {

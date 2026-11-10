@@ -4,31 +4,31 @@ $ pnpm build (exit 0)
 > pnpm -r build
 
 Scope: 3 of 4 workspace projects
-packages/client build$ vite build
 packages/server build$ vite build
+packages/client build$ vite build
 packages/server build: vite v8.3.6 building ssr environment for production...
 packages/client build: vite v8.3.6 building client environment for production...
-packages/server build: transforming...
 packages/client build: transforming...
-packages/server build: ✓ 44 modules transformed.
+packages/server build: transforming...
+packages/server build: ✓ 46 modules transformed.
 packages/server build: rendering chunks...
 packages/server build: computing gzip size...
-packages/server build: dist/index.mjs  3,566.88 kB │ gzip: 1,342.18 kB │ map: 3,822.82 kB
-packages/server build: ✓ built in 135ms
+packages/server build: dist/index.mjs  3,572.68 kB │ gzip: 1,344.01 kB │ map: 3,832.93 kB
+packages/server build: ✓ built in 144ms
 packages/server build: Done
-packages/client build: ✓ 105 modules transformed.
+packages/client build: ✓ 108 modules transformed.
 packages/client build: rendering chunks...
 packages/client build: computing gzip size...
 packages/client build: dist/index.html                    0.89 kB │ gzip:     0.54 kB
-packages/client build: dist/assets/index-DWGi6AMj.js  5,030.32 kB │ gzip: 1,740.05 kB
+packages/client build: dist/assets/index-D874Jtws.js  5,032.64 kB │ gzip: 1,740.81 kB
 packages/client build: [plugin builtin:vite-reporter] 
 packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
 packages/client build: - Using dynamic import() to code-split the application
 packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-packages/client build: ✓ built in 504ms
+packages/client build: ✓ built in 499ms
 packages/client build: Done
-(node:70726) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:1773) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -37,17 +37,17 @@ server output:
 > novaland@0.0.0 start <repo>
 > pnpm --filter @novaland/server start
 
-(node:70800) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:1853) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 > @novaland/server@0.0.0 start <repo>/packages/server
 > node dist/index.mjs
 
-{"event":"world-room-listening","port":5420,"roomId":"world","seed":1128458185,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
+{"event":"world-room-listening","port":5420,"roomId":"world","seed":1020467423,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
 
 
 observer output (last lines):
-{"event":"world","tick":254,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.203,"intentX":0,"intentY":0}]}
-{"event":"world","tick":260,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.203,"intentX":0,"intentY":0}]}
-{"event":"world","tick":266,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.203,"intentX":0,"intentY":0}]}
-{"event":"world","tick":272,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-1.203,"intentX":0,"intentY":0}]}
+{"event":"world","tick":242,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0},{"slot":1,"eid":46,"x":-14.5,"y":0.5,"intentX":0,"intentY":0},{"slot":2,"eid":47,"x":-12.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":249,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":255,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":261,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
