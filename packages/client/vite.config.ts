@@ -14,6 +14,6 @@ export default defineConfig({
   test: {
     name: 'client',
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'tools/**/*.test.mjs'],
   },
 });

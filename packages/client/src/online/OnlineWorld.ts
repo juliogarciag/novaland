@@ -125,14 +125,16 @@ export class OnlineWorld implements PlayableWorld {
   }
 
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
-    for (const command of commands) {
-      // The only player-facing command there is today. The slot is dropped: the server stamps the seat.
-      if (command.type === 'player/move') {
-        this.lastMove = { x: command.x, y: command.y };
-        this.connection.sendMove(this.lastMove);
-      }
-    }
+    for (const command of commands) this.queueCommand(command);
     return this.frames.nextFrame(deltaSeconds) ?? readViewFrame(this.sim);
+  }
+
+  /** Sends the command now; there is no tick to wait for here. Everything but `player/move` stays home: the server seats players itself. */
+  queueCommand(command: Command): void {
+    // The only player-facing command there is today. The slot is dropped: the server stamps the seat.
+    if (command.type !== 'player/move') return;
+    this.lastMove = { x: command.x, y: command.y };
+    this.connection.sendMove(this.lastMove);
   }
 
   /** A welcome after a drop: the same world, a new seat, a fresh full state. */

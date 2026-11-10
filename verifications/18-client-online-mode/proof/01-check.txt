@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (189 of 189)
+PASS  every test passed, none skipped  (216 of 216)
 PASS  the connection joins, goes online on the welcome and forwards updates only from then on
 PASS  a full world is shown and asked again, by itself and on retryNow
 PASS  an unreachable or booting server is retried with a growing wait
@@ -20,6 +20,6 @@ PASS  a server the client cannot play on is reported, first time and after a dro
 PASS  the frame buffer draws two send intervals behind at the display rate, holds on a stall, jumps on a gap, starts over on a restart
 PASS  view frames are read from a sim and interpolated by entity id
 PASS  the sim, replica, world room and client tests still pass
-PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (2e110fbf)
+PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (50b21d74)
 
 ALL 23 CHECKS PASSED

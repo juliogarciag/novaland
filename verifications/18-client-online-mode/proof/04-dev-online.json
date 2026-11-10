@@ -11,14 +11,14 @@
     "> novaland@0.0.0 dev:online <repo>",
     "> node scripts/dev-online.mjs",
     "",
-    "[client] (node:31258) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
-    "[client] (Use `node --trace-deprecation ...` to show where the warning was created)",
-    "[server] (node:31253) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+    "[server] (node:99243) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
     "[server] (Use `node --trace-deprecation ...` to show where the warning was created)",
-    "[client] > @novaland/client@0.0.0 dev <repo>/packages/client",
-    "[client] > vite",
+    "[client] (node:99248) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.",
+    "[client] (Use `node --trace-deprecation ...` to show where the warning was created)",
     "[server] > @novaland/server@0.0.0 dev <repo>/packages/server",
-    "[server] > tsx src/index.ts"
+    "[server] > tsx src/index.ts",
+    "[client] > @novaland/client@0.0.0 dev <repo>/packages/client",
+    "[client] > vite"
   ],
   "stopped": {
     "serverOpen": false,

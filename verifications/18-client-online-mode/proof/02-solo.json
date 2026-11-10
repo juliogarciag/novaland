@@ -4,13 +4,13 @@
     "isReplica": false,
     "tick": 11,
     "localSlot": 0,
-    "hud": "WASD / arrows to move   tick 10",
+    "hud": "WASD / arrows to move   tick 10\nyou: player-ember   players: 1\nJ: seat another player (dev)",
     "playerSlot": 0,
     "x": -13.5
   },
   "errors": [],
-  "tenPlayerSprite": {
+  "21-random-avatar-spread-spawns": {
     "code": 0,
-    "summary": "ALL 45 CHECKS PASSED"
+    "summary": "ALL 27 CHECKS PASSED"
   }
 }

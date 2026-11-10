@@ -1,10 +1,8 @@
 import { createSim, starterLevel, type Command, type SimHandle } from '@novaland/sim';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { readViewFrame, type ViewFrame } from '../render/viewFrame';
+import { firstEmptySeat, LOCAL_SLOT } from '../seats';
 import type { PlayableWorld } from './PlayableWorld';
-
-/** Seat of the one local player. */
-export const LOCAL_SLOT = 0;
 
 /** Never simulate more than this much real time per frame (tab switches, hitches). */
 const MAX_FRAME_SECONDS = 0.25;
@@ -37,6 +35,15 @@ export class LocalWorld implements PlayableWorld {
       this.pendingCommands = [];
     }
     return readViewFrame(this.sim);
+  }
+
+  queueCommand(command: Command): void {
+    this.pendingCommands.push(command);
+  }
+
+  joinAnotherSeat(): void {
+    const slot = firstEmptySeat(this.sim, this.pendingCommands);
+    if (slot !== undefined) this.queueCommand({ type: 'player/join', slot });
   }
 }
 
