@@ -3,1050 +3,1068 @@
     "file": "packages/server/src/headless.test.ts",
     "name": "server headless run drives the sim without a browser and is reproducible",
     "status": "passed",
-    "durationMs": 269.157375
+    "durationMs": 213.64383299999997
   },
   {
     "file": "packages/server/src/headless.test.ts",
     "name": "server headless run the stop command really stops the player",
     "status": "passed",
-    "durationMs": 153.297916
+    "durationMs": 40.00904200000002
   },
   {
     "file": "packages/server/src/headless.test.ts",
     "name": "server headless run runs exactly the requested number of ticks",
     "status": "passed",
-    "durationMs": 2.649624999999901
+    "durationMs": 21.53641700000003
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage accepts exactly { x, y } with finite numbers",
     "status": "passed",
-    "durationMs": 10.851833999999997
+    "durationMs": 1.2980000000000018
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage drops a payload that carries a slot or any other extra field",
     "status": "passed",
-    "durationMs": 0.2690410000000014
+    "durationMs": 0.24729200000001583
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage drops anything that is not an object with both fields",
     "status": "passed",
-    "durationMs": 0.2221669999999989
+    "durationMs": 0.33950000000001523
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage drops values that are not finite numbers",
     "status": "passed",
-    "durationMs": 0.2535000000000025
+    "durationMs": 0.9491669999999885
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage never throws, whatever comes in",
     "status": "passed",
-    "durationMs": 0.6059589999999986
+    "durationMs": 1.0502500000000055
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "payloadLength measures a payload as JSON and treats the unserialisable as infinitely large",
     "status": "passed",
-    "durationMs": 0.2722080000000062
+    "durationMs": 0.3240000000000123
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "MessageBudget allows a burst, then only the sustained rate",
     "status": "passed",
-    "durationMs": 0.26362500000000466
+    "durationMs": 0.26095900000001393
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
     "name": "MessageBudget refills fractionally and ignores a clock that goes backwards",
     "status": "passed",
-    "durationMs": 0.10162499999999852
+    "durationMs": 0.09787500000001614
   },
   {
     "file": "packages/server/src/world/seats.test.ts",
     "name": "Seats hands out the lowest free slot and refuses when every seat is taken",
     "status": "passed",
-    "durationMs": 1.413665999999992
+    "durationMs": 1.0991669999999942
   },
   {
     "file": "packages/server/src/world/seats.test.ts",
     "name": "Seats gives a released seat to the next session, lowest first",
     "status": "passed",
-    "durationMs": 0.8295420000000036
+    "durationMs": 0.33362500000001205
   },
   {
     "file": "packages/server/src/world/seats.test.ts",
     "name": "Seats never seats the same session twice and releasing a stranger frees nothing",
     "status": "passed",
-    "durationMs": 0.3719170000000105
+    "durationMs": 0.10429199999998673
   },
   {
     "file": "packages/server/src/world/takeWholeTicks.test.ts",
     "name": "takeWholeTicks (server copy of the client helper) runs zero ticks and keeps the time when a wake-up is shorter than a tick",
     "status": "passed",
-    "durationMs": 1.2112920000000003
+    "durationMs": 1.948582999999985
   },
   {
     "file": "packages/server/src/world/takeWholeTicks.test.ts",
     "name": "takeWholeTicks (server copy of the client helper) carries the remainder across wake-ups so no time is lost",
     "status": "passed",
-    "durationMs": 0.38058300000000145
+    "durationMs": 0.43587500000001
   },
   {
     "file": "packages/server/src/world/takeWholeTicks.test.ts",
     "name": "takeWholeTicks (server copy of the client helper) runs several ticks after a long wake-up",
     "status": "passed",
-    "durationMs": 0.10029099999999858
+    "durationMs": 0.1439579999999978
   },
   {
     "file": "packages/server/src/world/takeWholeTicks.test.ts",
     "name": "takeWholeTicks (server copy of the client helper) caps the catch-up after a stall instead of spiralling",
     "status": "passed",
-    "durationMs": 0.2014999999999958
+    "durationMs": 0.23483300000000895
   },
   {
     "file": "packages/server/src/world/takeWholeTicks.test.ts",
     "name": "takeWholeTicks (server copy of the client helper) ignores negative deltas",
     "status": "passed",
-    "durationMs": 0.3821669999999955
+    "durationMs": 0.4030840000000069
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection seats 5 players by room id, each welcomed with its own seat and already in the world",
     "status": "passed",
-    "durationMs": 761.2316250000001
+    "durationMs": 725.9825
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection shows every player the others moving, through deltas that chain without a gap",
     "status": "passed",
-    "durationMs": 335.219791
+    "durationMs": 331.39083299999993
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection refuses the sixth player, and refuses to create or join rooms any other way",
     "status": "passed",
-    "durationMs": 126.92145800000003
+    "durationMs": 118.07299999999987
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection frees the seat of a player who leaves, removes their avatar for the others, and seats the next joiner there",
     "status": "passed",
-    "durationMs": 231.9699169999999
+    "durationMs": 264.64658299999974
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection drops oversized, unknown, slot-carrying and malformed messages while the world keeps running",
     "status": "passed",
-    "durationMs": 409.0164169999998
+    "durationMs": 444.96716700000025
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses",
     "status": "passed",
-    "durationMs": 275.50708299999997
+    "durationMs": 338.4019159999998
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection closes a session that floods unknown message types once its budget is spent, and keeps the others",
     "status": "passed",
-    "durationMs": 176.81616600000007
+    "durationMs": 207.1557499999999
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget",
     "status": "passed",
-    "durationMs": 1213.7522920000001
+    "durationMs": 1244.1602080000002
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection closes a connection that never acknowledges its join after 5000 ms and frees the seat",
     "status": "passed",
-    "durationMs": 5140.162166999999
+    "durationMs": 5114.55375
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 \"idle\", and keeps one that plays",
     "status": "passed",
-    "durationMs": 508.97191700000076
+    "durationMs": 449.4727500000008
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection closes the connection of an oversized HTTP request before reading its body, and keeps serving joins",
     "status": "passed",
-    "durationMs": 20.265292000000045
+    "durationMs": 38.07500000000073
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom driven directly frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
     "status": "passed",
-    "durationMs": 117.35920799999985
+    "durationMs": 116.82733399999961
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom driven directly frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive",
     "status": "passed",
-    "durationMs": 68.55929099999958
+    "durationMs": 67.64929099999972
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom driven directly fails a join that is waiting for a tick when the room is disposed instead of hanging it",
     "status": "passed",
-    "durationMs": 1.0469170000014856
-  },
-  {
-    "file": "packages/client/src/seats.test.ts",
-    "name": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
-    "status": "passed",
-    "durationMs": 65.62662499999999
-  },
-  {
-    "file": "packages/client/src/seats.test.ts",
-    "name": "seats skips seats that are taken in the sim and seats a queued join is about to take",
-    "status": "passed",
-    "durationMs": 50.825041
-  },
-  {
-    "file": "packages/client/src/seats.test.ts",
-    "name": "seats reports no seat once every one is spoken for",
-    "status": "passed",
-    "durationMs": 1.0021249999999782
+    "durationMs": 0.8114580000001297
   },
   {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
     "status": "passed",
-    "durationMs": 1.2895000000000039
+    "durationMs": 1.3179160000000252
   },
   {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
     "status": "passed",
-    "durationMs": 0.40595799999999826
+    "durationMs": 2.1526250000000005
   },
   {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
     "status": "passed",
-    "durationMs": 20.245165999999983
+    "durationMs": 11.159582999999998
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
+    "status": "passed",
+    "durationMs": 96.92316700000003
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats skips seats that are taken in the sim and seats a queued join is about to take",
+    "status": "passed",
+    "durationMs": 68.20662499999997
+  },
+  {
+    "file": "packages/client/src/seats.test.ts",
+    "name": "seats reports no seat once every one is spoken for",
+    "status": "passed",
+    "durationMs": 0.993082999999956
   },
   {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed",
-    "durationMs": 1.4696670000000154
+    "durationMs": 2.1543330000000083
   },
   {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys maps single keys to unit axes, y pointing down",
     "status": "passed",
-    "durationMs": 0.3855830000000253
+    "durationMs": 0.4089159999999765
   },
   {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys cancels opposite keys",
     "status": "passed",
-    "durationMs": 0.11891700000001038
+    "durationMs": 0.1234579999999994
   },
   {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys reports diagonals raw; the sim normalises them",
     "status": "passed",
-    "durationMs": 0.19999999999998863
+    "durationMs": 0.19658400000000142
   },
   {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys compares directions by value",
     "status": "passed",
-    "durationMs": 0.20479199999999764
+    "durationMs": 0.21058400000001143
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
     "status": "passed",
-    "durationMs": 1.396917000000002
+    "durationMs": 3.429374999999993
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput emits nothing while no key is held",
     "status": "passed",
-    "durationMs": 0.2737079999999992
+    "durationMs": 0.2841669999999965
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
     "status": "passed",
-    "durationMs": 0.2311249999999916
+    "durationMs": 0.20624999999998295
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
     "status": "passed",
-    "durationMs": 0.8129169999999988
+    "durationMs": 0.6972080000000176
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
     "status": "passed",
-    "durationMs": 0.20633300000000077
+    "durationMs": 0.18420799999998394
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
     "status": "passed",
-    "durationMs": 0.19054199999999355
+    "durationMs": 0.9208340000000135
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
     "status": "passed",
-    "durationMs": 0.2275419999999997
+    "durationMs": 0.46025000000000205
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput collapses a press and release between drains into nothing",
     "status": "passed",
-    "durationMs": 0.08320900000001075
+    "durationMs": 0.13904100000002018
   },
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
     "status": "passed",
-    "durationMs": 0.6199589999999944
+    "durationMs": 0.7487080000000219
   },
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
     "status": "passed",
-    "durationMs": 1.0648750000000007
+    "durationMs": 1.3062500000000057
   },
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks carries the remainder across frames so no time is lost",
     "status": "passed",
-    "durationMs": 0.31679099999999494
+    "durationMs": 0.32108400000001325
   },
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks runs several ticks for a long frame",
     "status": "passed",
-    "durationMs": 0.0917090000000087
+    "durationMs": 0.0912089999999921
   },
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
     "status": "passed",
-    "durationMs": 0.19591700000000856
+    "durationMs": 0.193916999999999
   },
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks ignores negative deltas",
     "status": "passed",
-    "durationMs": 0.34995799999998667
+    "durationMs": 0.3614169999999888
   },
   {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
     "status": "passed",
-    "durationMs": 1.047791999999987
+    "durationMs": 1.1065840000000549
   },
   {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
     "status": "passed",
-    "durationMs": 0.26483299999998167
+    "durationMs": 0.2570419999999558
   },
   {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
     "status": "passed",
-    "durationMs": 0.142832999999996
+    "durationMs": 0.14391599999999016
   },
   {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
     "status": "passed",
-    "durationMs": 0.20275000000000887
+    "durationMs": 0.21266599999995606
   },
   {
     "file": "packages/client/src/render/pose.test.ts",
     "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
     "status": "passed",
-    "durationMs": 1.2532080000000008
+    "durationMs": 1.3389999999999986
   },
   {
     "file": "packages/client/src/render/pose.test.ts",
     "name": "poseFromHeading stands facing the last direction when the move intent is zero",
     "status": "passed",
-    "durationMs": 0.27437499999999204
+    "durationMs": 2.6680419999999856
   },
   {
     "file": "packages/client/src/render/pose.test.ts",
     "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
     "status": "passed",
-    "durationMs": 0.2941250000000082
+    "durationMs": 2.8689580000000205
   },
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
     "status": "passed",
-    "durationMs": 0.9626250000000027
+    "durationMs": 2.2122499999999974
   },
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
     "status": "passed",
-    "durationMs": 9.288375000000002
+    "durationMs": 7.019499999999994
   },
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
     "status": "passed",
-    "durationMs": 0.12916699999999537
+    "durationMs": 0.3115829999999846
   },
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor is 1 for a width that makes no sense",
     "status": "passed",
-    "durationMs": 0.1980000000000075
+    "durationMs": 0.3670829999999796
   },
   {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism same seed + same commands = identical state, including physics bytes",
     "status": "passed",
-    "durationMs": 481.237667
+    "durationMs": 473.94191600000005
   },
   {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism two live sims never share component data",
     "status": "passed",
-    "durationMs": 13.299709000000007
+    "durationMs": 25.130249999999933
   },
   {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism different commands diverge",
     "status": "passed",
-    "durationMs": 25.415542000000073
+    "durationMs": 13.524457999999981
   },
   {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism different seeds diverge in the rng state",
     "status": "passed",
-    "durationMs": 14.579625000000078
+    "durationMs": 98.50858299999993
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed full world states every tick draws exactly what the sim draws, tick after tick, through JSON",
     "status": "passed",
-    "durationMs": 911.369833
+    "durationMs": 1167.076458
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate matches the sim at every send with a delta every 1 tick(s), through joins, leaves and a recycled entity id",
     "status": "passed",
-    "durationMs": 153.47633299999984
+    "durationMs": 168.67870900000003
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate matches the sim at every send with a delta every 3 tick(s), through joins, leaves and a recycled entity id",
     "status": "passed",
-    "durationMs": 53.99441700000011
+    "durationMs": 57.46841699999982
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate never sends the terrain again: deltas carry only the players that moved",
     "status": "passed",
-    "durationMs": 3.442249999999831
+    "durationMs": 3.8324589999999716
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate removes an entity that left and reports a delta it cannot continue from",
     "status": "passed",
-    "durationMs": 3.3156669999998485
+    "durationMs": 4.156417000000147
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five",
     "status": "passed",
-    "durationMs": 3.7619159999999283
+    "durationMs": 5.201207999999951
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate a late joiner built from one full state sees the same renderables, in the same order, as the sim with its history",
     "status": "passed",
-    "durationMs": 8.999667000000045
+    "durationMs": 9.502333000000135
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "a replica fed deltas at a send rate is replaced whole by a full state, even one from an earlier tick (the server restarted)",
     "status": "passed",
-    "durationMs": 6.244249999999965
+    "durationMs": 6.317249999999831
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica is a SimHandle with the level, capacity and dt of a sim but no physics or rng",
     "status": "passed",
-    "durationMs": 1.2108750000002146
+    "durationMs": 1.9296249999999873
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything",
     "status": "passed",
-    "durationMs": 0.3695829999999205
+    "durationMs": 0.34629199999994853
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica refuses to step: a replica only shows what the server sent",
     "status": "passed",
-    "durationMs": 0.531291999999894
+    "durationMs": 0.5035419999999249
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica only a replica takes world states; a live sim or a foreign object is refused loudly",
     "status": "passed",
-    "durationMs": 0.8619169999999485
+    "durationMs": 0.8439589999998134
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica needs a full state before it takes deltas",
     "status": "passed",
-    "durationMs": 1.9168749999998909
+    "durationMs": 2.1749999999999545
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "createReplica a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica",
     "status": "passed",
-    "durationMs": 1.8097920000000158
+    "durationMs": 1.5181250000000546
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "the wire contract the server and the client are built against pins the message names, the refusal reasons and the default send rate ADR 0004 lists",
     "status": "passed",
-    "durationMs": 0.16220799999996416
+    "durationMs": 0.13154099999997015
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "applyWorldState with data from the network ignores anything that is not a world state or delta and leaves the replica untouched",
     "status": "passed",
-    "durationMs": 4.5069999999998345
+    "durationMs": 7.270374999999831
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "applyWorldState with data from the network drops bad entries, unknown components, unknown fields and non-numbers but applies the rest",
+    "name": "applyWorldState with data from the network refuses a whole delta when one entry is malformed, and leaves the replica untouched",
     "status": "passed",
-    "durationMs": 2.8415829999999005
+    "durationMs": 8.036957999999913
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network skips what depends on the world: ids beyond its capacity, unknown components and unknown fields",
+    "status": "passed",
+    "durationMs": 4.829334000000017
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had",
+    "status": "passed",
+    "durationMs": 3.094583000000057
+  },
+  {
+    "file": "packages/sim/src/core/replica.test.ts",
+    "name": "applyWorldState with data from the network refuses lists longer than MAX_CAPACITY before touching the replica",
+    "status": "passed",
+    "durationMs": 7.39387499999998
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "applyWorldState with data from the network rejects a delta whose ticks do not make sense, including ticks beyond the safe integer range",
     "status": "passed",
-    "durationMs": 2.3787079999999605
+    "durationMs": 3.1212920000000395
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
     "name": "applyWorldState with data from the network keeps the view alive when an entity points at a def that does not exist",
     "status": "passed",
-    "durationMs": 4.598958000000039
+    "durationMs": 5.688167000000021
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "applyWorldState with data from the network a full state from the network with bad entries keeps the good ones and drops everything else",
+    "name": "applyWorldState with data from the network refuses a full state with a malformed entry whole, and drops only an entity whose id is beyond the capacity",
     "status": "passed",
-    "durationMs": 2.8365420000000086
+    "durationMs": 3.6477500000000873
   },
   {
     "file": "packages/sim/src/core/restore.allocation.test.ts",
     "name": "allocation cost of writing a message into a replica a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity",
     "status": "passed",
-    "durationMs": 104.648292
+    "durationMs": 100.76724999999999
   },
   {
     "file": "packages/sim/src/core/restore.allocation.test.ts",
     "name": "allocation cost of writing a message into a replica a full state with every id in a bad order stays within one pass per message, and so does a delta",
     "status": "passed",
-    "durationMs": 17.829750000000047
+    "durationMs": 103.17616600000002
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists creates exactly the asked-for id in an empty world, leaving no other entity behind",
     "status": "passed",
-    "durationMs": 1.8932089999999988
+    "durationMs": 2.7157080000000065
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists is a no-op for a live id",
     "status": "passed",
-    "durationMs": 0.2824159999999978
+    "durationMs": 0.3006249999999966
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists brings back a freed id, however the world was used before",
     "status": "passed",
-    "durationMs": 0.2880839999999978
+    "durationMs": 0.27779200000000515
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists refuses ids outside 1..capacity and never allocates past the capacity",
     "status": "passed",
-    "durationMs": 0.3411660000000012
+    "durationMs": 1.1409160000000043
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntityExists agrees with a plain model over a long scripted mix of adds, removes and ensures",
     "status": "passed",
-    "durationMs": 42.46354199999999
+    "durationMs": 71.88145800000001
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "ensureEntitiesExist creates every wanted id in one pass and reports which are alive, dropping invalid ones",
     "status": "passed",
-    "durationMs": 0.30312500000002274
+    "durationMs": 0.31475000000000364
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "writeEntityComponents attaches the component and writes every field, zeroing what a fresh component is not given",
     "status": "passed",
-    "durationMs": 0.5238339999999937
+    "durationMs": 0.5263329999999655
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "writeEntityComponents keeps the fields it is not given once the component is there",
     "status": "passed",
-    "durationMs": 0.12250000000000227
+    "durationMs": 0.13183300000002873
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "writeEntityComponents skips unknown components, unknown fields, non-objects and values that are not finite numbers",
     "status": "passed",
-    "durationMs": 0.6588749999999948
+    "durationMs": 0.6742500000000291
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "removeEntityComponents and restoreEntity detaches named components and ignores names that are not there or not components",
     "status": "passed",
-    "durationMs": 0.29187500000000455
+    "durationMs": 3.5581660000000284
   },
   {
     "file": "packages/sim/src/core/restore.test.ts",
     "name": "removeEntityComponents and restoreEntity restoreEntity leaves the entity with exactly the given components",
     "status": "passed",
-    "durationMs": 0.3120000000000118
+    "durationMs": 11.381916000000047
   },
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot is plain JSON that survives a round trip",
     "status": "passed",
-    "durationMs": 226.91450000000003
+    "durationMs": 188.63675
   },
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot records every component field of every entity plus level, capacity, tick and rng",
     "status": "passed",
-    "durationMs": 6.423666999999966
+    "durationMs": 4.475166999999999
   },
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot hashes the same regardless of the order components were attached in",
     "status": "passed",
-    "durationMs": 0.6865829999999846
+    "durationMs": 3.1166660000000093
   },
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot has a stable hash (known answer)",
     "status": "passed",
-    "durationMs": 0.4469579999999951
+    "durationMs": 0.6452919999999835
   },
   {
     "file": "packages/sim/src/core/snapshot.test.ts",
     "name": "snapshot encodes base64 like the standard",
     "status": "passed",
-    "durationMs": 0.2154170000000022
+    "durationMs": 0.22479099999998198
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "worldState is the entities of the snapshot plus the tick, with no physics and no rng",
     "status": "passed",
-    "durationMs": 125.53775000000002
+    "durationMs": 139.26774999999998
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta a delta between two states of a running sim rebuilds the later state exactly, through JSON",
     "status": "passed",
-    "durationMs": 346.564125
+    "durationMs": 421.50154200000003
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta the delta of identical states is empty",
     "status": "passed",
-    "durationMs": 2.708415999999943
+    "durationMs": 0.26400000000001
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta carries only changed components, whole, plus added entities, removed entities and lost components",
     "status": "passed",
-    "durationMs": 0.46225000000004
+    "durationMs": 0.45895900000004985
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta keeps components and fields in name order, so two routes to the same state serialise the same",
     "status": "passed",
-    "durationMs": 2.8757499999999254
+    "durationMs": 0.2283750000000282
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta does not touch the state it is given",
     "status": "passed",
-    "durationMs": 0.44612500000005184
+    "durationMs": 0.1333750000000009
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta returns undefined for a delta that does not continue from the state or is not a delta",
     "status": "passed",
-    "durationMs": 0.3923330000000078
+    "durationMs": 0.28208299999994324
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta returns undefined for a state that is not a world state, instead of throwing",
     "status": "passed",
-    "durationMs": 0.35024999999996
+    "durationMs": 0.2904999999999518
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta validates component names, fields and values exactly like a replica would, so both agree on bad input",
     "status": "passed",
-    "durationMs": 7.670583000000079
+    "durationMs": 3.9034580000000005
   },
   {
     "file": "packages/sim/src/core/worldState.test.ts",
-    "name": "diffWorldState and applyWorldStateDelta skips malformed entries of a delta and keeps the rest",
+    "name": "diffWorldState and applyWorldStateDelta refuses a whole delta when one entry is malformed, and agrees with a replica on it",
     "status": "passed",
-    "durationMs": 0.45858399999997346
+    "durationMs": 1.495708000000036
   },
   {
     "file": "packages/sim/src/content/defs.test.ts",
     "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
     "status": "passed",
-    "durationMs": 6.142917000000011
+    "durationMs": 2.1396250000000236
   },
   {
     "file": "packages/sim/src/content/defs.test.ts",
     "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
     "status": "passed",
-    "durationMs": 0.6191670000000045
+    "durationMs": 0.6772910000000252
   },
   {
     "file": "packages/sim/src/content/defs.test.ts",
     "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
     "status": "passed",
-    "durationMs": 62.41399999999999
+    "durationMs": 82.06845800000002
   },
   {
     "file": "packages/sim/src/content/levels/levels.test.ts",
     "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
     "status": "passed",
-    "durationMs": 65.72291600000003
+    "durationMs": 78.10933300000005
   },
   {
     "file": "packages/sim/src/content/levels/levels.test.ts",
     "name": "levels by name answers undefined for a name it does not know, including prototype names",
     "status": "passed",
-    "durationMs": 0.8182500000000346
+    "durationMs": 1.6409170000000017
   },
   {
     "file": "packages/sim/src/content/levels/levels.test.ts",
     "name": "levels by name lists every level once, under a unique name",
     "status": "passed",
-    "durationMs": 0.2657920000000331
+    "durationMs": 1.8878750000000082
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own",
     "status": "passed",
-    "durationMs": 256.271291
+    "durationMs": 193.95379200000002
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) picks the same avatars for the same seed and the same joins, and other avatars for another seed",
     "status": "passed",
-    "durationMs": 274.3497080000001
+    "durationMs": 345.248417
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) never hands out an avatar somebody present wears while an unworn one is left",
     "status": "passed",
-    "durationMs": 9.828375000000051
+    "durationMs": 26.000958999999966
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) falls back to a worn avatar once every one is taken, instead of refusing the join",
     "status": "passed",
-    "durationMs": 3.019083999999907
+    "durationMs": 1.5708329999999933
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) frees an avatar when its player leaves, so the next arrival takes the only unworn one",
     "status": "passed",
-    "durationMs": 3.68166599999995
+    "durationMs": 7.116125000000011
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) ignores any avatar a client puts in the join command: the sim chooses",
     "status": "passed",
-    "durationMs": 7.7560419999999795
+    "durationMs": 7.634500000000003
   },
   {
     "file": "packages/sim/src/features/player/avatars.test.ts",
     "name": "avatars on join (headless) keeps the avatar in the snapshot through the DefRef component, so it survives serialization",
     "status": "passed",
-    "durationMs": 3.9125420000000304
+    "durationMs": 27.986083000000008
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) spawns facing down with no move intent",
     "status": "passed",
-    "durationMs": 120.0795
+    "durationMs": 122.72845899999999
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) turns to face a non-zero move intent and keeps facing it after a stop",
     "status": "passed",
-    "durationMs": 19.348041999999964
+    "durationMs": 60.019083999999964
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) stores the facing as a unit vector even when the intent is shorter or longer than one",
     "status": "passed",
-    "durationMs": 1.7596250000000282
+    "durationMs": 1.889583000000016
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) treats a malformed or negligible move as a stop and leaves the facing alone",
     "status": "passed",
-    "durationMs": 1.5731670000000122
+    "durationMs": 19.75324999999998
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) is part of the snapshot, so it survives serialization and feeds the state hash",
     "status": "passed",
-    "durationMs": 4.659582999999998
+    "durationMs": 8.276333000000022
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) resets to facing down when a recycled entity id is reused by a new join",
     "status": "passed",
-    "durationMs": 2.570042000000001
+    "durationMs": 2.548458000000096
   },
   {
     "file": "packages/sim/src/features/player/facing.test.ts",
     "name": "player facing (headless) has no heading for entities that do not move and face, or do not exist",
     "status": "passed",
-    "durationMs": 2.3251670000000217
+    "durationMs": 1.5184169999999995
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) spawns a player at the level spawn point on join",
     "status": "passed",
-    "durationMs": 178.518584
+    "durationMs": 120.53470900000002
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) moves at the def speed for N ticks in open space",
     "status": "passed",
-    "durationMs": 86.199208
+    "durationMs": 32.20345900000001
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) keeps moving with the last intent and stops on a zero move",
     "status": "passed",
-    "durationMs": 116.07774999999998
+    "durationMs": 3.823832999999979
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
     "status": "passed",
-    "durationMs": 4.2367080000000215
+    "durationMs": 3.7261250000000246
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) treats absurdly large components as full input, not as a stop",
     "status": "passed",
-    "durationMs": 1.5774999999999864
+    "durationMs": 28.829583000000014
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
     "status": "passed",
-    "durationMs": 91.04095899999993
+    "durationMs": 283.905958
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
     "status": "passed",
-    "durationMs": 1.9220840000000408
+    "durationMs": 12.461957999999981
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
     "status": "passed",
-    "durationMs": 1.2177920000000313
+    "durationMs": 4.84375
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
     "status": "passed",
-    "durationMs": 4.315666999999962
+    "durationMs": 14.886041999999975
   },
   {
     "file": "packages/sim/src/features/player/movement.test.ts",
     "name": "player movement (headless) ignores a join when the sim is full instead of throwing",
     "status": "passed",
-    "durationMs": 1.6717909999999847
+    "durationMs": 2.2944589999999607
   },
   {
     "file": "packages/sim/src/features/player/passThrough.test.ts",
     "name": "players pass through each other (headless) two players walking at each other cross and each keeps walking at full speed",
     "status": "passed",
-    "durationMs": 108.86224999999999
+    "durationMs": 189.40920800000004
   },
   {
     "file": "packages/sim/src/features/player/passThrough.test.ts",
     "name": "players pass through each other (headless) a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond",
     "status": "passed",
-    "durationMs": 122.60570899999999
+    "durationMs": 22.886333000000036
   },
   {
     "file": "packages/sim/src/features/player/passThrough.test.ts",
     "name": "players pass through each other (headless) gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
     "status": "passed",
-    "durationMs": 5.548707999999976
+    "durationMs": 2.293875000000071
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) puts the first player on the spawn tile itself",
     "status": "passed",
-    "durationMs": 133.43108300000003
+    "durationMs": 145.50025
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) lands five joins on five distinct, walkable tiles, all next to the spawn tile",
     "status": "passed",
-    "durationMs": 2.5883329999999773
+    "durationMs": 2.558334000000059
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn",
     "status": "passed",
-    "durationMs": 26.32362500000005
+    "durationMs": 31.599959000000013
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) chooses the same tiles for the same seed and joins",
     "status": "passed",
-    "durationMs": 3.32162500000004
+    "durationMs": 28.391750000000002
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) skips solid tiles and tiles a player stands on, reaching further out when the first ring is full",
     "status": "passed",
-    "durationMs": 0.6740409999999883
+    "durationMs": 0.8800420000000031
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) treats a tile a player walked onto as taken and a tile a player left as free again",
     "status": "passed",
-    "durationMs": 8.583208999999954
+    "durationMs": 5.523375000000101
   },
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
     "status": "passed",
-    "durationMs": 1.2511670000000095
+    "durationMs": 12.399082999999905
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
     "status": "passed",
-    "durationMs": 4.182041999999996
+    "durationMs": 3.5045829999999683
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
     "status": "passed",
-    "durationMs": 2.5773329999999817
+    "durationMs": 1.0524169999999913
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
     "status": "passed",
-    "durationMs": 139.86658300000002
+    "durationMs": 132.311708
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids reads a level object once and hands back the same grid",
     "status": "passed",
-    "durationMs": 6.735000000000014
+    "durationMs": 1.8116249999999923
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
     "status": "passed",
-    "durationMs": 0.26400000000001
+    "durationMs": 0.23733299999997826
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
     "status": "passed",
-    "durationMs": 0.24537499999996726
+    "durationMs": 0.25066599999996697
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
     "status": "passed",
-    "durationMs": 0.14891700000003993
+    "durationMs": 1.7129999999999654
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "solid tile merging covers every solid tile exactly once",
     "status": "passed",
-    "durationMs": 28.151749999999993
+    "durationMs": 38.90058399999998
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
     "status": "passed",
-    "durationMs": 10.184791999999959
+    "durationMs": 55.84945800000003
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) places each collider box over its tiles in metres",
     "status": "passed",
-    "durationMs": 0.6597919999999817
+    "durationMs": 0.5452089999999998
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
     "status": "passed",
-    "durationMs": 2.140541999999982
+    "durationMs": 1.733041999999955
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) a player walks freely along a path and over grass",
     "status": "passed",
-    "durationMs": 110.634458
+    "durationMs": 44.450333
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
     "status": "passed",
-    "durationMs": 77.820875
+    "durationMs": 124.31545899999992
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
     "status": "passed",
-    "durationMs": 96.33233399999995
+    "durationMs": 152.983791
   }
 ]
