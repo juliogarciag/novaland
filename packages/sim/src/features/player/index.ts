@@ -1,27 +1,40 @@
 import { addComponent, query } from 'bitecs';
 import { getDef } from '../../content/defs';
-import { spawnPoint } from '../../content/levels/grid';
 import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
 import { attachDynamicBall, Body } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents } from '../../core/transform';
+import { pickAvatarDefId } from './avatars';
 import { Facing, MoveIntent, Player } from './components';
-import { MIN_MOVE_INTENT, PlayerDefId } from './defs';
+import { MIN_MOVE_INTENT } from './defs';
 import { findPlayerEntity } from './queries';
+import { pickSpawnPoint } from './spawn';
 
 /** Players spawn looking down the screen (y points down). */
 const SPAWN_FACING = { x: 0, y: 1 } as const;
 
 /**
- * Player-controlled bodies. A `player/join` spawns one at the level spawn
- * point, `player/move` sets its intended direction and every tick the intent
- * becomes a velocity. A non-zero intent also turns the player to face that
- * way (the clamped intent, so an oversized command faces its clamped
- * direction), and the facing outlives the movement so a stopped player keeps
- * looking where it last walked. Terrain stops it through physics, not through
- * code here.
+ * Rapier interaction groups: the upper 16 bits are the layers a collider
+ * belongs to, the lower 16 the layers it touches. Players sit in their own
+ * layer and touch every layer but that one, so two players pass through
+ * each other (the paths are two tiles wide and a standing player would
+ * otherwise block them) while terrain, which keeps Rapier's default of
+ * every layer, still stops them.
+ */
+const PLAYER_LAYER = 1 << 0;
+const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
+
+/**
+ * Player-controlled bodies. A `player/join` dresses the new player in an
+ * avatar the sim picks (never the client) and spawns it on a free tile near
+ * the level spawn, `player/move` sets its intended direction and every tick
+ * the intent becomes a velocity. A non-zero intent also turns the player to
+ * face that way (the clamped intent, so an oversized command faces its
+ * clamped direction), and the facing outlives the movement so a stopped
+ * player keeps looking where it last walked. Terrain stops it through
+ * physics, not through code here; other players do not.
  *
  * Handlers are the validation boundary: commands will arrive from the
  * network one day, so anything malformed is ignored, never thrown on.
@@ -73,8 +86,10 @@ export const playerFeature: Feature = {
   },
 };
 
+/** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. */
 function spawnPlayer(sim: Sim, slot: number): number {
-  const def = getDef(PlayerDefId.Player);
+  const def = getDef(pickAvatarDefId(sim));
+  const spawn = pickSpawnPoint(sim);
   const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
   const player = sim.store(Player);
@@ -95,8 +110,8 @@ function spawnPlayer(sim: Sim, slot: number): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  const spawn = spawnPoint(sim.level);
-  attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
+  const rigidBody = attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
+  for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
   return eid;
 }
 
@@ -119,3 +134,5 @@ function clampToUnit(x: unknown, y: unknown): { x: number; y: number } {
   if (length <= 1) return { x: clampedX, y: clampedY };
   return { x: clampedX / length, y: clampedY / length };
 }
+
+export const __testing__ = { PLAYER_COLLISION_GROUPS };

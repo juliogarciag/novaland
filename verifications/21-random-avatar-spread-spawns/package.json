@@ -1,0 +1,12 @@
+{
+  "name": "verification-21-random-avatar-spread-spawns",
+  "private": true,
+  "type": "module",
+  "description": "Verification scripts for ticket #21. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}
