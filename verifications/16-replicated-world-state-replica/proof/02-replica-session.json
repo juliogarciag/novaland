@@ -11,7 +11,7 @@
   "sends": 400,
   "mismatches": 0,
   "firstMismatch": null,
-  "fullStateBytes": 9739,
+  "fullStateBytes": 9738,
   "deltaBytes": {
     "min": 68,
     "max": 609,

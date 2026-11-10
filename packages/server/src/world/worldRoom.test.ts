@@ -7,9 +7,13 @@ import {
   findPlayerEntity,
   getHeading,
   getRenderables,
+  isAvatarDefId,
   JOIN_REFUSAL,
   WIRE,
+  readTileGrid,
+  tileAt,
   type Heading,
+  type Renderable,
   type ReplicaHandle,
   type WelcomeMessage,
   type WorldStateApplyResult,
@@ -60,6 +64,12 @@ describe('WorldRoom over a real connection', () => {
     // The last welcome holds everybody: the state is taken after the tick that spawned the joiner.
     const last = players[MAX_SEATS - 1] as Player;
     for (let seat = 0; seat < MAX_SEATS; seat += 1) expect(findPlayerEntity(last.replica, seat)).toBeDefined();
+    // The sim picks each joiner's avatar and spawn tile: five joins wear five avatars on five tiles.
+    const avatars = playerRenderables(last.replica);
+    expect(avatars).toHaveLength(MAX_SEATS);
+    expect(avatars.every((avatar) => isAvatarDefId(avatar.defId))).toBe(true);
+    expect(new Set(avatars.map((avatar) => avatar.defId)).size).toBe(MAX_SEATS);
+    expect(new Set(avatars.map((avatar) => tileKeyOf(last.replica, avatar))).size).toBe(MAX_SEATS);
     expect(server.room.seatsTaken).toBe(MAX_SEATS);
   });
 
@@ -471,12 +481,23 @@ function fakeClock(): Clock & { skip(ms: number): void } {
   };
 }
 
-/** Where the player in `slot` is drawn. Players that spawn on the same tile push each other apart, so stillness is never asserted on this. */
+/** Where the player in `slot` is drawn. Tests assert on what players were told (`headingOf`), not on where physics left them. */
 function positionOf(replica: ReplicaHandle, slot: number): { x: number; y: number } {
   const eid = findPlayerEntity(replica, slot);
   const renderable = eid === undefined ? undefined : getRenderables(replica).find((candidate) => candidate.eid === eid);
   if (!renderable) throw new Error(`no player in slot ${slot}`);
   return { x: renderable.x, y: renderable.y };
+}
+
+/** Every player entity as drawn, one per seat taken. */
+function playerRenderables(replica: ReplicaHandle): Renderable[] {
+  return getRenderables(replica).filter((renderable) => isAvatarDefId(renderable.defId));
+}
+
+/** The tile a renderable's centre stands on, as one comparable string. */
+function tileKeyOf(replica: ReplicaHandle, renderable: Renderable): string {
+  const tile = tileAt(readTileGrid(replica.level), renderable.x, renderable.y);
+  return tile ? `${tile.column},${tile.row}` : 'off-grid';
 }
 
 /** What the player in `slot` was told to do: the sim's own record of the commands that reached it. */

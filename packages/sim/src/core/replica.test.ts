@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { starterLevel } from '../content/levels/starter';
 import { DEFAULT_CAPACITY, FIXED_DT, MAX_CAPACITY } from '../content/tuning';
+import { avatarDefIds, isAvatarDefId } from '../features/player/defs';
 import { findPlayerEntity, getHeading } from '../features/player/queries';
 import type { Command } from './commands';
 import { __testing__, createReplica, createSim } from './create';
@@ -102,6 +103,35 @@ describe('a replica fed deltas at a send rate', () => {
     expect(applyWorldState(replica, missed)).toBe('applied');
     expect(applyWorldState(replica, next)).toBe('applied');
     expectSameView(replica, sim);
+    sim.destroy();
+  });
+
+  it('shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five', async () => {
+    const sim = await createSim({ seed: 21 });
+    const replica = createReplica({ level: sim.level });
+    const server = new FakeServer(sim);
+    applyWorldState(replica, overTheWire(server.fullState()));
+    const seats = [0, 1, 2, 3, 4];
+    // Joins one per tick, like a room filling up; each one goes out as its own delta.
+    for (const slot of seats) {
+      sim.step([{ type: 'player/join', slot }]);
+      expect(applyWorldState(replica, overTheWire(server.delta()))).toBe('applied');
+      expectSameView(replica, sim);
+    }
+    const drawnBySlot = seats.map((slot) => {
+      const eid = findPlayerEntity(replica, slot) as number;
+      return getRenderables(replica).find((renderable) => renderable.eid === eid);
+    });
+    const simDrawnBySlot = seats.map((slot) => {
+      const eid = findPlayerEntity(sim, slot) as number;
+      return getRenderables(sim).find((renderable) => renderable.eid === eid);
+    });
+    expect(drawnBySlot).toEqual(simDrawnBySlot);
+    // The sim picks five different avatars (there are at least five) and five different tiles; the replica shows exactly those.
+    const avatars = drawnBySlot.map((renderable) => renderable?.defId as number);
+    expect(avatars.every((defId) => isAvatarDefId(defId))).toBe(true);
+    expect(new Set(avatars).size).toBe(Math.min(seats.length, avatarDefIds.length));
+    expect(new Set(drawnBySlot.map((renderable) => `${renderable?.x},${renderable?.y}`)).size).toBe(seats.length);
     sim.destroy();
   });
 
