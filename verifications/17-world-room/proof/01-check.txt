@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (173 of 173)
+PASS  every test passed, none skipped  (176 of 176)
 PASS  five players join by room id and are welcomed into the world
 PASS  every player sees the others move through chained deltas
 PASS  the sixth player is refused, as are create / join / joinOrCreate
