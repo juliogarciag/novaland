@@ -1,0 +1,557 @@
+{
+  "steps": [
+    {
+      "step": "alone",
+      "tick": 13,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -640,
+        "scrollY": -368,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -320,
+          "y": -128,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "players": [
+        {
+          "eid": 45,
+          "slot": 0,
+          "defId": 6,
+          "x": -13.5,
+          "y": -0.5,
+          "tile": {
+            "column": 6,
+            "row": 14
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "sprites": [
+        {
+          "x": -216,
+          "y": -8,
+          "texture": "player-ember",
+          "depth": -1.5999999999999996
+        }
+      ],
+      "circleCount": 0,
+      "hud": "WASD / arrows to move   tick 12\nyou: player-ember   players: 1\nJ: seat another player (dev)"
+    },
+    {
+      "step": "five",
+      "tick": 22,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -640,
+        "scrollY": -368,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -320,
+          "y": -128,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "players": [
+        {
+          "eid": 45,
+          "slot": 0,
+          "defId": 6,
+          "x": -13.5,
+          "y": -0.5,
+          "tile": {
+            "column": 6,
+            "row": 14
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 46,
+          "slot": 1,
+          "defId": 4,
+          "x": -12.5,
+          "y": 0.5,
+          "tile": {
+            "column": 7,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 47,
+          "slot": 2,
+          "defId": 8,
+          "x": -13.5,
+          "y": -1.5,
+          "tile": {
+            "column": 6,
+            "row": 13
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 48,
+          "slot": 3,
+          "defId": 5,
+          "x": -14.5,
+          "y": 0.5,
+          "tile": {
+            "column": 5,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 49,
+          "slot": 4,
+          "defId": 2,
+          "x": -13.5,
+          "y": 0.5,
+          "tile": {
+            "column": 6,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "sprites": [
+        {
+          "x": -216,
+          "y": -24,
+          "texture": "player-slate",
+          "depth": -17.6
+        },
+        {
+          "x": -216,
+          "y": -8,
+          "texture": "player-ember",
+          "depth": -1.5999999999999996
+        },
+        {
+          "x": -200,
+          "y": 8,
+          "texture": "player-sun",
+          "depth": 14.4
+        },
+        {
+          "x": -232,
+          "y": 8,
+          "texture": "player-plum",
+          "depth": 14.4
+        },
+        {
+          "x": -216,
+          "y": 8,
+          "texture": "player-rose",
+          "depth": 14.4
+        }
+      ],
+      "circleCount": 0,
+      "hud": "WASD / arrows to move   tick 21\nyou: player-ember   players: 5\nJ: seat another player (dev)"
+    },
+    {
+      "step": "walk-through",
+      "target": {
+        "eid": 47,
+        "slot": 2,
+        "defId": 8,
+        "x": -13.5,
+        "y": -1.5,
+        "tile": {
+          "column": 6,
+          "row": 13
+        },
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "direction": "up",
+      "localAfter": {
+        "eid": 45,
+        "slot": 0,
+        "defId": 6,
+        "x": -13.5,
+        "y": -3.0833306312561035,
+        "tile": {
+          "column": 6,
+          "row": 11
+        },
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "targetAfter": {
+        "eid": 47,
+        "slot": 2,
+        "defId": 8,
+        "x": -13.5,
+        "y": -1.5,
+        "tile": {
+          "column": 6,
+          "row": 13
+        },
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "passedBy": 1.5833306312561035
+    },
+    {
+      "step": "blocked",
+      "wall": {
+        "column": 6,
+        "row": 2
+      },
+      "expectedStop": -11.6,
+      "localBlocked": {
+        "eid": 45,
+        "slot": 0,
+        "defId": 6,
+        "x": -13.5,
+        "y": -11.60013484954834,
+        "tile": {
+          "column": 6,
+          "row": 3
+        },
+        "intent": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "step": "six",
+      "tick": 219,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -640,
+        "scrollY": -480,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": -320,
+          "y": -240,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": -320,
+          "y": -240,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "players": [
+        {
+          "eid": 45,
+          "slot": 0,
+          "defId": 6,
+          "x": -13.5,
+          "y": -11.600056648254395,
+          "tile": {
+            "column": 6,
+            "row": 3
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 46,
+          "slot": 1,
+          "defId": 4,
+          "x": -12.5,
+          "y": 0.5,
+          "tile": {
+            "column": 7,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 47,
+          "slot": 2,
+          "defId": 8,
+          "x": -13.5,
+          "y": -1.5,
+          "tile": {
+            "column": 6,
+            "row": 13
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 48,
+          "slot": 3,
+          "defId": 5,
+          "x": -14.5,
+          "y": 0.5,
+          "tile": {
+            "column": 5,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 49,
+          "slot": 4,
+          "defId": 2,
+          "x": -13.5,
+          "y": 0.5,
+          "tile": {
+            "column": 6,
+            "row": 15
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "eid": 50,
+          "slot": 5,
+          "defId": 3,
+          "x": -13.5,
+          "y": -0.5,
+          "tile": {
+            "column": 6,
+            "row": 14
+          },
+          "intent": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ],
+      "sprites": [
+        {
+          "x": -216,
+          "y": -185.6009063720703,
+          "texture": "player-ember",
+          "depth": -179.2009063720703
+        },
+        {
+          "x": -216,
+          "y": -24,
+          "texture": "player-slate",
+          "depth": -17.6
+        },
+        {
+          "x": -216,
+          "y": -8,
+          "texture": "player-moss",
+          "depth": -1.5999999999999996
+        },
+        {
+          "x": -200,
+          "y": 8,
+          "texture": "player-sun",
+          "depth": 14.4
+        },
+        {
+          "x": -232,
+          "y": 8,
+          "texture": "player-plum",
+          "depth": 14.4
+        },
+        {
+          "x": -216,
+          "y": 8,
+          "texture": "player-rose",
+          "depth": 14.4
+        }
+      ],
+      "circleCount": 0,
+      "hud": "WASD / arrows to move   tick 218\nyou: player-ember   players: 5\nJ: seat another player (dev)"
+    }
+  ],
+  "content": {
+    "grid": {
+      "columns": 40,
+      "rows": 30,
+      "tileSize": 1
+    },
+    "spawnTile": {
+      "column": 6,
+      "row": 14
+    },
+    "spawn": {
+      "x": -13.5,
+      "y": -0.5
+    },
+    "avatars": [
+      {
+        "id": 1,
+        "name": "player-sky",
+        "key": "player-sky",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 2,
+        "name": "player-rose",
+        "key": "player-rose",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 3,
+        "name": "player-moss",
+        "key": "player-moss",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 4,
+        "name": "player-sun",
+        "key": "player-sun",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 5,
+        "name": "player-plum",
+        "key": "player-plum",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 6,
+        "name": "player-ember",
+        "key": "player-ember",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 7,
+        "name": "player-teal",
+        "key": "player-teal",
+        "radius": 0.4,
+        "speed": 5
+      },
+      {
+        "id": 8,
+        "name": "player-slate",
+        "key": "player-slate",
+        "radius": 0.4,
+        "speed": 5
+      }
+    ],
+    "solidTileIds": [
+      202,
+      203
+    ],
+    "pixelsPerMetre": 16
+  },
+  "loaded": [
+    {
+      "key": "player-sky",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-rose",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-moss",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-sun",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-plum",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-ember",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-teal",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    },
+    {
+      "key": "player-slate",
+      "texture": true,
+      "frames": 17,
+      "animations": 4
+    }
+  ],
+  "errors": []
+}

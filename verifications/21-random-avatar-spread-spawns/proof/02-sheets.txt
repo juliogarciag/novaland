@@ -1,0 +1,16 @@
+PASS  the player defs declare at least 8 avatars with distinct sprite keys  (player-sky, player-rose, player-moss, player-sun, player-plum, player-ember, player-teal, player-slate)
+PASS  the generator has one palette per avatar def, under the same keys
+PASS  every avatar shares one layout: 16x24 frames at 16 px/m with four directions
+PASS  a sheet is committed under public/sprites for every avatar key  (8/8)
+PASS  every sheet is 4 columns x 4 rows of the declared frame size
+PASS  every idle frame and walk range of the defs exists on the sheets
+PASS  each direction uses its own row of the sheet
+PASS  the generator runs with plain node and no dependencies  (8 lines)
+PASS  every committed sheet is pixel-identical to a fresh run of the generator
+PASS  every frame of every sheet has a drawn figure (at least 100 opaque pixels)
+PASS  within each sheet all 16 frames are pairwise distinct
+PASS  no frame touches its edge, so neighbouring frames never bleed into each other
+PASS  the 8 sheets are pairwise different pictures
+PASS  every sheet is the same character (identical silhouette), only the palette changes
+
+ALL 14 CHECKS PASSED
