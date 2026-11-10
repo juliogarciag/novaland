@@ -1,0 +1,16 @@
+{
+  "solo": {
+    "screen": null,
+    "isReplica": false,
+    "tick": 11,
+    "localSlot": 0,
+    "hud": "WASD / arrows to move   tick 10\nyou: player-ember   players: 1\nJ: seat another player (dev)",
+    "playerSlot": 0,
+    "x": -13.5
+  },
+  "errors": [],
+  "21-random-avatar-spread-spawns": {
+    "code": 0,
+    "summary": "ALL 27 CHECKS PASSED"
+  }
+}

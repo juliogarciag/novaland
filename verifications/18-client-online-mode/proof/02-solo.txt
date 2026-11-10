@@ -1,0 +1,13 @@
+PASS  solo dev server up
+PASS  no connection screen exists in solo mode
+PASS  no online status is exposed in solo mode
+PASS  window.__novaland.sim is a live sim (not a replica) that ticks  (tick 11)
+PASS  the local player sits in seat 0, like before
+PASS  the HUD shows the controls and the tick, and no online counter  (WASD / arrows to move   tick 10
+you: player-ember   players: 1
+J: seat another player (dev))
+PASS  holding D walks the player east through the local sim  (-13.50 -> -11.00)
+PASS  no page or console errors
+PASS  ticket #21's browser verification still passes on this branch  (ALL 27 CHECKS PASSED)
+
+ALL 9 CHECKS PASSED

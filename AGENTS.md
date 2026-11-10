@@ -48,10 +48,13 @@ packages/
       features/index.ts   The list of features the sim runs (one line per feature).
   client/     Phaser app. Reads sim state, draws it, turns input into commands. No game rules.
     src/main.ts, src/scenes/, src/loop/, src/input/, src/render/, src/debug.ts
+    src/worlds/   PlayableWorld: what the scenes play; LocalWorld steps a sim (solo)
+    src/online/   OnlineWorld: the replica, the connection to the world room (the only place @colyseus/sdk is imported), the screens
   server/     The authoritative Colyseus server: one world room (5 seats, joined by id) that owns the only live sim,
               steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking, 0006 before touching the client's boot or its online mode.
 verifications/    One folder per ticket with its verification scripts and proof.
+scripts/          Root dev scripts: dev-online.mjs runs the world server and the client together (`pnpm dev:online`).
 ```
 
 Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. Packages reference them as `"catalog:"`.
@@ -61,7 +64,7 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 1. The sim is the single source of truth. The client is a view; it never decides anything about the game.
 2. Input reaches the sim only as serializable commands (`Command` in `sim/src/core/commands.ts`). No callbacks, no direct mutation of sim state from outside the sim. Views and servers only ever hold a `SimHandle` (`step`, `snapshot`, read-only fields); the `Sim` class with components, physics and rng is internal to `packages/sim`.
 3. State is serializable. `sim.snapshot()` must keep capturing everything: never keep game state outside components, the physics world and the rng.
-4. The sim advances only through `step(commands)`, one fixed tick of `FIXED_DT` at a time. The client's `WorldScene` (offline) and the server's `WorldRoom` (online) turn real time into whole ticks with `takeWholeTicks` (`client/src/loop/takeWholeTicks.ts`, mirrored in `server/src/world/takeWholeTicks.ts` until #25 lifts it into the sim) and carry the leftover to the next frame; commands wait in a buffer until the next earned tick. Nothing else may call `step`.
+4. The sim advances only through `step(commands)`, one fixed tick of `FIXED_DT` at a time. Solo, the client's `LocalWorld` turns real time into whole ticks with `takeWholeTicks` (`client/src/loop/takeWholeTicks.ts`, mirrored in `server/src/world/takeWholeTicks.ts` until #25 lifts it into the sim) and carries the leftover to the next frame; commands wait in a buffer until the next earned tick. Online (`VITE_SERVER_URL` set), the server's `WorldRoom` owns the tick the same way: the client holds a replica (`createReplica`) that only `applyWorldState` writes, sends its commands over the wire and draws between the last server states; `step` on a replica throws. Nothing else may call `step`. See `docs/decisions/0004-multiplayer-netcode.md`, `0005-world-room-join.md` and `0006-client-online-mode.md`.
 5. Determinism: same seed + same commands = identical state. In `packages/sim` there is no `Math.random`, `Date`, `crypto`, timers, Node modules or I/O. Randomness goes through `sim.rng`. Lint enforces this.
 6. Components hold numeric, mutable, per-entity state only (typed arrays). Static or rich data (names, sprites, stats, effects, speeds) lives in definition files keyed by a numeric `defId`; entities reference it through the `DefRef` component. See `docs/decisions/0001-ecs.md`.
 7. Content is data: entities, levels and tuning values live in data files (`sim/src/content/`, `features/<feature>/defs.ts`), not in logic.
@@ -87,7 +90,8 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 
 ```
 pnpm install
-pnpm dev          # client dev server. PORT=5180 pnpm dev to pin a port (needed when several worktrees run at once)
+pnpm dev          # client dev server, solo mode. PORT=5180 pnpm dev to pin a port (needed when several worktrees run at once)
+pnpm dev:online   # the world server and the client together; SERVER_PORT=<n> PORT=<m> pin them. Or run them apart: PORT=<n> pnpm --filter @novaland/server dev, then VITE_SERVER_URL=ws://localhost:<n> PORT=<m> pnpm dev
 pnpm test         # all tests in all packages, headless
 pnpm typecheck    # tsc for every package
 pnpm lint         # eslint, including the boundary rules
@@ -118,7 +122,8 @@ Example: a `coins` feature where players pick up coins.
 - Agents verify headlessly: sim tests are the proof that a feature works. The browser is for humans.
 - Test files read top-down: imports, then the `describe` blocks, then fixtures, fakes and helper functions at the bottom under a `// ---- Helpers ----` comment. A reader should see what is being asserted before how it is set up. Function declarations hoist, so this is always safe for them; `const` helpers and fixtures are fine too as long as they are only used inside `it`, `beforeAll` and similar callbacks, never in a `describe` body.
 - For user-facing changes, the ticket's `verifications/<ticket>/` folder holds scripts that exercise the real app (for example Playwright against `pnpm dev`) and the proof they produced (screenshots, logs, JSON reports). See `verifications/1-bootstrap-monorepo/` for the template.
-- Dev builds expose `window.__novaland` (`sim`, `game`, `snapshot()`, `hash()`, `level`, `grid`, `tileAt`, `tileCentre`, `defs`, `pixelsPerMetre`, `minVisibleMetres`, `camera()`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. It is stripped from production builds.
+- Dev builds expose `window.__novaland` (`sim`, `game`, `snapshot()`, `hash()`, `level`, `grid`, `tileAt`, `tileCentre`, `defs`, `pixelsPerMetre`, `minVisibleMetres`, `camera()`, `localSlot()`, `avatarDefIds`, `queueCommand(command)`, `joinAnotherSeat()`) so browser checks can read sim state and derive expectations from content instead of hardcoding numbers. Online, `sim` is the replica, `online.status()` says where the connection stands, and `joinAnotherSeat()` returns false because the server picks seats. It is stripped from production builds.
+- Online checks run against the real room server: start it with `PORT=<n> pnpm --filter @novaland/server dev` and the client with `VITE_SERVER_URL=ws://localhost:<n>`; the connection screens carry `data-screen="connecting|full|disconnected|incompatible"`. See `verifications/18-client-online-mode/` for the template.
 - Units: the sim works in metres, origin at the level centre, y pointing down; one tile is `TILE_SIZE` metres and `tileCentre`/`tileAt` (exported by the sim) convert between tiles and metres. One metre is one 16-pixel tile: the client converts metres to pixels with `PIXELS_PER_METRE` in `client/src/render/units.ts`. On-screen size comes from the camera's whole-number zoom (`client/src/render/zoom.ts`), never from that ratio.
 
 **Worktrees and ports**

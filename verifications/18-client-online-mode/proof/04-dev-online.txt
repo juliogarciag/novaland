@@ -1,0 +1,7 @@
+PASS  the room server listens on SERVER_PORT 5320
+PASS  the client listens on PORT 5321
+PASS  the page joins the shared world the script started  ({"status":{"kind":"online","slot":0},"isReplica":true})
+PASS  the script prefixes each process's output
+PASS  stopping the script stops both the server and the client  (server open false, client open false)
+
+ALL 5 CHECKS PASSED
