@@ -2,7 +2,7 @@ import { WIRE } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
-import { FULL_WORLD_RETRY_MS, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
 
 const { isWorldFullRefusal } = __testing__;
 
@@ -95,6 +95,40 @@ describe('WorldConnection', () => {
     expect(connection.status).toEqual({ kind: 'online', slot: 4 });
     expect(handlers.onWelcome).toHaveBeenCalledTimes(2);
     expect(statuses.map((status) => status.kind)).toEqual(['connecting', 'online', 'disconnected', 'connecting', 'online']);
+  });
+
+  it('stays away after the server frees an idle seat (close 4100), and rejoins only when asked', async () => {
+    const { connection, rooms, endpoints, statuses, handlers } = connect(['room', 'room']);
+    await settle();
+    const kicked = rooms[0]!;
+    kicked.receive(WIRE.welcome, WELCOME);
+    kicked.drop(IDLE_KICK_CODE);
+    expect(connection.status).toEqual({ kind: 'away' });
+    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+    kicked.receive(WIRE.delta, { stale: true });
+    expect(handlers.onUpdate).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(endpoints).toHaveLength(1);
+    connection.retryNow();
+    await settle();
+    expect(endpoints).toHaveLength(2);
+    expect(connection.status).toEqual({ kind: 'connecting', attempt: 1 });
+    rooms[1]!.receive(WIRE.welcome, { ...WELCOME, slot: 0 });
+    expect(connection.status).toEqual({ kind: 'online', slot: 0 });
+    expect(statuses.map((status) => status.kind)).toEqual(['connecting', 'online', 'away', 'connecting', 'online']);
+  });
+
+  it('still comes back by itself after every other close code, the server\'s other own codes included', async () => {
+    for (const code of [1000, 1006, 4000, 4002, IDLE_KICK_CODE + 1]) {
+      const { connection, rooms, endpoints } = connect(['room', 'room']);
+      await settle();
+      rooms[0]!.receive(WIRE.welcome, WELCOME);
+      rooms[0]!.drop(code);
+      expect(connection.status, `close ${code}`).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 1 });
+      await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+      expect(endpoints, `close ${code}`).toHaveLength(2);
+      connection.close();
+    }
   });
 
   it('abandons a room that never welcomes, even one whose server never closes the socket, and tries again', async () => {

@@ -28,6 +28,9 @@ const idleTest = passing(/frees the seat of a session with no accepted input for
 results.push(check('an idle session is kicked at the 10 minute timeout with 4100 "idle" on a fake clock, the playing one stays, the next joiner takes the seat', idleTest.length === 1));
 results.push(check('the idle test ran on a fake clock, not on ten real minutes', idleTest.length === 1 && idleTest[0].durationMs < 10_000, `${idleTest[0]?.durationMs} ms`));
 results.push(check('driven directly, the seat is free and the next join gets it before the kicked socket closes, and a non-positive timeout is refused', passing(/the moment it is kicked, before its socket closes, and refuses a timeout that is not positive/).length === 1));
+results.push(check('the client stays away after a 4100 close and rejoins only when asked', passing(/stays away after the server frees an idle seat \(close 4100\), and rejoins only when asked/).length === 1));
+results.push(check('the client still reconnects by itself after every other close code', passing(/still comes back by itself after every other close code/).length === 1));
+results.push(check('the away screen tells the player they were away', passing(/describeStatus tells the player what is going on/).length === 1));
 for (const [what, pattern] of [
   ['five players join by room id', /seats 5 players by room id/],
   ['every player sees the others move', /shows every player the others moving/],

@@ -1,0 +1,127 @@
+{
+  "idleTimeoutSeconds": 4,
+  "steps": [
+    {
+      "step": "kicked",
+      "aSeated": {
+        "kind": "online",
+        "slot": 0
+      },
+      "kickedAfterSeconds": 4.128,
+      "away": {
+        "status": {
+          "kind": "away"
+        },
+        "screen": "away",
+        "text": "You were away, so your seat was given up. Rejoin to play again.",
+        "buttonText": "Rejoin",
+        "buttonVisible": true,
+        "buttonFocused": true
+      },
+      "stillAway": {
+        "status": {
+          "kind": "away"
+        },
+        "screen": "away",
+        "text": "You were away, so your seat was given up. Rejoin to play again.",
+        "buttonText": "Rejoin",
+        "buttonVisible": true,
+        "buttonFocused": true
+      },
+      "joinsAtKick": 1,
+      "joinsAfterWait": 1
+    },
+    {
+      "step": "freed-and-rejoined",
+      "bAlone": {
+        "kind": "online",
+        "slot": 0
+      },
+      "aBack": {
+        "kind": "online",
+        "slot": 1
+      },
+      "bAfter": {
+        "kind": "online",
+        "slot": 0
+      },
+      "bPlayedSeconds": 8.505,
+      "aAgain": {
+        "kind": "away"
+      },
+      "kicks": [
+        {
+          "event": "world-room-idle-kick",
+          "slot": 0,
+          "idleSeconds": 4
+        },
+        {
+          "event": "world-room-idle-kick",
+          "slot": 1,
+          "idleSeconds": 4
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "room server up with a 4 s idle timeout, client dev server up",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":1465880168,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4}"
+    },
+    {
+      "name": "A joins the world and is seated",
+      "pass": true,
+      "details": "{\"kind\":\"online\",\"slot\":0}"
+    },
+    {
+      "name": "A is kicked at the idle timeout (4 s, at most 1.5 s late)",
+      "pass": true,
+      "details": "4.13 s"
+    },
+    {
+      "name": "A shows the away screen: \"you were away\" and a focused Rejoin button",
+      "pass": true,
+      "details": "{\"status\":{\"kind\":\"away\"},\"screen\":\"away\",\"text\":\"You were away, so your seat was given up. Rejoin to play again.\",\"buttonText\":\"Rejoin\",\"buttonVisible\":true,\"buttonFocused\":true}"
+    },
+    {
+      "name": "A stays away: no join sent by itself in 9 s, the away screen still up",
+      "pass": true,
+      "details": "joins 1 -> 1, {\"kind\":\"away\"}"
+    },
+    {
+      "name": "B takes A's freed seat and the world holds one player: B",
+      "pass": true,
+      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 896   1/5 online"
+    },
+    {
+      "name": "Enter on the away screen rejoins A, into a new seat, with one join sent",
+      "pass": true,
+      "details": "seat 1, joins 2"
+    },
+    {
+      "name": "both tabs see two players and read 2/5 online",
+      "pass": true
+    },
+    {
+      "name": "B, which kept playing, is still seated after 8.5 s (more than twice the timeout) and was never kicked",
+      "pass": true,
+      "details": "{\"kind\":\"online\",\"slot\":0}"
+    },
+    {
+      "name": "A, idle again after rejoining, is kicked again from its new seat and shows the away screen again",
+      "pass": true,
+      "details": "{\"kind\":\"away\"}"
+    },
+    {
+      "name": "the server kicked only A's seats (first A's seat before B took it, then A's new one) and never B's",
+      "pass": true,
+      "details": "[{\"event\":\"world-room-idle-kick\",\"slot\":0,\"idleSeconds\":4},{\"event\":\"world-room-idle-kick\",\"slot\":1,\"idleSeconds\":4}]"
+    },
+    {
+      "name": "no uncaught page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

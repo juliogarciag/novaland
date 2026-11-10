@@ -4,9 +4,13 @@
 set -u
 cd "$(dirname "$0")"
 repo="$(cd ../.. && pwd)"
+if [ ! -d node_modules ]; then
+  pnpm install --ignore-workspace --frozen-lockfile
+  npx playwright install chromium
+fi
 mkdir -p proof
 status=0
-for script in 01-check 02-idle-kick; do
+for script in 01-check 02-idle-kick 03-browser; do
   echo
   echo "=== $script ==="
   # Console output is proof too: keep machine paths out of it, like writeProof does.
