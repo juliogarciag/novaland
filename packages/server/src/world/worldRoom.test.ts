@@ -28,7 +28,6 @@ import {
   JOIN_ACK_TIMEOUT_MS,
   MAX_FRAME_BYTES,
   MAX_INBOUND_BYTES,
-  MAX_REQUEST_BODY_BYTES,
   MAX_SEATS,
   RESYNC_BURST,
   RESYNCS_PER_SECOND,
@@ -251,28 +250,6 @@ describe('WorldRoom over a real connection', () => {
     expect(await closed).toBe(CloseCode.WITH_ERROR);
     await waitUntil(() => server!.room.seatsTaken === 1 && findPlayerEntity(watcher.replica, 1) === undefined);
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
-  });
-
-  it('closes the connection of an oversized HTTP request before reading its body, and keeps serving joins', async () => {
-    server = await startWorldServer({ port: 0, seed: 10 });
-    const url = `http://127.0.0.1:${server.port}/matchmake/joinById/${WORLD_ROOM_ID}`;
-    const big = 'x'.repeat(MAX_REQUEST_BODY_BYTES * 256);
-    const refused = await fetch(url, { method: 'POST', body: big, headers: { 'content-type': 'application/json' } }).then((response) => response.status, () => 'connection cut');
-    expect([413, 'connection cut']).toContain(refused);
-    // Chunked, so no content-length to refuse up front: the stream is cut once it passes the cap.
-    const chunked = new ReadableStream<Uint8Array>({
-      start(controller) {
-        for (let i = 0; i < 64; i += 1) controller.enqueue(new TextEncoder().encode('y'.repeat(MAX_REQUEST_BODY_BYTES)));
-        controller.close();
-      },
-    });
-    const refusedChunked = await fetch(url, { method: 'POST', body: chunked, duplex: 'half', headers: { 'content-type': 'application/json' } } as RequestInit).then((response) => response.status, () => 'connection cut');
-    expect([413, 'connection cut']).toContain(refusedChunked);
-    // A small body still reaches Colyseus whole: the reservation it answers with is what a join starts from.
-    expect(await reserveSeat(server.port)).toMatchObject({ roomId: WORLD_ROOM_ID });
-    expect(server.room.seatsTaken).toBe(0);
-    players.push(await join(server.port));
-    expect(players[0]?.welcome.slot).toBe(0);
   });
 });
 

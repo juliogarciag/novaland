@@ -18,7 +18,7 @@ import { chromium } from 'playwright';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { PROOF, ROOT, check, run, start, summarize, waitForPort, writeProof } from './lib.mjs';
-import { openPlayer, othersSeenBy, rawStatus, startObserver, upgradeStatus, waitFor, waitSeated } from './browser.mjs';
+import { openPlayer, othersSeenBy, rawStatus, rawStatusLine, requestsColyseusCannotSurvive, startObserver, upgradeStatus, waitFor, waitSeated } from './browser.mjs';
 
 const SERVER_PORT = 5420;
 const DEV_CLIENT_PORT = 5421;
@@ -50,7 +50,7 @@ try {
   results.push(check(`PORT=${SERVER_PORT} pnpm start listens`, await waitForPort(SERVER_PORT)));
   const bootLine = await waitFor(() => server.output.split('\n').find((line) => line.includes('world-room-listening')), (line) => line !== undefined, 'the boot line');
   const boot = JSON.parse(bootLine.slice(bootLine.indexOf('{')));
-  results.push(check('the boot line names the client directory it serves and an empty allow-list', boot.port === SERVER_PORT && /packages\/client\/dist$/.test(boot.clientDirectory ?? '') && Array.isArray(boot.allowedOrigins) && boot.allowedOrigins.length === 0, JSON.stringify({ ...boot, seed: '<random>' })));
+  results.push(check('the boot line names the client directory it serves, an empty allow-list and loopback pages allowed (not production)', boot.port === SERVER_PORT && /packages\/client\/dist$/.test(boot.clientDirectory ?? '') && Array.isArray(boot.allowedOrigins) && boot.allowedOrigins.length === 0 && boot.loopbackOrigins === true, JSON.stringify({ ...boot, seed: '<random>' })));
 
   const base = `http://localhost:${SERVER_PORT}`;
   const health = await fetch(`${base}/healthz`);
@@ -58,7 +58,7 @@ try {
   results.push(check('/healthz answers 200 with ok, the room id, the seats and the tick', health.status === 200 && healthBody.ok === true && healthBody.roomId === 'world' && healthBody.seats === 5 && Number.isInteger(healthBody.tick), JSON.stringify(healthBody)));
   const index = await fetch(`${base}/`);
   const indexHeaders = Object.fromEntries(index.headers.entries());
-  results.push(check('/ is the built index.html with nosniff, a CSP, DENY framing and no long cache', index.status === 200 && /text\/html/.test(indexHeaders['content-type']) && indexHeaders['x-content-type-options'] === 'nosniff' && /default-src 'self'/.test(indexHeaders['content-security-policy'] ?? '') && indexHeaders['x-frame-options'] === 'DENY' && indexHeaders['cache-control'] === 'no-cache' && (await index.text()) === indexHtml));
+  results.push(check('/ is the built index.html with nosniff, a CSP, DENY framing and no long cache', index.status === 200 && /text\/html/.test(indexHeaders['content-type']) && indexHeaders['x-content-type-options'] === 'nosniff' && /default-src 'self'/.test(indexHeaders['content-security-policy'] ?? '') && indexHeaders['x-frame-options'] === 'DENY' && indexHeaders['cache-control'] === 'public, max-age=0' && indexHeaders['etag'] !== undefined && indexHeaders['strict-transport-security'] === undefined && indexHeaders['x-powered-by'] === undefined && (await index.text()) === indexHtml));
   const assets = [];
   for (const assetPath of assetPaths) {
     const response = await fetch(`${base}${assetPath}`);
@@ -74,8 +74,25 @@ try {
   results.push(check(`every sprite the build ships is served as image/png (${spriteNames.length}: ${spriteNames.join(', ')})`, spriteNames.length > 0 && sprites.every((sprite) => sprite.status === 200 && sprite.contentType === 'image/png' && sprite.bytes > 0), JSON.stringify(sprites.filter((sprite) => sprite.status !== 200))));
   const traversal = { dotdot: await rawStatus(SERVER_PORT, '/../package.json'), encoded: await rawStatus(SERVER_PORT, '/assets/..%2f..%2f..%2fpackage.json'), dotfile: await rawStatus(SERVER_PORT, '/.env') };
   results.push(check('a path cannot leave the client directory, and dotfiles are not served', Object.values(traversal).every((status) => status !== 200), JSON.stringify(traversal)));
-  const upgrades = { foreign: await upgradeStatus(SERVER_PORT, 'https://evil.example.com'), sameOrigin: await upgradeStatus(SERVER_PORT, base), noOrigin: await upgradeStatus(SERVER_PORT, undefined) };
-  results.push(check('a WebSocket upgrade from a foreign origin is refused with 403; same origin and no origin are taken (101)', upgrades.foreign === 403 && upgrades.sameOrigin === 101 && upgrades.noOrigin === 101, JSON.stringify(upgrades)));
+  const upgrades = {
+    foreign: await upgradeStatus(SERVER_PORT, 'https://evil.example.com'),
+    reboundDomain: await upgradeStatus(SERVER_PORT, `http://rebound.example.net:${SERVER_PORT}`, `rebound.example.net:${SERVER_PORT}`),
+    loopbackPage: await upgradeStatus(SERVER_PORT, base),
+    noOrigin: await upgradeStatus(SERVER_PORT, undefined),
+  };
+  results.push(check('a WebSocket upgrade from a foreign origin is refused with 403, and so is one whose Origin matches its own Host (a domain pointed at this server); a loopback page and no origin are taken (101)', upgrades.foreign === 403 && upgrades.reboundDomain === 403 && upgrades.loopbackPage === 101 && upgrades.noOrigin === 101, JSON.stringify(upgrades)));
+  const wildcard = await fetch(`${base}/healthz`, { headers: { origin: 'https://evil.example.com' } });
+  results.push(check('no answer tells a foreign origin it may read it: Colyseus\'s wildcard CORS header is gone', wildcard.status === 200 && wildcard.headers.get('access-control-allow-origin') === null, String(wildcard.headers.get('access-control-allow-origin'))));
+  const compressed = await fetch(`${base}${assetPaths[0]}`);
+  const compressedBytes = (await compressed.arrayBuffer()).byteLength;
+  const part = await fetch(`${base}${assetPaths[0]}`, { headers: { range: 'bytes=0-99', 'accept-encoding': 'identity' } });
+  const partBytes = (await part.arrayBuffer()).byteLength;
+  results.push(check('the bundle is compressed for a browser that accepts it, and a range request gets that part of the file', ['gzip', 'br', 'deflate'].includes(compressed.headers.get('content-encoding')) && compressedBytes > 100000 && part.status === 206 && partBytes === 100, JSON.stringify({ contentEncoding: compressed.headers.get('content-encoding'), partStatus: part.status, partBytes })));
+  const hostile = [];
+  for (const [what, lines] of requestsColyseusCannotSurvive(SERVER_PORT)) hostile.push({ what, answer: await rawStatusLine(SERVER_PORT, lines) });
+  const aliveAfterHostile = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  results.push(check('every request that ends a bare Colyseus process is answered 400, and the server is still up after all of them', hostile.every((request) => request.answer === 'HTTP/1.1 400 Bad Request') && aliveAfterHostile === 200, JSON.stringify({ hostile, aliveAfterHostile })));
+  report.hostile = hostile;
   const foreignMatchmake = await fetch(`${base}/matchmake/joinById/world`, { method: 'OPTIONS', headers: { origin: 'https://evil.example.com' } });
   results.push(check('a matchmaking preflight from a foreign origin is refused with 403 and no CORS headers', foreignMatchmake.status === 403 && foreignMatchmake.headers.get('access-control-allow-origin') === null));
   report.boot = { ...boot, seed: '<random>' };
@@ -138,7 +155,9 @@ try {
   results.push(check('ALLOWED_ORIGINS with a bare host (no scheme) stops the boot with a message naming the variable', badBoot.code === 1 && /ALLOWED_ORIGINS must list origins/.test(badBoot.output), badBoot.output.trim()));
   const missingClient = await run('node', ['packages/server/dist/index.mjs'], { env: { PORT: '0', CLIENT_DIR: '/nonexistent/client' } });
   results.push(check('a CLIENT_DIR without an index.html stops the boot', missingClient.code === 1 && /CLIENT_DIR/.test(missingClient.output), missingClient.output.trim()));
-  report.badBoots = { allowedOrigins: badBoot.output.trim(), clientDir: missingClient.output.trim() };
+  const productionWithoutOrigins = await run('node', ['packages/server/dist/index.mjs'], { env: { PORT: '0', NODE_ENV: 'production', ALLOWED_ORIGINS: undefined } });
+  results.push(check('production with no ALLOWED_ORIGINS stops the boot and says what to set', productionWithoutOrigins.code === 1 && /ALLOWED_ORIGINS must name the origin players open/.test(productionWithoutOrigins.output), productionWithoutOrigins.output.trim()));
+  report.badBoots = { allowedOrigins: badBoot.output.trim(), clientDir: missingClient.output.trim(), productionWithoutOrigins: productionWithoutOrigins.output.trim() };
 } catch (error) {
   results.push(check(`script ran to the end`, false, String(error?.stack ?? error)));
 } finally {

@@ -1,47 +1,51 @@
 $ docker build -t novaland:19-verify . (exit 0)
-
-#20 [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
-#20 CACHED
-
-#21 [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
-#21 CACHED
-
-#22 [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
-#22 CACHED
+#22 1.234 packages/client build: [plugin builtin:vite-reporter] 
+#22 1.234 packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
+#22 1.234 packages/client build: - Using dynamic import() to code-split the application
+#22 1.234 packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+#22 1.234 packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#22 1.234 packages/client build: ✓ built in 514ms
+#22 1.247 packages/client build: Done
+#22 DONE 1.3s
 
 #23 [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
 #23 DONE 0.0s
 
 #24 [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
-#24 DONE 0.0s
+#24 DONE 0.1s
 
 #25 exporting to image
 #25 exporting layers
-#25 exporting layers 0.3s done
-#25 exporting manifest sha256:ee99602342d8b47c6ee55bc332e5f2f06936e34bb271837cfc18354d34ff404b
-#25 exporting manifest sha256:ee99602342d8b47c6ee55bc332e5f2f06936e34bb271837cfc18354d34ff404b done
-#25 exporting config sha256:dd40ec0d233d27fd3a34d9e069a7812b6242b679bbb15fa16aae4bcb8207eb81 done
-#25 exporting attestation manifest sha256:1bcc4ac5b251de8681a2b0094ae2767846a9f7127c85f180a0511686d3c362e8 done
-#25 exporting manifest list sha256:ce623319b3697098ac4f6da6a0468ab9c62b5f77eca543743a8ac2b22095f357 done
+#25 exporting layers 1.3s done
+#25 exporting manifest sha256:757e7754f9784ebddf91c63ff249e322b11c5190304fb0836f635f0fd689c839
+#25 exporting manifest sha256:757e7754f9784ebddf91c63ff249e322b11c5190304fb0836f635f0fd689c839 done
+#25 exporting config sha256:0ef6d6c0e35f5a8d0ce6e8e0bd0d3db2318e36677758de697d3838207d417a5e done
+#25 exporting attestation manifest sha256:13d9b3ed6e7060efd00166f85bf57e7f1595547806af4e9c278dfe134343dfba 0.0s done
+#25 exporting manifest list sha256:8b5515508b454234d36e8764434a56f3a5fa885db47965b7a77acfe94966df9e done
 #25 naming to docker.io/library/novaland:19-verify done
-#25 unpacking to docker.io/library/novaland:19-verify 0.1s done
-#25 DONE 0.4s
+#25 unpacking to docker.io/library/novaland:19-verify
+#25 unpacking to docker.io/library/novaland:19-verify 0.4s done
+#25 DONE 1.7s
 
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/u5rch1ci7xjplj0erpugw808x
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/wudcj55rzf3jg27zz6wq7a393
 
 
-$ docker run -d --rm --name novaland-19-verify -e PORT=5419 -p 5419:5419 novaland:19-verify (exit 0)
-1845a48211fd61df6302c40e95757ede4664abd451f99751e7fc6f48e82a4595
+$ docker run --rm -e PORT=5419 novaland:19-verify (exit 1)
+ALLOWED_ORIGINS must name the origin players open in production, like https://play.example.com (several are separated by commas; * allows any)
+
+
+$ docker run -d --rm --name novaland-19-verify -e PORT=5419 -e ALLOWED_ORIGINS=http://localhost:5419 -p 5419:5419 novaland:19-verify (exit 0)
+40ff81b67dc0340810743b96c97835afbb59135dc7955eebd7161bfa5d6537a5
 
 
 $ docker exec novaland-19-verify sh -c ... (exit 0)
 node
 NODE_ENV=production
 v24.22.2
-server deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport 
-store: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod 
+server deps: packages/server/node_modules: @colyseus compression express helmet  packages/server/node_modules/@colyseus: core schema ws-transport 
+store: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound compressible compression content-disposition content-type cookie cookie-signature debug depd destroy detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown helmet http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished on-headers once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safe-buffer safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod 
 files: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: assets index.mjs index.mjs.map 
 
 
 container logs before stop:
-{"event":"world-room-listening","port":5419,"roomId":"world","seed":250808303,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":[],"loopbackOrigins":false}
+{"event":"world-room-listening","port":5419,"roomId":"world","seed":512428483,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":["http://localhost:5419"],"loopbackOrigins":false}

@@ -1,7 +1,8 @@
 import { matchMaker, Server } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
-import type { IncomingMessage, Server as HttpServer, ServerResponse } from 'node:http';
-import { MAX_FRAME_BYTES, MAX_REQUEST_BODY_BYTES, WORLD_ROOM_NAME } from './tuning';
+import type { Application } from 'express';
+import type { Server as HttpServer } from 'node:http';
+import { MAX_FRAME_BYTES, WORLD_ROOM_NAME } from './tuning';
 import { WorldRoom, type WorldRoomOptions } from './WorldRoom';
 
 export interface WorldServerOptions {
@@ -9,6 +10,27 @@ export interface WorldServerOptions {
   readonly port: number;
   /** Seed of the one sim. */
   readonly seed: number;
+  /** What stands between the port and the world. The server always passes one; without it the room listens on a bare port, which only the room's own tests do. */
+  readonly front?: WorldFront;
+}
+
+/**
+ * What stands between the port and the world: the HTTP server and what decides
+ * which requests reach the room. The HTTP edge builds it; it is typed here so
+ * the world depends on nothing of the edge. The world hands each piece to the
+ * hook Colyseus offers for it and never looks inside.
+ */
+export interface WorldFront {
+  /** The HTTP server to listen on. */
+  readonly httpServer: HttpServer;
+  /** Mounts the HTTP routes that are not Colyseus's own. Colyseus's `express` option. */
+  readonly mountRoutes: (app: Application) => void;
+  /** The response that refuses a WebSocket upgrade carrying these request headers, or undefined when it may go on. Colyseus's `beforeUpgrade` hook. */
+  readonly upgradeRefusal: (headers: Headers) => Response | undefined;
+  /** The CORS headers for a matchmaking request carrying these headers. The matchmaker's `getCorsHeaders`. */
+  readonly corsHeaders: (headers: Headers) => Record<string, string>;
+  /** Called once, right after Colyseus has bound its routes and before any request can arrive. */
+  readonly guardRequests: () => void;
 }
 
 /** A running world server: one Colyseus server with the one world room created. */
@@ -18,8 +40,6 @@ export interface WorldServer {
   readonly roomId: string;
   /** The room instance, for smoke runs and tests in the same process. */
   readonly room: WorldRoom;
-  /** The HTTP server the room listens on, so the boot can put the client files, the health check and the origin check in front of Colyseus. */
-  readonly httpServer: HttpServer;
   /** Disconnects every client, disposes the room (which destroys the sim) and closes the port. */
   stop(): Promise<void>;
 }
@@ -31,19 +51,33 @@ export interface WorldServer {
  * first so the room is reachable the moment it exists. `@colyseus/core` and
  * the transport are imported directly: the `colyseus` meta-package would
  * also load `@colyseus/tools`, which reads `.env` files into the environment.
+ *
+ * The `front`, when given, is plugged into Colyseus's own hooks: its HTTP
+ * server goes to the transport, its upgrade check to `beforeUpgrade`, its
+ * routes to the `express` option and its CORS headers to the matchmaker.
  */
-export async function startWorldServer({ port, seed }: WorldServerOptions): Promise<WorldServer> {
+export async function startWorldServer({ port, seed, front }: WorldServerOptions): Promise<WorldServer> {
   const gameServer = new Server({
-    transport: new WebSocketTransport({ maxPayload: MAX_FRAME_BYTES }),
+    transport: new WebSocketTransport({
+      maxPayload: MAX_FRAME_BYTES,
+      ...(front && { server: front.httpServer, beforeUpgrade: (_request, context) => front.upgradeRefusal(context.headers) }),
+    }),
+    ...(front && { express: front.mountRoutes }),
     greet: false,
     gracefullyShutdown: false,
   });
   gameServer.define(WORLD_ROOM_NAME, WorldRoom);
   matchMaker.controller.exposedMethods = ['joinById'];
+  if (front) {
+    // Colyseus answers every origin with `Access-Control-Allow-Origin: *` unless told otherwise: only the front says who may read a matchmaking answer.
+    matchMaker.controller.DEFAULT_CORS_HEADERS = withoutAllowOrigin(matchMaker.controller.DEFAULT_CORS_HEADERS);
+    matchMaker.controller.getCorsHeaders = front.corsHeaders;
+  }
   await gameServer.listen(port);
+  // Nothing may be awaited between `listen` and the guard: Colyseus binds its routes as the port opens, and the first request must already find the guard.
+  front?.guardRequests();
   const httpServer = gameServer.transport.server;
   if (!httpServer) throw new Error('the transport has no HTTP server to listen on');
-  refuseLargeRequestBodies(httpServer, MAX_REQUEST_BODY_BYTES);
   const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed } satisfies WorldRoomOptions);
   const room = matchMaker.getLocalRoomById(listing.roomId) as WorldRoom;
   const address = httpServer.address();
@@ -52,74 +86,14 @@ export async function startWorldServer({ port, seed }: WorldServerOptions): Prom
     port: boundPort,
     roomId: listing.roomId,
     room,
-    httpServer,
     stop: () => gameServer.gracefullyShutdown(false),
   };
 }
 
-/**
- * Colyseus reads the whole body of every matchmaking POST before it looks at
- * the method, with no size limit, and logs a stack trace when that read is
- * cut short. So the body is read here first, the way Colyseus's own
- * `prereadRequestBodies` does, but capped: a request that declares or streams
- * more than `maxBytes` is answered 413 and its connection closed, and Colyseus
- * never sees it. Everything else reaches Colyseus's router with `body`
- * already set, which the router honours.
- *
- * Installed after `listen`, which is when Colyseus binds its routes. Colyseus
- * serves every HTTP route (matchmaking, health check, and Express when that
- * option is used) from one `request` listener; WebSocket connections arrive
- * on `upgrade` and never pass through here. That one listener is the only one
- * wrapped, and the server refuses to boot if it finds any other number: a
- * second listener would either be wrapped without expecting a pre-read body
- * or, added later, bypass the cap. New HTTP routes go through Colyseus's
- * router, never `httpServer.on('request')`.
- */
-function refuseLargeRequestBodies(httpServer: HttpServer, maxBytes: number): void {
-  const requestListeners = httpServer.listeners('request');
-  if (requestListeners.length !== 1) {
-    throw new Error(`expected Colyseus's router to be the only HTTP request listener, found ${requestListeners.length}`);
-  }
-  const colyseusRouter = requestListeners[0] as (request: IncomingMessage, response: ServerResponse) => void;
-  httpServer.removeListener('request', colyseusRouter);
-  httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    const handOver = () => colyseusRouter.call(httpServer, request, response);
-    const refuse = () => {
-      response.writeHead(413, { connection: 'close', 'content-length': '0' });
-      response.end();
-      request.socket.destroy();
-    };
-    const declaredBytes = Number(request.headers['content-length']);
-    if (Number.isFinite(declaredBytes) && declaredBytes > maxBytes) {
-      refuse();
-      return;
-    }
-    const method = request.method ?? 'GET';
-    const hasBody = method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS' && (declaredBytes > 0 || request.headers['transfer-encoding'] !== undefined);
-    if (!hasBody) {
-      handOver();
-      return;
-    }
-    const chunks: Buffer[] = [];
-    let receivedBytes = 0;
-    let refused = false;
-    request.on('error', () => undefined);
-    request.on('data', (chunk: Buffer) => {
-      if (refused) return;
-      receivedBytes += chunk.length;
-      if (receivedBytes > maxBytes) {
-        refused = true;
-        refuse();
-        return;
-      }
-      chunks.push(chunk);
-    });
-    request.on('end', () => {
-      if (refused) return;
-      (request as IncomingMessage & { body?: string }).body = Buffer.concat(chunks).toString('utf8');
-      handOver();
-    });
-  });
-}
+// ---- Helpers ----
 
-export const __testing__ = { refuseLargeRequestBodies };
+function withoutAllowOrigin<CorsHeaders extends Record<string, string>>(headers: CorsHeaders): CorsHeaders {
+  const kept: Record<string, string> = { ...headers };
+  delete kept['Access-Control-Allow-Origin'];
+  return kept as CorsHeaders;
+}

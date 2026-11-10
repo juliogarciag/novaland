@@ -17,10 +17,14 @@
     "@colyseus/schema": "catalog:",
     "@colyseus/ws-transport": "catalog:",
     "@novaland/sim": "workspace:*",
-    "express": "catalog:"
+    "compression": "catalog:",
+    "express": "catalog:",
+    "helmet": "catalog:"
   },
   "devDependencies": {
     "@colyseus/sdk": "catalog:",
+    "@types/compression": "catalog:",
+    "@types/express": "catalog:",
     "@types/node": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

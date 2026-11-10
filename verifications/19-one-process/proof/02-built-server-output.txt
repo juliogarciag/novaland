@@ -10,12 +10,12 @@ packages/server build: vite v8.3.6 building ssr environment for production...
 packages/client build: vite v8.3.6 building client environment for production...
 packages/server build: transforming...
 packages/client build: transforming...
-packages/server build: ✓ 141 modules transformed.
+packages/server build: ✓ 143 modules transformed.
 packages/server build: rendering chunks...
 packages/server build: computing gzip size...
-packages/server build: dist/index.mjs                    269.15 kB │ gzip:    68.84 kB │ map:   696.44 kB
+packages/server build: dist/index.mjs                    267.01 kB │ gzip:    68.38 kB │ map:   694.72 kB
 packages/server build: dist/assets/rapier-CIsgl35y.js  3,488.08 kB │ gzip: 1,316.44 kB │ map: 3,650.85 kB
-packages/server build: ✓ built in 121ms
+packages/server build: ✓ built in 125ms
 packages/server build: Done
 packages/client build: ✓ 204 modules transformed.
 packages/client build: rendering chunks...
@@ -23,14 +23,14 @@ packages/client build: computing gzip size...
 packages/client build: dist/index.html                     0.89 kB │ gzip:     0.54 kB
 packages/client build: dist/assets/index-Cu22QIrA.js   1,678.75 kB │ gzip:   453.35 kB
 packages/client build: dist/assets/rapier-C1NO8tr2.js  3,446.04 kB │ gzip: 1,313.58 kB
+packages/client build: ✓ built in 486ms
 packages/client build: [plugin builtin:vite-reporter] 
 packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
 packages/client build: - Using dynamic import() to code-split the application
 packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-packages/client build: ✓ built in 499ms
 packages/client build: Done
-(node:98520) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:47580) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -39,17 +39,17 @@ server output:
 > novaland@0.0.0 start <repo>
 > pnpm --filter @novaland/server start
 
-(node:98592) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:47652) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 > @novaland/server@0.0.0 start <repo>/packages/server
 > node dist/index.mjs
 
-{"event":"world-room-listening","port":5420,"roomId":"world","seed":847920784,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
+{"event":"world-room-listening","port":5420,"roomId":"world","seed":1412824420,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true}
 
 
 observer output (last lines):
-{"event":"world","tick":335,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":341,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":347,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
-{"event":"world","tick":354,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":380,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":386,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":392,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}
+{"event":"world","tick":398,"ownEntity":45,"players":[{"slot":0,"eid":45,"x":-13.5,"y":-0.5,"intentX":0,"intentY":0}]}

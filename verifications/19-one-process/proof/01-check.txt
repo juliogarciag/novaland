@@ -2,14 +2,16 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (253 of 253)
-PASS  the origin policy: no Origin passes, same origin passes whatever the scheme or default-port spelling, foreign hosts/ports/null/junk are refused, the allow-list and * work, loopback to loopback passes outside production but not loopback to a deployed host nor a name that merely starts with 127.
-PASS  ALLOWED_ORIGINS is parsed strictly: unset is same-origin only, entries are normalised, anything that is not a bare http(s) origin throws
-PASS  one process: index.html with security headers, immutable hashed assets, ETag/HEAD, no escape from the directory, hand-over to Colyseus, no descriptor left open by an aborted or abandoned download, /healthz, 403 for foreign matchmaking and upgrades, files and health still open to everyone, the body cap still in force behind them
-PASS  a client directory with "assets" in its own path still caches only the files under assets/
+PASS  every test passed, none skipped  (268 of 268)
+PASS  the origin policy: no Origin passes, the listed origins pass in any spelling, other hosts/ports/schemes/null/junk are refused, the request never says who it is (no Host comparison), loopback pages pass outside production only, a name that merely looks like loopback does not, and * allows all
+PASS  ALLOWED_ORIGINS is parsed strictly: unset is loopback only outside production and stops the boot in production, entries are normalised, anything that is not a bare http(s) origin throws
+PASS  one process, the real composition: index.html with security headers, immutable hashed assets, ETag/HEAD/range, compression, no escape from the directory, no descriptor left open by an aborted download, /healthz, 403 for foreign matchmaking and upgrades (a rebound domain too), no wildcard CORS, files and health open to everyone, the body cap, 400 for every request Colyseus cannot survive, a real client seated through all of it, a proxied request let through
+PASS  one process in production: only the listed origin gets in, whatever Host a proxy presents; a loopback page and a rebound domain do not
+PASS  the request guard alone: installs only over exactly one listener, pre-reads bodies, 413 over the cap, 403 for foreign state changes, reads stay open, a forwarded protocol in either case
+PASS  the edge routes alone: /healthz is 503 until there is something to report, HEAD has no body, nothing is served without a client directory
 PASS  the client picks the server: VITE_SERVER_URL when set, the page origin in production, solo in dev
 PASS  physics loads on demand: a replica works with none loaded, a physics world before initPhysics throws a clear error, and Rapier loads once
 PASS  the sim, replica, world room and client online tests still pass
 PASS  pnpm sim:headless prints the same state hash as before Rapier loaded on demand (recorded in #18's proof)  (50b21d74 vs 50b21d74)
 
-ALL 13 CHECKS PASSED
+ALL 15 CHECKS PASSED

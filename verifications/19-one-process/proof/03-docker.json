@@ -8,7 +8,9 @@
     "tickRate": 60,
     "sendRate": 20,
     "clientDirectory": "/app/packages/client/dist",
-    "allowedOrigins": [],
+    "allowedOrigins": [
+      "http://localhost:5419"
+    ],
     "loopbackOrigins": false
   },
   "health": {
@@ -16,9 +18,9 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 3
+    "tick": 1
   },
-  "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus express  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound content-disposition content-type cookie cookie-signature debug depd detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: assets index.mjs index.mjs.map \n",
+  "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus compression express helmet  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound compressible compression content-disposition content-type cookie cookie-signature debug depd destroy detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown helmet http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished on-headers once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safe-buffer safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: assets index.mjs index.mjs.map \n",
   "sprites": [
     {
       "name": "player-ember.png",
@@ -71,8 +73,40 @@
   ],
   "upgrades": {
     "foreign": 403,
-    "sameOrigin": 101
+    "reboundDomain": 403,
+    "otherLoopbackPage": 403,
+    "listedBehindProxy": 101
   },
+  "hostile": [
+    {
+      "what": "an absolute URL as the target",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an absolute URL as the target of a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host with a port that is no port",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on the Colyseus health route",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a forwarded protocol that is no protocol",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "two forwarded protocols",
+      "answer": "HTTP/1.1 400 Bad Request"
+    }
+  ],
   "pages": {
     "aSeated": {
       "screen": null,
@@ -90,16 +124,16 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": 0.5,
+        "x": -14.5,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       },
       {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
-        "y": -0.5,
+        "x": -12.5,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -109,48 +143,48 @@
       "start": {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
-        "y": 0.5,
+        "x": -14.5,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       },
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -8.75,
-        "y": 0.5,
+        "x": -9.917,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.75
+      "distance": 4.583
     },
     "bWalk": {
       "slot": 2,
       "start": {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
-        "y": -0.5,
+        "x": -12.5,
+        "y": -1.5,
         "intentX": 0,
         "intentY": 0
       },
       "end": {
         "slot": 2,
         "eid": 47,
-        "x": -14.5,
-        "y": 4.167,
+        "x": -12.5,
+        "y": 3,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.667
+      "distance": 4.5
     },
     "quietFrames": {
       "count": 19,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 21,
-      "meanBytes": 116.04761904761905
+      "count": 19,
+      "meanBytes": 120.05263157894737
     },
     "aQuietFrames": {
       "count": 20,
@@ -182,6 +216,26 @@
         "contentType": "image/png"
       },
       {
+        "url": "/sprites/player-teal.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-ember.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-sun.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
         "url": "/sprites/player-plum.png",
         "status": 200,
         "contentType": "image/png"
@@ -192,107 +246,87 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-moss.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-sun.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-ember.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-teal.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
         "url": "/sprites/player-slate.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/2aab7d60-31a4-4ea8-b55a-267d002a4f31",
+        "url": "blob:/1bc8b7ae-fdd5-4d91-b24a-28bbfae9a8c9",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/ddde6f58-4988-48c2-8f99-6f1454710168",
+        "url": "blob:/ee263029-710d-4c82-92ca-97bb24756ef1",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/655f841f-d578-4fff-a80e-a6053d7e2549",
+        "url": "blob:/4f3a0422-a2a7-411f-ba46-d164f10cd73a",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/33a70981-ef7f-4158-b321-aee785e8a4db",
+        "url": "blob:/423f81c9-f9ec-4657-ad0e-73b21a362c3b",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/630ba755-6df5-46b2-9e2a-3b4395291dfb",
+        "url": "blob:/9a0cce80-70ef-4215-93b7-85ae81e17132",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/ca66c73d-ec22-4860-8773-6aae9af9e2e4",
+        "url": "blob:/139aa989-d831-495c-9ec1-0c3761bd3f69",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/ae69c2fb-93df-456b-9f6b-7ff712618fbf",
+        "url": "blob:/4dbe9395-935a-4849-931f-3cd2c3bfade5",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/cd74eba6-37ed-463d-bc6b-25f60cb16950",
+        "url": "blob:/384cfed9-63e2-4d8b-80d2-cba3e9e71c5a",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/0887e948-5916-4eb0-beb0-051f5eb06a72",
+        "url": "blob:/02bb8ddf-402c-46a4-bb5c-2153bb9c209f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/c496c742-a768-4c97-91a9-3cd18ca637d3",
+        "url": "blob:/7290505c-b6d5-4476-b9cc-c1006a812a88",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/cb525460-319f-4fc4-a8ae-5ebe1d5f613c",
+        "url": "blob:/316d7a2b-0e81-4cf9-b6d3-e66d82609ba1",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/4cefc260-98ae-442f-b761-92ac5af90024",
+        "url": "blob:/5e2a7fa0-1887-432a-8aa4-9541fa7338a3",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/46cfe0e3-9436-4915-829c-ee289a8f048d",
+        "url": "blob:/c38ab93c-3e7a-441b-a043-65dff27e37f2",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/abcf94af-01b4-4607-beb5-460f2c23ebab",
+        "url": "blob:/dd7dce8c-4686-464a-bfec-368fe342a8c8",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/12a9cd52-c60e-4ab9-b3df-d1453b384b94",
+        "url": "blob:/7209c35b-a546-483e-ae13-a7139ee4b515",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/4221420f-9c06-4ad5-aeb2-1351498e077c",
+        "url": "blob:/1f51294d-e229-482c-be6d-2ce938371125",
         "status": 200,
         "contentType": "image/png"
       }
@@ -301,5 +335,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.147
+  "stopSeconds": 0.132
 }

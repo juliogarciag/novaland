@@ -1,31 +1,24 @@
 /**
  * Entry point of the world server: `PORT=<n> pnpm --filter @novaland/server dev`
  * from source, `pnpm start` for the built bundle. One process serves the built
- * client and the world room on `PORT`: reads the port from the environment,
- * draws a random seed for this boot, starts the one world room and puts the
- * client files, `/healthz` and the origin check in front of it. The seed is
- * logged so a session can be replayed.
+ * client and the world room on `PORT`. This file only reads the environment
+ * (`PORT`, `ALLOWED_ORIGINS`, `NODE_ENV`, `CLIENT_DIR`), draws a random seed
+ * for this boot and hands them to `startServer`. The seed is logged so a
+ * session can be replayed.
  */
 import { TICK_RATE } from '@novaland/sim';
 import { randomInt } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { answerHealthChecks } from './http/answerHealthChecks';
-import { readOriginPolicy } from './http/origins';
-import { refuseForeignOrigins } from './http/refuseForeignOrigins';
-import { serveClientFiles } from './http/serveClientFiles';
-import { startWorldServer } from './world/startWorldServer';
-import { DEFAULT_PORT, MAX_SEATS, SEND_RATE } from './world/tuning';
+import { readOriginPolicy } from './edge';
+import { startServer } from './startServer';
+import { DEFAULT_PORT, MAX_SEATS, SEND_RATE } from './world';
 
 const port = readPort(process.env.PORT);
 const originPolicy = originPolicyOrExit(process.env.ALLOWED_ORIGINS, process.env.NODE_ENV);
 const clientDirectory = readClientDirectory(process.env.CLIENT_DIR);
 const seed = randomInt(0, 2 ** 31);
-const server = await startWorldServer({ port, seed });
-// Installed back to front: the last one answers first. Files and the health check stay reachable from anywhere; everything else is origin-checked before Colyseus sees it.
-refuseForeignOrigins(server.httpServer, originPolicy);
-answerHealthChecks(server.httpServer, () => ({ ok: true, roomId: server.roomId, seats: MAX_SEATS, seatsTaken: server.room.seatsTaken, tick: server.room.tick }));
-if (clientDirectory !== undefined) serveClientFiles(server.httpServer, { directory: clientDirectory });
+const server = await startServer({ port, seed, originPolicy, clientDirectory });
 console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, clientDirectory: clientDirectory ?? null, allowedOrigins: originPolicy.allowAll ? '*' : [...originPolicy.allowedOrigins], loopbackOrigins: originPolicy.allowLoopback }));
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
@@ -46,7 +39,7 @@ function readPort(value: string | undefined): number {
   return port;
 }
 
-/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `http/origins.ts`): same origin always, loopback to loopback outside production. A malformed entry stops the boot. */
+/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `edge/origins.ts`): the listed origins, plus any loopback page outside production. A malformed entry stops the boot, and so does production with nothing listed. */
 function originPolicyOrExit(allowedOrigins: string | undefined, nodeEnv: string | undefined) {
   try {
     return readOriginPolicy({ allowedOrigins, allowLoopback: nodeEnv !== 'production' });

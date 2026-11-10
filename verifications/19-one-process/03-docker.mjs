@@ -12,7 +12,7 @@
 import { chromium } from 'playwright';
 import path from 'node:path';
 import { PROOF, check, run, summarize, writeProof } from './lib.mjs';
-import { framesBetween, mean, openPlayer, othersSeenBy, startObserver, upgradeStatus, waitFor, waitSeated, walk } from './browser.mjs';
+import { framesBetween, mean, openPlayer, othersSeenBy, rawStatusLine, requestsColyseusCannotSurvive, startObserver, upgradeStatus, waitFor, waitSeated, walk } from './browser.mjs';
 
 const PORT = 5419;
 const IMAGE = 'novaland:19-verify';
@@ -28,17 +28,21 @@ try {
   transcript.push(`$ docker build -t ${IMAGE} . (exit ${build.code})\n${build.output.split('\n').slice(-30).join('\n')}`);
   results.push(check('docker build exits 0', build.code === 0));
   await run('docker', ['rm', '-f', CONTAINER]);
-  const started = await run('docker', ['run', '-d', '--rm', '--name', CONTAINER, '-e', `PORT=${PORT}`, '-p', `${PORT}:${PORT}`, IMAGE]);
-  transcript.push(`$ docker run -d --rm --name ${CONTAINER} -e PORT=${PORT} -p ${PORT}:${PORT} ${IMAGE} (exit ${started.code})\n${started.output}`);
-  containerStarted = started.code === 0;
-  results.push(check(`docker run with PORT=${PORT} starts`, containerStarted));
   const base = `http://localhost:${PORT}`;
+  // The image is production: without the origin players open, it must refuse to start.
+  const unconfigured = await run('docker', ['run', '--rm', '-e', `PORT=${PORT}`, IMAGE]);
+  transcript.push(`$ docker run --rm -e PORT=${PORT} ${IMAGE} (exit ${unconfigured.code})\n${unconfigured.output}`);
+  results.push(check('docker run without ALLOWED_ORIGINS exits 1 and says what to set', unconfigured.code === 1 && /ALLOWED_ORIGINS must name the origin players open/.test(unconfigured.output), unconfigured.output.trim()));
+  const started = await run('docker', ['run', '-d', '--rm', '--name', CONTAINER, '-e', `PORT=${PORT}`, '-e', `ALLOWED_ORIGINS=${base}`, '-p', `${PORT}:${PORT}`, IMAGE]);
+  transcript.push(`$ docker run -d --rm --name ${CONTAINER} -e PORT=${PORT} -e ALLOWED_ORIGINS=${base} -p ${PORT}:${PORT} ${IMAGE} (exit ${started.code})\n${started.output}`);
+  containerStarted = started.code === 0;
+  results.push(check(`docker run with PORT=${PORT} and ALLOWED_ORIGINS=${base} starts`, containerStarted));
   const health = await waitFor(() => fetch(`${base}/healthz`).then((response) => response.json()).catch(() => undefined), (body) => body?.ok === true, '/healthz to answer', 30000);
   results.push(check('/healthz answers from the container', health.ok === true && health.roomId === 'world' && health.seats === 5, JSON.stringify(health)));
   const logs = await run('docker', ['logs', CONTAINER]);
   const bootLine = logs.output.split('\n').find((line) => line.includes('world-room-listening'));
   const boot = bootLine ? JSON.parse(bootLine.slice(bootLine.indexOf('{'))) : undefined;
-  results.push(check('the container boot line serves /app/packages/client/dist with an empty allow-list', boot?.port === PORT && boot?.clientDirectory === '/app/packages/client/dist' && boot?.allowedOrigins?.length === 0, bootLine));
+  results.push(check('the container boot line serves /app/packages/client/dist, allows only the origin it was told and no loopback pages', boot?.port === PORT && boot?.clientDirectory === '/app/packages/client/dist' && JSON.stringify(boot?.allowedOrigins) === JSON.stringify([base]) && boot?.loopbackOrigins === false, bootLine));
   report.boot = boot ? { ...boot, seed: '<random>' } : undefined;
   report.health = health;
 
@@ -47,7 +51,7 @@ try {
   const serverDeps = inside.output.split('\n').find((line) => line.startsWith('server deps:')) ?? '';
   const store = inside.output.split('\n').find((line) => line.startsWith('store:')) ?? '';
   results.push(check('the process runs as the unprivileged node user, NODE_ENV=production, Node 24', /^node\n/.test(inside.output) && /NODE_ENV=production/.test(inside.output) && /v24\./.test(inside.output), inside.output.split('\n').slice(0, 3).join(' | ')));
-  results.push(check('the runtime image holds the server runtime dependencies (Colyseus core, transport, express) and no build tools: no vite, tsx, vitest or phaser in the store (typescript is a peer of @colyseus/schema)', /core/.test(serverDeps) && /ws-transport/.test(serverDeps) && /express/.test(serverDeps) && !/@novaland/.test(serverDeps) && !/\b(vite|tsx|vitest|phaser)\b/.test(store), `${serverDeps} || ${store}`));
+  results.push(check('the runtime image holds the server runtime dependencies (Colyseus core, transport, express, helmet, compression) and no build tools: no vite, tsx, vitest or phaser in the store (typescript is a peer of @colyseus/schema)', /core/.test(serverDeps) && /ws-transport/.test(serverDeps) && /express/.test(serverDeps) && /helmet/.test(serverDeps) && /compression/.test(serverDeps) && !/@novaland/.test(serverDeps) && !/\b(vite|tsx|vitest|phaser)\b/.test(store), `${serverDeps} || ${store}`));
   report.inside = inside.output;
 
   const spriteListing = await run('docker', ['exec', CONTAINER, 'ls', 'packages/client/dist/sprites']);
@@ -60,9 +64,20 @@ try {
   results.push(check(`the container serves every sprite in its client build as image/png (${spriteNames.length}: ${spriteNames.join(', ')})`, spriteNames.length >= 8 && sprites.every((sprite) => sprite.status === 200 && sprite.contentType === 'image/png' && sprite.bytes > 0), JSON.stringify(sprites.filter((sprite) => sprite.status !== 200))));
   report.sprites = sprites;
 
-  const upgrades = { foreign: await upgradeStatus(PORT, 'https://evil.example.com'), sameOrigin: await upgradeStatus(PORT, base) };
-  results.push(check('from the container: a foreign-origin WebSocket upgrade is refused with 403, same origin is taken', upgrades.foreign === 403 && upgrades.sameOrigin === 101, JSON.stringify(upgrades)));
+  const upgrades = {
+    foreign: await upgradeStatus(PORT, 'https://evil.example.com'),
+    reboundDomain: await upgradeStatus(PORT, `http://rebound.example.net:${PORT}`, `rebound.example.net:${PORT}`),
+    otherLoopbackPage: await upgradeStatus(PORT, 'http://localhost:5218'),
+    listedBehindProxy: await upgradeStatus(PORT, base, 'internal:8080'),
+  };
+  results.push(check('from the container: a WebSocket upgrade is refused with 403 from a foreign origin, from a domain pointed at the server (Origin equal to its own Host) and from another loopback page; the listed origin is taken whatever Host a proxy presents', upgrades.foreign === 403 && upgrades.reboundDomain === 403 && upgrades.otherLoopbackPage === 403 && upgrades.listedBehindProxy === 101, JSON.stringify(upgrades)));
   report.upgrades = upgrades;
+  const hostile = [];
+  for (const [what, lines] of requestsColyseusCannotSurvive(PORT)) hostile.push({ what, answer: await rawStatusLine(PORT, lines) });
+  const aliveAfterHostile = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  const stillRunning = await run('docker', ['inspect', '--format', '{{.State.Running}}', CONTAINER]);
+  results.push(check('the container answers 400 to every request that ends a bare Colyseus process, and is still running after all of them', hostile.every((request) => request.answer === 'HTTP/1.1 400 Bad Request') && aliveAfterHostile === 200 && stillRunning.output.trim() === 'true', JSON.stringify({ hostile, aliveAfterHostile, running: stillRunning.output.trim() })));
+  report.hostile = hostile;
 
   // Two browser contexts, a Node observer as the authoritative witness.
   observer = startObserver(`ws://127.0.0.1:${PORT}`);

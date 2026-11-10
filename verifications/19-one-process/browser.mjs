@@ -121,12 +121,12 @@ export function mean(values) {
   return values.length === 0 ? 0 : values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-/** The status of a WebSocket upgrade to `port` carrying `origin` (none when undefined), with the `Host` a browser at `http://localhost:<port>` would send: 101 when accepted, else what refused it. */
-export function upgradeStatus(port, origin) {
+/** The status of a WebSocket upgrade to `port` carrying `origin` (none when undefined) and `host` (what a browser at `http://localhost:<port>` would send, unless given): 101 when accepted, else what refused it. */
+export function upgradeStatus(port, origin, host = `localhost:${port}`) {
   return import('node:http').then(
     ({ default: http }) =>
       new Promise((resolve, reject) => {
-        const headers = { host: `localhost:${port}`, connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==' };
+        const headers = { host, connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==' };
         if (origin !== undefined) headers.origin = origin;
         const request = http.request({ host: '127.0.0.1', port, path: '/world', method: 'GET', headers });
         request.on('upgrade', (response, socket) => {
@@ -154,6 +154,47 @@ export function rawStatus(port, rawPath) {
         });
         request.on('error', reject);
         request.end();
+      }),
+  );
+}
+
+/** The requests that end a bare Colyseus process (its router throws outside any handler when `X-Forwarded-Proto`, `Host` and the target do not make a URL), each as the lines to write to a socket. */
+export function requestsColyseusCannotSurvive(port) {
+  const host = `Host: localhost:${port}`;
+  const json = ['Content-Type: application/json', 'Content-Length: 2', '', '{}'];
+  return [
+    ['an absolute URL as the target', ['GET http://evil.example/healthz HTTP/1.1', host]],
+    ['an absolute URL as the target of a matchmaking call', ['POST http://evil.example/matchmake/joinById/world HTTP/1.1', host, ...json]],
+    ['a Host that is no host, on a matchmaking call', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: exa[mple', ...json]],
+    ['a Host with a port that is no port', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: a:b', ...json]],
+    ['a Host that is no host, on the Colyseus health route', ['GET /__healthcheck HTTP/1.1', 'Host: exa[mple']],
+    ['a forwarded protocol that is no protocol', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: ht tp', ...json]],
+    ['two forwarded protocols', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: https, http', ...json]],
+  ];
+}
+
+/** Writes the request lines to a bare socket, as no HTTP client would, and returns the status line of the answer (or says there was none). */
+export function rawStatusLine(port, lines) {
+  return import('node:net').then(
+    ({ default: net }) =>
+      new Promise((resolve) => {
+        const socket = net.connect(port, '127.0.0.1');
+        let received = '';
+        const answer = () => received.split('\r\n')[0] || 'no answer';
+        socket.setTimeout(3000, () => {
+          socket.destroy();
+          resolve(answer());
+        });
+        socket.on('data', (chunk) => {
+          received += chunk.toString('latin1');
+          if (received.includes('\r\n')) {
+            socket.destroy();
+            resolve(answer());
+          }
+        });
+        socket.on('error', () => resolve(answer()));
+        socket.on('close', () => resolve(answer()));
+        socket.write(`${lines.join('\r\n')}\r\n\r\n`);
       }),
   );
 }
