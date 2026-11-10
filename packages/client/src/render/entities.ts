@@ -1,8 +1,9 @@
-import { getDef, getHeading, getRenderables, type SimHandle, type SpriteDef } from '@novaland/sim';
+import { getDef, type SimHandle, type SpriteDef } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { IDLE_DOWN, poseFromHeading } from './pose';
 import { walkAnimationKey } from './sprites';
 import { PIXELS_PER_METRE, toPixels } from './units';
+import { readViewFrame, type ViewFrame } from './viewFrame';
 
 interface EntityView {
   readonly gameObject: Phaser.GameObjects.Shape | Phaser.GameObjects.Sprite;
@@ -29,9 +30,15 @@ export class EntityRenderer {
 
   constructor(private readonly scene: Phaser.Scene) {}
 
-  sync(sim: SimHandle): void {
+  /** Draws what `handle` holds right now. */
+  sync(handle: SimHandle): void {
+    this.draw(readViewFrame(handle));
+  }
+
+  /** Draws a frame: positions and headings that may lie between two states (online interpolation). */
+  draw(frame: ViewFrame): void {
     const liveEntityIds = new Set<number>();
-    for (const renderable of getRenderables(sim)) {
+    for (const renderable of frame.renderables) {
       liveEntityIds.add(renderable.eid);
       let view = this.views.get(renderable.eid);
       if (view && (view.defId !== renderable.defId || view.halfWidth !== renderable.halfWidth || view.halfHeight !== renderable.halfHeight)) {
@@ -45,7 +52,7 @@ export class EntityRenderer {
       view.gameObject.setPosition(toPixels(renderable.x), toPixels(renderable.y));
       const depth = toPixels(renderable.y + renderable.halfHeight);
       if (view.gameObject.depth !== depth) view.gameObject.setDepth(depth); // setDepth queues a display-list sort even when unchanged
-      if (view.sheetSprite) this.animate(view.sheetSprite, sim, renderable.eid);
+      if (view.sheetSprite) this.animate(view.sheetSprite, frame, renderable.eid);
     }
     for (const [eid, view] of this.views) {
       if (!liveEntityIds.has(eid)) {
@@ -78,8 +85,8 @@ export class EntityRenderer {
   }
 
   /** Plays the walk cycle of the direction the entity moves in, or shows the idle frame of the direction it faces. */
-  private animate({ sprite, sheet }: NonNullable<EntityView['sheetSprite']>, sim: SimHandle, eid: number): void {
-    const heading = getHeading(sim, eid);
+  private animate({ sprite, sheet }: NonNullable<EntityView['sheetSprite']>, frame: ViewFrame, eid: number): void {
+    const heading = frame.headings.get(eid);
     const pose = heading ? poseFromHeading(heading) : IDLE_DOWN;
     if (pose.walking) {
       sprite.play(walkAnimationKey(sheet.key, pose.direction), true);

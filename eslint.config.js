@@ -8,6 +8,7 @@ import tseslint from 'typescript-eslint';
  *
  * sim    -> may import: bitecs, rapier. Never phaser, DOM, client, server, colyseus.
  * client -> may import: phaser, @novaland/sim (package entry only). Never rapier, bitecs, server.
+ *           @colyseus/sdk only inside packages/client/src/online: the rest of the client plays a PlayableWorld and does not know the transport.
  * server -> may import: @novaland/sim (package entry only), colyseus. Never phaser, client.
  *
  * Violations fail `pnpm lint`. Keep the lists below in sync with AGENTS.md.
@@ -18,6 +19,7 @@ const PHASER = group(['phaser', 'phaser/*'], 'Phaser is rendering/input only and
 const RAPIER = group(['@dimforge/*'], 'Physics lives in packages/sim. The client only reads sim state.');
 const BITECS = group(['bitecs', 'bitecs/*'], 'The ECS lives in packages/sim. Use the sim public API.');
 const COLYSEUS = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'Networking belongs to packages/server (and later a client adapter), not here.');
+const COLYSEUS_OUTSIDE_ONLINE = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'The Colyseus SDK lives in packages/client/src/online. Everything else in the client plays a PlayableWorld.');
 const CLIENT_PKG = group(['@novaland/client', '@novaland/client/*', '**/packages/client/**', '../**/client/**'], 'Nothing may depend on the client. It is a view.');
 const SERVER_PKG = group(['@novaland/server', '@novaland/server/*', '**/packages/server/**', '../**/server/**'], 'Nothing may depend on the server.');
 const NODE_BUILTINS = group(['node:*', 'fs', 'fs/*', 'path', 'os', 'crypto', 'child_process', 'worker_threads', 'http', 'https', 'net', 'events', 'stream', 'util', 'url'], 'The sim is headless and pure: no Node APIs in packages/sim.');
@@ -54,7 +56,7 @@ export default defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['*.js', '*.ts', 'packages/server/**/*.ts', 'packages/client/vite.config.ts', 'packages/client/tools/**/*.mjs', 'verifications/**/*.{js,mjs,ts}'],
+    files: ['*.js', '*.ts', 'scripts/**/*.mjs', 'packages/server/**/*.ts', 'packages/client/vite.config.ts', 'packages/client/tools/**/*.mjs', 'verifications/**/*.{js,mjs,ts}'],
     languageOptions: { globals: globals.node },
   },
   {
@@ -77,6 +79,11 @@ export default defineConfig([
   },
   {
     files: ['packages/client/**/*.ts'],
+    ignores: ['packages/client/src/online/**'],
+    rules: restrictImports(RAPIER, BITECS, SERVER_PKG, SIM_DEEP, COLYSEUS_OUTSIDE_ONLINE),
+  },
+  {
+    files: ['packages/client/src/online/**/*.ts'],
     rules: restrictImports(RAPIER, BITECS, SERVER_PKG, SIM_DEEP),
   },
   {
