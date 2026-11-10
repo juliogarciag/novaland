@@ -16,7 +16,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 2
+    "tick": 3
   },
   "indexHeaders": {
     "cache-control": "no-cache",
@@ -24,8 +24,8 @@
     "content-length": "899",
     "content-security-policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
     "content-type": "text/html; charset=utf-8",
-    "date": "Tue, 10 Nov 2026 01:30:12 GMT",
-    "etag": "W/\"383-1a1c313b94e\"",
+    "date": "Tue, 10 Nov 2026 01:42:42 GMT",
+    "etag": "W/\"383-1a1c31f2982\"",
     "keep-alive": "timeout=5",
     "referrer-policy": "same-origin",
     "x-content-type-options": "nosniff",
@@ -111,7 +111,7 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -14.5,
+        "x": -13.5,
         "y": 0.5,
         "intentX": 0,
         "intentY": 0
@@ -147,10 +147,6 @@
         "status": 200
       },
       {
-        "url": "/sprites/player-teal.png",
-        "status": 200
-      },
-      {
         "url": "/sprites/player-plum.png",
         "status": 200
       },
@@ -159,39 +155,43 @@
         "status": 200
       },
       {
+        "url": "/sprites/player-teal.png",
+        "status": 200
+      },
+      {
         "url": "/sprites/player-slate.png",
         "status": 200
       },
       {
-        "url": "blob:/fdb73731-bb6d-47da-ace3-b90f22a2d0ff",
+        "url": "blob:/15d0fef3-97bf-4d13-9a4b-ea5ff401b837",
         "status": 200
       },
       {
-        "url": "blob:/85ad07d7-b357-44b8-9117-23233ba41145",
+        "url": "blob:/f918bbd2-0418-440f-83e4-d601f662cbbd",
         "status": 200
       },
       {
-        "url": "blob:/0737f2d8-676c-4eeb-91a5-eab166b1467f",
+        "url": "blob:/1c278030-20d3-44da-a25f-3109fde9a243",
         "status": 200
       },
       {
-        "url": "blob:/31eb9495-0dc3-496c-94fd-cd77623eec43",
+        "url": "blob:/afd8c4e9-307d-4da4-bea4-cd485465b792",
         "status": 200
       },
       {
-        "url": "blob:/2f888747-c7c2-40c7-a8fd-278ccb52dba7",
+        "url": "blob:/d6a20b02-b7f7-4250-b39e-56cae4e94565",
         "status": 200
       },
       {
-        "url": "blob:/b961bb51-8ce4-4958-82f8-e5470061f0d3",
+        "url": "blob:/7ee967e1-3871-4b18-a65e-3efc2c11454f",
         "status": 200
       },
       {
-        "url": "blob:/ff45b04e-88f5-4e79-9bb7-2c3ac88d3a23",
+        "url": "blob:/486a694e-b8df-4420-8726-e10c57eb788a",
         "status": 200
       },
       {
-        "url": "blob:/fd644f3b-24f2-4393-a19c-c87508bda2af",
+        "url": "blob:/5639afbb-02de-465f-a76c-da8632e63543",
         "status": 200
       }
     ],
