@@ -3,36 +3,36 @@ PASS  while the join is in flight the page shows the connecting screen, no butto
 PASS  with no server the page shows the disconnected-and-retrying screen with a retry button, and keeps trying  ({"screen":"disconnected","text":"Disconnected from the world. Retrying in 1s…","button":true,"hasApi":false}, joins 1 -> 2)
 PASS  room server up
 PASS  once the server is up the page joins by itself: online, seated, screen hidden, the replica is the sim  ({"status":{"kind":"online","slot":0},"slot":0})
-PASS  the HUD reads 1/5 online with one player  (WASD / arrows to move   tick 66   1/5 online
-you: player-plum   players: 1)
+PASS  the HUD reads 1/5 online with one player  (WASD / arrows to move   tick 73   1/5 online
+you: player-sky   players: 1)
 PASS  the replica never steps: window.__novaland.sim.step() throws  (Error: A replica cannot step: it only shows what the authoritative sim sent. Use applyWorldState.)
 PASS  A and B hold different seats and each sees both avatars  (A seat 0, B seat 1)
-PASS  both HUDs read 2/5 online  (WASD / arrows to move   tick 123   2/5 online
-you: player-plum   players: 2 | WASD / arrows to move   tick 123   2/5 online
-you: player-slate   players: 2)
-PASS  B's replica shows A moving east while A holds D  (-13.50 -> -7.00 over 42 walking samples)
-PASS  B draws A's sprite moving east, with the walk animation playing  (player-plum/walk/right)
-PASS  the drawn position changes far more often than the replica (32 distinct sprite x vs 13 replica x in 0.72 s, ~43 display frames): 20 Hz updates draw as 60 Hz motion
-PASS  the drawn sprite lags the replica by the buffer, 100 ms = two send intervals (mean 10.3 px, expected ~8.0 px for 5 m/s)
+PASS  both HUDs read 2/5 online  (WASD / arrows to move   tick 112   2/5 online
+you: player-sky   players: 2 | WASD / arrows to move   tick 121   2/5 online
+you: player-rose   players: 2)
+PASS  B's replica shows A moving east while A holds D  (-13.50 -> -8.17 over 114 walking samples)
+PASS  B draws A's sprite moving east, with the walk animation playing  (player-sky/walk/right)
+PASS  the drawn position changes far more often than the replica (43 distinct sprite x vs 15 replica x in 0.70 s, ~42 display frames): 20 Hz updates draw as 60 Hz motion
+PASS  the drawn sprite lags the replica by the buffer, 100 ms = two send intervals (mean 8.7 px, expected ~8.0 px for 5 m/s)
 PASS  the drawn position never goes backwards while A walks east
-PASS  each page's camera is centred on its own seat's avatar (A on A, B on B, 5 m apart), or pinned at a level edge  ({"a":{"localSlot":0,"seatFromServer":0,"own":{"x":-112.001220703125,"y":-8},"centre":{"x":-112,"y":-8},"worldView":{"x":-272,"y":-128,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16},"b":{"localSlot":1,"seatFromServer":1,"own":{"x":-200,"y":8},"centre":{"x":-160,"y":8},"worldView":{"x":-320,"y":-112,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16}})
-PASS  five contexts are seated in five different seats and the HUD reads 5/5 online  (WASD / arrows to move   tick 411   5/5 online
-you: player-plum   players: 5)
+PASS  each page's camera is centred on its own seat's avatar (A on A, B on B, 5 m apart), or pinned at a level edge  ({"a":{"localSlot":0,"seatFromServer":0,"own":{"x":-130.66796875,"y":-8},"centre":{"x":-130.66666666666674,"y":-8},"worldView":{"x":-290.66666666666674,"y":-128,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16},"b":{"localSlot":1,"seatFromServer":1,"own":{"x":-232,"y":8},"centre":{"x":-160,"y":8},"worldView":{"x":-320,"y":-112,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16}})
+PASS  five contexts are seated in five different seats and the HUD reads 5/5 online  (WASD / arrows to move   tick 366   5/5 online
+you: player-sky   players: 5)
 PASS  every avatar sheet (8) is loaded in online mode with its frames and walk animations  ([{"key":"player-sky","texture":true,"frames":17,"animations":true},{"key":"player-rose","texture":true,"frames":17,"animations":true},{"key":"player-moss","texture":true,"frames":17,"animations":true},{"key":"player-sun","texture":true,"frames":17,"animations":true},{"key":"player-plum","texture":true,"frames":17,"animations":true},{"key":"player-ember","texture":true,"frames":17,"animations":true},{"key":"player-teal","texture":true,"frames":17,"animations":true},{"key":"player-slate","texture":true,"frames":17,"animations":true}])
-PASS  the five players wear five different avatars, each drawn from its own sheet  ([{"slot":0,"defId":5,"name":"player-plum","sheet":"player-plum","drawnWith":"player-plum"},{"slot":1,"defId":8,"name":"player-slate","sheet":"player-slate","drawnWith":"player-slate"},{"slot":2,"defId":7,"name":"player-teal","sheet":"player-teal","drawnWith":"player-teal"},{"slot":3,"defId":6,"name":"player-ember","sheet":"player-ember","drawnWith":"player-ember"},{"slot":4,"defId":2,"name":"player-rose","sheet":"player-rose","drawnWith":"player-rose"}])
-PASS  all five pages agree on who wears which avatar, and each HUD names its own  (you: player-plum   players: 5 | you: player-slate   players: 5 | you: player-teal   players: 5 | you: player-ember   players: 5 | you: player-rose   players: 5)
+PASS  the five players wear five different avatars, each drawn from its own sheet  ([{"slot":0,"defId":1,"name":"player-sky","sheet":"player-sky","drawnWith":"player-sky"},{"slot":1,"defId":2,"name":"player-rose","sheet":"player-rose","drawnWith":"player-rose"},{"slot":2,"defId":8,"name":"player-slate","sheet":"player-slate","drawnWith":"player-slate"},{"slot":3,"defId":3,"name":"player-moss","sheet":"player-moss","drawnWith":"player-moss"},{"slot":4,"defId":4,"name":"player-sun","sheet":"player-sun","drawnWith":"player-sun"}])
+PASS  all five pages agree on who wears which avatar, and each HUD names its own  (you: player-sky   players: 5 | you: player-rose   players: 5 | you: player-slate   players: 5 | you: player-moss   players: 5 | you: player-sun   players: 5)
 PASS  the sixth context sees the world-full screen, with the count and a retry button, and no game  (The world is full (5/5 online). Retrying in 5s.)
-PASS  the Retry button sends a new join at once (1 matchmake request(s) within 1507 ms) and, still full, the full screen is back with a fresh countdown  (The world is full (5/5 online). Retrying in 5s.)
-PASS  closing E removed its avatar for A: entity gone after 82 ms, sprite gone after 151 ms, HUD reads 4/5  (WASD / arrows to move   tick 562   4/5 online
-you: player-plum   players: 4)
+PASS  the Retry button sends a new join at once (1 matchmake request(s) within 1506 ms) and, still full, the full screen is back with a fresh countdown  (The world is full (5/5 online). Retrying in 5s.)
+PASS  closing E removed its avatar for A: entity gone after 78 ms, sprite gone after 157 ms, HUD reads 4/5  (WASD / arrows to move   tick 523   4/5 online
+you: player-sky   players: 4)
 PASS  F got the freed seat on its next retry and sees everybody  (F seat 4, 5 players)
-PASS  F's camera follows the seat the server gave it (4), not seat 0  ({"localSlot":4,"seatFromServer":4,"own":{"x":-128.0010986328125,"y":-8},"centre":{"x":-128,"y":-8},"worldView":{"x":-288,"y":-128,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16})
+PASS  F's camera follows the seat the server gave it (4), not seat 0  ({"localSlot":4,"seatFromServer":4,"own":{"x":-70.66732788085938,"y":-8},"centre":{"x":-70.66666666666663,"y":-8},"worldView":{"x":-230.66666666666663,"y":-128,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16})
 PASS  killing the server shows the disconnected-and-retrying screen with a retry button; the game stays underneath  (Disconnected from the world. Retrying in 1s…)
-PASS  while the server is down the page keeps retrying and the wait grows (2 more joins, attempt 1 -> 3, next try in 3956 ms), no uncaught error  (Disconnected from the world. Retrying in 4s…)
+PASS  while the server is down the page keeps retrying and the wait grows (2 more joins, attempt 1 -> 3, next try in 3975 ms), no uncaught error  (Disconnected from the world. Retrying in 4s…)
 PASS  room server restarted
-PASS  after the restart every page is seated again, the screen is gone and the world starts over (tick reset)  (tick 967 -> 212, 5 players)
-PASS  play resumes: A walks south and B sees it  (-1.50 -> 1.50)
-PASS  after the restart A's camera follows the seat the server gave it (2), away from the spawn stack  ({"localSlot":2,"seatFromServer":2,"own":{"x":-125.33441162109375,"y":24.000019073486328},"centre":{"x":-125.33333333333326,"y":24},"worldView":{"x":-285.33333333333326,"y":-96,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16})
+PASS  after the restart every page is seated again, the screen is gone and the world starts over (tick reset)  (tick 992 -> 218, 5 players)
+PASS  play resumes: A walks south and B sees it  (-0.50 -> 2.58)
+PASS  after the restart A's camera follows the seat the server gave it (0), with the camera off the level's west edge so it is live on x  ({"localSlot":0,"seatFromServer":0,"own":{"x":-102.39994278702049,"y":41.33332061767578},"centre":{"x":-102.33333333333326,"y":41.333333333333314},"worldView":{"x":-262.33333333333326,"y":-78.66666666666669,"width":320,"height":240},"bounds":{"x":-320,"y":-240,"width":640,"height":480},"zoom":3,"pixelsPerMetre":16})
 PASS  no uncaught page errors, and no console errors beyond the browser reporting the server outage
 
 ALL 31 CHECKS PASSED

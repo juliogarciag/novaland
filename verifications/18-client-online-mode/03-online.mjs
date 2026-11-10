@@ -177,13 +177,13 @@ try {
   const fIn = await stateOf(f.page);
   results.push(check("F got the freed seat on its next retry and sees everybody", fIn.status.kind === 'online' && fIn.localSlot === eSlot && fIn.players.length === SEATS, `F seat ${fIn.localSlot}, ${fIn.players.length} players`));
   await f.page.screenshot({ path: path.join(PROOF, '03-online-6-F-seated-after-E-left.png') });
-  // Walk F out of the spawn stack (where the camera is pinned at the level's west edge) so the check is live on both axes.
+  // Walk F east, out of the spawn area (where the camera is pinned at the level's west edge), so the check is live on both axes.
   await f.page.keyboard.down('KeyD');
-  await f.page.waitForTimeout(900);
+  await f.page.waitForTimeout(1600);
   await f.page.keyboard.up('KeyD');
   await f.page.waitForTimeout(500);
   const fCamera = await cameraOf(f.page);
-  results.push(check(`F's camera follows the seat the server gave it (${fIn.localSlot}), not seat 0`, centredOnOwn(fCamera) && fCamera.seatFromServer === eSlot && fCamera.localSlot === fCamera.seatFromServer && fCamera.own.x > -10 * fCamera.pixelsPerMetre, JSON.stringify(fCamera)));
+  results.push(check(`F's camera follows the seat the server gave it (${fIn.localSlot}), not seat 0`, centredOnOwn(fCamera) && fCamera.seatFromServer === eSlot && fCamera.localSlot === fCamera.seatFromServer && fCamera.worldView.x > fCamera.bounds.x + 1e-6, JSON.stringify(fCamera)));
   report.steps.push({ step: 'leave', eSlot, goneAfterMs, drawnGoneAfterMs, aFour, fIn, fCamera });
 
   // 5. The server dies: every page shows the disconnected screen; it comes back: every page is seated again and can move.
@@ -213,12 +213,13 @@ try {
   await waitFor(() => stateOf(b.page), (state) => state.players.find((player) => player.slot === aBack.localSlot).intent.y === 0, 'B sees A stop');
   const bBackEnd = (await stateOf(b.page)).players.find((player) => player.slot === aBack.localSlot);
   results.push(check('play resumes: A walks south and B sees it', bBackEnd.y > bBackStart.y + 0.5, `${bBackStart.y.toFixed(2)} -> ${bBackEnd.y.toFixed(2)}`));
+  // Walk east far enough that the camera leaves the level's west edge whatever seat (and spread spawn tile) A got.
   await a.page.keyboard.down('KeyD');
-  await a.page.waitForTimeout(900);
+  await a.page.waitForTimeout(1600);
   await a.page.keyboard.up('KeyD');
   await a.page.waitForTimeout(500);
   const aBackCamera = await cameraOf(a.page);
-  results.push(check(`after the restart A's camera follows the seat the server gave it (${aBack.localSlot}), away from the spawn stack`, centredOnOwn(aBackCamera) && aBackCamera.seatFromServer === aBack.localSlot && aBackCamera.localSlot === aBackCamera.seatFromServer && aBackCamera.own.x > -10 * aBackCamera.pixelsPerMetre, JSON.stringify(aBackCamera)));
+  results.push(check(`after the restart A's camera follows the seat the server gave it (${aBack.localSlot}), with the camera off the level's west edge so it is live on x`, centredOnOwn(aBackCamera) && aBackCamera.seatFromServer === aBack.localSlot && aBackCamera.localSlot === aBackCamera.seatFromServer && aBackCamera.worldView.x > aBackCamera.bounds.x + 1e-6, JSON.stringify(aBackCamera)));
   await a.page.screenshot({ path: path.join(PROOF, '03-online-8-A-back-online.png') });
   report.steps.push({ step: 'restart', tickBeforeKill, aDown, aStillDown, attemptsAtKill, twoMore, aBack, bBackStart, bBackEnd, aBackCamera });
 
