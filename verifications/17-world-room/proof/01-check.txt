@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (176 of 176)
+PASS  every test passed, none skipped  (179 of 179)
 PASS  five players join by room id and are welcomed into the world
 PASS  every player sees the others move through chained deltas
 PASS  the sixth player is refused, as are create / join / joinOrCreate
@@ -13,6 +13,7 @@ PASS  world/resync answers with one full state, and a resync flood only gets its
 PASS  a session flooding unknown message types is closed once its budget is spent
 PASS  a connection that never acknowledges its join is closed and its seat freed
 PASS  an oversized HTTP request body is refused before it is read
+PASS  the body cap wraps Colyseus's one request listener and refuses to boot beside any other
 PASS  a client leaving during its own join frees the seat; a dispose fails a waiting join instead of hanging it
 PASS  the inbound gate is unit tested (exact shape, finite numbers, never throws, budget)
 PASS  seats hand out the lowest free slot
@@ -20,4 +21,4 @@ PASS  the server tick helper caps the catch-up
 PASS  the sim, replica and client tests still pass
 PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (50b21d74)
 
-ALL 21 CHECKS PASSED
+ALL 22 CHECKS PASSED

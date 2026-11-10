@@ -55,18 +55,33 @@
     "status": "passed"
   },
   {
-    "file": "packages/server/src/world/seats.test.ts",
-    "name": "Seats hands out the lowest free slot and refuses when every seat is taken",
+    "file": "packages/server/src/world/roomSeats.test.ts",
+    "name": "RoomSeats hands out the lowest free slot and refuses when every seat is taken",
     "status": "passed"
   },
   {
-    "file": "packages/server/src/world/seats.test.ts",
-    "name": "Seats gives a released seat to the next session, lowest first",
+    "file": "packages/server/src/world/roomSeats.test.ts",
+    "name": "RoomSeats gives a released seat to the next session, lowest first",
     "status": "passed"
   },
   {
-    "file": "packages/server/src/world/seats.test.ts",
-    "name": "Seats never seats the same session twice and releasing a stranger frees nothing",
+    "file": "packages/server/src/world/roomSeats.test.ts",
+    "name": "RoomSeats never seats the same session twice and releasing a stranger frees nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/startWorldServer.test.ts",
+    "name": "the request body cap wraps the server's one request listener in place of it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/startWorldServer.test.ts",
+    "name": "the request body cap refuses to install when the server has no request listener",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/startWorldServer.test.ts",
+    "name": "the request body cap refuses to install when something besides the router listens for requests",
     "status": "passed"
   },
   {
@@ -155,21 +170,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/tools/generate-player-sheet.test.mjs",
-    "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/tools/generate-player-sheet.test.mjs",
-    "name": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/tools/generate-player-sheet.test.mjs",
-    "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/seats.test.ts",
     "name": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
     "status": "passed"
@@ -185,28 +185,18 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
+    "file": "packages/client/tools/generate-player-sheet.test.mjs",
+    "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
     "status": "passed"
   },
   {
@@ -277,6 +267,31 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
