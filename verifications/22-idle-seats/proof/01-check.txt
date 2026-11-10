@@ -2,9 +2,9 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (181 of 181)
+PASS  every test passed, none skipped  (225 of 225)
 PASS  an idle session is kicked at the 10 minute timeout with 4100 "idle" on a fake clock, the playing one stays, the next joiner takes the seat
-PASS  the idle test ran on a fake clock, not on ten real minutes  (477.9584589999995 ms)
+PASS  the idle test ran on a fake clock, not on ten real minutes  (473.7537080000002 ms)
 PASS  driven directly, the seat is free and the next join gets it before the kicked socket closes, and a non-positive timeout is refused
 PASS  #17 still holds: five players join by room id
 PASS  #17 still holds: every player sees the others move
