@@ -3,8 +3,14 @@ import type { Duplex } from 'node:stream';
 
 /** Answers a request, or calls `handOver` so the handlers installed before it see the request untouched. */
 export type FirstRequestHandler = (request: IncomingMessage, response: ServerResponse, handOver: () => void) => void;
+/** A WebSocket upgrade as Node hands it out: the request, its raw socket and the bytes already read past the headers. */
+export interface Upgrade {
+  readonly request: IncomingMessage;
+  readonly socket: Duplex;
+  readonly head: Buffer;
+}
 /** Answers an upgrade (writing to the raw socket), or calls `handOver` so the handlers installed before it see it untouched. */
-export type FirstUpgradeHandler = (request: IncomingMessage, socket: Duplex, head: Buffer, handOver: () => void) => void;
+export type FirstUpgradeHandler = (upgrade: Upgrade, handOver: () => void) => void;
 
 /**
  * Puts `handler` in front of every `request` listener the server has now.
@@ -28,7 +34,7 @@ export function handleUpgradesFirst(httpServer: HttpServer, handler: FirstUpgrad
   const previous = httpServer.listeners('upgrade') as Array<(request: IncomingMessage, socket: Duplex, head: Buffer) => void>;
   httpServer.removeAllListeners('upgrade');
   httpServer.on('upgrade', (request: IncomingMessage, socket: Duplex, head: Buffer) => {
-    handler(request, socket, head, () => {
+    handler({ request, socket, head }, () => {
       for (const listener of previous) listener.call(httpServer, request, socket, head);
     });
   });

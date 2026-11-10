@@ -17,10 +17,11 @@ export function refuseForeignOrigins(httpServer: HttpServer, policy: OriginPolic
       handOver();
       return;
     }
-    response.writeHead(403, { 'content-type': 'application/json', 'content-length': String(FORBIDDEN_BODY.length), 'cache-control': 'no-store' });
-    response.end(FORBIDDEN_BODY);
+    // The connection goes with the refusal: the body, if any, is never read, so a foreign client cannot keep the socket busy with one.
+    response.writeHead(403, { 'content-type': 'application/json', 'content-length': String(FORBIDDEN_BODY.length), 'cache-control': 'no-store', connection: 'close' });
+    response.end(FORBIDDEN_BODY, () => request.socket.destroy());
   });
-  handleUpgradesFirst(httpServer, (request, socket, _head, handOver) => {
+  handleUpgradesFirst(httpServer, ({ request, socket }, handOver) => {
     if (isOriginAllowed({ origin: request.headers.origin, host: request.headers.host, policy })) {
       handOver();
       return;

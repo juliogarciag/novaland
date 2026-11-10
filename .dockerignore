@@ -9,5 +9,6 @@ verifications
 docs
 *.md
 !packages/*/README.md
-.env
-.env.*
+**/.env
+**/.env.*
+**/*.local

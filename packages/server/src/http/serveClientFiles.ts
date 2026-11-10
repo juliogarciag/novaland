@@ -31,9 +31,15 @@ export function serveClientFiles(httpServer: HttpServer, { directory }: ClientFi
       handOver();
       return;
     }
-    void sendFile(request, response, root, file).then((sent) => {
-      if (!sent) handOver();
-    });
+    sendFile(request, response, { root, file }).then(
+      (sent) => {
+        if (!sent) handOver();
+      },
+      (error: unknown) => {
+        console.error(JSON.stringify({ event: 'client-file-failed', file, error: String(error) }));
+        response.destroy();
+      },
+    );
   });
 }
 
@@ -116,8 +122,15 @@ function fileFor(root: string, url: string): string | undefined {
   return file === root || file.startsWith(root + path.sep) ? file : undefined;
 }
 
-/** True when the file was answered (also a 304); false when it is not a regular file and the request must hand over. */
-async function sendFile(request: IncomingMessage, response: ServerResponse, root: string, file: string): Promise<boolean> {
+interface FileToSend {
+  /** The client directory, so the cache rule can tell `assets/` apart. */
+  readonly root: string;
+  /** The absolute file, already known to be under `root`. */
+  readonly file: string;
+}
+
+/** True when the file was answered (also a 304, or a client that left meanwhile); false when it is not a regular file and the request must hand over. */
+async function sendFile(request: IncomingMessage, response: ServerResponse, { root, file }: FileToSend): Promise<boolean> {
   let size: number;
   let modifiedMs: number;
   try {
@@ -136,6 +149,8 @@ async function sendFile(request: IncomingMessage, response: ServerResponse, root
     'cache-control': isHashedAsset(root, file) ? IMMUTABLE : REVALIDATE,
     etag,
   };
+  // The client may have gone while the file was being looked up; a destroyed response cannot be written or piped to.
+  if (response.destroyed) return true;
   if (request.headers['if-none-match'] === etag) {
     response.writeHead(304, headers);
     response.end();
@@ -147,8 +162,22 @@ async function sendFile(request: IncomingMessage, response: ServerResponse, root
     return true;
   }
   // `pipeline`, not `pipe`: when the browser gives up mid-download, `pipe` leaves the read stream paused with its descriptor open for good; `pipeline` destroys both ends.
-  pipeline(createReadStream(file), response, () => undefined);
+  const stream = createReadStream(file);
+  try {
+    pipeline(stream, response, (error) => {
+      if (error && !isClientGone(error)) console.error(JSON.stringify({ event: 'client-file-failed', file, error: String(error) }));
+    });
+  } catch (error) {
+    // `pipeline` throws before it is wired up when the response died between the check above and here; close the file ourselves.
+    stream.destroy();
+    throw error;
+  }
   return true;
+}
+
+/** Errors that only mean the browser closed the connection first; not worth a log line. */
+function isClientGone(error: NodeJS.ErrnoException): boolean {
+  return error.code === 'ERR_STREAM_PREMATURE_CLOSE' || error.code === 'ECONNRESET' || error.code === 'EPIPE' || error.code === 'ERR_STREAM_DESTROYED';
 }
 
 /** Whether `file` sits under the build's `assets/` folder (relative to `root`: a `CLIENT_DIR` with `assets` in its own path must not make everything immutable). */

@@ -11,22 +11,22 @@ import { randomInt } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { answerHealthChecks } from './http/answerHealthChecks';
-import { readAllowedOrigins } from './http/origins';
+import { readOriginPolicy } from './http/origins';
 import { refuseForeignOrigins } from './http/refuseForeignOrigins';
 import { serveClientFiles } from './http/serveClientFiles';
 import { startWorldServer } from './world/startWorldServer';
 import { DEFAULT_PORT, MAX_SEATS, SEND_RATE } from './world/tuning';
 
 const port = readPort(process.env.PORT);
-const allowedOrigins = readOriginPolicy(process.env.ALLOWED_ORIGINS);
+const originPolicy = originPolicyOrExit(process.env.ALLOWED_ORIGINS, process.env.NODE_ENV);
 const clientDirectory = readClientDirectory(process.env.CLIENT_DIR);
 const seed = randomInt(0, 2 ** 31);
 const server = await startWorldServer({ port, seed });
 // Installed back to front: the last one answers first. Files and the health check stay reachable from anywhere; everything else is origin-checked before Colyseus sees it.
-refuseForeignOrigins(server.httpServer, allowedOrigins);
+refuseForeignOrigins(server.httpServer, originPolicy);
 answerHealthChecks(server.httpServer, () => ({ ok: true, roomId: server.roomId, seats: MAX_SEATS, seatsTaken: server.room.seatsTaken, tick: server.room.tick }));
 if (clientDirectory !== undefined) serveClientFiles(server.httpServer, { directory: clientDirectory });
-console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, clientDirectory: clientDirectory ?? null, allowedOrigins: allowedOrigins.allowAll ? '*' : [...allowedOrigins.allowedOrigins] }));
+console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, clientDirectory: clientDirectory ?? null, allowedOrigins: originPolicy.allowAll ? '*' : [...originPolicy.allowedOrigins], loopbackOrigins: originPolicy.allowLoopback }));
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
@@ -46,10 +46,10 @@ function readPort(value: string | undefined): number {
   return port;
 }
 
-/** The origins in `ALLOWED_ORIGINS` (see `http/origins.ts`); same origin and loopback are always allowed. A malformed entry stops the boot. */
-function readOriginPolicy(value: string | undefined) {
+/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `http/origins.ts`): same origin always, loopback to loopback outside production. A malformed entry stops the boot. */
+function originPolicyOrExit(allowedOrigins: string | undefined, nodeEnv: string | undefined) {
   try {
-    return readAllowedOrigins(value);
+    return readOriginPolicy({ allowedOrigins, allowLoopback: nodeEnv !== 'production' });
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exit(1);

@@ -7,17 +7,15 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { startWorldServer, type WorldServer } from '../world/startWorldServer';
 import { MAX_SEATS } from '../world/tuning';
 import { answerHealthChecks } from './answerHealthChecks';
-import { readAllowedOrigins } from './origins';
+import { readOriginPolicy } from './origins';
 import { refuseForeignOrigins } from './refuseForeignOrigins';
 import { __testing__, serveClientFiles } from './serveClientFiles';
-
-const { CONTENT_SECURITY_POLICY } = __testing__;
 
 describe('one process: the client files, /healthz and the origin check in front of the world room', () => {
   beforeAll(async () => {
     clientDirectory = await fakeClientBuild();
     server = await startWorldServer({ port: 0, seed: 7 });
-    refuseForeignOrigins(server.httpServer, readAllowedOrigins('https://tunnel.example.com'));
+    refuseForeignOrigins(server.httpServer, readOriginPolicy({ allowedOrigins: 'https://tunnel.example.com', allowLoopback: true }));
     answerHealthChecks(server.httpServer, () => ({ ok: true, roomId: server.roomId, seats: MAX_SEATS, seatsTaken: server.room.seatsTaken, tick: server.room.tick }));
     serveClientFiles(server.httpServer, { directory: clientDirectory });
     base = `http://127.0.0.1:${server.port}`;
@@ -82,10 +80,18 @@ describe('one process: the client files, /healthz and the origin check in front 
   });
 
   it('closes the file when the browser gives up mid-download: no descriptor is left open', async () => {
-    const before = openDescriptors();
+    await abortDownload(server.port, '/assets/big-abc123.js'); // warm up, so the baseline holds no keep-alive socket about to close
+    const before = await descriptorCountOnceSettled(openDescriptorCount());
     for (let attempt = 0; attempt < 5; attempt += 1) await abortDownload(server.port, '/assets/big-abc123.js');
-    const after = await settledDescriptors(before);
-    expect(after).toBeLessThanOrEqual(before);
+    expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
+  });
+
+  it('opens no file for a browser that left before the lookup finished, and does not crash on it', async () => {
+    const before = await descriptorCountOnceSettled(openDescriptorCount());
+    for (let attempt = 0; attempt < 5; attempt += 1) await leaveBeforeTheAnswer(server.port, '/assets/big-abc123.js');
+    expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
+    const stillServing = await fetch(`${base}/assets/index-abc123.js`);
+    expect(stillServing.status).toBe(200);
   });
 
   it('answers /healthz with the room in it', async () => {
@@ -99,6 +105,7 @@ describe('one process: the client files, /healthz and the origin check in front 
     const foreign = await fetch(`${base}/matchmake/joinById/world`, { method: 'OPTIONS', headers: { origin: 'https://evil.example.com' } });
     expect(foreign.status).toBe(403);
     expect(foreign.headers.get('access-control-allow-origin')).toBeNull();
+    expect(foreign.headers.get('connection')).toBe('close');
     expect(await foreign.json()).toEqual({ error: 'origin not allowed' });
     const same = await fetch(`${base}/matchmake/joinById/world`, { method: 'OPTIONS', headers: { origin: base } });
     expect(same.status).toBe(204);
@@ -150,6 +157,7 @@ describe('serveClientFiles with a client directory whose own path contains "asse
 let server: WorldServer;
 let clientDirectory: string;
 let base: string;
+const { CONTENT_SECURITY_POLICY } = __testing__;
 
 const PNG_HEADER = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const BIG_ASSET_BYTES = 8 * 1024 * 1024;
@@ -198,18 +206,37 @@ function abortDownload(port: number, url: string): Promise<void> {
   });
 }
 
-/** Descriptors this process holds open (`/dev/fd` on macOS and Linux). */
-function openDescriptors(): number {
+/** Sends `GET url` and destroys the socket at once, before the server can have answered: it is still looking the file up. */
+function leaveBeforeTheAnswer(port: number, url: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const request = http.request({ host: '127.0.0.1', port, path: url, method: 'GET' });
+    request.on('error', () => undefined);
+    request.on('socket', (socket) => {
+      socket.on('connect', () => {
+        request.flushHeaders();
+        setImmediate(() => {
+          socket.destroy();
+          resolve();
+        });
+      });
+      socket.on('error', reject);
+    });
+    request.end();
+  });
+}
+
+/** How many descriptors this process holds open (`/dev/fd` on macOS and Linux). */
+function openDescriptorCount(): number {
   return readdirSync('/dev/fd').length;
 }
 
 /** The descriptor count once it has come back down to `baseline`, or whatever it is after a second. */
-async function settledDescriptors(baseline: number): Promise<number> {
+async function descriptorCountOnceSettled(baseline: number): Promise<number> {
   const deadline = Date.now() + 1000;
-  let count = openDescriptors();
+  let count = openDescriptorCount();
   while (count > baseline && Date.now() < deadline) {
     await new Promise((resolve) => setTimeout(resolve, 25));
-    count = openDescriptors();
+    count = openDescriptorCount();
   }
   return count;
 }
