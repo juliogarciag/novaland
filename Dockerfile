@@ -2,10 +2,12 @@
 # One deployable process: the built client and the world room on one port.
 #
 #   docker build -t novaland .
-#   docker run --rm -e PORT=8080 -p 8080:8080 novaland
+#   docker run --rm -e PORT=8080 -e ALLOWED_ORIGINS=http://localhost:8080 -p 8080:8080 novaland
 #
-# Host-agnostic: PORT comes from the environment (the host sets it), the
-# process answers GET /healthz, and the world lives in this process's memory.
+# Host-agnostic: PORT comes from the environment (the host sets it),
+# ALLOWED_ORIGINS names the address players open (the image is production and
+# refuses to start without it), the process answers GET /healthz, and the
+# world lives in this process's memory.
 # Node 24 as .node-version says; pnpm through corepack at the version pinned
 # in package.json's packageManager field.
 

@@ -34,7 +34,8 @@ export interface OriginPolicyOptions {
 /**
  * The policy in `ALLOWED_ORIGINS`: a comma-separated list of `http(s)`
  * origins, or `*`. Throws on anything that is not such an origin (a path, a
- * bare host, a `ws://` address, which a browser never sends as its `Origin`),
+ * bare host, a `ws://` address, which a browser never sends as its `Origin`,
+ * a `*` inside a host, which would match nobody), also next to a `*` entry,
  * and on a policy no browser could ever pass (nothing listed, loopback off),
  * so a typo or a forgotten variable stops the boot instead of silently
  * refusing every player.
@@ -44,26 +45,34 @@ export function readOriginPolicy({ allowedOrigins: value, allowLoopback }: Origi
     .split(',')
     .map((entry) => entry.trim())
     .filter((entry) => entry.length > 0);
-  if (entries.includes('*')) return { allowAll: true, allowedOrigins: new Set(), allowLoopback };
   const allowedOrigins = new Set<string>();
   for (const entry of entries) {
+    if (entry === '*') continue;
     const origin = listedOrigin(entry);
     if (origin === undefined) throw new Error(`ALLOWED_ORIGINS must list origins like https://play.example.com, got ${JSON.stringify(entry)}`);
     allowedOrigins.add(origin);
   }
+  if (entries.includes('*')) return { allowAll: true, allowedOrigins: new Set(), allowLoopback };
   if (allowedOrigins.size === 0 && !allowLoopback) {
     throw new Error('ALLOWED_ORIGINS must name the origin players open in production, like https://play.example.com (several are separated by commas; * allows any)');
   }
   return { allowAll: false, allowedOrigins, allowLoopback };
 }
 
-/** Whether a request carrying this `Origin` header (undefined when it has none) may reach the world room. */
+/**
+ * Whether a request carrying this `Origin` header (undefined when it has none)
+ * may reach the world room. The header must be spelled the way browsers send
+ * it, `scheme://host[:port]` in lower case with no default port and nothing
+ * after it: any other spelling of even a listed origin is refused, so what is
+ * allowed here is exactly what a browser compares against when it reads
+ * `Access-Control-Allow-Origin`.
+ */
 export function isOriginAllowed(origin: string | undefined, policy: OriginPolicy): boolean {
   if (origin === undefined) return true;
   if (policy.allowAll) return true;
   const originUrl = parseOrigin(origin);
-  if (originUrl === undefined) return false;
-  if (policy.allowedOrigins.has(originUrl.origin.toLowerCase())) return true;
+  if (originUrl === undefined || originUrl.origin !== origin) return false;
+  if (policy.allowedOrigins.has(origin)) return true;
   return policy.allowLoopback && isLoopback(originUrl.hostname);
 }
 
@@ -73,8 +82,8 @@ export function isOriginAllowed(origin: string | undefined, policy: OriginPolicy
 function listedOrigin(entry: string): string | undefined {
   const url = parseOrigin(entry);
   if (url === undefined) return undefined;
-  if (url.pathname !== '/' || url.search !== '' || url.hash !== '' || /[?#]$/.test(entry)) return undefined;
-  return url.origin.toLowerCase();
+  if (url.pathname !== '/' || url.search !== '' || url.hash !== '' || /[?#]$/.test(entry) || entry.includes('*')) return undefined;
+  return url.origin;
 }
 
 /** The URL when `value` is an http(s) origin with a host, else undefined (also for `null`, and for several origins sent in one header). */

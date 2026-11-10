@@ -6,15 +6,15 @@ import http from 'node:http';
 import net from 'node:net';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { readOriginPolicy } from './edge';
 import { startServer } from './startServer';
-import { MAX_REQUEST_BODY_BYTES, MAX_SEATS, WORLD_ROOM_ID, type WorldServer } from './world';
+import { MAX_SEATS, WORLD_ROOM_ID, type WorldServer } from './world';
 
 describe('one process: the client files, /healthz and the request guard in front of the world room', () => {
   beforeAll(async () => {
     server = await startServer({ port: 0, seed: 7, originPolicy: readOriginPolicy({ allowedOrigins: 'https://tunnel.example.com', allowLoopback: true }), clientDirectory: await fakeClientBuild() });
-    base = `http://127.0.0.1:${server.port}`;
+    baseUrl = `http://127.0.0.1:${server.port}`;
   });
 
   afterAll(async () => {
@@ -22,7 +22,7 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('serves index.html at / with the security headers and no long cache', async () => {
-    const response = await fetch(`${base}/`);
+    const response = await fetch(`${baseUrl}/`);
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
     expect(response.headers.get('content-security-policy')).toBe(CONTENT_SECURITY_POLICY);
@@ -37,12 +37,12 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('serves the hashed assets as immutable with their content type, and the sprites under /sprites', async () => {
-    const script = await fetch(`${base}/assets/index-abc123.js`);
+    const script = await fetch(`${baseUrl}/assets/index-abc123.js`);
     expect(script.status).toBe(200);
     expect(script.headers.get('content-type')).toBe('text/javascript; charset=utf-8');
     expect(script.headers.get('cache-control')).toBe('public, max-age=31536000, immutable');
     expect(await script.text()).toBe('console.log("bundle")');
-    const sprite = await fetch(`${base}/sprites/player.png`);
+    const sprite = await fetch(`${baseUrl}/sprites/player.png`);
     expect(sprite.status).toBe(200);
     expect(sprite.headers.get('content-type')).toBe('image/png');
     expect(sprite.headers.get('cache-control')).toBe('public, max-age=0');
@@ -50,26 +50,45 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('answers 304 to a matching ETag, headers only to HEAD and a part of the file to a range request', async () => {
-    const first = await fetch(`${base}/`);
+    const first = await fetch(`${baseUrl}/`);
     // Sent without `fetch`, which adds `Cache-Control: no-cache` to a conditional request and so asks for a fresh copy.
     const again = await rawGet(server.port, '/', { 'if-none-match': first.headers.get('etag') ?? '' });
     expect(again.status).toBe(304);
     expect(again.body).toBe('');
-    const head = await fetch(`${base}/`, { method: 'HEAD' });
+    const head = await fetch(`${baseUrl}/`, { method: 'HEAD' });
     expect(head.status).toBe(200);
     expect(head.headers.get('content-length')).toBe(first.headers.get('content-length'));
     expect(await head.text()).toBe('');
-    const part = await fetch(`${base}/assets/index-abc123.js`, { headers: { range: 'bytes=0-6' } });
+    const part = await fetch(`${baseUrl}/assets/index-abc123.js`, { headers: { range: 'bytes=0-6' } });
     expect(part.status).toBe(206);
     expect(await part.text()).toBe('console');
   });
 
   it('compresses a large file for a browser that accepts it', async () => {
-    const compressed = await fetch(`${base}/assets/big-abc123.js`);
+    const compressed = await fetch(`${baseUrl}/assets/big-abc123.js`);
     expect(['gzip', 'br', 'deflate']).toContain(compressed.headers.get('content-encoding'));
     expect((await compressed.arrayBuffer()).byteLength).toBe(BIG_ASSET_BYTES);
-    const plain = await fetch(`${base}/assets/big-abc123.js`, { headers: { 'accept-encoding': 'identity' } });
+    const plain = await fetch(`${baseUrl}/assets/big-abc123.js`, { headers: { 'accept-encoding': 'identity' } });
     expect(plain.headers.get('content-encoding')).toBeNull();
+    // A part of the file is a part of the plain file: it goes out as it is, even to a browser that accepts compression.
+    const part = await rawGet(server.port, '/assets/big-abc123.js', { range: 'bytes=0-9', 'accept-encoding': 'gzip' });
+    expect(part.status).toBe(206);
+    expect(part.body).toBe('//////////');
+  });
+
+  it('answers a range that cannot be satisfied, a failed precondition and a directory without a slash with their status, and logs nothing for them', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      expect((await rawGet(server.port, '/assets/index-abc123.js', { range: 'bytes=5-2' })).status).toBe(416);
+      expect((await rawGet(server.port, '/assets/index-abc123.js', { range: 'bytes=999999-' })).status).toBe(416);
+      expect((await rawGet(server.port, '/assets/index-abc123.js', { 'if-match': '"nope"' })).status).toBe(412);
+      // No redirect to the directory with a slash: there is no directory to browse.
+      expect((await rawGet(server.port, '/assets')).status).toBe(404);
+      expect((await rawGet(server.port, '/sprites')).status).toBe(404);
+      expect(logged).not.toHaveBeenCalled();
+    } finally {
+      logged.mockRestore();
+    }
   });
 
   it('never serves a file outside the client directory, a dotfile or a directory listing', async () => {
@@ -82,9 +101,9 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('answers 404 to an unknown path and to another method on a file', async () => {
-    expect((await fetch(`${base}/missing.js`)).status).toBe(404);
-    expect((await fetch(`${base}/assets/missing.js`)).status).toBe(404);
-    expect((await fetch(`${base}/`, { method: 'POST' })).status).toBe(404);
+    expect((await fetch(`${baseUrl}/missing.js`)).status).toBe(404);
+    expect((await fetch(`${baseUrl}/assets/missing.js`)).status).toBe(404);
+    expect((await fetch(`${baseUrl}/`, { method: 'POST' })).status).toBe(404);
   });
 
   it('closes the file when the browser gives up mid-download: no descriptor is left open', async () => {
@@ -92,18 +111,26 @@ describe('one process: the client files, /healthz and the request guard in front
     const before = await descriptorCountOnceSettled(openDescriptorCount());
     for (let attempt = 0; attempt < 5; attempt += 1) await abortDownload(server.port, '/assets/big-abc123.js');
     expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
-    expect((await fetch(`${base}/assets/index-abc123.js`)).status).toBe(200);
+    expect((await fetch(`${baseUrl}/assets/index-abc123.js`)).status).toBe(200);
+  });
+
+  it('drops a connection that sends its next request before the last answer is out, so a burst that hangs up leaves no file open', async () => {
+    const before = await descriptorCountOnceSettled(openDescriptorCount());
+    for (let round = 0; round < 3; round += 1) await sendBurstAndHangUp(server.port, { url: '/assets/big-abc123.js', requests: 200 });
+    expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
+    // One request at a time on a kept-alive connection, as browsers and proxies send them, still works.
+    expect(await sequentialStatuses(server.port, ['/assets/index-abc123.js', '/healthz', '/'])).toEqual([200, 200, 200]);
   });
 
   it('answers /healthz with the room in it', async () => {
-    const response = await fetch(`${base}/healthz`);
+    const response = await fetch(`${baseUrl}/healthz`);
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(await response.json()).toEqual({ ok: true, roomId: 'world', seats: MAX_SEATS, seatsTaken: 0, tick: expect.any(Number) });
   });
 
   it('refuses a matchmaking call from a foreign origin with 403, before Colyseus, and lets listed and loopback origins through', async () => {
-    const url = `${base}/matchmake/joinById/world`;
+    const url = `${baseUrl}/matchmake/joinById/world`;
     for (const method of ['OPTIONS', 'POST']) {
       const foreign = await fetch(url, { method, headers: { origin: 'https://evil.example.com' } });
       expect(foreign.status, method).toBe(403);
@@ -120,13 +147,15 @@ describe('one process: the client files, /healthz and the request guard in front
     const reservation = await fetch(url, { method: 'POST', headers: { origin: 'http://localhost:5218', 'content-type': 'application/json' }, body: '{}' });
     expect(reservation.status).toBe(200);
     expect(reservation.headers.get('access-control-allow-origin')).toBe('http://localhost:5218');
+    // Colyseus writes this answer itself, so the header comes with the others it is given.
+    expect(reservation.headers.get('x-content-type-options')).toBe('nosniff');
   });
 
   it('tells no origin it may read an answer unless the policy allows it: never the wildcard Colyseus sends by default', async () => {
     for (const requestPath of ['/healthz', '/__healthcheck', '/']) {
-      const foreign = await fetch(`${base}${requestPath}`, { headers: { origin: 'https://evil.example.com' } });
+      const foreign = await fetch(`${baseUrl}${requestPath}`, { headers: { origin: 'https://evil.example.com' } });
       expect(foreign.headers.get('access-control-allow-origin'), requestPath).toBeNull();
-      const noOrigin = await fetch(`${base}${requestPath}`);
+      const noOrigin = await fetch(`${baseUrl}${requestPath}`);
       expect(noOrigin.headers.get('access-control-allow-origin'), requestPath).toBeNull();
     }
   });
@@ -136,7 +165,7 @@ describe('one process: the client files, /healthz and the request guard in front
     expect(await upgradeStatus(server.port, { origin: 'http://127.evil.com' })).toBe(403);
     expect(await upgradeStatus(server.port, { origin: 'null' })).toBe(403);
     expect(await upgradeStatus(server.port, { origin: 'https://tunnel.example.com' })).toBe(101);
-    expect(await upgradeStatus(server.port, { origin: base })).toBe(101);
+    expect(await upgradeStatus(server.port, { origin: baseUrl })).toBe(101);
     expect(await upgradeStatus(server.port, {})).toBe(101);
   });
 
@@ -145,21 +174,21 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('still serves the files and the health check to a foreign origin: only what changes state is guarded', async () => {
-    const page = await fetch(`${base}/`, { headers: { origin: 'https://evil.example.com' } });
+    const page = await fetch(`${baseUrl}/`, { headers: { origin: 'https://evil.example.com' } });
     expect(page.status).toBe(200);
-    const health = await fetch(`${base}/healthz`, { headers: { origin: 'https://evil.example.com' } });
+    const health = await fetch(`${baseUrl}/healthz`, { headers: { origin: 'https://evil.example.com' } });
     expect(health.status).toBe(200);
   });
 
   it('refuses an oversized matchmaking body, declared or streamed, and a small one still reaches Colyseus', async () => {
-    const url = `${base}/matchmake/joinById/world`;
+    const url = `${baseUrl}/matchmake/joinById/world`;
     const headers = { 'content-type': 'application/json' };
-    const oversized = await fetch(url, { method: 'POST', headers, body: 'x'.repeat(MAX_REQUEST_BODY_BYTES * 4) }).then((response) => response.status, () => 'connection cut');
+    const oversized = await fetch(url, { method: 'POST', headers, body: 'x'.repeat(OVERSIZED_BODY_BYTES) }).then((response) => response.status, () => 'connection cut');
     expect([413, 'connection cut']).toContain(oversized);
     // Chunked, so no content-length to refuse up front: the stream is cut once it passes the cap.
     const chunked = new ReadableStream<Uint8Array>({
       start(controller) {
-        for (let index = 0; index < 64; index += 1) controller.enqueue(new TextEncoder().encode('y'.repeat(MAX_REQUEST_BODY_BYTES)));
+        for (let index = 0; index < 64; index += 1) controller.enqueue(new TextEncoder().encode('y'.repeat(OVERSIZED_BODY_BYTES / 64)));
         controller.close();
       },
     });
@@ -184,20 +213,22 @@ describe('one process: the client files, /healthz and the request guard in front
       ['a forwarded protocol that is no protocol', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: ht tp', ...json]],
       ['two forwarded protocols', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: https, http', ...json]],
       ['a target that is not a path', ['GET * HTTP/1.1', host]],
+      ...['*:99999999', '*%', '*[', '*:abc'].map((target): [string, string[]] => [`an upgrade whose target is ${target}`, [`GET ${target} HTTP/1.1`, host, 'Connection: Upgrade', 'Upgrade: websocket', 'Sec-WebSocket-Version: 13', 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==']]),
+      ['an upgrade with a Host that is no host', ['GET /world HTTP/1.1', 'Host: a:b', 'Connection: Upgrade', 'Upgrade: websocket', 'Sec-WebSocket-Version: 13', 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==']],
     ];
     for (const [what, lines] of hostile) {
       expect(await rawStatusLine(server.port, lines), what).toBe('HTTP/1.1 400 Bad Request');
     }
-    expect((await fetch(`${base}/healthz`)).status).toBe(200);
+    expect((await fetch(`${baseUrl}/healthz`)).status).toBe(200);
   });
 
   it('seats a real client through all of it: the reservation, the upgrade and the welcome', async () => {
-    const room = await new Client(base.replace('http', 'ws')).joinById(WORLD_ROOM_ID);
+    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID);
     try {
       const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
       expect(welcome.slot).toBe(0);
       expect(server.room.seatsTaken).toBe(1);
-      expect(await (await fetch(`${base}/healthz`)).json()).toMatchObject({ ok: true, seatsTaken: 1 });
+      expect(await (await fetch(`${baseUrl}/healthz`)).json()).toMatchObject({ ok: true, seatsTaken: 1 });
     } finally {
       await room.leave();
     }
@@ -212,7 +243,7 @@ describe('one process: the client files, /healthz and the request guard in front
 describe('one process in production: only the listed origins get in', () => {
   beforeAll(async () => {
     server = await startServer({ port: 0, seed: 8, originPolicy: readOriginPolicy({ allowedOrigins: 'https://play.example.com', allowLoopback: false }), clientDirectory: undefined });
-    base = `http://127.0.0.1:${server.port}`;
+    baseUrl = `http://127.0.0.1:${server.port}`;
   });
 
   afterAll(async () => {
@@ -222,33 +253,50 @@ describe('one process in production: only the listed origins get in', () => {
   it('takes an upgrade from the listed origin whatever Host a proxy presents, and refuses a loopback page and a rebound domain', async () => {
     expect(await upgradeStatus(server.port, { origin: 'https://play.example.com', host: 'internal:8080' })).toBe(101);
     expect(await upgradeStatus(server.port, { origin: 'http://localhost:5218' })).toBe(403);
-    expect(await upgradeStatus(server.port, { origin: base })).toBe(403);
+    expect(await upgradeStatus(server.port, { origin: baseUrl })).toBe(403);
     expect(await upgradeStatus(server.port, { origin: 'http://rebound.example.net', host: 'rebound.example.net' })).toBe(403);
   });
 
   it('refuses matchmaking from a loopback page and takes it from the listed origin', async () => {
-    const url = `${base}/matchmake/joinById/world`;
+    const url = `${baseUrl}/matchmake/joinById/world`;
     expect((await fetch(url, { method: 'POST', headers: { origin: 'http://localhost:5218', 'content-type': 'application/json' }, body: '{}' })).status).toBe(403);
     expect((await fetch(url, { method: 'POST', headers: { origin: 'https://play.example.com', 'content-type': 'application/json' }, body: '{}' })).status).toBe(200);
   });
 
   it('serves no client files when given no client directory, and still answers /healthz with the security headers', async () => {
-    expect((await fetch(`${base}/`)).status).toBe(404);
-    const health = await fetch(`${base}/healthz`);
+    expect((await fetch(`${baseUrl}/`)).status).toBe(404);
+    const health = await fetch(`${baseUrl}/healthz`);
     expect(health.status).toBe(200);
     expect(health.headers.get('x-content-type-options')).toBe('nosniff');
+  });
+});
+
+describe('one process on a busy port', () => {
+  it('fails the boot with the reason instead of waiting for ever', async () => {
+    const occupied = net.createServer();
+    await new Promise<void>((resolve) => occupied.listen(0, resolve));
+    const { port } = occupied.address() as net.AddressInfo;
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      await expect(startServer({ port, seed: 9, originPolicy: readOriginPolicy({ allowedOrigins: undefined, allowLoopback: true }), clientDirectory: undefined })).rejects.toMatchObject({ code: 'EADDRINUSE' });
+    } finally {
+      logged.mockRestore();
+      await new Promise((resolve) => occupied.close(resolve));
+    }
   });
 });
 
 // ---- Helpers ----
 
 let server: WorldServer;
-let base: string;
+let baseUrl: string;
 
 const CONTENT_SECURITY_POLICY =
   "default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'";
 const PNG_HEADER = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const BIG_ASSET_BYTES = 8 * 1024 * 1024;
+/** Far over any cap the edge could reasonably have: a join carries `{}`. */
+const OVERSIZED_BODY_BYTES = 1024 * 1024;
 const SECRET_CONTENT = 'what the file next to the client build holds';
 const HIDDEN_CONTENT = 'what a dotfile in the client build holds';
 
@@ -317,6 +365,47 @@ function abortDownload(port: number, url: string): Promise<void> {
     request.on('error', reject);
     request.end();
   });
+}
+
+interface Burst {
+  readonly url: string;
+  readonly requests: number;
+}
+
+/** Writes `requests` GETs of `url` to one connection in a single write, without waiting for any answer, and hangs up shortly after. */
+function sendBurstAndHangUp(port: number, { url, requests }: Burst): Promise<void> {
+  return new Promise((resolve) => {
+    const socket = net.connect(port, '127.0.0.1', () => {
+      socket.write(`GET ${url} HTTP/1.1\r\nHost: localhost\r\n\r\n`.repeat(requests));
+      setTimeout(() => socket.destroy(), 300);
+    });
+    socket.on('data', () => undefined);
+    socket.on('error', () => undefined);
+    socket.on('close', () => resolve());
+  });
+}
+
+/** The statuses of GETs sent one after another on a single kept-alive connection, each after the answer to the one before. */
+async function sequentialStatuses(port: number, urls: readonly string[]): Promise<number[]> {
+  const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+  const statuses: number[] = [];
+  try {
+    for (const url of urls) {
+      statuses.push(
+        await new Promise<number>((resolve, reject) => {
+          const request = http.request({ host: '127.0.0.1', port, path: url, method: 'GET', agent }, (response) => {
+            response.resume();
+            response.on('end', () => resolve(response.statusCode ?? 0));
+          });
+          request.on('error', reject);
+          request.end();
+        }),
+      );
+    }
+  } finally {
+    agent.destroy();
+  }
+  return statuses;
 }
 
 /** How many descriptors this process holds open (`/dev/fd` on macOS and Linux). */

@@ -4,5 +4,5 @@
  * imports the HTTP edge (lint enforces both). See
  * docs/decisions/0008-http-edge.md.
  */
-export { startWorldServer, type WorldFront, type WorldServer, type WorldServerOptions } from './startWorldServer';
-export { DEFAULT_PORT, MAX_REQUEST_BODY_BYTES, MAX_SEATS, SEND_RATE, WORLD_ROOM_ID } from './tuning';
+export { startWorldServer, type RoutesApp, type WorldFront, type WorldServer, type WorldServerOptions } from './startWorldServer';
+export { DEFAULT_PORT, MAX_SEATS, SEND_RATE, WORLD_ROOM_ID } from './tuning';

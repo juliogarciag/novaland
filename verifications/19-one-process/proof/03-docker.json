@@ -105,6 +105,26 @@
     {
       "what": "two forwarded protocols",
       "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:99999999",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *%",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *[",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:abc",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade with a Host that is no host",
+      "answer": "HTTP/1.1 400 Bad Request"
     }
   ],
   "pages": {
@@ -124,7 +144,7 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -14.5,
+        "x": -13.5,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -133,7 +153,7 @@
         "slot": 2,
         "eid": 47,
         "x": -12.5,
-        "y": -1.5,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -143,7 +163,7 @@
       "start": {
         "slot": 1,
         "eid": 46,
-        "x": -14.5,
+        "x": -13.5,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -151,7 +171,7 @@
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -9.917,
+        "x": -8.917,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -164,7 +184,7 @@
         "slot": 2,
         "eid": 47,
         "x": -12.5,
-        "y": -1.5,
+        "y": 0.5,
         "intentX": 0,
         "intentY": 0
       },
@@ -172,27 +192,27 @@
         "slot": 2,
         "eid": 47,
         "x": -12.5,
-        "y": 3,
+        "y": 5.417,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.5
+      "distance": 4.917
     },
     "quietFrames": {
       "count": 19,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 19,
-      "meanBytes": 120.05263157894737
+      "count": 20,
+      "meanBytes": 119.4
     },
     "aQuietFrames": {
-      "count": 20,
+      "count": 19,
       "meanBytes": 65
     },
     "aFramesDuringBWalk": {
-      "count": 19,
-      "meanBytes": 120.3157894736842
+      "count": 21,
+      "meanBytes": 121.9047619047619
     },
     "responses": [
       {
@@ -216,17 +236,7 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-teal.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-ember.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
-        "url": "/sprites/player-sun.png",
+        "url": "/sprites/player-rose.png",
         "status": 200,
         "contentType": "image/png"
       },
@@ -241,7 +251,12 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-rose.png",
+        "url": "/sprites/player-sun.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-ember.png",
         "status": 200,
         "contentType": "image/png"
       },
@@ -251,82 +266,87 @@
         "contentType": "image/png"
       },
       {
-        "url": "blob:/1bc8b7ae-fdd5-4d91-b24a-28bbfae9a8c9",
+        "url": "/sprites/player-teal.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/ee263029-710d-4c82-92ca-97bb24756ef1",
+        "url": "blob:/a0265250-7ff5-4415-af6f-b90f67ea6ff5",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/4f3a0422-a2a7-411f-ba46-d164f10cd73a",
+        "url": "blob:/f0a10db6-8ab6-4f67-8dba-7a0cfe882e1d",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/423f81c9-f9ec-4657-ad0e-73b21a362c3b",
+        "url": "blob:/44d38083-844b-4750-b698-c23e727ffece",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/9a0cce80-70ef-4215-93b7-85ae81e17132",
+        "url": "blob:/e5ff6e12-d3e4-4880-af73-93c32dcc6f8e",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/139aa989-d831-495c-9ec1-0c3761bd3f69",
+        "url": "blob:/916ff579-114e-4d38-abbf-e22402302c67",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/4dbe9395-935a-4849-931f-3cd2c3bfade5",
+        "url": "blob:/debbeafa-48f9-4602-9a6e-8d3ded65745d",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/384cfed9-63e2-4d8b-80d2-cba3e9e71c5a",
+        "url": "blob:/4541abf9-ade9-48f6-8f52-96f3d38486a1",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/02bb8ddf-402c-46a4-bb5c-2153bb9c209f",
+        "url": "blob:/f024d39b-a10a-440e-a2f1-1dc7e775bca1",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/7290505c-b6d5-4476-b9cc-c1006a812a88",
+        "url": "blob:/141c9a8a-3baf-4f1e-a5b3-ef1e4dd55f0b",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/316d7a2b-0e81-4cf9-b6d3-e66d82609ba1",
+        "url": "blob:/8016f496-27c0-4737-9942-969d05164bf8",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/5e2a7fa0-1887-432a-8aa4-9541fa7338a3",
+        "url": "blob:/a9e794f2-f891-4d13-a5c6-88a01cfb57ee",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/c38ab93c-3e7a-441b-a043-65dff27e37f2",
+        "url": "blob:/d0ceb9a6-4390-4fc1-925d-169dc1852893",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/dd7dce8c-4686-464a-bfec-368fe342a8c8",
+        "url": "blob:/38313af1-560e-4bba-b735-ee5c1f0a1c88",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/7209c35b-a546-483e-ae13-a7139ee4b515",
+        "url": "blob:/3f35b5a2-9400-4d44-b166-2c86425b9bdf",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/1f51294d-e229-482c-be6d-2ce938371125",
+        "url": "blob:/8bb76546-6cbb-486e-a66d-0523f4f8a5fc",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/8c6630d7-871c-4870-b663-99928fdddb48",
         "status": 200,
         "contentType": "image/png"
       }
@@ -335,5 +355,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.132
+  "stopSeconds": 0.159
 }

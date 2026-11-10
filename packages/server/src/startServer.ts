@@ -1,5 +1,5 @@
 import { createEdge, type OriginPolicy } from './edge';
-import { MAX_REQUEST_BODY_BYTES, MAX_SEATS, startWorldServer, type WorldServer } from './world';
+import { MAX_SEATS, startWorldServer, type WorldServer } from './world';
 
 export interface ServerOptions {
   /** TCP port to listen on; 0 picks a free one. Fails if it is busy. */
@@ -23,7 +23,6 @@ export async function startServer({ port, seed, originPolicy, clientDirectory }:
   const edge = createEdge({
     originPolicy,
     clientDirectory,
-    maxRequestBodyBytes: MAX_REQUEST_BODY_BYTES,
     health: () => started.world && { roomId: started.world.roomId, seats: MAX_SEATS, seatsTaken: started.world.room.seatsTaken, tick: started.world.room.tick },
   });
   started.world = await startWorldServer({ port, seed, front: edge });

@@ -37,6 +37,26 @@
     {
       "what": "two forwarded protocols",
       "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:99999999",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *%",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *[",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:abc",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade with a Host that is no host",
+      "answer": "HTTP/1.1 400 Bad Request"
     }
   ],
   "boot": {
@@ -56,7 +76,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 2
+    "tick": 0
   },
   "indexHeaders": {
     "accept-ranges": "bytes",
@@ -71,10 +91,10 @@
     "content-type": "text/html; charset=utf-8",
     "cross-origin-opener-policy": "same-origin",
     "cross-origin-resource-policy": "same-origin",
-    "date": "Tue, 10 Nov 2026 23:00:42 GMT",
-    "etag": "W/\"383-1a1c7b1344e\"",
+    "date": "Tue, 10 Nov 2026 23:37:53 GMT",
+    "etag": "W/\"383-1a1c7d33ea1\"",
     "keep-alive": "timeout=5",
-    "last-modified": "Tue, 10 Nov 2026 23:00:41 GMT",
+    "last-modified": "Tue, 10 Nov 2026 23:37:52 GMT",
     "origin-agent-cluster": "?1",
     "referrer-policy": "no-referrer",
     "vary": "Origin, Accept-Encoding",
@@ -166,7 +186,7 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -12.5,
+        "x": -14.5,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -202,11 +222,11 @@
         "status": 200
       },
       {
-        "url": "/sprites/player-teal.png",
+        "url": "/sprites/player-plum.png",
         "status": 200
       },
       {
-        "url": "/sprites/player-plum.png",
+        "url": "/sprites/player-teal.png",
         "status": 200
       },
       {
@@ -218,35 +238,35 @@
         "status": 200
       },
       {
-        "url": "blob:/cb8985b4-727c-4dd4-82d9-a26267e53c99",
+        "url": "blob:/cbc54e2e-d133-41fc-b608-c9fcea72f456",
         "status": 200
       },
       {
-        "url": "blob:/d561c705-1d84-48a5-9e9e-345d9c1bf036",
+        "url": "blob:/82b6f380-6750-4fcb-8d2f-1a66bd9eb801",
         "status": 200
       },
       {
-        "url": "blob:/f583bed6-0939-4762-8410-61d3616045db",
+        "url": "blob:/055debe7-ffa0-4b2e-9038-1ce4cc163a89",
         "status": 200
       },
       {
-        "url": "blob:/d470b903-8716-4699-8f2e-57aef859f3e8",
+        "url": "blob:/56eaaded-30f1-4675-a298-03d53c7941f3",
         "status": 200
       },
       {
-        "url": "blob:/4edd3d89-808d-4be2-b5e7-b79b25844af3",
+        "url": "blob:/7b6f272d-1489-4816-9eff-521038fd258d",
         "status": 200
       },
       {
-        "url": "blob:/74731a7d-1a68-4dd3-8b26-840e33b57e80",
+        "url": "blob:/ef373238-41bf-4d1f-8acc-ff96cdb1fe80",
         "status": 200
       },
       {
-        "url": "blob:/6deed4f2-874f-4b12-b765-8d8c2c0b1bea",
+        "url": "blob:/ef7477ee-9bae-45af-bd11-2270acb85964",
         "status": 200
       },
       {
-        "url": "blob:/2c7e6eba-50a1-45ed-8ab3-24e5ec915b40",
+        "url": "blob:/7d9d8eef-ae74-4083-ab35-9a4c0b715195",
         "status": 200
       }
     ],
@@ -272,7 +292,7 @@
       "online": false,
       "playerX": -13.5
     },
-    "soloAfter": -9.50006103515625,
+    "soloAfter": -9.416728973388672,
     "soloRapier": [
       {
         "url": "/node_modules/.vite/deps/@dimforge_rapier2d-deterministic-compat.js?v=11a7a3e3",

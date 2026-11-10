@@ -36,6 +36,11 @@
   },
   {
     "file": "packages/server/src/startServer.test.ts",
+    "name": "one process: the client files, /healthz and the request guard in front of the world room answers a range that cannot be satisfied, a failed precondition and a directory without a slash with their status, and logs nothing for them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/startServer.test.ts",
     "name": "one process: the client files, /healthz and the request guard in front of the world room never serves a file outside the client directory, a dotfile or a directory listing",
     "status": "passed"
   },
@@ -47,6 +52,11 @@
   {
     "file": "packages/server/src/startServer.test.ts",
     "name": "one process: the client files, /healthz and the request guard in front of the world room closes the file when the browser gives up mid-download: no descriptor is left open",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/startServer.test.ts",
+    "name": "one process: the client files, /healthz and the request guard in front of the world room drops a connection that sends its next request before the last answer is out, so a burst that hangs up leaves no file open",
     "status": "passed"
   },
   {
@@ -115,18 +125,33 @@
     "status": "passed"
   },
   {
-    "file": "packages/server/src/edge/guardRequests.test.ts",
-    "name": "guardRequests wraps the server's one request listener in place of it",
+    "file": "packages/server/src/startServer.test.ts",
+    "name": "one process on a busy port fails the boot with the reason instead of waiting for ever",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/createEdge.test.ts",
+    "name": "createEdge refuses an upgrade from an origin the policy does not allow, and lets a listed origin and a client that is no browser through",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/createEdge.test.ts",
+    "name": "createEdge names the caller in the matchmaking headers only when the policy allows it, and always sends nosniff and Vary",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/createEdge.test.ts",
+    "name": "createEdge closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open",
     "status": "passed"
   },
   {
     "file": "packages/server/src/edge/guardRequests.test.ts",
-    "name": "guardRequests refuses to install when the server has no request listener",
+    "name": "guardRequests wraps the server's one request listener and its one upgrade listener in place of them",
     "status": "passed"
   },
   {
     "file": "packages/server/src/edge/guardRequests.test.ts",
-    "name": "guardRequests refuses to install when something besides the routes listens for requests",
+    "name": "guardRequests refuses to install unless exactly one listener handles requests and exactly one handles upgrades, and leaves the server as it was",
     "status": "passed"
   },
   {
@@ -155,6 +180,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/server/src/edge/guardRequests.test.ts",
+    "name": "guardRequests answers 400 to an upgrade whose target is not a path or whose Host is no host, and hands a well-formed one to the upgrade handler",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/guardRequests.test.ts",
+    "name": "guardRequests closes a connection that sends a second request before the first is answered, and the routes never see the second",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/guardRequests.test.ts",
+    "name": "guardRequests serves one request after another on a kept-alive connection",
+    "status": "passed"
+  },
+  {
     "file": "packages/server/src/edge/mountEdgeRoutes.test.ts",
     "name": "mountEdgeRoutes answers /healthz with 503 while there is nothing to report, and with the report once there is",
     "status": "passed"
@@ -176,7 +216,12 @@
   },
   {
     "file": "packages/server/src/edge/origins.test.ts",
-    "name": "isOriginAllowed allows the listed origins in any spelling a browser may send: case, a default port spelled out",
+    "name": "isOriginAllowed allows the listed origins, spelled the way a browser sends them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/origins.test.ts",
+    "name": "isOriginAllowed refuses every other spelling of a listed origin: no browser sends one, and what is allowed must be exactly what a browser compares",
     "status": "passed"
   },
   {
@@ -227,6 +272,11 @@
   {
     "file": "packages/server/src/edge/origins.test.ts",
     "name": "readOriginPolicy refuses entries that are not bare http(s) origins, so a typo stops the boot instead of refusing every player",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/edge/origins.test.ts",
+    "name": "readOriginPolicy checks the other entries even next to a *",
     "status": "passed"
   },
   {
@@ -680,21 +730,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
     "status": "passed"
@@ -780,18 +815,18 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
     "status": "passed"
   },
   {
@@ -1085,88 +1120,18 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name answers undefined for a name it does not know, including prototype names",
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name lists every level once, under a unique name",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile grids reads a level object once and hands back the same grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging covers every solid tile exactly once",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) places each collider box over its tiles in metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely along a path and over grass",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
     "status": "passed"
   },
   {
@@ -1337,6 +1302,91 @@
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids a bad level fails when the sim is created, never inside a command handler",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile grids reads a level object once and hands back the same grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile exactly once",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each collider box over its tiles in metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name answers undefined for a name it does not know, including prototype names",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name lists every level once, under a unique name",
     "status": "passed"
   }
 ]

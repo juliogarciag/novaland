@@ -30,6 +30,8 @@ const EDGE_DEEP = group(['**/edge/*'], 'Import the HTTP edge through its entry f
 const WORLD_DEEP = group(['**/world/*'], 'Import the world through its entry file (packages/server/src/world) so its public surface stays explicit (ADR 0008).');
 const EDGE_ANY = group(['**/edge', '**/edge/**'], 'The world knows nothing about the HTTP edge: it declares what it needs in WorldFront and is handed it (ADR 0008).');
 const WORLD_ANY = group(['**/world', '**/world/**'], 'The HTTP edge knows nothing about the world room (ADR 0008).');
+const OUT_OF_HALF = group(['../*', '../**'], 'Each half of the server is self-contained: nothing in src/edge or src/world imports from outside its own folder, which would be a way round to the other half (ADR 0008).');
+const HTTP_LIBRARIES_IN_WORLD = group(['express', 'express/*', 'helmet', 'compression'], 'HTTP belongs to src/edge. The world names the Express app through Colyseus (RoutesApp) and imports no HTTP library (ADR 0008).');
 const COLYSEUS_IN_EDGE = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'The HTTP edge does not know Colyseus: it shapes its pieces for Colyseus\'s hooks and the world plugs them in (ADR 0008).');
 const SIM_DEEP = group(['@novaland/sim/*', '**/packages/sim/**', '../**/sim/**'], 'Import the sim through its package entry (@novaland/sim) so its public API stays explicit.');
 
@@ -112,11 +114,11 @@ export default defineConfig([
   },
   {
     files: ['packages/server/src/edge/**/*.ts'],
-    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, WORLD_ANY, COLYSEUS_IN_EDGE),
+    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, WORLD_ANY, COLYSEUS_IN_EDGE, OUT_OF_HALF),
   },
   {
     files: ['packages/server/src/world/**/*.ts'],
-    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, EDGE_ANY),
+    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, EDGE_ANY, HTTP_LIBRARIES_IN_WORLD, OUT_OF_HALF),
   },
   // `__testing__` exports exist for tests only. Later blocks replace a rule's
   // whole setting, so the sim block repeats NEW_DATE here.

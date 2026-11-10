@@ -158,10 +158,11 @@ export function rawStatus(port, rawPath) {
   );
 }
 
-/** The requests that end a bare Colyseus process (its router throws outside any handler when `X-Forwarded-Proto`, `Host` and the target do not make a URL), each as the lines to write to a socket. */
+/** The requests and upgrades that end a Colyseus process with nothing in front of it (its router and its transport throw outside any handler when `X-Forwarded-Proto`, `Host` and the target do not make a URL), each as the lines to write to a socket. */
 export function requestsColyseusCannotSurvive(port) {
   const host = `Host: localhost:${port}`;
   const json = ['Content-Type: application/json', 'Content-Length: 2', '', '{}'];
+  const upgrade = ['Connection: Upgrade', 'Upgrade: websocket', 'Sec-WebSocket-Version: 13', 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ=='];
   return [
     ['an absolute URL as the target', ['GET http://evil.example/healthz HTTP/1.1', host]],
     ['an absolute URL as the target of a matchmaking call', ['POST http://evil.example/matchmake/joinById/world HTTP/1.1', host, ...json]],
@@ -170,6 +171,8 @@ export function requestsColyseusCannotSurvive(port) {
     ['a Host that is no host, on the Colyseus health route', ['GET /__healthcheck HTTP/1.1', 'Host: exa[mple']],
     ['a forwarded protocol that is no protocol', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: ht tp', ...json]],
     ['two forwarded protocols', ['POST /matchmake/joinById/world HTTP/1.1', host, 'X-Forwarded-Proto: https, http', ...json]],
+    ...['*:99999999', '*%', '*[', '*:abc'].map((target) => [`an upgrade whose target is ${target}`, [`GET ${target} HTTP/1.1`, host, ...upgrade]]),
+    ['an upgrade with a Host that is no host', ['GET /world HTTP/1.1', 'Host: a:b', ...upgrade]],
   ];
 }
 

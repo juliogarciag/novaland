@@ -7,11 +7,27 @@ describe('isOriginAllowed', () => {
     expect(isOriginAllowed(undefined, DEVELOPMENT)).toBe(true);
   });
 
-  it('allows the listed origins in any spelling a browser may send: case, a default port spelled out', () => {
+  it('allows the listed origins, spelled the way a browser sends them', () => {
     expect(isOriginAllowed('https://play.example.com', PRODUCTION)).toBe(true);
-    expect(isOriginAllowed('https://PLAY.example.com', PRODUCTION)).toBe(true);
-    expect(isOriginAllowed('https://play.example.com:443', PRODUCTION)).toBe(true);
     expect(isOriginAllowed('https://tunnel.example.com', PRODUCTION)).toBe(true);
+  });
+
+  it('refuses every other spelling of a listed origin: no browser sends one, and what is allowed must be exactly what a browser compares', () => {
+    for (const spelling of [
+      'https://PLAY.example.com',
+      'HTTPS://play.example.com',
+      'https://play.example.com:443',
+      'https://play.example.com/',
+      'https://play.example.com/x',
+      'https://play.example.com?x',
+      'https://play.example.com\\@evil.example.net',
+      'https://play.example.com.',
+      ' https://play.example.com',
+      'https://play.example.com ',
+      'https://pl\tay.example.com',
+    ]) {
+      expect(isOriginAllowed(spelling, PRODUCTION), JSON.stringify(spelling)).toBe(false);
+    }
   });
 
   it('refuses another host, another port, another scheme, a null origin, several origins at once and junk', () => {
@@ -36,7 +52,6 @@ describe('isOriginAllowed', () => {
     expect(isOriginAllowed('http://localhost:5218', DEVELOPMENT)).toBe(true);
     expect(isOriginAllowed('http://127.0.0.1:5218', DEVELOPMENT)).toBe(true);
     expect(isOriginAllowed('http://[::1]:5218', DEVELOPMENT)).toBe(true);
-    expect(isOriginAllowed('http://127.1:5218', DEVELOPMENT)).toBe(true);
     expect(isOriginAllowed('http://app.localhost:5218', DEVELOPMENT)).toBe(true);
   });
 
@@ -83,9 +98,14 @@ describe('readOriginPolicy', () => {
   });
 
   it('refuses entries that are not bare http(s) origins, so a typo stops the boot instead of refusing every player', () => {
-    for (const bad of ['play.example.com', 'https://play.example.com/path', 'https://user:pw@play.example.com', 'ftp://play.example.com', 'wss://play.example.com', 'https://', 'https://play.example.com?x=1', 'https://play.example.com#top']) {
+    for (const bad of ['play.example.com', 'https://play.example.com/path', 'https://user:pw@play.example.com', 'ftp://play.example.com', 'wss://play.example.com', 'https://', 'https://play.example.com?x=1', 'https://play.example.com#top', 'https://*.example.com']) {
       expect(() => readOriginPolicy({ allowedOrigins: bad, allowLoopback: true }), bad).toThrow(/ALLOWED_ORIGINS/);
     }
+  });
+
+  it('checks the other entries even next to a *', () => {
+    expect(() => readOriginPolicy({ allowedOrigins: '*, play.example.com', allowLoopback: true })).toThrow(/ALLOWED_ORIGINS/);
+    expect(readOriginPolicy({ allowedOrigins: 'https://play.example.com, *', allowLoopback: false }).allowAll).toBe(true);
   });
 });
 

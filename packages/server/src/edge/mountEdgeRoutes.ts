@@ -1,5 +1,5 @@
 import compression from 'compression';
-import express, { type Application } from 'express';
+import express, { type Application, type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
 import path from 'node:path';
 
@@ -20,6 +20,9 @@ export interface EdgeRoutesOptions {
  * `express.static` serves the files (conditional and range requests, `HEAD`,
  * no path out of the directory, no dotfiles) and `compression` compresses
  * them. Only the choices are made here.
+ *
+ * Nothing here logs a stack trace for a request: what an anonymous client
+ * can trigger at will must not fill the log. A server-side failure is one line.
  */
 export function mountEdgeRoutes(app: Application, { clientDirectory, health }: EdgeRoutesOptions): void {
   app.disable('x-powered-by');
@@ -40,14 +43,30 @@ export function mountEdgeRoutes(app: Application, { clientDirectory, health }: E
     }
     response.json({ ok: true, ...report });
   });
-  if (clientDirectory === undefined) return;
-  app.use(compression());
-  // Vite names the files under `assets/` by a hash of their content, so a name never changes what it holds: cache them for a year. Everything else is revalidated on every load.
-  app.use('/assets', express.static(path.join(clientDirectory, 'assets'), { index: false, immutable: true, maxAge: '1y' }));
-  app.use(express.static(clientDirectory));
+  if (clientDirectory !== undefined) {
+    // A part of a file is sent as it is: compressing it would label a range of the plain file as a range of the compressed one.
+    app.use(compression({ filter: (request, response) => request.headers.range === undefined && compression.filter(request, response) }));
+    // Vite names the files under `assets/` by a hash of their content, so a name never changes what it holds: cache them for a year. Everything else is revalidated on every load.
+    // No redirect from a directory to its trailing slash: the build has no directory to browse, and a redirect is one more thing to get wrong.
+    app.use('/assets', express.static(path.join(clientDirectory, 'assets'), { index: false, redirect: false, immutable: true, maxAge: '1y' }));
+    app.use(express.static(clientDirectory, { redirect: false }));
+  }
+  app.use(answerErrorsQuietly);
 }
 
 // ---- Helpers ----
+
+/** Express's last stop for an error: the status the error names (a malformed `Range`, a failed precondition), else `500`, with no body and no stack trace on the log. */
+function answerErrorsQuietly(error: unknown, _request: Request, response: Response, next: NextFunction): void {
+  if (response.headersSent) {
+    next(error);
+    return;
+  }
+  const named = (error as { status?: unknown }).status;
+  const status = typeof named === 'number' && named >= 400 && named < 600 ? named : 500;
+  if (status >= 500) console.error(JSON.stringify({ event: 'http-route-failed', status, error: error instanceof Error ? error.message : String(error) }));
+  response.status(status).end();
+}
 
 /**
  * Scripts and styles come from this origin (the inline `<style>` in

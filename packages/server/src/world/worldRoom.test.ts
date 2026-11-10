@@ -20,7 +20,7 @@ import {
   type WorldStateUpdate,
 } from '@novaland/sim';
 import { afterEach, describe, expect, it } from 'vitest';
-import { startWorldServer, type WorldServer } from './startWorldServer';
+import { __testing__, type WorldServer } from './startWorldServer';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
   INBOUND_BURST,
@@ -285,6 +285,9 @@ describe('WorldRoom driven directly', () => {
 });
 
 // ---- Helpers ----
+
+/** The room on a bare port: these tests are about the room, not about what stands in front of it. */
+const { startBareWorldServer: startWorldServer } = __testing__;
 
 interface Player {
   readonly room: Room;
