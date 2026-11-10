@@ -1,7 +1,7 @@
 {
   "boot": {
     "event": "world-room-listening",
-    "port": 58382,
+    "port": 54899,
     "roomId": "world",
     "seed": "<random>",
     "seats": 5,
@@ -9,7 +9,7 @@
     "sendRate": 20
   },
   "summary": {
-    "port": 58382,
+    "port": 54899,
     "seats": 5,
     "slots": [
       0,
@@ -55,7 +55,7 @@
     "chained": [
       {
         "name": "player-0",
-        "updates": 53,
+        "updates": 54,
         "applied": true
       },
       {
@@ -80,9 +80,9 @@
       }
     ],
     "deltaBytes": {
-      "count": 258,
+      "count": 259,
       "min": 66,
-      "max": 735
+      "max": 734
     },
     "welcomeBytes": 8498
   }
