@@ -255,7 +255,7 @@ describe('WorldRoom over a real connection', () => {
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
   });
 
-  it(`frees the seat of a session with no accepted input for ${IDLE_TIMEOUT_MS / 60000} minutes, closing it with ${IDLE_KICK.code} "${IDLE_KICK.reason}", and keeps one that plays`, async () => {
+  it(`frees the seat of a session with no accepted input for ${IDLE_TIMEOUT_MS / 60000} minutes, closing it with ${IDLE_KICK.code} "${IDLE_KICK.reason}", and keeps one that plays, also while it holds one direction for several timeouts`, async () => {
     const clock = fakeClock();
     server = await startWorldServer({ port: 0, seed: 13, clock });
     for (let seat = 0; seat < 2; seat += 1) players.push(await join(server.port));
@@ -269,7 +269,7 @@ describe('WorldRoom over a real connection', () => {
     await waitForUpdates(players, 3);
     expect(server.room.clients.length).toBe(2);
     expect(server.room.idleSeatsFreed).toBe(0);
-    // The walker plays once, just before the deadline. The idler only sends a move that fails the gate, which is not input: only the idler crosses the deadline.
+    // The walker starts walking south just before the deadline and holds the key: one move, then nothing, as a browser sends it. The idler only sends a move that fails the gate, which is not input: only the idler crosses the deadline.
     walker.room.send(WIRE.move, { x: 0, y: 1 });
     idler.room.send(WIRE.move, { x: 1 });
     await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1 && server!.room.dropped.malformed === 1);
@@ -285,16 +285,25 @@ describe('WorldRoom over a real connection', () => {
     players.push(next);
     expect(next.welcome.slot).toBe(idler.welcome.slot);
     expect(walker.applyResults.every((result) => result === 'applied')).toBe(true);
-    // The walker's own timeout runs from its last accepted move, not from its join: most of it is still ahead of it.
-    clock.skip(IDLE_TIMEOUT_MS - 120_000);
-    await waitForUpdates(players, 3);
+    // Three whole timeouts pass with the walker still holding south: walking is never idle. `next`, which never played, is kicked meanwhile (the cleanup copes: a left room's `leave` resolves at once).
+    const nextLeft = new Promise<number>((resolve) => next.room.onLeave((code) => resolve(code)));
+    clock.skip(3 * IDLE_TIMEOUT_MS);
+    expect(await orTimeout(nextLeft, 'next was not kicked after a whole timeout without input')).toBe(IDLE_KICK.code);
+    await waitForUpdates([walker], 3);
     expect(walkerLeftWith).toBeUndefined();
-    expect(server.room.idleSeatsFreed).toBe(1);
-    expect(server.room.clients.length).toBe(2);
-    // Past it, the walker goes; so does `next`, which joined a whole timeout ago and never played (the cleanup copes: a left room's `leave` resolves at once).
-    clock.skip(120_000);
+    expect(server.room.idleSeatsFreed).toBe(2);
+    expect(headingOf(walker.replica, walker.welcome.slot).moveIntent.y).toBe(1);
+    // The walker stops: its idle clock starts at that move, so most of the timeout is still ahead of it.
+    walker.room.send(WIRE.move, { x: 0, y: 0 });
+    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 0);
+    clock.skip(IDLE_TIMEOUT_MS - 60_000);
+    await waitForUpdates([walker], 3);
+    expect(walkerLeftWith).toBeUndefined();
+    // Past it, the walker goes.
+    clock.skip(61_000);
     await waitUntil(() => walkerLeftWith !== undefined);
     expect(walkerLeftWith).toBe(IDLE_KICK.code);
+    expect(server.room.idleSeatsFreed).toBe(3);
   });
 
   it('closes the connection of an oversized HTTP request before reading its body, and keeps serving joins', async () => {

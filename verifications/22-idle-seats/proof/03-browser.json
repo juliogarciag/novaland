@@ -7,13 +7,13 @@
         "kind": "online",
         "slot": 0
       },
-      "kickedAfterSeconds": 4.128,
+      "kickedAfterSeconds": 4.069,
       "away": {
         "status": {
           "kind": "away"
         },
         "screen": "away",
-        "text": "You were away, so your seat was given up. Rejoin to play again.",
+        "text": "You were away too long, so the server freed your seat. Rejoin to play again.",
         "buttonText": "Rejoin",
         "buttonVisible": true,
         "buttonFocused": true
@@ -23,13 +23,20 @@
           "kind": "away"
         },
         "screen": "away",
-        "text": "You were away, so your seat was given up. Rejoin to play again.",
+        "text": "You were away too long, so the server freed your seat. Rejoin to play again.",
         "buttonText": "Rejoin",
         "buttonVisible": true,
         "buttonFocused": true
       },
       "joinsAtKick": 1,
       "joinsAfterWait": 1
+    },
+    {
+      "step": "B-walking",
+      "intent": {
+        "x": 1,
+        "y": 0
+      }
     },
     {
       "step": "freed-and-rejoined",
@@ -45,7 +52,7 @@
         "kind": "online",
         "slot": 0
       },
-      "bPlayedSeconds": 8.505,
+      "bWalkedSeconds": 8.50140000000596,
       "aAgain": {
         "kind": "away"
       },
@@ -60,14 +67,15 @@
           "slot": 1,
           "idleSeconds": 4
         }
-      ]
+      ],
+      "bAwayAfterSeconds": 4.31
     }
   ],
   "results": [
     {
-      "name": "room server up with a 4 s idle timeout, client dev server up",
+      "name": "room server up with a 4 s idle timeout, client dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":1465880168,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":1748060382,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4}"
     },
     {
       "name": "A joins the world and is seated",
@@ -77,12 +85,12 @@
     {
       "name": "A is kicked at the idle timeout (4 s, at most 1.5 s late)",
       "pass": true,
-      "details": "4.13 s"
+      "details": "4.07 s"
     },
     {
       "name": "A shows the away screen: \"you were away\" and a focused Rejoin button",
       "pass": true,
-      "details": "{\"status\":{\"kind\":\"away\"},\"screen\":\"away\",\"text\":\"You were away, so your seat was given up. Rejoin to play again.\",\"buttonText\":\"Rejoin\",\"buttonVisible\":true,\"buttonFocused\":true}"
+      "details": "{\"status\":{\"kind\":\"away\"},\"screen\":\"away\",\"text\":\"You were away too long, so the server freed your seat. Rejoin to play again.\",\"buttonText\":\"Rejoin\",\"buttonVisible\":true,\"buttonFocused\":true}"
     },
     {
       "name": "A stays away: no join sent by itself in 9 s, the away screen still up",
@@ -92,10 +100,10 @@
     {
       "name": "B takes A's freed seat and the world holds one player: B",
       "pass": true,
-      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 896   1/5 online"
+      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 893   1/5 online"
     },
     {
-      "name": "Enter on the away screen rejoins A, into a new seat, with one join sent",
+      "name": "Enter on the away screen rejoins A, even with the Rejoin button no longer focused, into a new seat, with one join sent",
       "pass": true,
       "details": "seat 1, joins 2"
     },
@@ -104,9 +112,9 @@
       "pass": true
     },
     {
-      "name": "B, which kept playing, is still seated after 8.5 s (more than twice the timeout) and was never kicked",
+      "name": "B, holding one direction since it joined, is still seated after 8.5 s more (past twice the timeout) and still walking",
       "pass": true,
-      "details": "{\"kind\":\"online\",\"slot\":0}"
+      "details": "{\"status\":{\"kind\":\"online\",\"slot\":0},\"intent\":{\"x\":1,\"y\":0}}"
     },
     {
       "name": "A, idle again after rejoining, is kicked again from its new seat and shows the away screen again",
@@ -114,9 +122,14 @@
       "details": "{\"kind\":\"away\"}"
     },
     {
-      "name": "the server kicked only A's seats (first A's seat before B took it, then A's new one) and never B's",
+      "name": "while B walked the server kicked only A's seats (first A's seat before B took it, then A's new one), never B's",
       "pass": true,
       "details": "[{\"event\":\"world-room-idle-kick\",\"slot\":0,\"idleSeconds\":4},{\"event\":\"world-room-idle-kick\",\"slot\":1,\"idleSeconds\":4}]"
+    },
+    {
+      "name": "B, once it releases the key, is kicked a timeout later (4 s, at most 1.5 s late)",
+      "pass": true,
+      "details": "4.31 s"
     },
     {
       "name": "no uncaught page errors",

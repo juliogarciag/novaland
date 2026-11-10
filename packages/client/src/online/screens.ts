@@ -38,6 +38,11 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   reloadButton.addEventListener('click', actions.onReload);
   screen.append(message, retryButton, reloadButton);
   parent.append(screen);
+  const rejoinOnEnter = (event: KeyboardEvent): void => {
+    // The focused button already turns Enter into a click.
+    if (shown?.kind === 'away' && event.key === 'Enter' && document.activeElement !== retryButton) actions.onRetry();
+  };
+  document.addEventListener('keydown', rejoinOnEnter);
   let countdown: ReturnType<typeof setInterval> | undefined;
   let shown: ConnectionStatus | undefined;
 
@@ -62,11 +67,12 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
       screen.dataset['screen'] = status.kind;
       render();
       if (status.kind === 'full' || status.kind === 'disconnected') countdown = setInterval(render, COUNTDOWN_INTERVAL_MS);
-      // Enter or Space rejoins from the away screen as well as a click.
-      if (status.kind === 'away') retryButton.focus();
+      // Enter or Space on the focused button rejoins as well as a click; `rejoinOnEnter` keeps Enter working if focus moved elsewhere.
+      if (status.kind === 'away') retryButton.focus({ preventScroll: true });
     },
     destroy() {
       if (countdown !== undefined) clearInterval(countdown);
+      document.removeEventListener('keydown', rejoinOnEnter);
       screen.remove();
     },
   };
@@ -84,7 +90,7 @@ function describeStatus(status: ConnectionStatus): string {
     case 'disconnected':
       return `Disconnected from the world. Retrying in ${secondsUntil(status.retryAt)}s…`;
     case 'away':
-      return 'You were away, so your seat was given up. Rejoin to play again.';
+      return 'You were away too long, so the server freed your seat. Rejoin to play again.';
     case 'incompatible':
       return `Cannot play on this server: ${status.reason}.`;
   }

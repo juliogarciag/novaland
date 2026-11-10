@@ -1,7 +1,7 @@
 {
   "boot": {
     "event": "world-room-listening",
-    "port": 54063,
+    "port": 55373,
     "roomId": "world",
     "seed": "<random>",
     "seats": 5,
@@ -17,15 +17,15 @@
         "code": 4100,
         "reason": "idle"
       },
-      "kickedAfterSeconds": 2.98,
+      "kickedAfterSeconds": 3.01,
       "avatarGoneForWalker": true
     },
     "walker": {
       "slot": 1,
-      "movesSent": 6,
+      "movesSent": 7,
       "stillSeatedWhenIdlerKicked": true,
       "stillSeatedTwiceTheTimeout": true,
-      "secondsSeatedWhileMoving": 6.03,
+      "secondsSeatedWhileMoving": 6.05,
       "leftWith": {
         "code": 4100,
         "reason": "idle"

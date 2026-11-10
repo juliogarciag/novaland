@@ -50,9 +50,10 @@ export interface WorldConnectionOptions {
  * updates to the online world, and comes back by itself after a full world,
  * an unreachable server or a dropped connection, but not after the server
  * freed the seat of an idle player: that one waits for the player to rejoin
- * on purpose, or an idle tab would take its seat straight back. The SDK's own reconnection
- * is turned off: the server exposes no `reconnect` and keeps no session to
- * come back to (ADR 0005), so every return is a fresh join and a new seat.
+ * on purpose, or an idle tab would take its seat straight back. The SDK's
+ * own reconnection is turned off: the server exposes no `reconnect` and keeps
+ * no session to come back to (ADR 0005), so every return is a fresh join and
+ * a new seat.
  * Waiting is bounded by the client's own clock: a join that does not settle
  * or a room that never welcomes is abandoned, never waited on.
  */
@@ -154,7 +155,9 @@ export class WorldConnection {
       this.clearJoinTimer();
       // The server decided this player was idle; coming back is the player's call, not the page's.
       if (code === IDLE_KICK_CODE) {
+        // A kick is not a failed connection, and the rejoin is a fresh start: both counters begin again.
         this.failedConnections = 0;
+        this.attempt = 0;
         this.setStatus({ kind: 'away' });
         return;
       }

@@ -2,10 +2,12 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (227 of 227)
+PASS  every test passed, none skipped  (228 of 228)
 PASS  an idle session is kicked at the 10 minute timeout with 4100 "idle" on a fake clock, the playing one stays, the next joiner takes the seat
-PASS  the idle test ran on a fake clock, not on ten real minutes  (452.33541700000023 ms)
+PASS  the idle test ran on a fake clock, not on ten real minutes  (728.597334 ms)
 PASS  driven directly, the seat is free and the next join gets it before the kicked socket closes, and a non-positive timeout is refused
+PASS  a session holding one direction for three whole timeouts is never kicked, and is kicked a timeout after the move that stops it
+PASS  the client stays away after a 4100 that comes before the welcome, past the join timeout too
 PASS  the client stays away after a 4100 close and rejoins only when asked
 PASS  the client still reconnects by itself after every other close code
 PASS  the away screen tells the player they were away
@@ -22,4 +24,4 @@ PASS  #17 still holds: an oversized HTTP body is refused
 PASS  #17 still holds: the room driven directly: a leave mid-join and a dispose mid-join
 PASS  the sim, replica and client tests still pass
 
-ALL 23 CHECKS PASSED
+ALL 25 CHECKS PASSED

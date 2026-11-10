@@ -57,8 +57,10 @@ interface Session {
   welcomedAt: number | undefined;
   /** Set by `world/resync`: the next send carries a full state instead of a delta. */
   wantsFullState: boolean;
-  /** When the session's last input passed the edge gate (its join counts as one); `idleTimeoutMs` after it the seat is freed. */
+  /** When the session's last input passed the edge gate (its join counts as one); `idleTimeoutMs` after it the seat is freed, unless the session is walking. */
   lastInputAt: number;
+  /** The last accepted move had a direction: the player is holding a key and the avatar is walking. A client sends a move only when the direction changes, so a held key sends nothing more; the idle clock runs only once the player stops. */
+  walking: boolean;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
 }
@@ -149,6 +151,7 @@ export class WorldRoom extends Room {
       welcomedAt: undefined,
       wantsFullState: false,
       lastInputAt: now,
+      walking: false,
       budget: new MessageBudget(INBOUND_MESSAGES_PER_SECOND, INBOUND_BURST, now),
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
     };
@@ -278,7 +281,7 @@ export class WorldRoom extends Room {
   private freeIdleSeats(now: number): void {
     for (const client of this.clients) {
       const session = this.sessions.get(client.sessionId);
-      if (!session || now - session.lastInputAt < this.idleTimeoutMs) continue;
+      if (!session || session.walking || now - session.lastInputAt < this.idleTimeoutMs) continue;
       this.idleSeatsFreed += 1;
       console.log(JSON.stringify({ event: 'world-room-idle-kick', slot: session.slot, idleSeconds: Math.round((now - session.lastInputAt) / 1000) }));
       this.freeSeat(client);
@@ -305,6 +308,7 @@ export class WorldRoom extends Room {
       return;
     }
     session.lastInputAt = now;
+    session.walking = move.x !== 0 || move.y !== 0;
     this.pendingCommands.push({ type: 'player/move', slot: session.slot, x: move.x, y: move.y });
   }
 

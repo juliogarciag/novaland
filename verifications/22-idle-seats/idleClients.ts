@@ -50,12 +50,10 @@ interface Player {
 const idler = await join('idler');
 const walker = await join('walker');
 say(`idler seated in slot ${idler.welcome.slot}, walker in slot ${walker.welcome.slot}; idle timeout ${idleTimeoutSeconds} s`);
-let lastMoveAt = Date.now();
 let moves = 0;
 const walking = setInterval(() => {
   walker.room.send(WIRE.move, { x: moves % 2 === 0 ? 1 : 0, y: 0 });
   moves += 1;
-  lastMoveAt = Date.now();
 }, 1000);
 
 // 2. The idler is kicked at the timeout; the walker, seated just as long, is not.
@@ -77,9 +75,11 @@ await waitUntil(() => findPlayerEntity(walker.replica, rejoined.welcome.slot) !=
 const seatsTakenAfterRejoin = [0, 1, 2, 3, 4].filter((slot) => findPlayerEntity(walker.replica, slot) !== undefined).length;
 say(`the kicked player rejoined and was seated in slot ${rejoined.welcome.slot}; the walker sees ${seatsTakenAfterRejoin} players`);
 
-// 4. The walker stops: its own timeout runs from its last accepted move.
+// 4. The walker stops, as a browser does when the key is released: its own timeout runs from that last accepted move.
 clearInterval(walking);
-const stoppedAt = lastMoveAt;
+walker.room.send(WIRE.move, { x: 0, y: 0 });
+moves += 1;
+const stoppedAt = Date.now();
 say(`walker stopped sending moves after ${moves} of them`);
 await waitUntil(() => walker.leftWith !== undefined, (idleTimeoutSeconds + 5) * 1000);
 const walkerKickedAfterLastMoveSeconds = ((walker.leftAt as number) - stoppedAt) / 1000;

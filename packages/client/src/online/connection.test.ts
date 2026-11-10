@@ -118,7 +118,19 @@ describe('WorldConnection', () => {
     expect(statuses.map((status) => status.kind)).toEqual(['connecting', 'online', 'away', 'connecting', 'online']);
   });
 
-  it('still comes back by itself after every other close code, the server\'s other own codes included', async () => {
+  it('stays away after a 4100 that comes before the welcome, past the join timeout too', async () => {
+    const { connection, rooms, endpoints } = connect(['room', 'room']);
+    await settle();
+    rooms[0]!.drop(IDLE_KICK_CODE);
+    expect(connection.status).toEqual({ kind: 'away' });
+    await vi.advanceTimersByTimeAsync(JOIN_TIMEOUT_MS + 60_000);
+    expect(endpoints).toHaveLength(1);
+    expect(connection.status).toEqual({ kind: 'away' });
+    connection.retryNow();
+    expect(connection.status).toEqual({ kind: 'connecting', attempt: 1 });
+  });
+
+  it('still comes back by itself after every other close code, Colyseus\'s own and unknown room codes included', async () => {
     for (const code of [1000, 1006, 4000, 4002, IDLE_KICK_CODE + 1]) {
       const { connection, rooms, endpoints } = connect(['room', 'room']);
       await settle();

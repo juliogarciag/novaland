@@ -12,7 +12,7 @@ describe('describeStatus', () => {
     expect(describeStatus({ kind: 'full', retryAt: soon })).toBe(`The world is full (${WORLD_SEATS}/${WORLD_SEATS} online). Retrying in 5s.`);
     expect(describeStatus({ kind: 'disconnected', retryAt: soon, attempt: 2 })).toBe('Disconnected from the world. Retrying in 5s…');
     expect(describeStatus({ kind: 'disconnected', retryAt: Date.now() - 100, attempt: 2 })).toBe('Disconnected from the world. Retrying in 0s…');
-    expect(describeStatus({ kind: 'away' })).toBe('You were away, so your seat was given up. Rejoin to play again.');
+    expect(describeStatus({ kind: 'away' })).toBe('You were away too long, so the server freed your seat. Rejoin to play again.');
     expect(describeStatus({ kind: 'incompatible', reason: 'this client has no level named "moon"' })).toBe('Cannot play on this server: this client has no level named "moon".');
     expect(describeStatus({ kind: 'online', slot: 0 })).toBe('');
   });
