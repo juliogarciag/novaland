@@ -12,7 +12,7 @@ const transcript = [];
 const badBoot = await run('pnpm', ['--filter', '@novaland/server', 'dev'], { env: { PORT: '0', IDLE_TIMEOUT_SECONDS: 'soon' } });
 transcript.push(`$ IDLE_TIMEOUT_SECONDS=soon PORT=0 pnpm --filter @novaland/server dev (exit ${badBoot.code})\n${badBoot.output}`);
 results.push(check('IDLE_TIMEOUT_SECONDS=soon stops the boot with a message instead of picking a default', badBoot.code !== 0 && /IDLE_TIMEOUT_SECONDS must be a number of seconds, at least 1/.test(badBoot.output)));
-// Under a second every player would be kicked before their first send.
+// Under a second is almost surely milliseconds typed as seconds: refused, not run.
 const tooShortBoot = await run('pnpm', ['--filter', '@novaland/server', 'dev'], { env: { PORT: '0', IDLE_TIMEOUT_SECONDS: '0.5' } });
 transcript.push(`$ IDLE_TIMEOUT_SECONDS=0.5 PORT=0 pnpm --filter @novaland/server dev (exit ${tooShortBoot.code})\n${tooShortBoot.output}`);
 results.push(check('IDLE_TIMEOUT_SECONDS=0.5 stops the boot too: the timeout is at least a second', tooShortBoot.code !== 0 && /at least 1, got "0.5"/.test(tooShortBoot.output)));

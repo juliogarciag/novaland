@@ -32,7 +32,7 @@ function readPort(value: string | undefined): number {
   return port;
 }
 
-/** The idle timeout in `IDLE_TIMEOUT_SECONDS` as milliseconds, or the tuned default when unset. Anything under a second, or not a number, stops the boot, like a bad `PORT`: a shorter timeout would kick every player before their first send. */
+/** The idle timeout in `IDLE_TIMEOUT_SECONDS` as milliseconds, or the tuned default when unset. Anything under a second, or not a number, stops the boot, like a bad `PORT`: a value under a second is almost surely milliseconds typed as seconds, and would leave no one the time to press a key. */
 function readIdleTimeoutMs(value: string | undefined): number {
   if (value === undefined || value === '') return IDLE_TIMEOUT_MS;
   const seconds = Number(value);

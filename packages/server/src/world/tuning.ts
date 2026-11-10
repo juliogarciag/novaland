@@ -39,7 +39,7 @@ export const RESYNC_BURST = 2;
 /** Hard ceiling Colyseus enforces by disconnecting the session; a flood that ignores the budget above ends here. */
 export const DISCONNECT_MESSAGES_PER_SECOND = 60;
 
-/** Milliseconds a session may go without an accepted input before its seat is freed (#22), counted from the move that stopped it: a player holding a direction is never idle. `IDLE_TIMEOUT_SECONDS` in the environment overrides it for one boot. */
+/** Milliseconds a session may go without an accepted input before its seat is freed (#22), counted from the join or from the move that stopped the player: a player holding a direction is never idle. `IDLE_TIMEOUT_SECONDS` in the environment overrides it for one boot. */
 export const IDLE_TIMEOUT_MS = 10 * 60 * 1000;
 
 /** Port when `PORT` is not set. Colyseus's conventional one. */

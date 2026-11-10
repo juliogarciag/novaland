@@ -38,13 +38,13 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   reloadButton.addEventListener('click', actions.onReload);
   screen.append(message, retryButton, reloadButton);
   parent.append(screen);
+  let countdown: ReturnType<typeof setInterval> | undefined;
+  let shown: ConnectionStatus | undefined;
   const rejoinOnEnter = (event: KeyboardEvent): void => {
     // The focused button already turns Enter into a click.
     if (shown?.kind === 'away' && event.key === 'Enter' && document.activeElement !== retryButton) actions.onRetry();
   };
   document.addEventListener('keydown', rejoinOnEnter);
-  let countdown: ReturnType<typeof setInterval> | undefined;
-  let shown: ConnectionStatus | undefined;
 
   const render = (): void => {
     if (!shown) return;

@@ -137,6 +137,20 @@ export class OnlineWorld implements PlayableWorld {
     this.connection.sendMove(this.lastMove);
   }
 
+  /**
+   * The page lost focus or was hidden while a key may be down: the player
+   * stops. The keyboard lets go of its keys then, but the stop it would send
+   * comes from the game loop, which a hidden tab pauses; without this the
+   * server would see the avatar walking for as long as the tab stays hidden,
+   * and an abandoned tab would never be freed as idle (#22). Forgetting the
+   * held move also keeps a reconnect from walking again on its own.
+   */
+  stopWalking(): void {
+    if (this.lastMove.x === 0 && this.lastMove.y === 0) return;
+    this.lastMove = { x: 0, y: 0 };
+    this.connection.sendMove(this.lastMove);
+  }
+
   /** A welcome after a drop: the same world, a new seat, a fresh full state. */
   private welcomeAgain(welcome: WelcomeMessage): 'seated' | { readonly incompatible: string } {
     if (welcome.level !== this.sim.level.name || welcome.capacity !== this.sim.capacity) {

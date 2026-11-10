@@ -9,7 +9,8 @@
  * free seat, and both tabs see two players. B holds one direction the whole
  * time (one move, then nothing, as the client sends it) and is never kicked
  * while it walks; the rejoined A, idle again, is kicked again from its new
- * seat; B releases the key and is kicked a timeout later.
+ * seat; B's tab is then hidden with the key still down, the client sends a
+ * stop by itself, and B is kicked a timeout later.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
@@ -101,7 +102,7 @@ try {
   // 5. B, holding the same key all along, outlives the timeout twice over and is never kicked: walking is not idle.
   const bWalkedSeconds = await waitForSeconds(b.page, IDLE_TIMEOUT_SECONDS * 2);
   const bAfter = await stateOf(b.page);
-  results.push(check(`B, holding one direction since it joined, is still seated after ${bWalkedSeconds.toFixed(1)} s more (past twice the timeout) and still walking`, bAfter.status.kind === 'online' && bAfter.status.slot === bAlone.status.slot && bWalkedSeconds > IDLE_TIMEOUT_SECONDS * 2 && bAfter.ownIntent?.x === 1, JSON.stringify({ status: bAfter.status, intent: bAfter.ownIntent })));
+  results.push(check(`B, holding one direction since it was seated, is still seated after ${bWalkedSeconds.toFixed(1)} s more (past twice the timeout) and still walking`, bAfter.status.kind === 'online' && bAfter.status.slot === bAlone.status.slot && bWalkedSeconds > IDLE_TIMEOUT_SECONDS * 2 && bAfter.ownIntent?.x === 1, JSON.stringify({ status: bAfter.status, intent: bAfter.ownIntent })));
   // A sat idle again after rejoining, so the server frees its new seat too, and A waits for the player again.
   const aAgain = await screenOf(a.page);
   results.push(check('A, idle again after rejoining, is kicked again from its new seat and shows the away screen again', aAgain.status.kind === 'away' && aAgain.screen === 'away', JSON.stringify(aAgain.status)));
@@ -109,13 +110,25 @@ try {
   const kicksOfB = kicks.slice(kicksBeforeB).filter((kick) => kick.slot === bAlone.status.slot);
   results.push(check("while B walked the server kicked only A's seats (first A's seat before B took it, then A's new one), never B's", kicksBeforeB === 1 && kicks[0].slot === aSeated.status.slot && kicksOfB.length === 0 && kicks.slice(1).every((kick) => kick.slot === aBack.status.slot), JSON.stringify(kicks)));
 
-  // 6. B releases the key: it stands still now, and a timeout later its seat is freed too.
-  await b.page.keyboard.up('KeyD');
-  const releasedAt = Date.now();
+  // 6. The player leaves B's tab with D still held: the tab is hidden and loses focus. Headless Chromium never hides a page (a background tab stays visible and keeps its frames), so the page gets what a hidden tab gets: no more animation frames, which stops the game loop and with it the keyboard's own stop, then the hidden state and the events of a tab switch. The client must send the stop itself; a timeout later the seat is freed.
+  await b.page.evaluate(() => {
+    window.requestAnimationFrame = () => 0;
+  });
+  await b.page.waitForTimeout(200); // the frame already scheduled runs, then the loop has nothing to run on
+  const hiddenAt = Date.now();
+  await b.page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('blur'));
+  });
+  // B's replica still follows the server while hidden (updates arrive as messages, not on the paused loop); A is away again by now, so its replica is stale.
+  const bStopped = await waitFor(() => stateOf(b.page), (state) => state.ownIntent?.x === 0, 'the server has B standing still once B is hidden', 2000).catch(() => undefined);
+  results.push(check('hiding B with D still held stops B: the server has its avatar standing still within 2 s', bStopped !== undefined, bStopped && JSON.stringify(bStopped.ownIntent)));
   await b.page.waitForSelector('#screen[data-screen="away"]', { timeout: (IDLE_TIMEOUT_SECONDS + 5) * 1000 });
-  const bAwayAfterSeconds = (Date.now() - releasedAt) / 1000;
-  await b.page.screenshot({ path: path.join(PROOF, '03-browser-5-B-away-after-stopping.png') });
-  results.push(check(`B, once it releases the key, is kicked a timeout later (${IDLE_TIMEOUT_SECONDS} s, at most 1.5 s late)`, bAwayAfterSeconds >= IDLE_TIMEOUT_SECONDS - 0.3 && bAwayAfterSeconds <= IDLE_TIMEOUT_SECONDS + 1.5, `${bAwayAfterSeconds.toFixed(2)} s`));
+  const bAwayAfterSeconds = (Date.now() - hiddenAt) / 1000;
+  await b.page.screenshot({ path: path.join(PROOF, '03-browser-5-B-away-after-its-tab-was-hidden.png') });
+  results.push(check(`B, hidden with D held, is kicked a timeout later (${IDLE_TIMEOUT_SECONDS} s, at most 1.5 s late)`, bAwayAfterSeconds >= IDLE_TIMEOUT_SECONDS - 0.3 && bAwayAfterSeconds <= IDLE_TIMEOUT_SECONDS + 1.5, `${bAwayAfterSeconds.toFixed(2)} s`));
   results.push(check('no uncaught page errors', pageErrors.length === 0, pageErrors.join(' | ')));
   report.steps.push({ step: 'freed-and-rejoined', bAlone: bAlone.status, aBack: aBack.status, bAfter: bAfter.status, bWalkedSeconds, aAgain: aAgain.status, kicks, bAwayAfterSeconds });
 } catch (error) {

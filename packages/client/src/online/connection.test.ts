@@ -127,6 +127,7 @@ describe('WorldConnection', () => {
     expect(endpoints).toHaveLength(1);
     expect(connection.status).toEqual({ kind: 'away' });
     connection.retryNow();
+    // Attempt 1, not 2: the kick reset the count, so the rejoin reads as a fresh start.
     expect(connection.status).toEqual({ kind: 'connecting', attempt: 1 });
   });
 

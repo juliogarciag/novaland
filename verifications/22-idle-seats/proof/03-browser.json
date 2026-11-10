@@ -7,7 +7,7 @@
         "kind": "online",
         "slot": 0
       },
-      "kickedAfterSeconds": 4.069,
+      "kickedAfterSeconds": 4.055,
       "away": {
         "status": {
           "kind": "away"
@@ -52,7 +52,7 @@
         "kind": "online",
         "slot": 0
       },
-      "bWalkedSeconds": 8.50140000000596,
+      "bWalkedSeconds": 8.502,
       "aAgain": {
         "kind": "away"
       },
@@ -68,14 +68,14 @@
           "idleSeconds": 4
         }
       ],
-      "bAwayAfterSeconds": 4.31
+      "bAwayAfterSeconds": 4.349
     }
   ],
   "results": [
     {
       "name": "room server up with a 4 s idle timeout, client dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":1748060382,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":470787081,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4}"
     },
     {
       "name": "A joins the world and is seated",
@@ -85,7 +85,7 @@
     {
       "name": "A is kicked at the idle timeout (4 s, at most 1.5 s late)",
       "pass": true,
-      "details": "4.07 s"
+      "details": "4.05 s"
     },
     {
       "name": "A shows the away screen: \"you were away\" and a focused Rejoin button",
@@ -100,7 +100,7 @@
     {
       "name": "B takes A's freed seat and the world holds one player: B",
       "pass": true,
-      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 893   1/5 online"
+      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 879   1/5 online"
     },
     {
       "name": "Enter on the away screen rejoins A, even with the Rejoin button no longer focused, into a new seat, with one join sent",
@@ -112,7 +112,7 @@
       "pass": true
     },
     {
-      "name": "B, holding one direction since it joined, is still seated after 8.5 s more (past twice the timeout) and still walking",
+      "name": "B, holding one direction since it was seated, is still seated after 8.5 s more (past twice the timeout) and still walking",
       "pass": true,
       "details": "{\"status\":{\"kind\":\"online\",\"slot\":0},\"intent\":{\"x\":1,\"y\":0}}"
     },
@@ -127,9 +127,14 @@
       "details": "[{\"event\":\"world-room-idle-kick\",\"slot\":0,\"idleSeconds\":4},{\"event\":\"world-room-idle-kick\",\"slot\":1,\"idleSeconds\":4}]"
     },
     {
-      "name": "B, once it releases the key, is kicked a timeout later (4 s, at most 1.5 s late)",
+      "name": "hiding B with D still held stops B: the server has its avatar standing still within 2 s",
       "pass": true,
-      "details": "4.31 s"
+      "details": "{\"x\":0,\"y\":0}"
+    },
+    {
+      "name": "B, hidden with D held, is kicked a timeout later (4 s, at most 1.5 s late)",
+      "pass": true,
+      "details": "4.35 s"
     },
     {
       "name": "no uncaught page errors",

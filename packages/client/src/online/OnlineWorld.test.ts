@@ -143,6 +143,21 @@ describe('OnlineWorld', () => {
     expect(world.nextFrame([], FRAME).renderables).toEqual(getRenderables(world.sim));
   });
 
+  it('stops walking when the page loses focus, once, and does not walk again after a reconnect', async () => {
+    const { world, room, server, join } = await seated(0);
+    world.nextFrame([{ type: 'player/move', slot: 0, x: 1, y: 0 }], FRAME);
+    world.stopWalking();
+    world.stopWalking();
+    expect(room.sent).toEqual([
+      { type: WIRE.move, payload: { x: 1, y: 0 } },
+      { type: WIRE.move, payload: { x: 0, y: 0 } },
+    ]);
+    room.drop(1006);
+    const secondRoom = await nextRoom(join, 1);
+    server.welcome(secondRoom, 0);
+    expect(secondRoom.sent).toEqual([]);
+  });
+
   it('reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape', async () => {
     for (const [welcome, reason] of [
       [{ slot: 0, level: 'moon-base', capacity: 1024, state: emptyState() }, /no level named "moon-base"/],

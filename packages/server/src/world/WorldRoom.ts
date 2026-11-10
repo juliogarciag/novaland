@@ -42,7 +42,7 @@ export interface Clock {
 export interface WorldRoomOptions {
   /** Seed of the one sim. The boot draws a random one; a test pins it. */
   readonly seed: number;
-  /** Milliseconds a session may go without an accepted input before its seat is freed; `IDLE_TIMEOUT_MS` unless set. */
+  /** Milliseconds a session may stand still without an accepted input before its seat is freed; `IDLE_TIMEOUT_MS` unless set. */
   readonly idleTimeoutMs?: number;
   /** The clock the room reads; `performance.now` unless a test passes a fake. */
   readonly clock?: Clock;
@@ -59,7 +59,7 @@ interface Session {
   wantsFullState: boolean;
   /** When the session's last input passed the edge gate (its join counts as one); `idleTimeoutMs` after it the seat is freed, unless the session is walking. */
   lastInputAt: number;
-  /** The last accepted move had a direction: the player is holding a key and the avatar is walking. A client sends a move only when the direction changes, so a held key sends nothing more; the idle clock runs only once the player stops. */
+  /** The last accepted move had a direction: the player is holding a key and the avatar is walking. A client sends a move only when the direction changes, so a held key sends nothing more; the idle clock runs only once the player stops. The browser client also sends a stop when its tab is hidden or loses focus, so an abandoned tab does not stay walking. */
   walking: boolean;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
@@ -83,8 +83,9 @@ export interface DroppedMessages {
  * stamped with the session's slot; the sim's own handlers validate again.
  * Outbound, each session gets a full state in its welcome and then a delta
  * every `TICKS_PER_SEND` ticks, diffed from the last state sent to it. A
- * session that sends no accepted input for `idleTimeoutMs` is closed with
- * `IDLE_KICK` so its seat goes to someone who plays (#22).
+ * session that stands still and sends no accepted input for `idleTimeoutMs`
+ * is closed with `IDLE_KICK` so its seat goes to someone who plays (#22); a
+ * session whose last move has a direction is walking, never idle.
  */
 export class WorldRoom extends Room {
   override maxClients = MAX_SEATS;
@@ -123,7 +124,7 @@ export class WorldRoom extends Room {
     this.roomId = WORLD_ROOM_ID;
     if (options.clock) this.time = options.clock;
     if (options.idleTimeoutMs !== undefined) {
-      // The boot refuses a bad IDLE_TIMEOUT_SECONDS the same way: a typo must never silently become ten minutes, or zero.
+      // A typo must never silently become ten minutes, or zero. The boot is stricter still: IDLE_TIMEOUT_SECONDS is at least 1.
       if (!Number.isFinite(options.idleTimeoutMs) || options.idleTimeoutMs <= 0) throw new RangeError(`idleTimeoutMs must be a positive number of milliseconds, got ${String(options.idleTimeoutMs)}`);
       this.idleTimeoutMs = options.idleTimeoutMs;
     }
@@ -271,7 +272,8 @@ export class WorldRoom extends Room {
   }
 
   /**
-   * Frees the seat of every session whose last accepted input is
+   * Frees the seat of every session that stands still (its last accepted move
+   * has no direction, or it never moved) and whose last accepted input is
    * `idleTimeoutMs` or more behind `now`, then closes it; the close reaches
    * the client as `IDLE_KICK`. The seat is freed here and not when the socket's
    * close completes: a peer that never answers the close handshake would hold
