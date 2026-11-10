@@ -37,6 +37,8 @@ results.push(check('the wire names, refusal reasons and send rate are pinned', p
 results.push(check('findLevel resolves the level name a welcome carries', passing(/resolves the name a snapshot or a welcome message carries/).length === 1));
 results.push(check('replica.step throws and a live sim is refused by applyWorldState', passing(/refuses to step/).length === 1 && passing(/foreign object is refused loudly/).length === 1));
 results.push(check('malformed network data is ignored, never thrown on', passing(/applyWorldState with data from the network/).length >= 5));
+results.push(check('one malformed entry rejects the whole message, in the replica and in the pure apply alike', passing(/refuses a whole delta when one entry is malformed/).length === 2 && passing(/refuses a full state with a malformed entry whole/).length === 1));
+results.push(check('what depends on the world (ids beyond capacity, unknown components and fields, a __proto__ key) is skipped, not refused', passing(/skips what depends on the world/).length === 1));
 results.push(check('a DefRef at no def does not crash the view', passing(/keeps the view alive when an entity points at a def that does not exist/).length === 1));
 results.push(check('diff -> apply rebuilds the next state exactly, through JSON', passing(/rebuilds the later state exactly/).length === 1));
 results.push(check('ensureEntityExists agrees with a model over 2000 random steps', passing(/agrees with a plain model/).length === 1));

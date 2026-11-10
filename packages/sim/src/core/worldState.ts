@@ -1,8 +1,10 @@
+import { z } from 'zod';
+import { MAX_CAPACITY } from '../content/tuning';
 import { getComponentDef } from './components';
 import { asEntityWorld } from './entityWorld';
 import { mergeComponentFields } from './restore';
 import type { SimHandle } from './sim';
-import { snapshotEntities, type EntitySnapshot } from './snapshot';
+import { snapshotEntities } from './snapshot';
 
 /**
  * World state is what a server sends to its players: every entity with every
@@ -13,34 +15,71 @@ import { snapshotEntities, type EntitySnapshot } from './snapshot';
  * component, so static things (terrain) travel once and five walking players
  * cost a few hundred bytes per update.
  */
-export interface WorldState {
-  readonly kind: 'full';
-  readonly tick: number;
-  /** Sorted by id, like a snapshot's entities. */
-  readonly entities: readonly EntitySnapshot[];
-}
+const tickSchema = z.int().nonnegative();
+
+/** Whether the id fits a world's capacity is checked where it is written (restore.ts): the capacity is not known here. */
+const entityIdSchema = z.int().positive();
+
+/**
+ * Field name to value. A null is dropped rather than refused: it is how JSON
+ * writes NaN and Infinity, so one non-finite value on the server must cost
+ * that field (the replica keeps what it had) and not every message from then
+ * on, resyncs included. Any other non-number refuses the message.
+ */
+const fieldsSchema = z
+  .record(z.string(), z.number().nullable())
+  .transform((fields) => Object.fromEntries(Object.entries(fields).filter((entry): entry is [string, number] => entry[1] !== null)));
+
+/** Component name to fields. Unknown names pass here and are skipped where they are written (restore.ts). */
+const componentsSchema = z.record(z.string(), fieldsSchema);
+
+const worldStateSchema = z
+  .object({
+    kind: z.literal('full'),
+    tick: tickSchema,
+    /** Sorted by id, like a snapshot's entities. */
+    entities: z.array(z.object({ id: entityIdSchema, components: componentsSchema }).readonly()).max(MAX_CAPACITY).readonly(),
+  })
+  .readonly();
+
+const entityDeltaSchema = z
+  .object({
+    id: entityIdSchema,
+    /** Every field of every component that changed or appeared. */
+    components: componentsSchema,
+    /** Components the entity lost. Omitted when empty. */
+    removedComponents: z.array(z.string()).readonly().optional(),
+  })
+  .readonly();
+
+const worldStateDeltaSchema = z
+  .object({
+    kind: z.literal('delta'),
+    /** Tick of the state this delta applies to. A replica at any other tick needs a full state instead. */
+    fromTick: tickSchema,
+    /** Tick of the state this delta produces. */
+    tick: tickSchema,
+    changed: z.array(entityDeltaSchema).max(MAX_CAPACITY).readonly(),
+    /** Ids of entities that no longer exist. */
+    removed: z.array(entityIdSchema).max(MAX_CAPACITY).readonly(),
+  })
+  .refine((delta) => delta.fromTick <= delta.tick)
+  .readonly();
+
+const worldStateUpdateSchema = z.discriminatedUnion('kind', [worldStateSchema, worldStateDeltaSchema]);
+
+/**
+ * The types are inferred from the schemas above, so what `readWorldStateUpdate`
+ * accepts and what the rest of the code may assume can never drift apart.
+ */
+export type WorldState = z.infer<typeof worldStateSchema>;
 
 /** What changed about one entity. A new entity carries all of its components. */
-export interface EntityDelta {
-  readonly id: number;
-  /** Every field of every component that changed or appeared. */
-  readonly components: Record<string, Record<string, number>>;
-  /** Components the entity lost. Omitted when empty. */
-  readonly removedComponents?: readonly string[];
-}
+export type EntityDelta = z.infer<typeof entityDeltaSchema>;
 
-export interface WorldStateDelta {
-  readonly kind: 'delta';
-  /** Tick of the state this delta applies to. A replica at any other tick needs a full state instead. */
-  readonly fromTick: number;
-  /** Tick of the state this delta produces. */
-  readonly tick: number;
-  readonly changed: readonly EntityDelta[];
-  /** Ids of entities that no longer exist. */
-  readonly removed: readonly number[];
-}
+export type WorldStateDelta = z.infer<typeof worldStateDeltaSchema>;
 
-export type WorldStateUpdate = WorldState | WorldStateDelta;
+export type WorldStateUpdate = z.infer<typeof worldStateUpdateSchema>;
 
 /** The current world state of a sim or a replica. */
 export function worldState(handle: SimHandle): WorldState {
@@ -79,8 +118,7 @@ export function diffWorldState(previous: WorldState, next: WorldState): WorldSta
 /**
  * The world state after `delta`, or undefined when either argument is not
  * what its type says or `delta` does not continue from `state.tick`. Pure:
- * neither argument is changed, and the result shares unchanged entity
- * objects with `state`, so never mutate a WorldState. Both arguments are
+ * neither argument is changed. Both arguments are
  * validated like `applyWorldState` validates its input, and the result is
  * what a replica would hold after the same delta. Views do not read world
  * states (they read a replica through the view queries); this is for
@@ -110,53 +148,20 @@ export function applyWorldStateDelta(state: WorldState, delta: WorldStateDelta):
 }
 
 /**
- * The update behind an arbitrary value, with the shape every reader relies
- * on: a kind, integer ticks, arrays of entries whose ids are positive
- * integers and whose components are plain objects. Entries that are not get
- * dropped; anything else wrong makes the whole value undefined. Component
- * names and field values are checked where they are written (restore.ts).
- * Used by `applyWorldState` (replica.ts) and `applyWorldStateDelta`.
+ * The update behind an arbitrary value, or undefined when it does not match
+ * the schemas above: a kind, safe-integer ticks with `fromTick <= tick`,
+ * positive safe-integer ids, component fields that are finite numbers (or
+ * null, which is dropped: see `fieldsSchema`), at most MAX_CAPACITY entries,
+ * changes and removed ids. One bad entry rejects the whole value,
+ * because applying part of a state would silently desync a replica; the
+ * client asks for a full state instead. The result is a frozen copy. What
+ * depends on the world (ids within its capacity, known component and field
+ * names) is checked where it is written (restore.ts). Used by
+ * `applyWorldState` (replica.ts) and `applyWorldStateDelta`.
  */
 export function readWorldStateUpdate(value: unknown): WorldStateUpdate | undefined {
-  if (!isRecord(value) || !isTick(value['tick'])) return undefined;
-  if (value['kind'] === 'full') {
-    if (!Array.isArray(value['entities'])) return undefined;
-    const entities: EntitySnapshot[] = [];
-    for (const entry of value['entities']) {
-      if (isRecord(entry) && isId(entry['id']) && isRecord(entry['components'])) {
-        entities.push({ id: entry['id'], components: entry['components'] as Record<string, Record<string, number>> });
-      }
-    }
-    return { kind: 'full', tick: value['tick'], entities };
-  }
-  if (value['kind'] === 'delta') {
-    if (!isTick(value['fromTick']) || value['fromTick'] > value['tick']) return undefined;
-    if (!Array.isArray(value['changed']) || !Array.isArray(value['removed'])) return undefined;
-    const changed: EntityDelta[] = [];
-    for (const entry of value['changed']) {
-      if (!isRecord(entry) || !isId(entry['id']) || !isRecord(entry['components'])) continue;
-      const components = entry['components'] as Record<string, Record<string, number>>;
-      const removedComponents = Array.isArray(entry['removedComponents'])
-        ? entry['removedComponents'].filter((name): name is string => typeof name === 'string')
-        : undefined;
-      changed.push(removedComponents ? { id: entry['id'], components, removedComponents } : { id: entry['id'], components });
-    }
-    const removed = value['removed'].filter(isId);
-    return { kind: 'delta', fromTick: value['fromTick'], tick: value['tick'], changed, removed };
-  }
-  return undefined;
-}
-
-function isTick(value: unknown): value is number {
-  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
-}
-
-function isId(value: unknown): value is number {
-  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 1;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  const result = worldStateUpdateSchema.safeParse(value);
+  return result.success ? result.data : undefined;
 }
 
 function sameFields(before: Record<string, number> | undefined, after: Record<string, number>): boolean {
