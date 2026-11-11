@@ -88,16 +88,51 @@ describe('guardRequests', () => {
     expect(seenRequests).toHaveLength(2);
   });
 
-  it('answers 400 to an upgrade whose target is not a path or whose Host is no host, and hands a well-formed one to the upgrade handler', async () => {
+  it('answers 400 to an upgrade whose target is not a path or whose Host is no host, 403 to one from a foreign origin, and hands the rest to the upgrade handler', async () => {
     const { port, seenUpgrades } = await guardedServer();
-    const upgrade = (target: string, host = `localhost:${port}`) => [`GET ${target} HTTP/1.1`, `Host: ${host}`, 'Connection: Upgrade', 'Upgrade: websocket'];
+    const upgrade = (target: string, extra: string[] = [], host = `localhost:${port}`) => [`GET ${target} HTTP/1.1`, `Host: ${host}`, 'Connection: Upgrade', 'Upgrade: websocket', ...extra];
     for (const target of ['*:99999999', '*%', '*[', '*:abc']) {
       expect(await statusLine(port, upgrade(target)), target).toBe('HTTP/1.1 400 Bad Request');
     }
-    expect(await statusLine(port, upgrade('/world', 'a:b'))).toBe('HTTP/1.1 400 Bad Request');
+    expect(await statusLine(port, upgrade('/world', [], 'a:b'))).toBe('HTTP/1.1 400 Bad Request');
+    expect(await statusLine(port, upgrade('/world', ['Origin: https://evil.example.com']))).toBe('HTTP/1.1 403 Forbidden');
+    expect(await statusLine(port, upgrade('/world', ['Origin: https://play.example.com', 'Origin: https://evil.example.com']))).toBe('HTTP/1.1 403 Forbidden');
     expect(seenUpgrades).toEqual([]);
     expect(await statusLine(port, upgrade('/world?sessionId=1'))).toBe('HTTP/1.1 101 Switching Protocols');
-    expect(seenUpgrades).toEqual(['/world?sessionId=1']);
+    expect(await statusLine(port, upgrade('/world?sessionId=2', ['Origin: https://play.example.com']))).toBe('HTTP/1.1 101 Switching Protocols');
+    expect(seenUpgrades).toEqual(['/world?sessionId=1', '/world?sessionId=2']);
+  });
+
+  it('destroys the connection of a refused upgrade even when the client stays on it', async () => {
+    const { port } = await guardedServer();
+    for (const lines of [
+      ['GET * HTTP/1.1', 'Host: localhost', 'Connection: Upgrade', 'Upgrade: websocket'],
+      ['GET /world HTTP/1.1', 'Host: localhost', 'Origin: https://evil.example.com', 'Connection: Upgrade', 'Upgrade: websocket'],
+    ]) {
+      expect(await millisecondsUntilServerCloses(port, lines), lines[0]).toBeLessThan(GUARD.idleConnectionTimeoutMs);
+    }
+  });
+
+  it('closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing', async () => {
+    const { port, seenUpgrades } = await guardedServer({ holdUpgrades: true });
+    const closedAfterMs = await millisecondsUntilServerCloses(port, ['GET /world HTTP/1.1', 'Host: localhost', 'Connection: Upgrade', 'Upgrade: websocket']);
+    expect(seenUpgrades).toEqual(['/world']);
+    expect(closedAfterMs).toBeGreaterThanOrEqual(GUARD.idleConnectionTimeoutMs - 50);
+    expect(closedAfterMs).toBeLessThan(GUARD.idleConnectionTimeoutMs * 5);
+  });
+
+  it('closes a connection that sends a request before the answer to an earlier one is out, even when the earlier one never reached the guard', async () => {
+    const { port, seenRequests } = await guardedServer();
+    // No Host on the first: Node answers 400 itself and the guard never sees it. The second is queued behind that answer all the same.
+    const received = await new Promise<string>((resolve) => {
+      const socket = net.connect(port, '127.0.0.1', () => socket.write('GET /first HTTP/1.1\r\n\r\nGET /second HTTP/1.1\r\nHost: localhost\r\n\r\n'));
+      let bytes = '';
+      socket.on('data', (chunk: Buffer) => (bytes += chunk.toString('latin1')));
+      socket.on('error', () => undefined);
+      socket.on('close', () => resolve(bytes));
+    });
+    expect(received).not.toContain('200 OK');
+    expect(seenRequests).toEqual([]);
   });
 
   it('closes a connection that sends a second request before the first is answered, and the routes never see the second', async () => {
@@ -136,7 +171,7 @@ describe('guardRequests', () => {
 
 // ---- Helpers ----
 
-const GUARD = { originPolicy: readOriginPolicy({ allowedOrigins: 'https://play.example.com', allowLoopback: false }), maxRequestBodyBytes: 64 };
+const GUARD = { originPolicy: readOriginPolicy({ allowedOrigins: 'https://play.example.com', allowLoopback: false }), maxRequestBodyBytes: 64, idleConnectionTimeoutMs: 400 };
 const servers: HttpServer[] = [];
 
 interface SeenRequest {
@@ -156,8 +191,8 @@ interface GuardedServer {
   readonly answerHeldRequests: () => void;
 }
 
-/** A listening server whose routes record what reaches them and answer 200 (at once, or when told to with `holdAnswers`) and whose upgrade handler records and answers 101, with the guard in front. */
-async function guardedServer({ holdAnswers = false } = {}): Promise<GuardedServer> {
+/** A listening server whose routes record what reaches them and answer 200 (at once, or when told to with `holdAnswers`) and whose upgrade handler records and answers 101 (or nothing at all with `holdUpgrades`), with the guard in front. */
+async function guardedServer({ holdAnswers = false, holdUpgrades = false } = {}): Promise<GuardedServer> {
   const seenRequests: SeenRequest[] = [];
   const seenUpgrades: string[] = [];
   const heldResponses: ServerResponse[] = [];
@@ -168,13 +203,31 @@ async function guardedServer({ holdAnswers = false } = {}): Promise<GuardedServe
   });
   httpServer.on('upgrade', (request, socket) => {
     seenUpgrades.push(request.url ?? '');
-    socket.end('HTTP/1.1 101 Switching Protocols\r\nConnection: close\r\n\r\n');
+    if (!holdUpgrades) socket.end('HTTP/1.1 101 Switching Protocols\r\nConnection: close\r\n\r\n');
   });
   guardRequests(httpServer, GUARD);
   servers.push(httpServer);
   await new Promise<void>((resolve) => httpServer.listen(0, '127.0.0.1', resolve));
   const { port } = httpServer.address() as AddressInfo;
   return { url: `http://127.0.0.1:${port}/`, port, seenRequests, seenUpgrades, answerHeldRequests: () => heldResponses.splice(0).forEach((response) => response.end('ok')) };
+}
+
+/** Writes the request lines to a bare socket and keeps the client's side open: how long until the server closes the connection, or infinity if it has not after three seconds. */
+function millisecondsUntilServerCloses(port: number, lines: readonly string[]): Promise<number> {
+  return new Promise((resolve) => {
+    const startedAt = performance.now();
+    const socket = net.connect(port, '127.0.0.1', () => socket.write(`${lines.join('\r\n')}\r\n\r\n`));
+    const gaveUp = setTimeout(() => {
+      socket.destroy();
+      resolve(Number.POSITIVE_INFINITY);
+    }, 3000);
+    socket.on('data', () => undefined);
+    socket.on('error', () => undefined);
+    socket.on('close', () => {
+      clearTimeout(gaveUp);
+      resolve(performance.now() - startedAt);
+    });
+  });
 }
 
 /** Writes the request lines to a bare socket and returns the status line of the answer (or says there was none). */

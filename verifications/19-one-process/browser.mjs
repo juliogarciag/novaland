@@ -201,3 +201,21 @@ export function rawStatusLine(port, lines) {
       }),
   );
 }
+
+/** Opens a connection to `port`, writes the bytes as they are, optionally writes more once the first answer arrives, and hangs up after `hangUpAfterMs`. */
+export function writeAndHangUp(port, { bytes, thenWrite, hangUpAfterMs }) {
+  return import('node:net').then(
+    ({ default: net }) =>
+      new Promise((resolve) => {
+        const socket = net.connect(port, '127.0.0.1', () => {
+          socket.write(bytes);
+          setTimeout(() => socket.destroy(), hangUpAfterMs);
+        });
+        socket.once('data', () => {
+          if (thenWrite !== undefined) socket.write(thenWrite);
+        });
+        socket.on('error', () => undefined);
+        socket.on('close', () => resolve());
+      }),
+  );
+}

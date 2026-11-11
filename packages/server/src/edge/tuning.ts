@@ -4,9 +4,10 @@ export const MAX_REQUEST_BODY_BYTES = 4096;
 /**
  * How long a connection may go without a byte moving in either direction
  * before it is closed. A client that asks for a file and never reads it would
- * otherwise hold the connection and the open file for good. A slow download
- * keeps moving bytes and is not cut. WebSocket connections are not affected:
- * the transport takes the timeout off a socket when it upgrades it, and pings
- * it on its own.
+ * otherwise hold the connection and the open file for good; measured, such a
+ * download is cut within two of these, an idle connection within one. A slow
+ * download keeps moving bytes and is not cut. A seated player is not affected:
+ * the transport clears the timeout on a connection it accepts and pings it on
+ * its own. An upgrade still in its handshake is.
  */
 export const IDLE_CONNECTION_TIMEOUT_MS = 60_000;

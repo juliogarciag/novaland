@@ -127,6 +127,11 @@
       "answer": "HTTP/1.1 400 Bad Request"
     }
   ],
+  "descriptors": {
+    "largeAsset": "/assets/rapier-C1NO8tr2.js",
+    "descriptorsBefore": 24,
+    "descriptorsAfter": 24
+  },
   "pages": {
     "aSeated": {
       "screen": null,
@@ -144,7 +149,7 @@
       {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
+        "x": -12.5,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -152,8 +157,8 @@
       {
         "slot": 2,
         "eid": 47,
-        "x": -12.5,
-        "y": 0.5,
+        "x": -14.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -163,7 +168,7 @@
       "start": {
         "slot": 1,
         "eid": 46,
-        "x": -13.5,
+        "x": -12.5,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
@@ -171,48 +176,48 @@
       "end": {
         "slot": 1,
         "eid": 46,
-        "x": -8.917,
+        "x": -7.25,
         "y": -1.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.583
+      "distance": 5.25
     },
     "bWalk": {
       "slot": 2,
       "start": {
         "slot": 2,
         "eid": 47,
-        "x": -12.5,
-        "y": 0.5,
+        "x": -14.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
       "end": {
         "slot": 2,
         "eid": 47,
-        "x": -12.5,
-        "y": 5.417,
+        "x": -14.5,
+        "y": 4.25,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 4.917
+      "distance": 4.75
     },
     "quietFrames": {
-      "count": 19,
+      "count": 20,
       "meanBytes": 65
     },
     "walkingFrames": {
-      "count": 20,
-      "meanBytes": 119.4
+      "count": 21,
+      "meanBytes": 119.0952380952381
     },
     "aQuietFrames": {
-      "count": 19,
+      "count": 20,
       "meanBytes": 65
     },
     "aFramesDuringBWalk": {
       "count": 21,
-      "meanBytes": 121.9047619047619
+      "meanBytes": 117.66666666666667
     },
     "responses": [
       {
@@ -246,12 +251,12 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-plum.png",
+        "url": "/sprites/player-sun.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-sun.png",
+        "url": "/sprites/player-plum.png",
         "status": 200,
         "contentType": "image/png"
       },
@@ -261,92 +266,92 @@
         "contentType": "image/png"
       },
       {
-        "url": "/sprites/player-slate.png",
-        "status": 200,
-        "contentType": "image/png"
-      },
-      {
         "url": "/sprites/player-teal.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/a0265250-7ff5-4415-af6f-b90f67ea6ff5",
+        "url": "/sprites/player-slate.png",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/f0a10db6-8ab6-4f67-8dba-7a0cfe882e1d",
+        "url": "blob:/e6c3f4fc-ecdc-49d1-bfb1-bedf63c237dc",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/44d38083-844b-4750-b698-c23e727ffece",
+        "url": "blob:/f1dd77bd-5ba8-4bc1-879d-74e422fcf31f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/e5ff6e12-d3e4-4880-af73-93c32dcc6f8e",
+        "url": "blob:/d62d5391-27fd-439f-9abb-973a39d146f0",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/916ff579-114e-4d38-abbf-e22402302c67",
+        "url": "blob:/2c975375-1e23-426c-9453-221a3fa2b03f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/debbeafa-48f9-4602-9a6e-8d3ded65745d",
+        "url": "blob:/81fad090-acdd-46ca-b33a-2da813abef7d",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/4541abf9-ade9-48f6-8f52-96f3d38486a1",
+        "url": "blob:/c8606751-b52d-4ed2-9cc4-4b3d140ab64b",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/f024d39b-a10a-440e-a2f1-1dc7e775bca1",
+        "url": "blob:/5fd311e3-3a45-4a5b-8cbe-016e2d666870",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/141c9a8a-3baf-4f1e-a5b3-ef1e4dd55f0b",
+        "url": "blob:/cfcc9da8-aaa8-4d4a-a8ba-3bc96be6801e",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/8016f496-27c0-4737-9942-969d05164bf8",
+        "url": "blob:/4c96bc67-ed37-403b-9a96-95fa4e47c4ac",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/a9e794f2-f891-4d13-a5c6-88a01cfb57ee",
+        "url": "blob:/fa7ea19b-f397-44ee-801b-67373ec4dd3e",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/d0ceb9a6-4390-4fc1-925d-169dc1852893",
+        "url": "blob:/01ff37cb-9e25-4cb7-b0aa-f583b6c02384",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/38313af1-560e-4bba-b735-ee5c1f0a1c88",
+        "url": "blob:/277dbb11-9c69-48bf-925d-11af95416e4f",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/3f35b5a2-9400-4d44-b166-2c86425b9bdf",
+        "url": "blob:/3c5672b2-7351-4b33-aa88-7706bc4681b2",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/8bb76546-6cbb-486e-a66d-0523f4f8a5fc",
+        "url": "blob:/fbd03182-7f43-49f7-8d44-21a26d033b2a",
         "status": 200,
         "contentType": "image/png"
       },
       {
-        "url": "blob:/8c6630d7-871c-4870-b663-99928fdddb48",
+        "url": "blob:/ff9642b6-4c30-4780-aebd-e6a702cdab0b",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/d72c0109-147d-4f40-a030-278614edbbd9",
         "status": 200,
         "contentType": "image/png"
       }
@@ -355,5 +360,5 @@
     "pageErrors": []
   },
   "dockerHealth": "healthy",
-  "stopSeconds": 0.159
+  "stopSeconds": 0.172
 }

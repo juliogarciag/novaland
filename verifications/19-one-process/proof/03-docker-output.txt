@@ -1,9 +1,9 @@
 $ docker build -t novaland:19-verify . (exit 0)
 
-#20 [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+#20 [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
 #20 CACHED
 
-#21 [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
+#21 [runtime 2/7] WORKDIR /app
 #21 CACHED
 
 #22 [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
@@ -13,21 +13,21 @@ $ docker build -t novaland:19-verify . (exit 0)
 #23 DONE 0.0s
 
 #24 [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
-#24 DONE 0.0s
+#24 DONE 0.1s
 
 #25 exporting to image
 #25 exporting layers
 #25 exporting layers 0.3s done
-#25 exporting manifest sha256:d385f5a8613d2f6b05d2cce96f35f9ac60a40e35d6410302b502dfadb0ba8dfc
-#25 exporting manifest sha256:d385f5a8613d2f6b05d2cce96f35f9ac60a40e35d6410302b502dfadb0ba8dfc done
-#25 exporting config sha256:cc86619cf957d519df33addf6151d1eeb7d7c51f904fdf5ac2f8b70ff2c70437 done
-#25 exporting attestation manifest sha256:72b95273e0906814c3e8f973f2f9880f185851b3d5783d1e1ddf19d3e36ca4b9 done
-#25 exporting manifest list sha256:ae15587adedc5a9b449cf7119429a7ff8d18e5ba34c9b42bad8a67b300ca3a80 done
+#25 exporting manifest sha256:8b4e47529ff91a74f9e10c3245221d9e9dfca854bc26af03f6ce75b243083b6a
+#25 exporting manifest sha256:8b4e47529ff91a74f9e10c3245221d9e9dfca854bc26af03f6ce75b243083b6a done
+#25 exporting config sha256:89adcdafc170cf0b35fa29d3a3a14bc9054252b119156d1c351affa2fa818828 done
+#25 exporting attestation manifest sha256:daed2402a0fb610c67a0303b7419df9b1812963ca862cf4d2a7a32413b722e6e done
+#25 exporting manifest list sha256:cb3a1ab962d6a14e9ad3ea207883a72cb7f6cc597098361dbe46464cb107a9e0 done
 #25 naming to docker.io/library/novaland:19-verify done
 #25 unpacking to docker.io/library/novaland:19-verify 0.1s done
 #25 DONE 0.4s
 
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/yr4ezp2mjal6jxxird4365gyt
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/oqip1xskvf4vr0312h2upe90u
 
 
 $ docker run --rm -e PORT=5419 novaland:19-verify (exit 1)
@@ -35,7 +35,7 @@ ALLOWED_ORIGINS must name the origin players open in production, like https://pl
 
 
 $ docker run -d --rm --name novaland-19-verify -e PORT=5419 -e ALLOWED_ORIGINS=http://localhost:5419 -p 5419:5419 novaland:19-verify (exit 0)
-f6173f7c1b94386909fb59e95787e9ac797024ca63dc323df3f2db050736f8d0
+2714aa5e1589f71d4174ad89cd126192f8dcba7de450df7e6ff4df843b38069d
 
 
 $ docker exec novaland-19-verify sh -c ... (exit 0)
@@ -48,4 +48,4 @@ files: packages: client server  packages/client/dist: assets index.html sprites 
 
 
 container logs before stop:
-{"event":"world-room-listening","port":5419,"roomId":"world","seed":1138153741,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":["http://localhost:5419"],"loopbackOrigins":false}
+{"event":"world-room-listening","port":5419,"roomId":"world","seed":2109938775,"seats":5,"tickRate":60,"sendRate":20,"clientDirectory":"/app/packages/client/dist","allowedOrigins":["http://localhost:5419"],"loopbackOrigins":false}

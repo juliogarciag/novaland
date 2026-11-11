@@ -6,6 +6,8 @@ export interface RequestGuardOptions {
   readonly originPolicy: OriginPolicy;
   /** The largest request body let through, in bytes. */
   readonly maxRequestBodyBytes: number;
+  /** How long an upgrade handed on may sit with no byte moving before its connection is closed. */
+  readonly idleConnectionTimeoutMs: number;
 }
 
 /**
@@ -19,25 +21,31 @@ export interface RequestGuardOptions {
  *   request from anyone could stop the world. So the target must be a path,
  *   `Host` a plain `host[:port]`, and `X-Forwarded-Proto`, when a proxy sends
  *   it, one of `http` and `https`.
- * - `403` for a state-changing request (anything but `GET` and `HEAD`) from a
- *   browser origin the policy does not allow. Matchmaking reserves a seat, so
- *   another site's page must not be able to call it. Files and the health
- *   check are plain reads and stay open to everyone. Upgrades are checked
- *   against the policy in Colyseus's `beforeUpgrade` hook, not here.
+ * - `403` for an upgrade, or a state-changing request (anything but `GET` and
+ *   `HEAD`), from a browser origin the policy does not allow. The upgrade is
+ *   the way into the room and matchmaking reserves a seat, so another site's
+ *   page must not be able to do either. Files and the health check are plain
+ *   reads and stay open to everyone. Colyseus has a `beforeUpgrade` hook for
+ *   the upgrade check, but it parses the target before the hook runs, which
+ *   is one of the crashes above, and it never closes a socket it refuses.
  * - `413` for a body over `maxRequestBodyBytes`. Colyseus reads the whole body
  *   of every matchmaking POST before it looks at the method, with no limit, so
  *   the body is read here first, capped, and handed on as `request.body`,
  *   which its router honours.
  * - No answer at all, only a closed connection, for a request that arrives
- *   while the answer to the one before it on the same connection is not out
- *   yet (pipelining). Node starts such requests at once and queues their
- *   answers; if the client then hangs up, the queued answers never learn it
- *   and every file opened for them stays open for good. Browsers and proxies
- *   send one request at a time on a connection, so only a client built to
- *   exhaust the server is cut off.
+ *   while an answer to an earlier one on the same connection is not out yet
+ *   (pipelining). Node starts such requests at once and queues their answers;
+ *   if the client then hangs up, the queued answers never learn it and every
+ *   file opened for them stays open for good. Browsers and proxies send one
+ *   request at a time on a connection, so only a client built to exhaust the
+ *   server is cut off.
  *
- * A refused request is answered and its connection closed. Nothing behind the
- * guard sees it.
+ * A refused request or upgrade is answered and its connection destroyed, not
+ * only ended: a client that stays on, or sends more, holds nothing open.
+ * Nothing behind the guard sees it. An upgrade that is handed on gets the idle
+ * timeout back (Node takes it off a socket it upgrades), so one that stalls
+ * in the handshake is closed too; the transport clears it for a connection it
+ * accepts and pings that one itself.
  *
  * This is the one place the server takes listeners off the HTTP server.
  * Colyseus has no hook in front of its own routes (it answers them before the
@@ -48,32 +56,34 @@ export interface RequestGuardOptions {
  * one would be wrapped without expecting a pre-read body, or bypass the guard.
  * New HTTP routes go in `mountEdgeRoutes`, never on `httpServer.on('request')`.
  */
-export function guardRequests(httpServer: HttpServer, { originPolicy, maxRequestBodyBytes }: RequestGuardOptions): void {
+export function guardRequests(httpServer: HttpServer, { originPolicy, maxRequestBodyBytes, idleConnectionTimeoutMs }: RequestGuardOptions): void {
   // Both are looked up before either is taken off, so a refusal to install leaves the server as it was.
   const routes = onlyListener(httpServer, 'request') as (request: IncomingMessage, response: ServerResponse) => void;
   const upgradeHandler = onlyListener(httpServer, 'upgrade') as (request: IncomingMessage, socket: Duplex, head: Buffer) => void;
   httpServer.removeListener('request', routes);
   httpServer.removeListener('upgrade', upgradeHandler);
-  /** Connections with an answer still on its way out. */
-  const answering = new WeakSet<Duplex>();
 
   httpServer.on('upgrade', (request: IncomingMessage, socket: Duplex, head: Buffer) => {
     if (!isWellFormed(request)) {
-      socket.on('error', () => undefined);
-      socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');
+      refuseUpgrade(socket, '400 Bad Request');
       return;
+    }
+    if (!isOriginAllowed(request.headers.origin, originPolicy)) {
+      refuseUpgrade(socket, '403 Forbidden');
+      return;
+    }
+    if ('setTimeout' in socket && typeof socket.setTimeout === 'function') {
+      socket.setTimeout(idleConnectionTimeoutMs, () => socket.destroy());
     }
     upgradeHandler.call(httpServer, request, socket, head);
   });
 
   httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    if (answering.has(request.socket)) {
+    // Node gives an answer its connection only once every answer before it is out. One without a connection is queued behind another: the client did not wait.
+    if (response.socket === null) {
       request.socket.destroy();
       return;
     }
-    answering.add(request.socket);
-    response.once('close', () => answering.delete(request.socket));
-
     const handOver = () => routes.call(httpServer, request, response);
     const refusal = refusalFor(request, { originPolicy, maxRequestBodyBytes });
     if (refusal !== undefined) {
@@ -127,7 +137,7 @@ function onlyListener(httpServer: HttpServer, event: 'request' | 'upgrade'): (..
 }
 
 /** Why the request is refused before any of its body is read, or undefined when it may go on. */
-function refusalFor(request: IncomingMessage, { originPolicy, maxRequestBodyBytes }: RequestGuardOptions): Refusal | undefined {
+function refusalFor(request: IncomingMessage, { originPolicy, maxRequestBodyBytes }: Pick<RequestGuardOptions, 'originPolicy' | 'maxRequestBodyBytes'>): Refusal | undefined {
   if (!isWellFormed(request)) return MALFORMED_REQUEST;
   const changesState = request.method !== 'GET' && request.method !== 'HEAD';
   if (changesState && !isOriginAllowed(request.headers.origin, originPolicy)) return ORIGIN_NOT_ALLOWED;
@@ -162,6 +172,17 @@ function mayCarryBody(request: IncomingMessage): boolean {
   const method = request.method ?? 'GET';
   if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') return false;
   return Number(request.headers['content-length']) > 0 || request.headers['transfer-encoding'] !== undefined;
+}
+
+/** How long a refused upgrade's answer gets to leave before its connection is destroyed anyway. */
+const UPGRADE_REFUSAL_FLUSH_MS = 1000;
+
+/** Answers an upgrade with a status and no body, then destroys the connection: once the answer is out, or after a moment if it never gets out. */
+function refuseUpgrade(socket: Duplex, statusLine: string): void {
+  socket.on('error', () => undefined);
+  const destroyAnyway = setTimeout(() => socket.destroy(), UPGRADE_REFUSAL_FLUSH_MS);
+  socket.once('close', () => clearTimeout(destroyAnyway));
+  socket.end(`HTTP/1.1 ${statusLine}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`, () => socket.destroy());
 }
 
 function refuse(request: IncomingMessage, response: ServerResponse, { status, error }: Refusal): void {

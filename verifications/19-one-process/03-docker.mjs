@@ -12,7 +12,7 @@
 import { chromium } from 'playwright';
 import path from 'node:path';
 import { PROOF, check, run, summarize, writeProof } from './lib.mjs';
-import { framesBetween, mean, openPlayer, othersSeenBy, rawStatusLine, requestsColyseusCannotSurvive, startObserver, upgradeStatus, waitFor, waitSeated, walk } from './browser.mjs';
+import { framesBetween, mean, openPlayer, othersSeenBy, rawStatusLine, requestsColyseusCannotSurvive, startObserver, upgradeStatus, waitFor, waitSeated, walk, writeAndHangUp } from './browser.mjs';
 
 const PORT = 5419;
 const IMAGE = 'novaland:19-verify';
@@ -78,6 +78,21 @@ try {
   const stillRunning = await run('docker', ['inspect', '--format', '{{.State.Running}}', CONTAINER]);
   results.push(check('the container answers 400 to every request that ends a bare Colyseus process, and is still running after all of them', hostile.every((request) => request.answer === 'HTTP/1.1 400 Bad Request') && aliveAfterHostile === 200 && stillRunning.output.trim() === 'true', JSON.stringify({ hostile, aliveAfterHostile, running: stillRunning.output.trim() })));
   report.hostile = hostile;
+
+  // The three ways a client left files or sockets open for good, replayed against the container: its open descriptors come back to where they were.
+  const openDescriptors = async () => Number((await run('docker', ['exec', CONTAINER, 'sh', '-c', 'ls /proc/1/fd | wc -l'])).stdout.trim());
+  const assetListing = await run('docker', ['exec', CONTAINER, 'ls', 'packages/client/dist/assets']);
+  const largeAsset = `/assets/${assetListing.stdout.split('\n').find((name) => name.startsWith('rapier-'))}`;
+  const descriptorsBefore = await openDescriptors();
+  const getLargeAsset = `GET ${largeAsset} HTTP/1.1\r\nHost: localhost:${PORT}\r\nAccept-Encoding: gzip\r\n\r\n`;
+  const refusedUpgrade = `GET /world HTTP/1.1\r\nHost: localhost:${PORT}\r\nOrigin: https://evil.example.com\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n`;
+  for (let round = 0; round < 5; round += 1) await writeAndHangUp(PORT, { bytes: getLargeAsset.repeat(500), hangUpAfterMs: 300 });
+  await Promise.all(Array.from({ length: 200 }, () => writeAndHangUp(PORT, { bytes: `GET / HTTP/1.1\r\n\r\n${getLargeAsset}`, hangUpAfterMs: 300 })));
+  await Promise.all(Array.from({ length: 200 }, () => writeAndHangUp(PORT, { bytes: refusedUpgrade, thenWrite: 'x', hangUpAfterMs: 300 })));
+  const descriptorsAfter = await waitFor(openDescriptors, (count) => count <= descriptorsBefore + 2, 'the container to close what the attacks opened', 15000).catch(openDescriptors);
+  const aliveAfterBursts = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  results.push(check('the container holds no more open descriptors after 2500 pipelined requests for a large file that hang up, 200 bursts behind a request Node answers itself, and 200 refused upgrades that send more and leave', largeAsset.startsWith('/assets/rapier-') && descriptorsAfter <= descriptorsBefore + 2 && aliveAfterBursts === 200, JSON.stringify({ largeAsset, descriptorsBefore, descriptorsAfter, aliveAfterBursts })));
+  report.descriptors = { largeAsset, descriptorsBefore, descriptorsAfter };
 
   // Two browser contexts, a Node observer as the authoritative witness.
   observer = startObserver(`ws://127.0.0.1:${PORT}`);

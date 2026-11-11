@@ -122,6 +122,26 @@ describe('one process: the client files, /healthz and the request guard in front
     expect(await sequentialStatuses(server.port, ['/assets/index-abc123.js', '/healthz', '/'])).toEqual([200, 200, 200]);
   });
 
+  it('leaves no file open when the first request of a burst is one Node answers itself, which the guard never sees', async () => {
+    const before = await descriptorCountOnceSettled(openDescriptorCount());
+    // No Host on the first request: Node answers 400 on its own, and the second request's answer waits behind it.
+    const burst = 'GET / HTTP/1.1\r\n\r\nGET /assets/big-abc123.js HTTP/1.1\r\nHost: localhost\r\n\r\n';
+    await Promise.all(Array.from({ length: 100 }, () => writeAndHangUp(server.port, { bytes: burst, hangUpAfterMs: 300 })));
+    expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
+  });
+
+  it('closes the connection of a refused upgrade itself, whether the client hangs on or sends more and leaves', async () => {
+    const before = await descriptorCountOnceSettled(openDescriptorCount());
+    const upgrade = (target: string, origin: string) => `GET ${target} HTTP/1.1\r\nHost: localhost\r\nOrigin: ${origin}\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n`;
+    for (const refused of [upgrade('/world', 'https://evil.example.com'), upgrade('*', 'https://tunnel.example.com')]) {
+      // A client that reads the refusal and then just waits: the server ends the connection, not the client.
+      expect(await closedByServerWithin(server.port, { bytes: refused, withinMs: 2000 })).toBe(true);
+      // A client that reads the refusal, sends one more byte and leaves.
+      await Promise.all(Array.from({ length: 50 }, () => writeAndHangUp(server.port, { bytes: refused, thenWrite: 'x', hangUpAfterMs: 200 })));
+    }
+    expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
+  });
+
   it('answers /healthz with the room in it', async () => {
     const response = await fetch(`${baseUrl}/healthz`);
     expect(response.status).toBe(200);
@@ -271,6 +291,36 @@ describe('one process in production: only the listed origins get in', () => {
   });
 });
 
+describe('one process with a short idle timeout', () => {
+  beforeAll(async () => {
+    server = await startServer({ port: 0, seed: 10, originPolicy: readOriginPolicy({ allowedOrigins: undefined, allowLoopback: true }), clientDirectory: undefined, idleConnectionTimeoutMs: 300 });
+    baseUrl = `http://127.0.0.1:${server.port}`;
+  });
+
+  afterAll(async () => {
+    await server.stop();
+  });
+
+  it('never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room', async () => {
+    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID);
+    let left = false;
+    room.onLeave(() => (left = true));
+    try {
+      await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
+      // Five times the timeout, sending nothing.
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      expect(left).toBe(false);
+      expect(server.room.seatsTaken).toBe(1);
+    } finally {
+      await room.leave();
+    }
+  });
+
+  it('closes a plain connection that says nothing', async () => {
+    expect(await closedByServerWithin(server.port, { bytes: '', withinMs: 2000 })).toBe(true);
+  });
+});
+
 describe('one process on a busy port', () => {
   it('fails the boot with the reason instead of waiting for ever', async () => {
     const occupied = net.createServer();
@@ -406,6 +456,51 @@ async function sequentialStatuses(port: number, urls: readonly string[]): Promis
     agent.destroy();
   }
   return statuses;
+}
+
+interface BytesToWrite {
+  readonly bytes: string;
+  /** Written once the first answer has arrived, when given. */
+  readonly thenWrite?: string;
+  readonly hangUpAfterMs: number;
+}
+
+/** Opens a connection, writes the bytes as they are, optionally writes more after the first answer, and hangs up. */
+function writeAndHangUp(port: number, { bytes, thenWrite, hangUpAfterMs }: BytesToWrite): Promise<void> {
+  return new Promise((resolve) => {
+    const socket = net.connect(port, '127.0.0.1', () => {
+      socket.write(bytes);
+      setTimeout(() => socket.destroy(), hangUpAfterMs);
+    });
+    socket.once('data', () => {
+      if (thenWrite !== undefined) socket.write(thenWrite);
+    });
+    socket.on('error', () => undefined);
+    socket.on('close', () => resolve());
+  });
+}
+
+interface BytesToWait {
+  readonly bytes: string;
+  readonly withinMs: number;
+}
+
+/** Opens a connection, writes the bytes and never closes it: whether the server closed it within the time given. */
+function closedByServerWithin(port: number, { bytes, withinMs }: BytesToWait): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = net.connect(port, '127.0.0.1', () => socket.write(bytes));
+    const gaveUp = setTimeout(() => {
+      socket.destroy();
+      resolve(false);
+    }, withinMs);
+    socket.on('data', () => undefined);
+    socket.on('error', () => undefined);
+    // `end` is the server's FIN; a server that only half-closes never destroys, so wait for the full close with the client's side left open.
+    socket.on('close', () => {
+      clearTimeout(gaveUp);
+      resolve(true);
+    });
+  });
 }
 
 /** How many descriptors this process holds open (`/dev/fd` on macOS and Linux). */

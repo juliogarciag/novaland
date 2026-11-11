@@ -21,8 +21,9 @@ export interface EdgeRoutesOptions {
  * no path out of the directory, no dotfiles) and `compression` compresses
  * them. Only the choices are made here.
  *
- * Nothing here logs a stack trace for a request: what an anonymous client
- * can trigger at will must not fill the log. A server-side failure is one line.
+ * No request a client can send makes this log a stack trace: what an anonymous
+ * client can trigger at will must not fill the log. A failure on the server's
+ * side is one line.
  */
 export function mountEdgeRoutes(app: Application, { clientDirectory, health }: EdgeRoutesOptions): void {
   app.disable('x-powered-by');
@@ -62,8 +63,8 @@ function answerErrorsQuietly(error: unknown, _request: Request, response: Respon
     next(error);
     return;
   }
-  const named = (error as { status?: unknown }).status;
-  const status = typeof named === 'number' && named >= 400 && named < 600 ? named : 500;
+  const statusOfError = (error as { status?: unknown }).status;
+  const status = typeof statusOfError === 'number' && statusOfError >= 400 && statusOfError < 600 ? statusOfError : 500;
   if (status >= 500) console.error(JSON.stringify({ event: 'http-route-failed', status, error: error instanceof Error ? error.message : String(error) }));
   response.status(status).end();
 }

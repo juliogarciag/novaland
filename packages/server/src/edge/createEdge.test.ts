@@ -13,13 +13,6 @@ describe('createEdge', () => {
     await Promise.all(servers.splice(0).map((httpServer) => new Promise((resolve) => httpServer.close(resolve))));
   });
 
-  it('refuses an upgrade from an origin the policy does not allow, and lets a listed origin and a client that is no browser through', () => {
-    const edge = createEdge(OPTIONS);
-    expect(edge.upgradeRefusal(new Headers({ origin: 'https://evil.example.com' }))?.status).toBe(403);
-    expect(edge.upgradeRefusal(new Headers({ origin: 'https://play.example.com' }))).toBeUndefined();
-    expect(edge.upgradeRefusal(new Headers())).toBeUndefined();
-  });
-
   it('names the caller in the matchmaking headers only when the policy allows it, and always sends nosniff and Vary', () => {
     const edge = createEdge(OPTIONS);
     expect(edge.matchmakingHeaders(new Headers({ origin: 'https://play.example.com' }))).toEqual({ 'Access-Control-Allow-Origin': 'https://play.example.com', 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });

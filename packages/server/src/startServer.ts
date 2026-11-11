@@ -10,6 +10,8 @@ export interface ServerOptions {
   readonly originPolicy: OriginPolicy;
   /** The client build to serve, or undefined to serve none. */
   readonly clientDirectory: string | undefined;
+  /** How long a connection may sit with no byte moving before it is closed; the edge's default unless a test passes a shorter one. */
+  readonly idleConnectionTimeoutMs?: number;
 }
 
 /**
@@ -18,11 +20,12 @@ export interface ServerOptions {
  * room listens on the edge's HTTP server, and the room hands the edge's
  * pieces to Colyseus's hooks. `/healthz` answers `503` until the room exists.
  */
-export async function startServer({ port, seed, originPolicy, clientDirectory }: ServerOptions): Promise<WorldServer> {
+export async function startServer({ port, seed, originPolicy, clientDirectory, idleConnectionTimeoutMs }: ServerOptions): Promise<WorldServer> {
   const started: { world?: WorldServer } = {};
   const edge = createEdge({
     originPolicy,
     clientDirectory,
+    idleConnectionTimeoutMs,
     health: () => started.world && { roomId: started.world.roomId, seats: MAX_SEATS, seatsTaken: started.world.room.seatsTaken, tick: started.world.room.tick },
   });
   started.world = await startWorldServer({ port, seed, front: edge });

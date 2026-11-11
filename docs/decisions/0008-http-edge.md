@@ -10,7 +10,7 @@ One process serves the built client and the world room on one port. The first ve
 - The hand-written parts missed cases that libraries cover. The file server ignored range requests and sent nothing compressed. The origin check compared `Origin` with the request's `Host`, which a domain pointed at the server's address (DNS rebinding) satisfies, and which fails real players behind a proxy that rewrites `Host`.
 - Nobody had sent Colyseus a malformed request. Its router builds a URL from `X-Forwarded-Proto`, `Host` and the request target, and throws outside any handler when that does not parse. One such request from anyone ended the process. This is in Colyseus 0.18.27 and was there before #19.
 
-Two reviews and three security passes read the code and missed the last point. Sending bytes found it in ten minutes, and found two more problems in the rebuild. That is the reason for this record: the edge of a public server is not the place for code that is only as good as the cases its author thought of, and it is tested by attacking it.
+Two reviews and three security passes read the code and missed the last point. Sending bytes found it in ten minutes, and found four more problems in the rebuild over two rounds. That is the reason for this record: the edge of a public server is not the place for code that is only as good as the cases its author thought of, and it is tested by attacking it.
 
 ## Decision
 
@@ -32,7 +32,7 @@ Two reviews and three security passes read the code and missed the last point. S
 
 - The edge creates the HTTP server and the transport listens on it (`WebSocketTransport({ server })`).
 - The routes are mounted through Colyseus's `express` option.
-- The origin policy on WebSocket upgrades runs in Colyseus's `beforeUpgrade` hook.
+- Colyseus's `beforeUpgrade` hook is not used. With it set, the transport parses the upgrade's target before the hook runs and throws on one that is not a URL, and it never closes a socket the hook refuses. The origin policy on upgrades runs in the guard below.
 - The matchmaker's `getCorsHeaders` is replaced, and `Access-Control-Allow-Origin: *` is taken out of its defaults, so an answer Colyseus writes names an origin only when the policy allows it.
 
 ### The origin policy is told, never inferred
@@ -44,16 +44,18 @@ Two reviews and three security passes read the code and missed the last point. S
 
 ### One guard, the only place listeners are taken over
 
-Colyseus answers its own routes before the Express app and parses an upgrade's target before `beforeUpgrade`, with no hook in front of either. So `edge/guardRequests.ts` wraps the single `request` listener and the single `upgrade` listener Colyseus installs, right after it binds its routes, and refuses to install over any other number.
+Colyseus answers its own routes before the Express app, with no hook in front of them, and its hook in front of upgrades cannot be used. So `edge/guardRequests.ts` wraps the single `request` listener and the single `upgrade` listener Colyseus installs, right after it binds its routes, and refuses to install over any other number.
 
 | Answer | For |
 |---|---|
 | `400` | A request or upgrade Colyseus cannot survive: a target that is not a path, a `Host` that is not `host[:port]`, an `X-Forwarded-Proto` that is not one `http` or `https` |
-| `403` | A state-changing request (anything but `GET` and `HEAD`) from an origin the policy does not allow, because matchmaking reserves a seat |
+| `403` | An upgrade, or a state-changing request (anything but `GET` and `HEAD`), from an origin the policy does not allow: the upgrade is the way into the room and matchmaking reserves a seat |
 | `413` | A body over the edge's cap, which the guard reads first, because Colyseus reads bodies with no limit (#17's cap, moved) |
-| Connection closed | A request sent before the answer to the previous one on the same connection is out |
+| Connection closed | A request sent before the answer to an earlier one on the same connection is out |
 
-The last row is not about Colyseus. Node starts pipelined requests at once and queues their answers. When the client hangs up, the queued answers never learn it, and every file `express.static` opened for them stays open for good. Browsers and proxies send one request at a time on a connection.
+The last row is not about Colyseus. Node starts pipelined requests at once and queues their answers. When the client hangs up, the queued answers never learn it, and every file `express.static` opened for them stays open for good. Browsers and proxies send one request at a time on a connection. The guard tells a queued answer by its missing socket, which also covers an earlier request Node answered itself.
+
+A refused request or upgrade has its connection destroyed, not only ended, so a client that stays on or sends more holds nothing open.
 
 ## Consequences
 
@@ -61,10 +63,11 @@ The last row is not about Colyseus. Node starts pipelined requests at once and q
 - New HTTP routes go in `edge/mountEdgeRoutes.ts`. Nothing but the guard calls `httpServer.on('request')`.
 - The guard depends on one fact about Colyseus: it serves all HTTP from one listener and all upgrades from another, bound when the port opens. The guard checks both counts at boot, and `startServer.test.ts` sends the crashing requests through the real composition, so a Colyseus upgrade that changes either fails loudly. If Colyseus fixes its parsing and adds a body limit, the `400` and `413` rows can go.
 - A proxy that sends a list in `X-Forwarded-Proto` (`https, http`) gets `400`. Colyseus would crash on it. A deployment behind two proxies must make the outer one overwrite the header.
-- A connection on which no byte moves for a minute is closed, so a client that never reads a file does not hold it open. WebSocket connections are not affected.
+- A connection on which no byte moves is closed after a minute, so a client that never reads a file does not hold it open for good (measured: up to two minutes for a stalled download). An upgrade that stalls in its handshake is closed the same way. A seated player is never cut: the transport clears the timeout for a connection it accepts and pings it itself.
 - A busy port fails the boot. Colyseus only logged it and waited for ever.
 - `/healthz` answers `503` until the room exists.
 - Local runs of the image need `ALLOWED_ORIGINS` (`-e ALLOWED_ORIGINS=http://localhost:8080`), because the image is production.
 - Not done here, for ticket #20's host to cover:
+  - Nothing bounds how many connections one client holds, nor how slowly it reads.
   - Matchmaking is not rate-limited. A client that is not a browser can reserve seats, three seconds at a time. A per-address budget must not read the address from `X-Forwarded-For` unless the proxy overwrites it: Colyseus takes the first hop, which any client can set.
   - Colyseus still logs a stack trace for some junk an anonymous client can send (a matchmaking body that is not JSON, a malformed frame from a seated client).

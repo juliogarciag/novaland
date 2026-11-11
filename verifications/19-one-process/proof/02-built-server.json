@@ -76,7 +76,7 @@
     "roomId": "world",
     "seats": 5,
     "seatsTaken": 0,
-    "tick": 0
+    "tick": 2
   },
   "indexHeaders": {
     "accept-ranges": "bytes",
@@ -91,10 +91,10 @@
     "content-type": "text/html; charset=utf-8",
     "cross-origin-opener-policy": "same-origin",
     "cross-origin-resource-policy": "same-origin",
-    "date": "Tue, 10 Nov 2026 23:37:53 GMT",
-    "etag": "W/\"383-1a1c7d33ea1\"",
+    "date": "Wed, 11 Nov 2026 00:10:08 GMT",
+    "etag": "W/\"383-1a1c7f0c705\"",
     "keep-alive": "timeout=5",
-    "last-modified": "Tue, 10 Nov 2026 23:37:52 GMT",
+    "last-modified": "Wed, 11 Nov 2026 00:10:08 GMT",
     "origin-agent-cluster": "?1",
     "referrer-policy": "no-referrer",
     "vary": "Origin, Accept-Encoding",
@@ -187,7 +187,7 @@
         "slot": 1,
         "eid": 46,
         "x": -14.5,
-        "y": -1.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       }
@@ -206,10 +206,6 @@
         "status": 200
       },
       {
-        "url": "/sprites/player-sky.png",
-        "status": 200
-      },
-      {
         "url": "/sprites/player-rose.png",
         "status": 200
       },
@@ -218,19 +214,11 @@
         "status": 200
       },
       {
+        "url": "/sprites/player-sky.png",
+        "status": 200
+      },
+      {
         "url": "/sprites/player-sun.png",
-        "status": 200
-      },
-      {
-        "url": "/sprites/player-plum.png",
-        "status": 200
-      },
-      {
-        "url": "/sprites/player-teal.png",
-        "status": 200
-      },
-      {
-        "url": "/sprites/player-slate.png",
         "status": 200
       },
       {
@@ -238,35 +226,47 @@
         "status": 200
       },
       {
-        "url": "blob:/cbc54e2e-d133-41fc-b608-c9fcea72f456",
+        "url": "/sprites/player-plum.png",
         "status": 200
       },
       {
-        "url": "blob:/82b6f380-6750-4fcb-8d2f-1a66bd9eb801",
+        "url": "/sprites/player-slate.png",
         "status": 200
       },
       {
-        "url": "blob:/055debe7-ffa0-4b2e-9038-1ce4cc163a89",
+        "url": "/sprites/player-teal.png",
         "status": 200
       },
       {
-        "url": "blob:/56eaaded-30f1-4675-a298-03d53c7941f3",
+        "url": "blob:/1fe3c303-e6ce-47ba-9e69-94021757c9fc",
         "status": 200
       },
       {
-        "url": "blob:/7b6f272d-1489-4816-9eff-521038fd258d",
+        "url": "blob:/e5059f33-1618-434d-b64a-294fe962694b",
         "status": 200
       },
       {
-        "url": "blob:/ef373238-41bf-4d1f-8acc-ff96cdb1fe80",
+        "url": "blob:/f4ae8ba3-d036-45cf-be88-75e40cf019c3",
         "status": 200
       },
       {
-        "url": "blob:/ef7477ee-9bae-45af-bd11-2270acb85964",
+        "url": "blob:/07c26ae0-c5eb-42a9-9a18-3f5185c7b482",
         "status": 200
       },
       {
-        "url": "blob:/7d9d8eef-ae74-4083-ab35-9a4c0b715195",
+        "url": "blob:/1393963e-d862-4418-b66a-f32759d3d7cb",
+        "status": 200
+      },
+      {
+        "url": "blob:/e0bf4d07-42b6-4551-9b9c-ff6b526ea0a4",
+        "status": 200
+      },
+      {
+        "url": "blob:/e9f6b106-d8d0-44fb-a19a-b1e3577146a5",
+        "status": 200
+      },
+      {
+        "url": "blob:/85b1039e-a18f-42a3-ad5d-cc7c4dc049f3",
         "status": 200
       }
     ],
@@ -292,7 +292,7 @@
       "online": false,
       "playerX": -13.5
     },
-    "soloAfter": -9.416728973388672,
+    "soloAfter": -9.50006103515625,
     "soloRapier": [
       {
         "url": "/node_modules/.vite/deps/@dimforge_rapier2d-deterministic-compat.js?v=11a7a3e3",

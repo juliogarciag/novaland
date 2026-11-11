@@ -27,11 +27,9 @@ export interface WorldFront {
   readonly httpServer: HttpServer;
   /** Mounts the HTTP routes that are not Colyseus's own. Colyseus's `express` option. */
   readonly mountRoutes: (app: RoutesApp) => void;
-  /** The response that refuses a WebSocket upgrade carrying these request headers, or undefined when it may go on. Colyseus's `beforeUpgrade` hook. */
-  readonly upgradeRefusal: (headers: Headers) => Response | undefined;
   /** The headers Colyseus adds to every answer it writes itself, for a request carrying these headers. The matchmaker's `getCorsHeaders`. */
   readonly matchmakingHeaders: (headers: Headers) => Record<string, string>;
-  /** Called once, right after Colyseus has bound its routes and before any request can arrive. */
+  /** Called once, right after Colyseus has bound its routes and its upgrade handler and before any request can arrive. */
   readonly guardRequests: () => void;
 }
 
@@ -55,8 +53,8 @@ export interface WorldServer {
  * also load `@colyseus/tools`, which reads `.env` files into the environment.
  *
  * The `front` is plugged into Colyseus's own hooks: its HTTP server goes to
- * the transport, its upgrade check to `beforeUpgrade`, its routes to the
- * `express` option and its headers to the matchmaker.
+ * the transport, its routes to the `express` option and its headers to the
+ * matchmaker.
  */
 export function startWorldServer(options: WorldServerOptions): Promise<WorldServer> {
   return bootWorldServer(options);
@@ -67,8 +65,6 @@ function startBareWorldServer(options: Omit<WorldServerOptions, 'front'>): Promi
   return bootWorldServer(options);
 }
 
-export const __testing__ = { startBareWorldServer };
-
 // ---- Helpers ----
 
 /** What Colyseus's matchmaker answers with when nothing replaces it, kept so a bare boot gets it back after a fronted one in the same process. */
@@ -77,7 +73,7 @@ const COLYSEUS_CORS = { defaultHeaders: matchMaker.controller.DEFAULT_CORS_HEADE
 async function bootWorldServer({ port, seed, front }: Omit<WorldServerOptions, 'front'> & { readonly front?: WorldFront }): Promise<WorldServer> {
   const transport = new WebSocketTransport({
     maxPayload: MAX_FRAME_BYTES,
-    ...(front && { server: front.httpServer, beforeUpgrade: (_request, context) => front.upgradeRefusal(context.headers) }),
+    ...(front && { server: front.httpServer }),
   });
   const httpServer = transport.server;
   if (!httpServer) throw new Error('the transport has no HTTP server to listen on');
@@ -92,8 +88,8 @@ async function bootWorldServer({ port, seed, front }: Omit<WorldServerOptions, '
   // Colyseus answers every origin with `Access-Control-Allow-Origin: *` unless told otherwise: only the front says who may read a matchmaking answer.
   matchMaker.controller.DEFAULT_CORS_HEADERS = front ? withoutAllowOrigin(COLYSEUS_CORS.defaultHeaders) : COLYSEUS_CORS.defaultHeaders;
   matchMaker.controller.getCorsHeaders = front ? front.matchmakingHeaders : COLYSEUS_CORS.headersFor;
-  await portOpened({ gameServer, httpServer, port });
   try {
+    await portOpened({ gameServer, httpServer, port });
     // Nothing may be awaited between the port opening and the guard: Colyseus binds its routes as the port opens, and the first request must already find the guard.
     front?.guardRequests();
     const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed } satisfies WorldRoomOptions);
@@ -107,7 +103,7 @@ async function bootWorldServer({ port, seed, front }: Omit<WorldServerOptions, '
       stop: () => gameServer.gracefullyShutdown(false),
     };
   } catch (error) {
-    // A boot that fails with the port already open must not leave it open.
+    // A boot that fails must leave nothing behind: not the port if it was opened, not the matchmaker's timers.
     await gameServer.gracefullyShutdown(false).catch(() => undefined);
     throw error;
   }
@@ -135,3 +131,5 @@ function withoutAllowOrigin<CorsHeaders extends Record<string, string>>(headers:
   delete keptHeaders['Access-Control-Allow-Origin'];
   return keptHeaders as CorsHeaders;
 }
+
+export const __testing__ = { startBareWorldServer };
