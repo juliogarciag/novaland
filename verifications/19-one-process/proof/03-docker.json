@@ -1,0 +1,364 @@
+{
+  "boot": {
+    "event": "world-room-listening",
+    "port": 5419,
+    "roomId": "world",
+    "seed": "<random>",
+    "seats": 5,
+    "tickRate": 60,
+    "sendRate": 20,
+    "clientDirectory": "/app/packages/client/dist",
+    "allowedOrigins": [
+      "http://localhost:5419"
+    ],
+    "loopbackOrigins": false
+  },
+  "health": {
+    "ok": true,
+    "roomId": "world",
+    "seats": 5,
+    "seatsTaken": 0,
+    "tick": 1
+  },
+  "inside": "node\nNODE_ENV=production\nv24.22.2\nserver deps: packages/server/node_modules: @colyseus compression express helmet  packages/server/node_modules/@colyseus: core schema ws-transport \nstore: @better-auth+utils @better-fetch+fetch @colyseus+better-call @colyseus+clock @colyseus+core @colyseus+greeting-banner @colyseus+schema @colyseus+shared-types @colyseus+timer @colyseus+ws-transport @msgpackr-extract+msgpackr-extract-linux-arm64 @standard-schema+spec @types+node @types+ws accepts body-parser bytes call-bind-apply-helpers call-bound compressible compression content-disposition content-type cookie cookie-signature debug depd destroy detect-libc dunder-proto ee-first encodeurl es-define-property es-errors es-object-atoms escape-html etag express finalhandler forwarded fresh function-bind get-intrinsic get-proto gopd has-symbols hasown helmet http-errors iconv-lite inherits ipaddr.js is-promise lock.yaml math-intrinsics media-typer merge-descriptors mime-db mime-types ms msgpackr msgpackr-extract nanoid negotiator node-gyp-build-optional-packages node_modules object-inspect on-finished on-headers once parseurl path-to-regexp proxy-addr qs range-parser raw-body rou3 router safe-buffer safer-buffer send serve-static set-cookie-parser setprototypeof side-channel side-channel-list side-channel-map side-channel-weakmap statuses toidentifier type-is typescript undici-types unpipe vary wrappy ws zod \nfiles: packages: client server  packages/client/dist: assets index.html sprites  packages/server/dist: assets index.mjs index.mjs.map \n",
+  "sprites": [
+    {
+      "name": "player-ember.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-moss.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-plum.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-rose.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 699
+    },
+    {
+      "name": "player-sky.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-slate.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-sun.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-teal.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 708
+    }
+  ],
+  "upgrades": {
+    "foreign": 403,
+    "reboundDomain": 403,
+    "otherLoopbackPage": 403,
+    "listedBehindProxy": 101
+  },
+  "hostile": [
+    {
+      "what": "an absolute URL as the target",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an absolute URL as the target of a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host with a port that is no port",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on the Colyseus health route",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a forwarded protocol that is no protocol",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "two forwarded protocols",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:99999999",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *%",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *[",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:abc",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade with a Host that is no host",
+      "answer": "HTTP/1.1 400 Bad Request"
+    }
+  ],
+  "descriptors": {
+    "largeAsset": "/assets/rapier-C1NO8tr2.js",
+    "descriptorsBefore": 24,
+    "descriptorsAfter": 24
+  },
+  "pages": {
+    "aSeated": {
+      "screen": null,
+      "text": "Connecting to the world…Retry nowReload page",
+      "hasDebugApi": false,
+      "canvas": true
+    },
+    "bSeated": {
+      "screen": null,
+      "text": "Connecting to the world…Retry nowReload page",
+      "hasDebugApi": false,
+      "canvas": true
+    },
+    "both": [
+      {
+        "slot": 1,
+        "eid": 46,
+        "x": -12.5,
+        "y": -1.5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      {
+        "slot": 2,
+        "eid": 47,
+        "x": -13.5,
+        "y": 0.5,
+        "intentX": 0,
+        "intentY": 0
+      }
+    ],
+    "aWalk": {
+      "slot": 1,
+      "start": {
+        "slot": 1,
+        "eid": 46,
+        "x": -12.5,
+        "y": -1.5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "end": {
+        "slot": 1,
+        "eid": 46,
+        "x": -7.917,
+        "y": -1.5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "distance": 4.583
+    },
+    "bWalk": {
+      "slot": 2,
+      "start": {
+        "slot": 2,
+        "eid": 47,
+        "x": -13.5,
+        "y": 0.5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "end": {
+        "slot": 2,
+        "eid": 47,
+        "x": -13.5,
+        "y": 5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "distance": 4.5
+    },
+    "quietFrames": {
+      "count": 20,
+      "meanBytes": 65
+    },
+    "walkingFrames": {
+      "count": 20,
+      "meanBytes": 118.35
+    },
+    "aQuietFrames": {
+      "count": 20,
+      "meanBytes": 65
+    },
+    "aFramesDuringBWalk": {
+      "count": 20,
+      "meanBytes": 117.55
+    },
+    "responses": [
+      {
+        "url": "/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "url": "/assets/index-Cu22QIrA.js",
+        "status": 200,
+        "contentType": "text/javascript; charset=utf-8"
+      },
+      {
+        "url": "/matchmake/joinById/world",
+        "status": 200,
+        "contentType": "application/json"
+      },
+      {
+        "url": "/sprites/player-sky.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-rose.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-sun.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-plum.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-teal.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-ember.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "/sprites/player-slate.png",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/d9dc3efb-37f0-4c7e-b5ff-d7757f7c00a9",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/6b02fa35-11a0-4d1d-b9d3-15d12e863b5a",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/97a70e9a-3809-4d4b-81cd-b4e1bfa88ee9",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/83fd9ac0-7bad-4e26-94a1-4b48aa35e7ef",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/296b65c2-e193-4fcf-9068-d17627ac1e94",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/db0eee66-1510-4b1a-91d0-bb721fd70acc",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/0d322a14-2810-47c6-bad1-7330ab0ca167",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/60e1c2ba-4bd7-4e9a-a20d-162c42980dff",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/93c68b35-0628-436a-9bd2-3338f90838c4",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/36e23524-47db-4af3-bbf3-6b47d7f3f760",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/9edf8f04-bbb6-4dd9-98f9-319e9be17bd5",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/cc651e65-af6d-4c13-a41a-742a505cefd8",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/a9e78e6a-c894-49c3-89b1-cf433e6d0a4a",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/34b5dec5-76a0-4734-b178-4df163bd8860",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/449de671-746c-4dca-9f4c-1de8aae1a7c8",
+        "status": 200,
+        "contentType": "image/png"
+      },
+      {
+        "url": "blob:/583d686c-827e-4d3c-b3b5-4e37c0cbc697",
+        "status": 200,
+        "contentType": "image/png"
+      }
+    ],
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "dockerHealth": "healthy",
+  "stopSeconds": 0.143
+}

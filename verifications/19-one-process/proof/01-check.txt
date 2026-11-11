@@ -1,0 +1,20 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (285 of 285)
+PASS  the origin policy: no Origin passes, the listed origins pass only in the exact spelling a browser sends, other hosts/ports/schemes/null/junk are refused, the request never says who it is (no Host comparison), loopback pages pass outside production only, a name that merely looks like loopback does not, and * allows all
+PASS  ALLOWED_ORIGINS is parsed strictly: unset is loopback only outside production and stops the boot in production, entries are normalised, anything that is not a bare http(s) origin throws (a * inside a host too, and next to a * entry)
+PASS  one process, the real composition: index.html with security headers, immutable hashed assets, ETag/HEAD/range, compression (not of ranges), quiet 416/412/404 with nothing logged, no escape from the directory, no descriptor left open by an aborted download or by a pipelined burst that hangs up, /health, 403 for foreign matchmaking and upgrades (a rebound domain too), no wildcard CORS, nosniff on what Colyseus answers, files and health open to everyone, the body cap, 400 for every request and upgrade Colyseus cannot survive, a real client seated through all of it, a proxied request let through
+PASS  one process in production: only the listed origin gets in, whatever Host a proxy presents; a loopback page and a rebound domain do not
+PASS  the request guard alone: installs only over exactly one request listener and one upgrade listener, pre-reads bodies, 413 over the cap, 403 for foreign state changes and foreign upgrades, reads stay open, a forwarded protocol in either case, 400 for a malformed upgrade, a refused upgrade destroyed even when the client stays, a stalled handshake closed, a pipelined request closes the connection (also behind an answer Node wrote itself), one request after another still works
+PASS  the front alone: matchmaking headers follow the policy, and a connection on which no byte moves is closed
+PASS  a seated player is never cut by the idle timeout, a silent plain connection is; a boot that fails after the port opened closes it
+PASS  a busy port fails the boot instead of waiting for ever
+PASS  the front routes alone: /health is 503 until there is something to report, HEAD has no body, nothing is served without a client directory
+PASS  the client picks the server: VITE_SERVER_URL when set, the page origin in production, solo in dev
+PASS  physics loads on demand: a replica works with none loaded, a physics world before initPhysics throws a clear error, and Rapier loads once
+PASS  the sim, replica, world room and client online tests still pass
+PASS  pnpm sim:headless prints the same state hash as before Rapier loaded on demand (recorded in #18's proof)  (50b21d74 vs 50b21d74)
+
+ALL 18 CHECKS PASSED

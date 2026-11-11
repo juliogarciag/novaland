@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { exposeDebugApi, type OnlineDebugApi } from './debug';
 import { OnlineWorld } from './online/OnlineWorld';
-import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
 import { createConnectionScreens } from './online/screens';
+import { worldServerUrl } from './online/serverUrl';
+import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
 import { WorldScene } from './scenes/WorldScene';
@@ -10,13 +11,15 @@ import { createLocalWorld } from './worlds/LocalWorld';
 import type { PlayableWorld } from './worlds/PlayableWorld';
 
 /**
- * Boots the game around a playable world. With `VITE_SERVER_URL` set the
- * world is the shared one on that server, joined before the game exists
- * (the level comes with the welcome); otherwise this client runs its own
- * sim, as it always did. The Phaser side is the same in both modes.
+ * Boots the game around a playable world. With a world server to reach
+ * (`VITE_SERVER_URL`, or the page's own origin in a production build, which
+ * the world server serves itself) the world is the shared one on that server,
+ * joined before the game exists (the level comes with the welcome); otherwise
+ * this client runs its own sim, as it always did. The Phaser side is the same
+ * in both modes.
  */
 async function boot(): Promise<void> {
-  const serverUrl = import.meta.env.VITE_SERVER_URL;
+  const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
   const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld(), online: undefined };
   const game = new Phaser.Game({
     type: Phaser.AUTO,

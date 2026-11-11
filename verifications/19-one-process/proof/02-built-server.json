@@ -1,0 +1,310 @@
+{
+  "builtAssets": [
+    {
+      "name": "index-Cu22QIrA.js",
+      "bytes": 1678752
+    },
+    {
+      "name": "rapier-C1NO8tr2.js",
+      "bytes": 3446045
+    }
+  ],
+  "hostile": [
+    {
+      "what": "an absolute URL as the target",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an absolute URL as the target of a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on a matchmaking call",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host with a port that is no port",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a Host that is no host, on the Colyseus health route",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "a forwarded protocol that is no protocol",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "two forwarded protocols",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:99999999",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *%",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *[",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade whose target is *:abc",
+      "answer": "HTTP/1.1 400 Bad Request"
+    },
+    {
+      "what": "an upgrade with a Host that is no host",
+      "answer": "HTTP/1.1 400 Bad Request"
+    }
+  ],
+  "boot": {
+    "event": "world-room-listening",
+    "port": 5420,
+    "roomId": "world",
+    "seed": "<random>",
+    "seats": 5,
+    "tickRate": 60,
+    "sendRate": 20,
+    "clientDirectory": "<repo>/packages/client/dist",
+    "allowedOrigins": [],
+    "loopbackOrigins": true
+  },
+  "health": {
+    "ok": true,
+    "roomId": "world",
+    "seats": 5,
+    "seatsTaken": 0,
+    "tick": 3
+  },
+  "indexHeaders": {
+    "accept-ranges": "bytes",
+    "access-control-allow-credentials": "true",
+    "access-control-allow-headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    "access-control-allow-methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "access-control-max-age": "2592000",
+    "cache-control": "public, max-age=0",
+    "connection": "keep-alive",
+    "content-length": "899",
+    "content-security-policy": "default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin",
+    "cross-origin-resource-policy": "same-origin",
+    "date": "Wed, 11 Nov 2026 01:40:29 GMT",
+    "etag": "W/\"383-1a1c8437d2c\"",
+    "keep-alive": "timeout=5",
+    "last-modified": "Wed, 11 Nov 2026 01:40:28 GMT",
+    "origin-agent-cluster": "?1",
+    "referrer-policy": "no-referrer",
+    "vary": "Origin, Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-dns-prefetch-control": "off",
+    "x-download-options": "noopen",
+    "x-frame-options": "DENY",
+    "x-permitted-cross-domain-policies": "none",
+    "x-xss-protection": "0"
+  },
+  "assets": [
+    {
+      "path": "/assets/index-Cu22QIrA.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "bytes": 1678752
+    }
+  ],
+  "sprites": [
+    {
+      "name": "player-ember.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-moss.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-plum.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-rose.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 699
+    },
+    {
+      "name": "player-sky.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 707
+    },
+    {
+      "name": "player-slate.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-sun.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 704
+    },
+    {
+      "name": "player-teal.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 708
+    }
+  ],
+  "traversal": {
+    "dotdot": 404,
+    "encoded": 404,
+    "dotfile": 404
+  },
+  "upgrades": {
+    "foreign": 403,
+    "reboundDomain": 403,
+    "loopbackPage": 101,
+    "noOrigin": 101
+  },
+  "productionPage": {
+    "seated": {
+      "screen": null,
+      "text": "Connecting to the world…Retry nowReload page",
+      "hasDebugApi": false,
+      "canvas": true
+    },
+    "seenByObserver": [
+      {
+        "slot": 1,
+        "eid": 46,
+        "x": -13.5,
+        "y": 0.5,
+        "intentX": 0,
+        "intentY": 0
+      }
+    ],
+    "responses": [
+      {
+        "url": "/",
+        "status": 200
+      },
+      {
+        "url": "/assets/index-Cu22QIrA.js",
+        "status": 200
+      },
+      {
+        "url": "/matchmake/joinById/world",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-sky.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-rose.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-moss.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-sun.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-plum.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-teal.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-ember.png",
+        "status": 200
+      },
+      {
+        "url": "/sprites/player-slate.png",
+        "status": 200
+      },
+      {
+        "url": "blob:/6c0058e9-37ae-4c71-83a9-13bc2a5520e9",
+        "status": 200
+      },
+      {
+        "url": "blob:/930b6339-fe95-4f00-8c30-5aad4e06ae08",
+        "status": 200
+      },
+      {
+        "url": "blob:/1936a91a-d893-4fdf-a99f-39565dc0da27",
+        "status": 200
+      },
+      {
+        "url": "blob:/b2ae0eb8-46c7-4f37-835c-189b146919f1",
+        "status": 200
+      },
+      {
+        "url": "blob:/6869866b-6fa6-4130-b449-d3d14010faa8",
+        "status": 200
+      },
+      {
+        "url": "blob:/21e0fc73-6e5b-4c2f-b8ee-8e9510b7f627",
+        "status": 200
+      },
+      {
+        "url": "blob:/649f62a3-20eb-4ea5-8332-c5a906fcc687",
+        "status": 200
+      },
+      {
+        "url": "blob:/277fb98e-dda9-4070-a5d9-f90e37e05d67",
+        "status": 200
+      }
+    ],
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "devPage": {
+    "devSeated": {
+      "screen": null,
+      "text": "Connecting to the world…Retry nowReload page",
+      "hasDebugApi": true,
+      "canvas": true
+    },
+    "devStatus": {
+      "kind": "online",
+      "slot": 2
+    },
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "soloPage": {
+    "soloBefore": {
+      "online": false,
+      "playerX": -13.5
+    },
+    "soloAfter": -9.50006103515625,
+    "soloRapier": [
+      {
+        "url": "/node_modules/.vite/deps/@dimforge_rapier2d-deterministic-compat.js?v=11a7a3e3",
+        "status": 200
+      }
+    ],
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "badBoots": {
+    "allowedOrigins": "ALLOWED_ORIGINS must list origins like https://play.example.com, got \"play.example.com\"",
+    "clientDir": "CLIENT_DIR must hold a client build with an index.html, found none in /nonexistent/client",
+    "productionWithoutOrigins": "ALLOWED_ORIGINS must name the origin players open in production, like https://play.example.com (several are separated by commas; * allows any)"
+  }
+}

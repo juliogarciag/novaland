@@ -1,18 +1,26 @@
 /**
- * Entry point of the world server: `PORT=<n> pnpm --filter @novaland/server dev`.
- * Reads the port from the environment, draws a random seed for this boot and
- * starts the one world room. The seed is logged so a session can be replayed.
+ * Entry point of the world server: `PORT=<n> pnpm --filter @novaland/server dev`
+ * from source, `pnpm start` for the built bundle. One process serves the built
+ * client and the world room on `PORT`. This file only reads the environment
+ * (`PORT`, `ALLOWED_ORIGINS`, `NODE_ENV`, `CLIENT_DIR`), draws a random seed
+ * for this boot and hands them to `startServer`. The seed is logged so a
+ * session can be replayed.
  */
 import { TICK_RATE } from '@novaland/sim';
 import { randomInt } from 'node:crypto';
-import { startWorldServer } from './world/startWorldServer';
-import { DEFAULT_PORT, IDLE_TIMEOUT_MS, MAX_SEATS, SEND_RATE } from './world/tuning';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { readOriginPolicy } from './front';
+import { startServer } from './startServer';
+import { DEFAULT_PORT, IDLE_TIMEOUT_MS, MAX_SEATS, SEND_RATE } from './world';
 
 const port = readPort(process.env.PORT);
+const originPolicy = originPolicyOrExit(process.env.ALLOWED_ORIGINS, process.env.NODE_ENV);
+const clientDirectory = readClientDirectory(process.env.CLIENT_DIR);
 const idleTimeoutMs = readIdleTimeoutMs(process.env.IDLE_TIMEOUT_SECONDS);
 const seed = randomInt(0, 2 ** 31);
-const server = await startWorldServer({ port, seed, idleTimeoutMs });
-console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, idleTimeoutSeconds: idleTimeoutMs / 1000 }));
+const server = await startServer({ port, seed, originPolicy, clientDirectory, idleTimeoutMs });
+console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, idleTimeoutSeconds: idleTimeoutMs / 1000, clientDirectory: clientDirectory ?? null, allowedOrigins: originPolicy.allowAll ? '*' : [...originPolicy.allowedOrigins], loopbackOrigins: originPolicy.allowLoopback }));
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
@@ -41,4 +49,34 @@ function readIdleTimeoutMs(value: string | undefined): number {
     process.exit(1);
   }
   return seconds * 1000;
+}
+
+/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `front/origins.ts`): the listed origins, plus any loopback page outside production. A malformed entry stops the boot, and so does production with nothing listed. */
+function originPolicyOrExit(allowedOrigins: string | undefined, nodeEnv: string | undefined) {
+  try {
+    return readOriginPolicy({ allowedOrigins, allowLoopback: nodeEnv !== 'production' });
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
+/**
+ * The client build to serve: `CLIENT_DIR`, or `packages/client/dist` next to
+ * this package (the same relative path from `src/` and from `dist/`). When
+ * neither exists the room runs alone, as it does under `pnpm dev:online`,
+ * where Vite serves the client; a `CLIENT_DIR` that does not exist stops the
+ * boot, because it was asked for.
+ */
+function readClientDirectory(value: string | undefined): string | undefined {
+  if (value !== undefined && value !== '') {
+    const directory = path.resolve(value);
+    if (!existsSync(path.join(directory, 'index.html'))) {
+      console.error(`CLIENT_DIR must hold a client build with an index.html, found none in ${directory}`);
+      process.exit(1);
+    }
+    return directory;
+  }
+  const defaultDirectory = path.resolve(import.meta.dirname, '../../client/dist');
+  return existsSync(path.join(defaultDirectory, 'index.html')) ? defaultDirectory : undefined;
 }
