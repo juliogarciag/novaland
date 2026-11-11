@@ -1,0 +1,57 @@
+import type { Application } from 'express';
+import { createServer, type Server as HttpServer } from 'node:http';
+import { guardRequests } from './guardRequests';
+import { mountFrontRoutes } from './mountFrontRoutes';
+import { isOriginAllowed, type OriginPolicy } from './origins';
+import { IDLE_CONNECTION_TIMEOUT_MS, MAX_REQUEST_BODY_BYTES } from './tuning';
+
+export interface FrontOptions {
+  /** Which browser origins may reach the world room. */
+  readonly originPolicy: OriginPolicy;
+  /** The client build to serve, or undefined to serve none. */
+  readonly clientDirectory: string | undefined;
+  /** What `/health` reports, or undefined while there is nothing to report yet. */
+  readonly health: () => Readonly<Record<string, unknown>> | undefined;
+  /** How long a connection may sit with no byte moving before it is closed; `IDLE_CONNECTION_TIMEOUT_MS` unless a test passes a shorter one. */
+  readonly idleConnectionTimeoutMs?: number;
+}
+
+/**
+ * Everything between the port and the world room: the HTTP server itself and
+ * the pieces that decide what reaches the room. The front knows nothing about
+ * rooms or Colyseus. Each piece is shaped for the hook Colyseus offers for it,
+ * and whoever starts the room plugs them in:
+ *
+ * - `httpServer` goes to the transport, so the front owns the server;
+ * - `mountRoutes` is Colyseus's `express` option;
+ * - `matchmakingHeaders` replaces the matchmaker's `getCorsHeaders`;
+ * - `guardRequests` is called once Colyseus has bound its routes.
+ */
+export interface Front {
+  /** The HTTP server, created here and not listening yet. */
+  readonly httpServer: HttpServer;
+  /** Mounts the security headers, `/health` and the client files on an Express app. */
+  readonly mountRoutes: (app: Application) => void;
+  /** The headers Colyseus adds to every answer it writes itself, for a request carrying these headers: `nosniff`, and the CORS header naming the caller's origin when the policy allows it. */
+  readonly matchmakingHeaders: (headers: Headers) => Record<string, string>;
+  /** Puts the guard in front of the routes and of the upgrade handler. Call it once, right after Colyseus has bound them. */
+  readonly guardRequests: () => void;
+}
+
+export function createFront({ originPolicy, clientDirectory, health, idleConnectionTimeoutMs = IDLE_CONNECTION_TIMEOUT_MS }: FrontOptions): Front {
+  const httpServer = createServer();
+  httpServer.setTimeout(idleConnectionTimeoutMs);
+  return {
+    httpServer,
+    mountRoutes: (app) => mountFrontRoutes(app, { clientDirectory, health }),
+    matchmakingHeaders: (headers): Record<string, string> => {
+      const origin = headers.get('origin');
+      // `Vary` either way: a cache must not hand one origin's answer to another.
+      const onEveryAnswer = { 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' };
+      // An allowed origin is spelled exactly as a browser sends it (see `isOriginAllowed`), so it is safe to send back as it came.
+      if (origin === null || !isOriginAllowed(origin, originPolicy)) return onEveryAnswer;
+      return { ...onEveryAnswer, 'Access-Control-Allow-Origin': origin };
+    },
+    guardRequests: () => guardRequests(httpServer, { originPolicy, maxRequestBodyBytes: MAX_REQUEST_BODY_BYTES, idleConnectionTimeoutMs }),
+  };
+}

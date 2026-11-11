@@ -52,7 +52,9 @@ packages/
     src/online/   OnlineWorld: the replica, the connection to the world room (the only place @colyseus/sdk is imported), the screens
   server/     The authoritative Colyseus server: one world room (5 seats, joined by id) that owns the only live sim,
               steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking, 0006 before touching the client's boot or its online mode.
+              src/front/ is everything between the port and the room: the HTTP server, the routes, the origin policy, the request guard.
+              The two never import each other and are reached through their entry files only; src/startServer.ts joins them (ADR 0008).
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0004 and 0005 before touching replication or networking, 0006 before touching the client's boot or its online mode, 0008 before touching the server's HTTP front.
 verifications/    One folder per ticket with its verification scripts and proof.
 scripts/          Root dev scripts: dev-online.mjs runs the world server and the client together (`pnpm dev:online`).
 ```
@@ -98,6 +100,8 @@ pnpm lint         # eslint, including the boundary rules
 pnpm check        # test + typecheck + lint, what CI runs
 pnpm sim:headless # runs the sim in the server package for 5 simulated seconds and prints a state hash
 PORT=<n> pnpm --filter @novaland/server dev   # the world room server (default port 2567); clients join room id `world`
+pnpm build        # the client bundle and the server bundle (what the Dockerfile runs)
+pnpm start        # the built server: the client and the world room on PORT (see "Running it yourself" in README.md)
 ```
 
 Before opening a PR: `pnpm install && pnpm test && pnpm typecheck && pnpm lint` must pass.

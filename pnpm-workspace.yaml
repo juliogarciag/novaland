@@ -5,15 +5,19 @@ packages:
 catalog:
   "@dimforge/rapier2d-deterministic-compat": 0.21.0
   "@eslint/js": ^10.0.0
+  "@types/compression": ^1.8.1
+  "@types/express": ^5.0.6
   "@types/node": ^24.0.0
   bitecs: 0.4.0
   "@colyseus/schema": 5.0.45
   "@colyseus/sdk": 0.18.9
   "@colyseus/core": 0.18.27
   "@colyseus/ws-transport": 0.18.4
+  compression: ^1.8.2
   eslint: ^10.14.0
   express: ^5.1.0
   globals: ^16.0.0
+  helmet: ^8.3.0
   phaser: 4.2.1
   tsx: ^4.19.0
   typescript: 6.0.3

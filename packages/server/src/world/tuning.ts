@@ -23,8 +23,6 @@ export const SEAT_RESERVATION_SECONDS = 3;
 /** Milliseconds after its welcome a session has to acknowledge the join; Colyseus buffers every send to it until then, so an unacknowledged session is closed instead. */
 export const JOIN_ACK_TIMEOUT_MS = 5000;
 
-/** Largest HTTP request body the server reads; a join carries `{}`. Bigger requests have their connection closed before Colyseus buffers the body. */
-export const MAX_REQUEST_BODY_BYTES = 4096;
 /** Largest WebSocket frame the transport accepts; a bigger one closes that connection (code 1009). */
 export const MAX_FRAME_BYTES = 1024;
 /** Largest decoded payload the room reads; a bigger one is dropped. A `player/move` is under 60 bytes as JSON. */

@@ -1,4 +1,5 @@
-import RAPIER, { type RigidBody, type World as PhysicsWorld } from '@dimforge/rapier2d-deterministic-compat';
+import type RAPIER from '@dimforge/rapier2d-deterministic-compat';
+import type { RigidBody, World as PhysicsWorld } from '@dimforge/rapier2d-deterministic-compat';
 import { addComponent, hasComponent, query } from 'bitecs';
 import { defineComponent, f64 } from './components';
 import type { Sim } from './sim';
@@ -15,16 +16,42 @@ import { Position } from './transform';
  * server-authoritative, see 0004-multiplayer-netcode.md.
  */
 
-let ready: Promise<void> | undefined;
+type Rapier = typeof RAPIER;
 
-/** Loads the Rapier WASM module once per process. createSim awaits this for you. */
+let ready: Promise<void> | undefined;
+let rapierModule: Rapier | undefined;
+
+/**
+ * Loads the Rapier WASM module once per process. createSim awaits this for you.
+ *
+ * Rapier arrives through a dynamic import, so a bundle that never creates a
+ * sim never fetches it: a production client only holds a replica of the
+ * server's world, and Rapier's inlined WASM is most of what it would
+ * otherwise download.
+ */
 export function initPhysics(): Promise<void> {
-  ready ??= RAPIER.init().then(() => undefined);
+  ready ??= import('@dimforge/rapier2d-deterministic-compat').then(
+    async ({ default: rapier }) => {
+      await rapier.init();
+      rapierModule = rapier;
+    },
+    (error: unknown) => {
+      // A chunk that failed to fetch (offline, a redeploy) is not cached: the next createSim tries again.
+      ready = undefined;
+      throw error;
+    },
+  );
   return ready;
 }
 
+/** Rapier, loaded. Every caller runs inside a sim, and a sim only exists once initPhysics has finished. */
+function loadedRapier(): Rapier {
+  if (!rapierModule) throw new Error('Rapier is not loaded: await initPhysics() before creating a sim');
+  return rapierModule;
+}
+
 export function createPhysicsWorld(dt: number): PhysicsWorld {
-  const world = new RAPIER.World({ x: 0, y: 0 });
+  const world = new (loadedRapier().World)({ x: 0, y: 0 });
   world.timestep = dt;
   return world;
 }
@@ -48,9 +75,10 @@ export interface BallBodyOptions {
 
 /** A moving body that never rotates and never tunnels through thin walls. */
 export function attachDynamicBall(sim: Sim, eid: number, { x, y, radius }: BallBodyOptions): RigidBody {
-  const bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y).lockRotations().setCcdEnabled(true);
+  const rapier = loadedRapier();
+  const bodyDesc = rapier.RigidBodyDesc.dynamic().setTranslation(x, y).lockRotations().setCcdEnabled(true);
   const rigidBody = sim.physics.createRigidBody(bodyDesc);
-  sim.physics.createCollider(RAPIER.ColliderDesc.ball(radius).setFriction(0).setRestitution(0), rigidBody);
+  sim.physics.createCollider(rapier.ColliderDesc.ball(radius).setFriction(0).setRestitution(0), rigidBody);
   register(sim, eid, rigidBody);
   return rigidBody;
 }
@@ -64,9 +92,10 @@ export interface BoxBodyOptions {
 
 /** An immovable body: terrain and other obstacles. */
 export function attachStaticBox(sim: Sim, eid: number, { x, y, halfWidth, halfHeight }: BoxBodyOptions): RigidBody {
-  const bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(x, y);
+  const rapier = loadedRapier();
+  const bodyDesc = rapier.RigidBodyDesc.fixed().setTranslation(x, y);
   const rigidBody = sim.physics.createRigidBody(bodyDesc);
-  sim.physics.createCollider(RAPIER.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
+  sim.physics.createCollider(rapier.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
   register(sim, eid, rigidBody);
   return rigidBody;
 }

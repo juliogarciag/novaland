@@ -1,0 +1,14 @@
+# Only what the build needs goes into the image context.
+node_modules
+**/node_modules
+**/dist
+.worktrees
+.claude
+.git
+verifications
+docs
+*.md
+!packages/*/README.md
+**/.env
+**/.env.*
+**/*.local
