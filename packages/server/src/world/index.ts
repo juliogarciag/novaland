@@ -5,4 +5,4 @@
  * docs/decisions/0008-http-front.md.
  */
 export { startWorldServer, type RoutesApp, type WorldFront, type WorldServer, type WorldServerOptions } from './startWorldServer';
-export { DEFAULT_PORT, MAX_SEATS, SEND_RATE, WORLD_ROOM_ID } from './tuning';
+export { DEFAULT_PORT, IDLE_TIMEOUT_MS, MAX_SEATS, SEND_RATE, WORLD_ROOM_ID } from './tuning';

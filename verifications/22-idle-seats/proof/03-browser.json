@@ -1,0 +1,145 @@
+{
+  "idleTimeoutSeconds": 4,
+  "steps": [
+    {
+      "step": "kicked",
+      "aSeated": {
+        "kind": "online",
+        "slot": 0
+      },
+      "kickedAfterSeconds": 4.069,
+      "away": {
+        "status": {
+          "kind": "away"
+        },
+        "screen": "away",
+        "text": "You were away too long, so the server freed your seat. Rejoin to play again.",
+        "buttonText": "Rejoin",
+        "buttonVisible": true,
+        "buttonFocused": true
+      },
+      "stillAway": {
+        "status": {
+          "kind": "away"
+        },
+        "screen": "away",
+        "text": "You were away too long, so the server freed your seat. Rejoin to play again.",
+        "buttonText": "Rejoin",
+        "buttonVisible": true,
+        "buttonFocused": true
+      },
+      "joinsAtKick": 1,
+      "joinsAfterWait": 1
+    },
+    {
+      "step": "B-walking",
+      "intent": {
+        "x": 1,
+        "y": 0
+      }
+    },
+    {
+      "step": "freed-and-rejoined",
+      "bAlone": {
+        "kind": "online",
+        "slot": 0
+      },
+      "aBack": {
+        "kind": "online",
+        "slot": 1
+      },
+      "bAfter": {
+        "kind": "online",
+        "slot": 0
+      },
+      "bWalkedSeconds": 8.502,
+      "aAgain": {
+        "kind": "away"
+      },
+      "kicks": [
+        {
+          "event": "world-room-idle-kick",
+          "slot": 0,
+          "idleSeconds": 4
+        },
+        {
+          "event": "world-room-idle-kick",
+          "slot": 1,
+          "idleSeconds": 4
+        }
+      ],
+      "bAwayAfterSeconds": 4.35
+    }
+  ],
+  "results": [
+    {
+      "name": "room server up with a 4 s idle timeout, client dev server up, both started by this run",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5422,\"roomId\":\"world\",\"seed\":427788835,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":4,\"clientDirectory\":null,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+    },
+    {
+      "name": "A joins the world and is seated",
+      "pass": true,
+      "details": "{\"kind\":\"online\",\"slot\":0}"
+    },
+    {
+      "name": "A is kicked at the idle timeout (4 s, at most 1.5 s late)",
+      "pass": true,
+      "details": "4.07 s"
+    },
+    {
+      "name": "A shows the away screen: \"you were away\" and a focused Rejoin button",
+      "pass": true,
+      "details": "{\"status\":{\"kind\":\"away\"},\"screen\":\"away\",\"text\":\"You were away too long, so the server freed your seat. Rejoin to play again.\",\"buttonText\":\"Rejoin\",\"buttonVisible\":true,\"buttonFocused\":true}"
+    },
+    {
+      "name": "A stays away: no join sent by itself in 9 s, the away screen still up",
+      "pass": true,
+      "details": "joins 1 -> 1, {\"kind\":\"away\"}"
+    },
+    {
+      "name": "B takes A's freed seat and the world holds one player: B",
+      "pass": true,
+      "details": "A had seat 0, B got 0; WASD / arrows to move   tick 893   1/5 online"
+    },
+    {
+      "name": "Enter on the away screen rejoins A, even with the Rejoin button no longer focused, into a new seat, with one join sent",
+      "pass": true,
+      "details": "seat 1, joins 2"
+    },
+    {
+      "name": "both tabs see two players and read 2/5 online",
+      "pass": true
+    },
+    {
+      "name": "B, holding one direction since it was seated, is still seated after 8.5 s more (past twice the timeout) and still walking",
+      "pass": true,
+      "details": "{\"status\":{\"kind\":\"online\",\"slot\":0},\"intent\":{\"x\":1,\"y\":0}}"
+    },
+    {
+      "name": "A, idle again after rejoining, is kicked again from its new seat and shows the away screen again",
+      "pass": true,
+      "details": "{\"kind\":\"away\"}"
+    },
+    {
+      "name": "while B walked the server kicked only A's seats (first A's seat before B took it, then A's new one), never B's",
+      "pass": true,
+      "details": "[{\"event\":\"world-room-idle-kick\",\"slot\":0,\"idleSeconds\":4},{\"event\":\"world-room-idle-kick\",\"slot\":1,\"idleSeconds\":4}]"
+    },
+    {
+      "name": "hiding B with D still held stops B: the server has its avatar standing still within 2 s",
+      "pass": true,
+      "details": "{\"x\":0,\"y\":0}"
+    },
+    {
+      "name": "B, hidden with D held, is kicked a timeout later (4 s, at most 1.5 s late)",
+      "pass": true,
+      "details": "4.35 s"
+    },
+    {
+      "name": "no uncaught page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

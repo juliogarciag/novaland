@@ -1,4 +1,4 @@
-import type { Client as ServerClient } from '@colyseus/core';
+import { ClientState, type Client as ServerClient } from '@colyseus/core';
 import { Client, CloseCode, type Room } from '@colyseus/sdk';
 import {
   applyWorldState,
@@ -20,9 +20,11 @@ import {
   type WorldStateUpdate,
 } from '@novaland/sim';
 import { afterEach, describe, expect, it } from 'vitest';
+import { IDLE_KICK } from './kicks';
 import { __testing__, type WorldServer } from './startWorldServer';
 import {
   DISCONNECT_MESSAGES_PER_SECOND,
+  IDLE_TIMEOUT_MS,
   INBOUND_BURST,
   INBOUND_MESSAGES_PER_SECOND,
   JOIN_ACK_TIMEOUT_MS,
@@ -33,7 +35,7 @@ import {
   RESYNCS_PER_SECOND,
   WORLD_ROOM_ID,
 } from './tuning';
-import { WorldRoom } from './WorldRoom';
+import { WorldRoom, type Clock } from './WorldRoom';
 
 /**
  * The room from the network side: a real Colyseus server on a free port and
@@ -251,6 +253,58 @@ describe('WorldRoom over a real connection', () => {
     await waitUntil(() => server!.room.seatsTaken === 1 && findPlayerEntity(watcher.replica, 1) === undefined);
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
   });
+
+  it(`frees the seat of a session with no accepted input for ${IDLE_TIMEOUT_MS / 60000} minutes, closing it with ${IDLE_KICK.code} "${IDLE_KICK.reason}", and keeps one that plays, also while it holds one direction for several timeouts`, async () => {
+    const clock = fakeClock();
+    server = await startWorldServer({ port: 0, seed: 13, clock });
+    for (let seat = 0; seat < 2; seat += 1) players.push(await join(server.port));
+    const [idler, walker] = players as [Player, Player];
+    const idlerLeft = new Promise<[number, string | undefined]>((resolve) => idler.room.onLeave((code, reason) => resolve([code, reason])));
+    let walkerLeftWith: number | undefined;
+    walker.room.onLeave((code) => (walkerLeftWith = code));
+    await waitForUpdates(players, 1);
+    // Most of the timeout passes with nobody playing: nobody is kicked yet. The minute left is slack for real time on a slow machine; the fake clock makes it free.
+    clock.skip(IDLE_TIMEOUT_MS - 60_000);
+    await waitForUpdates(players, 3);
+    expect(server.room.clients.length).toBe(2);
+    expect(server.room.idleSeatsFreed).toBe(0);
+    // The walker starts walking south just before the deadline and holds the key: one move, then nothing, as a browser sends it. The idler only sends a move that fails the gate, which is not input: only the idler crosses the deadline.
+    walker.room.send(WIRE.move, { x: 0, y: 1 });
+    idler.room.send(WIRE.move, { x: 1 });
+    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1 && server!.room.dropped.malformed === 1);
+    clock.skip(61_000);
+    expect(await orTimeout(idlerLeft, 'the idler was not kicked after the timeout passed')).toEqual([IDLE_KICK.code, IDLE_KICK.reason]);
+    expect(server.room.idleSeatsFreed).toBe(1);
+    expect(walkerLeftWith).toBeUndefined();
+    // The leave reached the sim: the idler's avatar is gone for the walker, and its seat goes to the next joiner.
+    await waitUntil(() => findPlayerEntity(walker.replica, idler.welcome.slot) === undefined);
+    expect(server.room.seatsTaken).toBe(1);
+    players.splice(players.indexOf(idler), 1);
+    const next = await join(server.port);
+    players.push(next);
+    expect(next.welcome.slot).toBe(idler.welcome.slot);
+    expect(walker.applyResults.every((result) => result === 'applied')).toBe(true);
+    // Three whole timeouts pass with the walker still holding south: walking is never idle. `next`, which never played, is kicked meanwhile (the cleanup copes: a left room's `leave` resolves at once).
+    const nextLeft = new Promise<number>((resolve) => next.room.onLeave((code) => resolve(code)));
+    clock.skip(3 * IDLE_TIMEOUT_MS);
+    expect(await orTimeout(nextLeft, 'next was not kicked after a whole timeout without input')).toBe(IDLE_KICK.code);
+    await waitForUpdates([walker], 3);
+    expect(walkerLeftWith).toBeUndefined();
+    expect(server.room.idleSeatsFreed).toBe(2);
+    expect(headingOf(walker.replica, walker.welcome.slot).moveIntent.y).toBe(1);
+    // The walker stops: its idle clock starts at that move, so most of the timeout is still ahead of it.
+    walker.room.send(WIRE.move, { x: 0, y: 0 });
+    await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 0);
+    clock.skip(IDLE_TIMEOUT_MS - 60_000);
+    await waitForUpdates([walker], 3);
+    expect(walkerLeftWith).toBeUndefined();
+    // Past it, the walker goes.
+    clock.skip(61_000);
+    await waitUntil(() => walkerLeftWith !== undefined);
+    expect(walkerLeftWith).toBe(IDLE_KICK.code);
+    expect(server.room.idleSeatsFreed).toBe(3);
+  });
+
 });
 
 describe('WorldRoom driven directly', () => {
@@ -273,6 +327,35 @@ describe('WorldRoom driven directly', () => {
     } finally {
       room.onDispose();
     }
+  });
+
+  it('frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive', async () => {
+    const clock = fakeClock();
+    const room = new WorldRoom();
+    await room.onCreate({ seed: 14, clock, idleTimeoutMs: 1000 });
+    try {
+      // A peer that never answers the close handshake: its `leave` closes nothing, so `onLeave` never runs for it.
+      const idler = fakeClient('idler');
+      await room.onJoin(idler);
+      room.clients.push(idler);
+      expect(room.seatsTaken).toBe(1);
+      clock.skip(2000);
+      await waitUntil(() => room.idleSeatsFreed === 1);
+      expect(idler.left).toEqual([[IDLE_KICK.code, IDLE_KICK.reason]]);
+      expect(room.seatsTaken).toBe(0);
+      // The seat is already the next joiner's, and the kicked session is not kicked again while its socket lingers.
+      const next = fakeClient('next');
+      await room.onJoin(next);
+      expect((idler.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
+      expect((next.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
+      expect(room.idleSeatsFreed).toBe(1);
+      expect(idler.left.length).toBe(1);
+    } finally {
+      room.onDispose();
+    }
+    const refused = new WorldRoom();
+    await expect(refused.onCreate({ seed: 15, idleTimeoutMs: 0 })).rejects.toThrow(RangeError);
+    refused.onDispose();
   });
 
   it('fails a join that is waiting for a tick when the room is disposed instead of hanging it', async () => {
@@ -342,12 +425,50 @@ async function reserveSeat(port: number): Promise<{ sessionId: string; roomId: s
 
 interface FakeClient extends ServerClient {
   readonly sent: Array<[string, unknown]>;
+  /** Every `leave(code, reason)` the room asked for. Nothing closes: the fake is a peer that never answers. */
+  readonly left: Array<[number | undefined, string | undefined]>;
 }
 
-/** Enough of a Colyseus client for the room's own join and leave paths: a session id and a `send` that records. */
+/** Enough of a Colyseus client for the room's own join, kick and leave paths: a session id, a joined state, a `send` that records and a `leave` that records and closes nothing. */
 function fakeClient(sessionId: string): FakeClient {
   const sent: Array<[string, unknown]> = [];
-  return { sessionId, sent, send: (type: string, message: unknown) => sent.push([type, message]) } as unknown as FakeClient;
+  const left: Array<[number | undefined, string | undefined]> = [];
+  return {
+    sessionId,
+    state: ClientState.JOINED,
+    sent,
+    left,
+    send: (type: string, message: unknown) => sent.push([type, message]),
+    leave: (code?: number, reason?: string) => left.push([code, reason]),
+  } as unknown as FakeClient;
+}
+
+/** `promise`, or a rejection that names what did not happen once the suite's usual wait is up. */
+function orTimeout<T>(promise: Promise<T>, message: string, timeoutMs = JOIN_ACK_TIMEOUT_MS + 4000): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error: unknown) => {
+        clearTimeout(timer);
+        reject(error instanceof Error ? error : new Error(String(error)));
+      },
+    );
+  });
+}
+
+/** A clock a test pushes forward: real time plus whatever was skipped, so the room keeps ticking while an idle timeout passes in an instant. */
+function fakeClock(): Clock & { skip(ms: number): void } {
+  let skippedMs = 0;
+  return {
+    now: () => performance.now() + skippedMs,
+    skip: (ms) => {
+      skippedMs += ms;
+    },
+  };
 }
 
 /** Where the player in `slot` is drawn. Tests assert on what players were told (`headingOf`), not on where physics left them. */

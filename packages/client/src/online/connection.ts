@@ -1,6 +1,6 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
 import { JOIN_REFUSAL, WIRE, type MoveMessage } from '@novaland/sim';
-import { FULL_WORLD_RETRY_MS, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
  * Where the client stands with the world server. The screens draw it, the
@@ -15,6 +15,8 @@ export type ConnectionStatus =
   | { readonly kind: 'full'; readonly retryAt: number }
   /** The server is unreachable or the connection dropped. The client tries again at `retryAt`; `attempt` counts the connections that failed in a row, the dropped one included; a full world does not count. */
   | { readonly kind: 'disconnected'; readonly retryAt: number; readonly attempt: number }
+  /** The server freed this seat because the player sent no input for its idle timeout (close code `IDLE_KICK_CODE`). Nothing is retried until the player rejoins with `retryNow`. */
+  | { readonly kind: 'away' }
   /** The server runs a world this client cannot show. Nothing is retried. */
   | { readonly kind: 'incompatible'; readonly reason: string };
 
@@ -46,9 +48,12 @@ export interface WorldConnectionOptions {
 /**
  * One client's connection to the world room: joins, hands welcomes and
  * updates to the online world, and comes back by itself after a full world,
- * an unreachable server or a dropped connection. The SDK's own reconnection
- * is turned off: the server exposes no `reconnect` and keeps no session to
- * come back to (ADR 0005), so every return is a fresh join and a new seat.
+ * an unreachable server or a dropped connection, but not after the server
+ * freed the seat of an idle player: that one waits for the player to rejoin
+ * on purpose, or an idle tab would take its seat straight back. The SDK's
+ * own reconnection is turned off: the server exposes no `reconnect` and keeps
+ * no session to come back to (ADR 0005), so every return is a fresh join and
+ * a new seat.
  * Waiting is bounded by the client's own clock: a join that does not settle
  * or a room that never welcomes is abandoned, never waited on.
  */
@@ -85,7 +90,7 @@ export class WorldConnection {
     void this.tryToJoin();
   }
 
-  /** Tries again now instead of at the scheduled time (the screens' button). Does nothing while a join is in flight or once seated. */
+  /** Tries again now instead of at the scheduled time, or rejoins after an idle kick (the screens' button). Does nothing while a join is in flight or once seated. */
   retryNow(): void {
     if (this.closed || this.status.kind === 'connecting' || this.status.kind === 'online' || this.status.kind === 'incompatible') return;
     this.clearRetry();
@@ -144,10 +149,18 @@ export class WorldConnection {
       return;
     }
     this.room = room;
-    room.onLeave(() => {
+    room.onLeave((code) => {
       if (generation !== this.generation) return;
       this.room = undefined;
       this.clearJoinTimer();
+      // The server decided this player was idle; coming back is the player's call, not the page's.
+      if (code === IDLE_KICK_CODE) {
+        // A kick is not a failed connection, and the rejoin is a fresh start: both counters begin again.
+        this.failedConnections = 0;
+        this.attempt = 0;
+        this.setStatus({ kind: 'away' });
+        return;
+      }
       this.failedConnections += 1;
       this.scheduleReconnect();
     });

@@ -12,18 +12,19 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { readOriginPolicy } from './front';
 import { startServer } from './startServer';
-import { DEFAULT_PORT, MAX_SEATS, SEND_RATE } from './world';
+import { DEFAULT_PORT, IDLE_TIMEOUT_MS, MAX_SEATS, SEND_RATE } from './world';
 
 const port = readPort(process.env.PORT);
 const originPolicy = originPolicyOrExit(process.env.ALLOWED_ORIGINS, process.env.NODE_ENV);
 const clientDirectory = readClientDirectory(process.env.CLIENT_DIR);
+const idleTimeoutMs = readIdleTimeoutMs(process.env.IDLE_TIMEOUT_SECONDS);
 const seed = randomInt(0, 2 ** 31);
-const server = await startServer({ port, seed, originPolicy, clientDirectory });
-console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, clientDirectory: clientDirectory ?? null, allowedOrigins: originPolicy.allowAll ? '*' : [...originPolicy.allowedOrigins], loopbackOrigins: originPolicy.allowLoopback }));
+const server = await startServer({ port, seed, originPolicy, clientDirectory, idleTimeoutMs });
+console.log(JSON.stringify({ event: 'world-room-listening', port: server.port, roomId: server.roomId, seed, seats: MAX_SEATS, tickRate: TICK_RATE, sendRate: SEND_RATE, idleTimeoutSeconds: idleTimeoutMs / 1000, clientDirectory: clientDirectory ?? null, allowedOrigins: originPolicy.allowAll ? '*' : [...originPolicy.allowedOrigins], loopbackOrigins: originPolicy.allowLoopback }));
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
-    console.log(JSON.stringify({ event: 'world-room-stopping', signal, tick: server.room.tick, seatsTaken: server.room.seatsTaken, dropped: server.room.dropped }));
+    console.log(JSON.stringify({ event: 'world-room-stopping', signal, tick: server.room.tick, seatsTaken: server.room.seatsTaken, dropped: server.room.dropped, idleSeatsFreed: server.room.idleSeatsFreed }));
     void server.stop().finally(() => process.exit(0));
   });
 }
@@ -37,6 +38,17 @@ function readPort(value: string | undefined): number {
     process.exit(1);
   }
   return port;
+}
+
+/** The idle timeout in `IDLE_TIMEOUT_SECONDS` as milliseconds, or the tuned default when unset. Anything under a second, or not a number, stops the boot, like a bad `PORT`: a value under a second is almost surely milliseconds typed as seconds, and would leave no one the time to press a key. */
+function readIdleTimeoutMs(value: string | undefined): number {
+  if (value === undefined || value === '') return IDLE_TIMEOUT_MS;
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds * 1000) || seconds < 1) {
+    console.error(`IDLE_TIMEOUT_SECONDS must be a number of seconds, at least 1, got ${JSON.stringify(value)}`);
+    process.exit(1);
+  }
+  return seconds * 1000;
 }
 
 /** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `front/origins.ts`): the listed origins, plus any loopback page outside production. A malformed entry stops the boot, and so does production with nothing listed. */

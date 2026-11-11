@@ -11,7 +11,7 @@ export interface ConnectionScreens {
 const COUNTDOWN_INTERVAL_MS = 250;
 
 export interface ConnectionScreenActions {
-  /** The "Retry now" button of the full and disconnected screens. */
+  /** The "Retry now" button of the full and disconnected screens, and the "Rejoin" button of the away screen. */
   readonly onRetry: () => void;
   /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
   readonly onReload: () => void;
@@ -40,11 +40,17 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   parent.append(screen);
   let countdown: ReturnType<typeof setInterval> | undefined;
   let shown: ConnectionStatus | undefined;
+  const rejoinOnEnter = (event: KeyboardEvent): void => {
+    // The focused button already turns Enter into a click.
+    if (shown?.kind === 'away' && event.key === 'Enter' && document.activeElement !== retryButton) actions.onRetry();
+  };
+  document.addEventListener('keydown', rejoinOnEnter);
 
   const render = (): void => {
     if (!shown) return;
     message.textContent = describeStatus(shown);
-    retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected';
+    retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && shown.kind !== 'away';
+    retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : 'Retry now';
     reloadButton.hidden = shown.kind !== 'incompatible';
   };
 
@@ -61,9 +67,12 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
       screen.dataset['screen'] = status.kind;
       render();
       if (status.kind === 'full' || status.kind === 'disconnected') countdown = setInterval(render, COUNTDOWN_INTERVAL_MS);
+      // Enter or Space on the focused button rejoins as well as a click; `rejoinOnEnter` keeps Enter working if focus moved elsewhere.
+      if (status.kind === 'away') retryButton.focus({ preventScroll: true });
     },
     destroy() {
       if (countdown !== undefined) clearInterval(countdown);
+      document.removeEventListener('keydown', rejoinOnEnter);
       screen.remove();
     },
   };
@@ -80,6 +89,8 @@ function describeStatus(status: ConnectionStatus): string {
       return `The world is full (${WORLD_SEATS}/${WORLD_SEATS} online). Retrying in ${secondsUntil(status.retryAt)}s.`;
     case 'disconnected':
       return `Disconnected from the world. Retrying in ${secondsUntil(status.retryAt)}s…`;
+    case 'away':
+      return 'You were away too long, so the server freed your seat. Rejoin to play again.';
     case 'incompatible':
       return `Cannot play on this server: ${status.reason}.`;
   }

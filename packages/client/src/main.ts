@@ -48,6 +48,11 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
   });
   const joining = OnlineWorld.join({ endpoint: serverUrl, onStatus: (status) => screens.show(status) });
   const world = await joining.seated;
+  // A hidden tab pauses the game loop, so the keyboard's own stop never goes out: send it here, or the server keeps an abandoned tab walking and seated.
+  window.addEventListener('blur', () => world.stopWalking());
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) world.stopWalking();
+  });
   return {
     world,
     online: {

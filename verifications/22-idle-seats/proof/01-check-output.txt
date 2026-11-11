@@ -1,0 +1,232 @@
+$ pnpm install
+Scope: all 4 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: msgpackr-extract.                                   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Done in 513ms using pnpm v10.9.0
+(node:98407) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm typecheck
+
+> novaland@0.0.0 typecheck <repo>
+> pnpm -r typecheck
+
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+(node:98427) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+
+$ pnpm lint
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+
+
+
+$ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
+
+ RUN  v5.1.0 <repo>
+
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 5ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 10ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 10ms
+ ✓ |client| src/online/frameBuffer.test.ts (7 tests) 9ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 3ms
+ ✓ |client| src/online/serverUrl.test.ts (3 tests) 3ms
+ ✓ |client| src/render/camera.test.ts (4 tests) 13ms
+ ✓ |client| src/render/viewFrame.test.ts (6 tests) 281ms
+ ✓ |client| src/online/connection.test.ts (17 tests) 161ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 3ms
+ ✓ |client| src/seats.test.ts (3 tests) 304ms
+ ✓ |client| src/worlds/LocalWorld.test.ts (3 tests) 293ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 6ms
+ ✓ |client| src/online/screens.test.ts (1 test) 4ms
+ ✓ |server| src/front/mountFrontRoutes.test.ts (3 tests) 108ms
+ ✓ |server| src/front/origins.test.ts (14 tests) 8ms
+ ✓ |server| src/headless.test.ts (3 tests) 207ms
+ ✓ |server| src/world/roomSeats.test.ts (3 tests) 3ms
+ ✓ |server| src/world/inbound.test.ts (8 tests) 9ms
+ ✓ |server| src/world/startWorldServer.test.ts (1 test) 107ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 3ms
+ ✓ |server| src/front/guardRequests.test.ts (13 tests) 537ms
+   ✓ guardRequests (13)
+     ✓ closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing 401ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 465ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (14 tests) 519ms
+ ✓ |sim| src/features/player/avatars.test.ts (7 tests) 485ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 539ms
+   ✓ determinism (4)
+     ✓ same seed + same commands = identical state, including physics bytes 496ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 204ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 197ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 281ms
+ ✓ |server| src/front/createFront.test.ts (2 tests) 1708ms
+   ✓ createFront (2)
+     ✓ closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open 1704ms
+ ✓ |sim| src/features/player/spawn.test.ts (7 tests) 140ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 99ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 122ms
+ ✓ |sim| src/content/levels/levels.test.ts (3 tests) 87ms
+ ✓ |sim| src/core/replica.test.ts (23 tests) 1390ms
+   ✓ a replica fed full world states every tick (1)
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 1014ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 98ms
+ ✓ |sim| src/core/physics.test.ts (3 tests) 56ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 27ms
+ ✓ |client| src/online/OnlineWorld.test.ts (14 tests) 3499ms
+   ✓ OnlineWorld (13)
+     ✓ resolves once welcomed, with a replica that holds the world, the seat and the count of players 352ms
+     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1010ms
+     ✓ stops walking when the page loses focus, once, and does not walk again after a reconnect 1008ms
+     ✓ after a drop refuses a welcome for another world, so the page can reload 1004ms
+ ✓ |server| src/startServer.test.ts (27 tests) 2879ms
+   ✓ one process: the client files, /health and the request guard in front of the world room (21)
+     ✓ compresses a large file for a browser that accepts it 307ms
+   ✓ one process with a short idle timeout (2)
+     ✓ never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room 1523ms
+     ✓ closes a plain connection that says nothing 303ms
+stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts
+{"event":"world-room-idle-kick","slot":0,"idleSeconds":601}
+
+stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts
+{"event":"world-room-idle-kick","slot":0,"idleSeconds":1800}
+
+stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts
+{"event":"world-room-idle-kick","slot":1,"idleSeconds":601}
+
+stdout | src/world/worldRoom.test.ts > WorldRoom driven directly > frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive
+{"event":"world-room-idle-kick","slot":0,"idleSeconds":2}
+
+ ✓ |server| src/world/worldRoom.test.ts (13 tests) 9373ms
+   ✓ WorldRoom over a real connection (10)
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 301ms
+     ✓ shows every player the others moving, through deltas that chain without a gap 378ms
+     ✓ frees the seat of a player who leaves, removes their avatar for the others, and seats the next joiner there 360ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 498ms
+     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1216ms
+     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5139ms
+     ✓ frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts 709ms
+
+ Test Files  41 passed (41)
+      Tests  291 passed (291)
+   Start at  21:33:49
+   Duration  10.62s (tests 80%, import 14%, transform 5%, worker 1%)
+
+JSON report written to <repo>/verifications/22-idle-seats/proof/01-tests-report.json
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses
+Max payload size exceeded
+RangeError: Max payload size exceeded
+    at Receiver.haveLength (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:442:28)
+    at Receiver.getPayloadLength16 (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:393:10)
+    at Receiver.startLoop (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:181:16)
+    at Receiver._write (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/receiver.js:117:10)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.socketOnData (<repo>/node_modules/.pnpm/ws@8.22.2/node_modules/ws/lib/websocket.js:1407:35)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+

@@ -1,0 +1,44 @@
+{
+  "boot": {
+    "event": "world-room-listening",
+    "port": 53859,
+    "roomId": "world",
+    "seed": "<random>",
+    "seats": 5,
+    "tickRate": 60,
+    "sendRate": 20,
+    "idleTimeoutSeconds": 3,
+    "clientDirectory": null,
+    "allowedOrigins": [],
+    "loopbackOrigins": true
+  },
+  "summary": {
+    "idleTimeoutSeconds": 3,
+    "idler": {
+      "slot": 0,
+      "leftWith": {
+        "code": 4100,
+        "reason": "idle"
+      },
+      "kickedAfterSeconds": 3.03,
+      "avatarGoneForWalker": true
+    },
+    "walker": {
+      "slot": 1,
+      "movesSent": 7,
+      "stillSeatedWhenIdlerKicked": true,
+      "stillSeatedTwiceTheTimeout": true,
+      "secondsSeatedWhileMoving": 6.07,
+      "leftWith": {
+        "code": 4100,
+        "reason": "idle"
+      },
+      "kickedAfterLastMoveSeconds": 3.01
+    },
+    "rejoin": {
+      "slot": 0,
+      "seatsTakenAfter": 2
+    },
+    "allApplied": true
+  }
+}
