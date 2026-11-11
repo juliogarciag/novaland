@@ -1,4 +1,4 @@
-/** Largest HTTP request body the edge lets through to the routes. The only body a route expects is a join, which carries `{}`. Bigger requests have their connection closed before anything buffers them. */
+/** Largest HTTP request body the front lets through to the routes. The only body a route expects is a join, which carries `{}`. Bigger requests have their connection closed before anything buffers them. */
 export const MAX_REQUEST_BODY_BYTES = 4096;
 
 /**

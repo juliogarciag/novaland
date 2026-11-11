@@ -164,7 +164,7 @@ export function requestsColyseusCannotSurvive(port) {
   const json = ['Content-Type: application/json', 'Content-Length: 2', '', '{}'];
   const upgrade = ['Connection: Upgrade', 'Upgrade: websocket', 'Sec-WebSocket-Version: 13', 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ=='];
   return [
-    ['an absolute URL as the target', ['GET http://evil.example/healthz HTTP/1.1', host]],
+    ['an absolute URL as the target', ['GET http://evil.example/health HTTP/1.1', host]],
     ['an absolute URL as the target of a matchmaking call', ['POST http://evil.example/matchmake/joinById/world HTTP/1.1', host, ...json]],
     ['a Host that is no host, on a matchmaking call', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: exa[mple', ...json]],
     ['a Host with a port that is no port', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: a:b', ...json]],

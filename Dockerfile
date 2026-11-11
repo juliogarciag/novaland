@@ -6,7 +6,7 @@
 #
 # Host-agnostic: PORT comes from the environment (the host sets it),
 # ALLOWED_ORIGINS names the address players open (the image is production and
-# refuses to start without it), the process answers GET /healthz, and the
+# refuses to start without it), the process answers GET /health, and the
 # world lives in this process's memory.
 # Node 24 as .node-version says; pnpm through corepack at the version pinned
 # in package.json's packageManager field.
@@ -44,5 +44,5 @@ COPY --from=production-deps /app/packages/server/package.json ./packages/server/
 COPY --from=build /app/packages/server/dist ./packages/server/dist
 COPY --from=build /app/packages/client/dist ./packages/client/dist
 USER node
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD wget -qO- "http://127.0.0.1:${PORT:-2567}/healthz" || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD wget -qO- "http://127.0.0.1:${PORT:-2567}/health" || exit 1
 CMD ["node", "packages/server/dist/index.mjs"]

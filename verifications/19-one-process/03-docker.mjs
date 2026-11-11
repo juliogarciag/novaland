@@ -3,7 +3,7 @@
  * only PORT, then from the served URL in Chromium: two browser contexts get
  * seats and each one's key presses move its avatar in the authoritative world
  * (seen through a Node observer) while the other page receives the deltas
- * that carry the movement; /healthz answers and Docker's own health check
+ * that carry the movement; /health answers and Docker's own health check
  * turns healthy; the bundle and the sprites are served with correct paths;
  * window.__novaland is absent; no console errors (the CSP lets the game run);
  * the process runs as `node` with production dependencies only; a foreign
@@ -37,8 +37,8 @@ try {
   transcript.push(`$ docker run -d --rm --name ${CONTAINER} -e PORT=${PORT} -e ALLOWED_ORIGINS=${base} -p ${PORT}:${PORT} ${IMAGE} (exit ${started.code})\n${started.output}`);
   containerStarted = started.code === 0;
   results.push(check(`docker run with PORT=${PORT} and ALLOWED_ORIGINS=${base} starts`, containerStarted));
-  const health = await waitFor(() => fetch(`${base}/healthz`).then((response) => response.json()).catch(() => undefined), (body) => body?.ok === true, '/healthz to answer', 30000);
-  results.push(check('/healthz answers from the container', health.ok === true && health.roomId === 'world' && health.seats === 5, JSON.stringify(health)));
+  const health = await waitFor(() => fetch(`${base}/health`).then((response) => response.json()).catch(() => undefined), (body) => body?.ok === true, '/health to answer', 30000);
+  results.push(check('/health answers from the container', health.ok === true && health.roomId === 'world' && health.seats === 5, JSON.stringify(health)));
   const logs = await run('docker', ['logs', CONTAINER]);
   const bootLine = logs.output.split('\n').find((line) => line.includes('world-room-listening'));
   const boot = bootLine ? JSON.parse(bootLine.slice(bootLine.indexOf('{'))) : undefined;
@@ -74,7 +74,7 @@ try {
   report.upgrades = upgrades;
   const hostile = [];
   for (const [what, lines] of requestsColyseusCannotSurvive(PORT)) hostile.push({ what, answer: await rawStatusLine(PORT, lines) });
-  const aliveAfterHostile = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  const aliveAfterHostile = await fetch(`${base}/health`).then((response) => response.status, () => 'down');
   const stillRunning = await run('docker', ['inspect', '--format', '{{.State.Running}}', CONTAINER]);
   results.push(check('the container answers 400 to every request that ends a bare Colyseus process, and is still running after all of them', hostile.every((request) => request.answer === 'HTTP/1.1 400 Bad Request') && aliveAfterHostile === 200 && stillRunning.output.trim() === 'true', JSON.stringify({ hostile, aliveAfterHostile, running: stillRunning.output.trim() })));
   report.hostile = hostile;
@@ -90,7 +90,7 @@ try {
   await Promise.all(Array.from({ length: 200 }, () => writeAndHangUp(PORT, { bytes: `GET / HTTP/1.1\r\n\r\n${getLargeAsset}`, hangUpAfterMs: 300 })));
   await Promise.all(Array.from({ length: 200 }, () => writeAndHangUp(PORT, { bytes: refusedUpgrade, thenWrite: 'x', hangUpAfterMs: 300 })));
   const descriptorsAfter = await waitFor(openDescriptors, (count) => count <= descriptorsBefore + 2, 'the container to close what the attacks opened', 15000).catch(openDescriptors);
-  const aliveAfterBursts = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  const aliveAfterBursts = await fetch(`${base}/health`).then((response) => response.status, () => 'down');
   results.push(check('the container holds no more open descriptors after 2500 pipelined requests for a large file that hang up, 200 bursts behind a request Node answers itself, and 200 refused upgrades that send more and leave', largeAsset.startsWith('/assets/rapier-') && descriptorsAfter <= descriptorsBefore + 2 && aliveAfterBursts === 200, JSON.stringify({ largeAsset, descriptorsBefore, descriptorsAfter, aliveAfterBursts })));
   report.descriptors = { largeAsset, descriptorsBefore, descriptorsAfter };
 

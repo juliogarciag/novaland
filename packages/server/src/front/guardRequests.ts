@@ -54,7 +54,7 @@ export interface RequestGuardOptions {
  * Colyseus installs, and is put in place right after Colyseus binds its
  * routes. It refuses to install over any other number of listeners: a second
  * one would be wrapped without expecting a pre-read body, or bypass the guard.
- * New HTTP routes go in `mountEdgeRoutes`, never on `httpServer.on('request')`.
+ * New HTTP routes go in `mountFrontRoutes`, never on `httpServer.on('request')`.
  */
 export function guardRequests(httpServer: HttpServer, { originPolicy, maxRequestBodyBytes, idleConnectionTimeoutMs }: RequestGuardOptions): void {
   // Both are looked up before either is taken off, so a refusal to install leaves the server as it was.

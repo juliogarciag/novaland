@@ -53,9 +53,9 @@ try {
   results.push(check('the boot line names the client directory it serves, an empty allow-list and loopback pages allowed (not production)', boot.port === SERVER_PORT && /packages\/client\/dist$/.test(boot.clientDirectory ?? '') && Array.isArray(boot.allowedOrigins) && boot.allowedOrigins.length === 0 && boot.loopbackOrigins === true, JSON.stringify({ ...boot, seed: '<random>' })));
 
   const base = `http://localhost:${SERVER_PORT}`;
-  const health = await fetch(`${base}/healthz`);
+  const health = await fetch(`${base}/health`);
   const healthBody = await health.json();
-  results.push(check('/healthz answers 200 with ok, the room id, the seats and the tick', health.status === 200 && healthBody.ok === true && healthBody.roomId === 'world' && healthBody.seats === 5 && Number.isInteger(healthBody.tick), JSON.stringify(healthBody)));
+  results.push(check('/health answers 200 with ok, the room id, the seats and the tick', health.status === 200 && healthBody.ok === true && healthBody.roomId === 'world' && healthBody.seats === 5 && Number.isInteger(healthBody.tick), JSON.stringify(healthBody)));
   const index = await fetch(`${base}/`);
   const indexHeaders = Object.fromEntries(index.headers.entries());
   results.push(check('/ is the built index.html with nosniff, a CSP, DENY framing and no long cache', index.status === 200 && /text\/html/.test(indexHeaders['content-type']) && indexHeaders['x-content-type-options'] === 'nosniff' && /default-src 'self'/.test(indexHeaders['content-security-policy'] ?? '') && indexHeaders['x-frame-options'] === 'DENY' && indexHeaders['cache-control'] === 'public, max-age=0' && indexHeaders['etag'] !== undefined && indexHeaders['strict-transport-security'] === undefined && indexHeaders['x-powered-by'] === undefined && (await index.text()) === indexHtml));
@@ -81,7 +81,7 @@ try {
     noOrigin: await upgradeStatus(SERVER_PORT, undefined),
   };
   results.push(check('a WebSocket upgrade from a foreign origin is refused with 403, and so is one whose Origin matches its own Host (a domain pointed at this server); a loopback page and no origin are taken (101)', upgrades.foreign === 403 && upgrades.reboundDomain === 403 && upgrades.loopbackPage === 101 && upgrades.noOrigin === 101, JSON.stringify(upgrades)));
-  const wildcard = await fetch(`${base}/healthz`, { headers: { origin: 'https://evil.example.com' } });
+  const wildcard = await fetch(`${base}/health`, { headers: { origin: 'https://evil.example.com' } });
   results.push(check('no answer tells a foreign origin it may read it: Colyseus\'s wildcard CORS header is gone', wildcard.status === 200 && wildcard.headers.get('access-control-allow-origin') === null, String(wildcard.headers.get('access-control-allow-origin'))));
   const compressed = await fetch(`${base}${assetPaths[0]}`);
   const compressedBytes = (await compressed.arrayBuffer()).byteLength;
@@ -90,7 +90,7 @@ try {
   results.push(check('the bundle is compressed for a browser that accepts it, and a range request gets that part of the file', ['gzip', 'br', 'deflate'].includes(compressed.headers.get('content-encoding')) && compressedBytes > 100000 && part.status === 206 && partBytes === 100, JSON.stringify({ contentEncoding: compressed.headers.get('content-encoding'), partStatus: part.status, partBytes })));
   const hostile = [];
   for (const [what, lines] of requestsColyseusCannotSurvive(SERVER_PORT)) hostile.push({ what, answer: await rawStatusLine(SERVER_PORT, lines) });
-  const aliveAfterHostile = await fetch(`${base}/healthz`).then((response) => response.status, () => 'down');
+  const aliveAfterHostile = await fetch(`${base}/health`).then((response) => response.status, () => 'down');
   results.push(check('every request that ends a bare Colyseus process is answered 400, and the server is still up after all of them', hostile.every((request) => request.answer === 'HTTP/1.1 400 Bad Request') && aliveAfterHostile === 200, JSON.stringify({ hostile, aliveAfterHostile })));
   report.hostile = hostile;
   const foreignMatchmake = await fetch(`${base}/matchmake/joinById/world`, { method: 'OPTIONS', headers: { origin: 'https://evil.example.com' } });

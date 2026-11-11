@@ -10,7 +10,7 @@ import { TICK_RATE } from '@novaland/sim';
 import { randomInt } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { readOriginPolicy } from './edge';
+import { readOriginPolicy } from './front';
 import { startServer } from './startServer';
 import { DEFAULT_PORT, MAX_SEATS, SEND_RATE } from './world';
 
@@ -39,7 +39,7 @@ function readPort(value: string | undefined): number {
   return port;
 }
 
-/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `edge/origins.ts`): the listed origins, plus any loopback page outside production. A malformed entry stops the boot, and so does production with nothing listed. */
+/** The origin policy for `ALLOWED_ORIGINS` and `NODE_ENV` (see `front/origins.ts`): the listed origins, plus any loopback page outside production. A malformed entry stops the boot, and so does production with nothing listed. */
 function originPolicyOrExit(allowedOrigins: string | undefined, nodeEnv: string | undefined) {
   try {
     return readOriginPolicy({ allowedOrigins, allowLoopback: nodeEnv !== 'production' });

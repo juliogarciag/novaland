@@ -5,33 +5,33 @@ import net, { type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createEdge } from './createEdge';
+import { createFront } from './createFront';
 import { readOriginPolicy } from './origins';
 
-describe('createEdge', () => {
+describe('createFront', () => {
   afterEach(async () => {
     await Promise.all(servers.splice(0).map((httpServer) => new Promise((resolve) => httpServer.close(resolve))));
   });
 
   it('names the caller in the matchmaking headers only when the policy allows it, and always sends nosniff and Vary', () => {
-    const edge = createEdge(OPTIONS);
-    expect(edge.matchmakingHeaders(new Headers({ origin: 'https://play.example.com' }))).toEqual({ 'Access-Control-Allow-Origin': 'https://play.example.com', 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
-    expect(edge.matchmakingHeaders(new Headers({ origin: 'https://evil.example.com' }))).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
+    const front = createFront(OPTIONS);
+    expect(front.matchmakingHeaders(new Headers({ origin: 'https://play.example.com' }))).toEqual({ 'Access-Control-Allow-Origin': 'https://play.example.com', 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
+    expect(front.matchmakingHeaders(new Headers({ origin: 'https://evil.example.com' }))).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
     // Another spelling of the listed origin is refused, so nothing a browser would not match is ever sent back.
-    expect(edge.matchmakingHeaders(new Headers({ origin: 'https://play.example.com/x' }))).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
-    expect(edge.matchmakingHeaders(new Headers())).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
+    expect(front.matchmakingHeaders(new Headers({ origin: 'https://play.example.com/x' }))).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
+    expect(front.matchmakingHeaders(new Headers())).toEqual({ 'X-Content-Type-Options': 'nosniff', Vary: 'Origin' });
   });
 
   it('closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open', async () => {
-    const clientDirectory = await mkdtemp(path.join(tmpdir(), 'novaland-edge-'));
+    const clientDirectory = await mkdtemp(path.join(tmpdir(), 'novaland-front-'));
     await writeFile(path.join(clientDirectory, 'big.bin'), Buffer.alloc(64 * 1024 * 1024));
-    const edge = createEdge({ ...OPTIONS, clientDirectory, idleConnectionTimeoutMs: 300 });
+    const front = createFront({ ...OPTIONS, clientDirectory, idleConnectionTimeoutMs: 300 });
     const app = express();
-    edge.mountRoutes(app);
-    edge.httpServer.on('request', app);
-    servers.push(edge.httpServer);
-    await new Promise<void>((resolve) => edge.httpServer.listen(0, '127.0.0.1', resolve));
-    const { port } = edge.httpServer.address() as AddressInfo;
+    front.mountRoutes(app);
+    front.httpServer.on('request', app);
+    servers.push(front.httpServer);
+    await new Promise<void>((resolve) => front.httpServer.listen(0, '127.0.0.1', resolve));
+    const { port } = front.httpServer.address() as AddressInfo;
 
     const startedAt = performance.now();
     await new Promise<void>((resolve) => {
@@ -46,7 +46,7 @@ describe('createEdge', () => {
       setTimeout(() => socket.resume(), 1500);
     });
     expect(performance.now() - startedAt).toBeLessThan(5000);
-    expect(await new Promise<number>((resolve) => edge.httpServer.getConnections((_error, count) => resolve(count)))).toBe(0);
+    expect(await new Promise<number>((resolve) => front.httpServer.getConnections((_error, count) => resolve(count)))).toBe(0);
   });
 });
 

@@ -9,4 +9,4 @@ One file per decision, numbered, never edited after the fact (write a new one th
 - [0005 - The world room: one fixed room id, join by id only, and how "full" reaches the client](0005-world-room-join.md)
 - [0006 - Client online mode: one playable world, two ways to fill it](0006-client-online-mode.md)
 - [0007 - Physics loads on demand](0007-physics-loads-on-demand.md)
-- [0008 - The server's HTTP edge: its own half, libraries for the work, Colyseus's hooks for the wiring](0008-http-edge.md)
+- [0008 - The server's HTTP front: its own half, libraries for the work, Colyseus's hooks for the wiring](0008-http-front.md)

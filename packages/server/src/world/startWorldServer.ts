@@ -18,8 +18,8 @@ export type RoutesApp = Parameters<NonNullable<ServerOptions['express']>>[0];
 
 /**
  * What stands between the port and the world: the HTTP server and what decides
- * which requests reach the room. The HTTP edge builds it; it is typed here so
- * the world depends on nothing of the edge. The world hands each piece to the
+ * which requests reach the room. The HTTP front builds it; it is typed here so
+ * the world depends on nothing of the front. The world hands each piece to the
  * hook Colyseus offers for it and never looks inside.
  */
 export interface WorldFront {

@@ -3,16 +3,16 @@ import express, { type Application, type NextFunction, type Request, type Respon
 import helmet from 'helmet';
 import path from 'node:path';
 
-export interface EdgeRoutesOptions {
+export interface FrontRoutesOptions {
   /** The client build to serve (`index.html`, `assets/`, `sprites/`), or undefined to serve none: in development Vite serves the client. */
   readonly clientDirectory: string | undefined;
-  /** What `/healthz` reports, or undefined while there is nothing to report yet (answered `503`). */
+  /** What `/health` reports, or undefined while there is nothing to report yet (answered `503`). */
   readonly health: () => Readonly<Record<string, unknown>> | undefined;
 }
 
 /**
  * Mounts every HTTP route that is not Colyseus's own on the Express app
- * Colyseus hands out: the security headers, `/healthz` and the built client.
+ * Colyseus hands out: the security headers, `/health` and the built client.
  * Colyseus answers its matchmaking routes first and passes everything else
  * here, so nothing in this file ever sees a matchmaking call.
  *
@@ -25,7 +25,7 @@ export interface EdgeRoutesOptions {
  * client can trigger at will must not fill the log. A failure on the server's
  * side is one line.
  */
-export function mountEdgeRoutes(app: Application, { clientDirectory, health }: EdgeRoutesOptions): void {
+export function mountFrontRoutes(app: Application, { clientDirectory, health }: FrontRoutesOptions): void {
   app.disable('x-powered-by');
   app.use(
     helmet({
@@ -35,7 +35,7 @@ export function mountEdgeRoutes(app: Application, { clientDirectory, health }: E
       strictTransportSecurity: false,
     }),
   );
-  app.get('/healthz', (_request, response) => {
+  app.get('/health', (_request, response) => {
     const report = health();
     response.set('cache-control', 'no-store');
     if (report === undefined) {

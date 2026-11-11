@@ -11,8 +11,8 @@ import tseslint from 'typescript-eslint';
  * client -> may import: phaser, @novaland/sim (package entry only). Never rapier, bitecs, server.
  *           @colyseus/sdk only inside packages/client/src/online: the rest of the client plays a PlayableWorld and does not know the transport.
  * server -> may import: @novaland/sim (package entry only), colyseus. Never phaser, client.
- *           Two halves that never import each other (ADR 0008): src/edge (HTTP: express, helmet, never colyseus) and src/world (the room: colyseus).
- *           The rest of the server reaches each through its entry file only (src/edge/index.ts, src/world/index.ts).
+ *           Two halves that never import each other (ADR 0008): src/front (HTTP: express, helmet, never colyseus) and src/world (the room: colyseus).
+ *           The rest of the server reaches each through its entry file only (src/front/index.ts, src/world/index.ts).
  *
  * Violations fail `pnpm lint`. Keep the lists below in sync with AGENTS.md.
  */
@@ -26,13 +26,13 @@ const COLYSEUS_OUTSIDE_ONLINE = group(['colyseus', 'colyseus/*', '@colyseus/*'],
 const CLIENT_PKG = group(['@novaland/client', '@novaland/client/*', '**/packages/client/**', '../**/client/**'], 'Nothing may depend on the client. It is a view.');
 const SERVER_PKG = group(['@novaland/server', '@novaland/server/*', '**/packages/server/**', '../**/server/**'], 'Nothing may depend on the server.');
 const NODE_BUILTINS = group(['node:*', 'fs', 'fs/*', 'path', 'os', 'crypto', 'child_process', 'worker_threads', 'http', 'https', 'net', 'events', 'stream', 'util', 'url'], 'The sim is headless and pure: no Node APIs in packages/sim.');
-const EDGE_DEEP = group(['**/edge/*'], 'Import the HTTP edge through its entry file (packages/server/src/edge) so its public surface stays explicit (ADR 0008).');
+const FRONT_DEEP = group(['**/front/*'], 'Import the HTTP front through its entry file (packages/server/src/front) so its public surface stays explicit (ADR 0008).');
 const WORLD_DEEP = group(['**/world/*'], 'Import the world through its entry file (packages/server/src/world) so its public surface stays explicit (ADR 0008).');
-const EDGE_ANY = group(['**/edge', '**/edge/**'], 'The world knows nothing about the HTTP edge: it declares what it needs in WorldFront and is handed it (ADR 0008).');
-const WORLD_ANY = group(['**/world', '**/world/**'], 'The HTTP edge knows nothing about the world room (ADR 0008).');
-const OUT_OF_HALF = group(['../*', '../**'], 'Each half of the server is self-contained: nothing in src/edge or src/world imports from outside its own folder, which would be a way round to the other half (ADR 0008).');
-const HTTP_LIBRARIES_IN_WORLD = group(['express', 'express/*', 'helmet', 'compression'], 'HTTP belongs to src/edge. The world names the Express app through Colyseus (RoutesApp) and imports no HTTP library (ADR 0008).');
-const COLYSEUS_IN_EDGE = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'The HTTP edge does not know Colyseus: it shapes its pieces for Colyseus\'s hooks and the world plugs them in (ADR 0008).');
+const FRONT_ANY = group(['**/front', '**/front/**'], 'The world knows nothing about the HTTP front: it declares what it needs in WorldFront and is handed it (ADR 0008).');
+const WORLD_ANY = group(['**/world', '**/world/**'], 'The HTTP front knows nothing about the world room (ADR 0008).');
+const OUT_OF_HALF = group(['../*', '../**'], 'Each half of the server is self-contained: nothing in src/front or src/world imports from outside its own folder, which would be a way round to the other half (ADR 0008).');
+const HTTP_LIBRARIES_IN_WORLD = group(['express', 'express/*', 'helmet', 'compression'], 'HTTP belongs to src/front. The world names the Express app through Colyseus (RoutesApp) and imports no HTTP library (ADR 0008).');
+const COLYSEUS_IN_FRONT = group(['colyseus', 'colyseus/*', '@colyseus/*'], 'The HTTP front does not know Colyseus: it shapes its pieces for Colyseus\'s hooks and the world plugs them in (ADR 0008).');
 const SIM_DEEP = group(['@novaland/sim/*', '**/packages/sim/**', '../**/sim/**'], 'Import the sim through its package entry (@novaland/sim) so its public API stays explicit.');
 
 const restrictImports = (...groups) => ({
@@ -109,16 +109,16 @@ export default defineConfig([
   // Later blocks replace a rule's whole setting, so each of the three repeats what all server files share.
   {
     files: ['packages/server/**/*.ts'],
-    ignores: ['packages/server/src/edge/**', 'packages/server/src/world/**'],
-    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, EDGE_DEEP, WORLD_DEEP),
+    ignores: ['packages/server/src/front/**', 'packages/server/src/world/**'],
+    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, FRONT_DEEP, WORLD_DEEP),
   },
   {
-    files: ['packages/server/src/edge/**/*.ts'],
-    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, WORLD_ANY, COLYSEUS_IN_EDGE, OUT_OF_HALF),
+    files: ['packages/server/src/front/**/*.ts'],
+    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, WORLD_ANY, COLYSEUS_IN_FRONT, OUT_OF_HALF),
   },
   {
     files: ['packages/server/src/world/**/*.ts'],
-    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, EDGE_ANY, HTTP_LIBRARIES_IN_WORLD, OUT_OF_HALF),
+    rules: restrictImports(PHASER, CLIENT_PKG, SIM_DEEP, FRONT_ANY, HTTP_LIBRARIES_IN_WORLD, OUT_OF_HALF),
   },
   // `__testing__` exports exist for tests only. Later blocks replace a rule's
   // whole setting, so the sim block repeats NEW_DATE here.

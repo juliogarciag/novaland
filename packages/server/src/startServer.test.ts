@@ -7,11 +7,11 @@ import net from 'node:net';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { readOriginPolicy } from './edge';
+import { readOriginPolicy } from './front';
 import { startServer } from './startServer';
 import { MAX_SEATS, WORLD_ROOM_ID, type WorldServer } from './world';
 
-describe('one process: the client files, /healthz and the request guard in front of the world room', () => {
+describe('one process: the client files, /health and the request guard in front of the world room', () => {
   beforeAll(async () => {
     server = await startServer({ port: 0, seed: 7, originPolicy: readOriginPolicy({ allowedOrigins: 'https://tunnel.example.com', allowLoopback: true }), clientDirectory: await fakeClientBuild() });
     baseUrl = `http://127.0.0.1:${server.port}`;
@@ -119,7 +119,7 @@ describe('one process: the client files, /healthz and the request guard in front
     for (let round = 0; round < 3; round += 1) await sendBurstAndHangUp(server.port, { url: '/assets/big-abc123.js', requests: 200 });
     expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
     // One request at a time on a kept-alive connection, as browsers and proxies send them, still works.
-    expect(await sequentialStatuses(server.port, ['/assets/index-abc123.js', '/healthz', '/'])).toEqual([200, 200, 200]);
+    expect(await sequentialStatuses(server.port, ['/assets/index-abc123.js', '/health', '/'])).toEqual([200, 200, 200]);
   });
 
   it('leaves no file open when the first request of a burst is one Node answers itself, which the guard never sees', async () => {
@@ -142,8 +142,8 @@ describe('one process: the client files, /healthz and the request guard in front
     expect(await descriptorCountOnceSettled(before)).toBeLessThanOrEqual(before);
   });
 
-  it('answers /healthz with the room in it', async () => {
-    const response = await fetch(`${baseUrl}/healthz`);
+  it('answers /health with the room in it', async () => {
+    const response = await fetch(`${baseUrl}/health`);
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(await response.json()).toEqual({ ok: true, roomId: 'world', seats: MAX_SEATS, seatsTaken: 0, tick: expect.any(Number) });
@@ -172,7 +172,7 @@ describe('one process: the client files, /healthz and the request guard in front
   });
 
   it('tells no origin it may read an answer unless the policy allows it: never the wildcard Colyseus sends by default', async () => {
-    for (const requestPath of ['/healthz', '/__healthcheck', '/']) {
+    for (const requestPath of ['/health', '/__healthcheck', '/']) {
       const foreign = await fetch(`${baseUrl}${requestPath}`, { headers: { origin: 'https://evil.example.com' } });
       expect(foreign.headers.get('access-control-allow-origin'), requestPath).toBeNull();
       const noOrigin = await fetch(`${baseUrl}${requestPath}`);
@@ -196,7 +196,7 @@ describe('one process: the client files, /healthz and the request guard in front
   it('still serves the files and the health check to a foreign origin: only what changes state is guarded', async () => {
     const page = await fetch(`${baseUrl}/`, { headers: { origin: 'https://evil.example.com' } });
     expect(page.status).toBe(200);
-    const health = await fetch(`${baseUrl}/healthz`, { headers: { origin: 'https://evil.example.com' } });
+    const health = await fetch(`${baseUrl}/health`, { headers: { origin: 'https://evil.example.com' } });
     expect(health.status).toBe(200);
   });
 
@@ -223,7 +223,7 @@ describe('one process: the client files, /healthz and the request guard in front
     const host = `Host: localhost:${server.port}`;
     const json = ['Content-Type: application/json', 'Content-Length: 2', '', '{}'];
     const hostile: Array<[string, string[]]> = [
-      ['an absolute URL as the target of a file', ['GET http://evil.example/healthz HTTP/1.1', host]],
+      ['an absolute URL as the target of a file', ['GET http://evil.example/health HTTP/1.1', host]],
       ['an absolute URL as the target of a matchmaking call', ['POST http://evil.example/matchmake/joinById/world HTTP/1.1', host, ...json]],
       ['a Host that is no host, on a matchmaking call', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: exa[mple', ...json]],
       ['a Host with a port that is no port, on a matchmaking call', ['POST /matchmake/joinById/world HTTP/1.1', 'Host: a:b', ...json]],
@@ -239,7 +239,7 @@ describe('one process: the client files, /healthz and the request guard in front
     for (const [what, lines] of hostile) {
       expect(await rawStatusLine(server.port, lines), what).toBe('HTTP/1.1 400 Bad Request');
     }
-    expect((await fetch(`${baseUrl}/healthz`)).status).toBe(200);
+    expect((await fetch(`${baseUrl}/health`)).status).toBe(200);
   });
 
   it('seats a real client through all of it: the reservation, the upgrade and the welcome', async () => {
@@ -248,7 +248,7 @@ describe('one process: the client files, /healthz and the request guard in front
       const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
       expect(welcome.slot).toBe(0);
       expect(server.room.seatsTaken).toBe(1);
-      expect(await (await fetch(`${baseUrl}/healthz`)).json()).toMatchObject({ ok: true, seatsTaken: 1 });
+      expect(await (await fetch(`${baseUrl}/health`)).json()).toMatchObject({ ok: true, seatsTaken: 1 });
     } finally {
       await room.leave();
     }
@@ -283,9 +283,9 @@ describe('one process in production: only the listed origins get in', () => {
     expect((await fetch(url, { method: 'POST', headers: { origin: 'https://play.example.com', 'content-type': 'application/json' }, body: '{}' })).status).toBe(200);
   });
 
-  it('serves no client files when given no client directory, and still answers /healthz with the security headers', async () => {
+  it('serves no client files when given no client directory, and still answers /health with the security headers', async () => {
     expect((await fetch(`${baseUrl}/`)).status).toBe(404);
-    const health = await fetch(`${baseUrl}/healthz`);
+    const health = await fetch(`${baseUrl}/health`);
     expect(health.status).toBe(200);
     expect(health.headers.get('x-content-type-options')).toBe('nosniff');
   });
@@ -345,7 +345,7 @@ const CONTENT_SECURITY_POLICY =
   "default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'";
 const PNG_HEADER = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const BIG_ASSET_BYTES = 8 * 1024 * 1024;
-/** Far over any cap the edge could reasonably have: a join carries `{}`. */
+/** Far over any cap the front could reasonably have: a join carries `{}`. */
 const OVERSIZED_BODY_BYTES = 1024 * 1024;
 const SECRET_CONTENT = 'what the file next to the client build holds';
 const HIDDEN_CONTENT = 'what a dotfile in the client build holds';
