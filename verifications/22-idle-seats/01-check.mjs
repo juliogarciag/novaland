@@ -44,7 +44,7 @@ for (const [what, pattern] of [
   ['world/resync answers with one full state', /answers world\/resync/],
   ['an unknown-type flood closes its sender', /floods unknown message types/],
   ['a join that is never acknowledged is closed', /never acknowledges its join/],
-  ['an oversized HTTP body is refused', /oversized HTTP request/],
+  ['an oversized HTTP body is refused (by the HTTP front since #19)', /refuses an oversized matchmaking body/],
   ['the room driven directly: a leave mid-join and a dispose mid-join', /leaves while its join is waiting|waiting for a tick when the room is disposed/],
 ]) {
   results.push(check(`#17 still holds: ${what}`, passing(pattern).length >= 1));

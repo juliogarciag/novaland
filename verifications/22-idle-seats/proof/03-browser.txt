@@ -1,9 +1,9 @@
-PASS  room server up with a 4 s idle timeout, client dev server up, both started by this run  ({"event":"world-room-listening","port":5422,"roomId":"world","seed":470787081,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":4})
+PASS  room server up with a 4 s idle timeout, client dev server up, both started by this run  ({"event":"world-room-listening","port":5422,"roomId":"world","seed":427788835,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":4,"clientDirectory":null,"allowedOrigins":[],"loopbackOrigins":true})
 PASS  A joins the world and is seated  ({"kind":"online","slot":0})
-PASS  A is kicked at the idle timeout (4 s, at most 1.5 s late)  (4.05 s)
+PASS  A is kicked at the idle timeout (4 s, at most 1.5 s late)  (4.07 s)
 PASS  A shows the away screen: "you were away" and a focused Rejoin button  ({"status":{"kind":"away"},"screen":"away","text":"You were away too long, so the server freed your seat. Rejoin to play again.","buttonText":"Rejoin","buttonVisible":true,"buttonFocused":true})
 PASS  A stays away: no join sent by itself in 9 s, the away screen still up  (joins 1 -> 1, {"kind":"away"})
-PASS  B takes A's freed seat and the world holds one player: B  (A had seat 0, B got 0; WASD / arrows to move   tick 879   1/5 online)
+PASS  B takes A's freed seat and the world holds one player: B  (A had seat 0, B got 0; WASD / arrows to move   tick 893   1/5 online)
 PASS  Enter on the away screen rejoins A, even with the Rejoin button no longer focused, into a new seat, with one join sent  (seat 1, joins 2)
 PASS  both tabs see two players and read 2/5 online
 PASS  B, holding one direction since it was seated, is still seated after 8.5 s more (past twice the timeout) and still walking  ({"status":{"kind":"online","slot":0},"intent":{"x":1,"y":0}})

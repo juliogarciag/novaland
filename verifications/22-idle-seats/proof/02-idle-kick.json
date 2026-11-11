@@ -1,13 +1,16 @@
 {
   "boot": {
     "event": "world-room-listening",
-    "port": 56817,
+    "port": 53859,
     "roomId": "world",
     "seed": "<random>",
     "seats": 5,
     "tickRate": 60,
     "sendRate": 20,
-    "idleTimeoutSeconds": 3
+    "idleTimeoutSeconds": 3,
+    "clientDirectory": null,
+    "allowedOrigins": [],
+    "loopbackOrigins": true
   },
   "summary": {
     "idleTimeoutSeconds": 3,
@@ -25,7 +28,7 @@
       "movesSent": 7,
       "stillSeatedWhenIdlerKicked": true,
       "stillSeatedTwiceTheTimeout": true,
-      "secondsSeatedWhileMoving": 6.06,
+      "secondsSeatedWhileMoving": 6.07,
       "leftWith": {
         "code": 4100,
         "reason": "idle"
