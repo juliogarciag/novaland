@@ -1,6 +1,6 @@
 # 0011 - Ground textures: a flat tile's art is a sheet of variants copied into the ground tileset
 
-Status: accepted. Date: 2026-11-14. Builds on [0003](0003-levels-as-tiles.md) and [0010](0010-standing-tiles.md). It replaces one line of 0010's consequences: "Flat tiles (grass, dirt, rock) are unchanged". Grass now has a texture, and the rock is a standing tile. From ticket #42.
+Status: accepted. Date: 2026-11-14. Builds on [0003](0003-levels-as-tiles.md) and [0010](0010-standing-tiles.md). It replaces one line of 0010's consequences: "Flat tiles (grass, dirt, rock) are unchanged". Grass now has a texture, and the rock is a standing tile. For flat tiles it also replaces 0003's last consequence ("real art replaces `ensurePlaceholderTileset` with a loaded tileset image and gives each `TileDef` a texture index"): the tileset is still put together by the client, from sheets, and a def has no texture index. From ticket #42.
 
 ## Context
 
@@ -14,7 +14,7 @@ The ground was one flat colour per tile def. Grass needs to read as grass over t
 - Which variant a tile shows is `variantOfTile` (`render/tileVariant.ts`), the same hash of column and row that picks a standing tile's frame. The ground under a standing tile is its `groundDefId` in the variant of that tile's own column and row, so removing a tree leaves the grass that was under it.
 - A ground sprite's tiles must be `GROUND_TILE_PIXELS` (16) square; a client test checks every def, and building the tileset throws for one that is not.
 - If a sheet fails to load, its def is drawn as one flat tile in its `color`, as before.
-- The rock is a standing tile (0010): a boulder is a lump on the ground, slightly taller than its tile, and has to sort against the player like a tree.
+- The rock is a standing tile (0010): a boulder stands up from the ground it is sunk into and has to sort against the player like a tree. Its sheet paints the grass at its foot in the grass sheet's own greens (`GRASS_COLORS`), so the two must change together.
 - The sheets are generated (`packages/client/tools/generate-grass-sheet.mjs`, `generate-rock-sheet.mjs`; `pnpm --filter @novaland/client art:grass`, `art:rock`) and committed. The generators share `tools/pixelCanvas.mjs` and `tools/sheetFile.mjs` with the tree's.
 
 ## Consequences
@@ -22,4 +22,4 @@ The ground was one flat colour per tile def. Grass needs to read as grass over t
 - A new textured ground (sand, water, dirt) is a `groundSprite` entry on its def and a PNG. No client code.
 - There is no blending between two kinds of ground: where grass meets another textured ground the edge is the tile edge. Transitions (edge tiles, autotiling) are a later decision.
 - All variants appear equally often. To make a detail rare, paint it on few tiles of a large sheet (the grass sheet has flowers on 2 of its 24).
-- The tileset is a canvas texture built once per page; a def's art cannot change while the game runs.
+- The tileset is a canvas texture built each time a level is drawn; a def's art cannot change while the level is on screen.

@@ -41,7 +41,7 @@ expectPassed('client: the ground tileset gives each def its tiles', /^groundTile
 expectPassed('client: the ground shows the variant a tile picks, also under trees and rocks, and falls back flat', /^groundTileIndexRows /, 6);
 expectPassed('client: variant picking is repeatable and spread out', /^variantOfTile /, 4);
 expectPassed('client: rocks are placed as standing tiles', /^standingTilePlacements /, 5);
-expectPassed('client: the rock generator paints what the rock def declares', /^rock sheet generator /, 3);
+expectPassed('client: the rock generator paints what the rock def declares, a buried rock in every frame', /^rock sheet generator /, 5);
 expectPassed('client: the grass generator paints what the grass def declares, textured all over', /^grass sheet generator /, 4);
 expectPassed('client: the tree generator still paints what the tree def declares', /^tree sheet generator /, 2);
 expectPassed('determinism test still passes', /determinism same seed \+ same commands = identical state/, 1);

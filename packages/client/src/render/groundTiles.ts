@@ -1,4 +1,4 @@
-import { getTileDef, type GroundTileSprite, type TileDef, type TileGrid } from '@novaland/sim';
+import { getTileDef, type GroundTileSprite, type StandingTileSprite, type TileDef, type TileGrid } from '@novaland/sim';
 import { variantOfTile } from './tileVariant';
 
 /** Side of one tile of the ground tileset in texture pixels. A ground sprite's tiles must be this size. */
@@ -40,16 +40,16 @@ export function groundTilesetSlots(tileDefs: readonly TileDef[], isTextureLoaded
 /**
  * The tileset index of the ground at every tile of the grid, row by row.
  * A tile whose def stands up from the ground shows its `groundDefId` there
- * when its image is drawn (`isTextureLoaded`), and its own flat tile when
- * it is not. A def with several tiles shows the variant its column and row
+ * when its image is drawn (`isStandingImageDrawn`), and its own flat tile
+ * when it is not. A def with several tiles shows the variant its column and row
  * pick, so the ground under a tree is the grass that tile would have had.
  */
-export function groundTileIndexRows({ grid, slots, isTextureLoaded }: { grid: TileGrid; slots: readonly GroundTilesetSlot[]; isTextureLoaded: (key: string) => boolean }): number[][] {
+export function groundTileIndexRows({ grid, slots, isStandingImageDrawn }: { grid: TileGrid; slots: readonly GroundTilesetSlot[]; isStandingImageDrawn: (sprite: StandingTileSprite) => boolean }): number[][] {
   const slotByDefId = new Map(slots.map((slot) => [slot.def.id, slot]));
   return grid.defIds.map((defIdsOfRow, row) =>
     defIdsOfRow.map((defId, column) => {
       const standingSprite = getTileDef(defId).standingSprite;
-      const groundDefId = standingSprite && isTextureLoaded(standingSprite.key) ? standingSprite.groundDefId : defId;
+      const groundDefId = standingSprite && isStandingImageDrawn(standingSprite) ? standingSprite.groundDefId : defId;
       const slot = slotByDefId.get(groundDefId);
       if (!slot) throw new Error(`Def id ${groundDefId} has no tile in the ground tileset`);
       return slot.firstTileIndex + variantOfTile({ column, row, variantCount: slot.tileCount });

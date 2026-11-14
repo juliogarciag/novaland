@@ -19,65 +19,81 @@
   },
   "rocks": [
     {
-      "opaquePixels": 172,
+      "opaquePixels": 140,
       "greyTones": 5,
-      "greyShare": 0.9825581395348837,
-      "topRow": 4,
-      "bottomRow": 18,
-      "shadowPixels": 20
-    },
-    {
-      "opaquePixels": 156,
-      "greyTones": 5,
-      "greyShare": 0.9871794871794872,
-      "topRow": 4,
-      "bottomRow": 18,
-      "shadowPixels": 25
-    },
-    {
-      "opaquePixels": 132,
-      "greyTones": 5,
-      "greyShare": 0.9848484848484849,
+      "greyShare": 0.8357142857142857,
       "topRow": 6,
-      "bottomRow": 18,
-      "shadowPixels": 27
+      "bottomRow": 17,
+      "footPixels": 15,
+      "footColours": [
+        "92,158,74"
+      ],
+      "translucentPixels": 0
     },
     {
-      "opaquePixels": 176,
+      "opaquePixels": 124,
       "greyTones": 5,
-      "greyShare": 0.9829545454545454,
-      "topRow": 2,
-      "bottomRow": 18,
-      "shadowPixels": 20
+      "greyShare": 0.8387096774193549,
+      "topRow": 6,
+      "bottomRow": 17,
+      "footPixels": 15,
+      "footColours": [
+        "92,158,74"
+      ],
+      "translucentPixels": 0
+    },
+    {
+      "opaquePixels": 109,
+      "greyTones": 5,
+      "greyShare": 0.7981651376146789,
+      "topRow": 8,
+      "bottomRow": 17,
+      "footPixels": 15,
+      "footColours": [
+        "92,158,74"
+      ],
+      "translucentPixels": 0
+    },
+    {
+      "opaquePixels": 142,
+      "greyTones": 5,
+      "greyShare": 0.8873239436619719,
+      "topRow": 4,
+      "bottomRow": 17,
+      "footPixels": 14,
+      "footColours": [
+        "92,158,74"
+      ],
+      "translucentPixels": 0
     }
   ],
   "grass": {
     "baseColour": "92,158,74",
     "bladeShares": [
-      0.43359375,
-      0.453125,
-      0.4453125,
-      0.44921875,
-      0.453125,
-      0.49609375,
-      0.4375,
-      0.4453125,
-      0.4296875,
-      0.421875,
-      0.4609375,
-      0.42578125,
-      0.41796875,
-      0.42578125,
-      0.3984375,
-      0.453125,
-      0.43359375,
-      0.4609375,
-      0.41796875,
-      0.42578125,
-      0.40625,
-      0.44140625,
-      0.43359375,
-      0.4296875
+      0.13671875,
+      0.14453125,
+      0.13671875,
+      0.140625,
+      0.13671875,
+      0.15234375,
+      0.12109375,
+      0.14453125,
+      0.1328125,
+      0.14453125,
+      0.14453125,
+      0.1484375,
+      0.14453125,
+      0.13671875,
+      0.1484375,
+      0.14453125,
+      0.15234375,
+      0.16796875,
+      0.14453125,
+      0.140625,
+      0.140625,
+      0.13671875,
+      0.14453125,
+      0.13671875
     ],
     "flowerTiles": 2,
     "flatPatches": [
@@ -105,18 +121,19 @@
       0,
       0,
       0
-    ]
+    ],
+    "furthestFromTurf": 28
   },
   "results": [
     {
       "name": "public/sprites/rock.png is byte for byte what generate-rock-sheet.mjs writes",
       "pass": true,
-      "details": "468 bytes"
+      "details": "387 bytes"
     },
     {
       "name": "public/sprites/grass.png is byte for byte what generate-grass-sheet.mjs writes",
       "pass": true,
-      "details": "2225 bytes"
+      "details": "1262 bytes"
     },
     {
       "name": "public/sprites/tree.png is byte for byte what generate-tree-sheet.mjs writes",
@@ -136,21 +153,12 @@
     {
       "name": "every rock variant is a solid lump: at least a third of the tile, opaque",
       "pass": true,
-      "details": "172, 156, 132, 176"
+      "details": "140, 124, 109, 142"
     },
     {
-      "name": "every rock variant is stone: over 90% grey, in at least 4 tones plus the dark edge",
+      "name": "every rock variant stands at least half a tile tall and goes into the ground near the bottom of its tile",
       "pass": true,
-      "details": "98% in 5 tones, 99% in 5 tones, 98% in 5 tones, 98% in 5 tones"
-    },
-    {
-      "name": "every rock variant fills the height of its tile: it starts within 3 rows of the top edge, or above it, and stands near the bottom",
-      "pass": true,
-      "details": "rows 4-18, rows 4-18, rows 6-18, rows 2-18"
-    },
-    {
-      "name": "every rock variant casts a soft shadow on the ground",
-      "pass": true
+      "details": "rows 6-17, rows 6-17, rows 8-17, rows 4-17"
     },
     {
       "name": "no two rock variants are the same",
@@ -162,22 +170,41 @@
       "details": "384x16"
     },
     {
+      "name": "every rock variant is sunk into the ground: its lowest row is grass, in colours the grass sheet uses, at least 6 pixels wide",
+      "pass": true,
+      "details": "15 px, 15 px, 15 px, 14 px"
+    },
+    {
+      "name": "every rock variant is stone above its grass: all grey, in at least 4 tones plus the dark edge",
+      "pass": true,
+      "details": "100% in 5 tones, 100% in 5 tones, 100% in 5 tones, 100% in 5 tones"
+    },
+    {
+      "name": "no rock variant has a shadow or anything else translucent under it",
+      "pass": true
+    },
+    {
       "name": "every pixel of every grass tile is opaque",
       "pass": true
     },
     {
-      "name": "grass is textured all over: no 4x4 patch of any tile is one flat colour",
+      "name": "grass is textured all over: no 6x6 patch of any tile is one flat colour",
       "pass": true,
       "details": "0 flat patches in 24 tiles"
     },
     {
-      "name": "in every grass tile between a quarter and two thirds of the pixels are blades, the rest turf",
+      "name": "grass is sparse: in every tile between a tenth and a third of the pixels are blades, the rest turf",
       "pass": true,
-      "details": "40%-50%"
+      "details": "12%-17%"
     },
     {
       "name": "the blade share is even across tiles, so no tile stands out as lighter or darker",
       "pass": true
+    },
+    {
+      "name": "grass is calm: no green of any tile is more than 32 of 255 away from the turf in any channel",
+      "pass": true,
+      "details": "furthest 28"
     },
     {
       "name": "every grass tile is green everywhere but in its flower",

@@ -5,10 +5,13 @@
  * - `rock.png`, `grass.png` and `tree.png` are byte for byte the output of
  *   their generators (the tree's too: its generator now shares its pixel
  *   canvas with the other two and must paint the same tree).
- * - Every rock variant is a grey lump with a dark edge that fills the
- *   height of its tile and casts a shadow; the variants differ.
- * - Every grass tile is opaque and textured all over: no 4x4 patch of any
- *   tile is one flat colour. The tiles differ, and only a few carry a flower.
+ * - Every rock variant is a grey lump with a dark edge, sunk into the
+ *   ground: its lowest row is grass in the grass sheet's own greens and
+ *   nothing is drawn under it. The variants differ.
+ * - Every grass tile is opaque and textured all over, but calmly: no 6x6
+ *   patch of any tile is one flat colour, between a tenth and a third of
+ *   its pixels are blades, and the blades are close to the turf in tone.
+ *   The tiles differ, and only a few carry a flower.
  *
  * It also writes proof/02-sheets-contact.png: the committed sheets enlarged,
  * then a field laid out the way the client lays it out. That image is drawn
@@ -57,30 +60,40 @@ report.rocks = rockFrames.map((frame) => {
   const opaque = frame.pixels.filter((pixel) => pixel.alpha === 255);
   const greys = new Set(opaque.filter((pixel) => isGrey(pixel)).map((pixel) => pixel.colour));
   const rows = opaque.map((pixel) => pixel.y);
-  return { opaquePixels: opaque.length, greyTones: greys.size, greyShare: opaque.filter((pixel) => isGrey(pixel)).length / opaque.length, topRow: Math.min(...rows), bottomRow: Math.max(...rows), shadowPixels: frame.pixels.filter((pixel) => pixel.alpha > 0 && pixel.alpha < 255).length };
+  const bottomRow = Math.max(...rows);
+  const foot = opaque.filter((pixel) => pixel.y === bottomRow);
+  return { opaquePixels: opaque.length, greyTones: greys.size, greyShare: opaque.filter((pixel) => isGrey(pixel)).length / opaque.length, topRow: Math.min(...rows), bottomRow, footPixels: foot.length, footColours: [...new Set(foot.map((pixel) => pixel.colour))], translucentPixels: frame.pixels.filter((pixel) => pixel.alpha > 0 && pixel.alpha < 255).length };
 });
-const rowsAboveTheTile = ROCK.frameHeight - ROCK.pixelsPerMetre;
 results.push(check('every rock variant is a solid lump: at least a third of the tile, opaque', report.rocks.every((rock) => rock.opaquePixels >= (TILE_PIXELS * TILE_PIXELS) / 3), report.rocks.map((rock) => rock.opaquePixels).join(', ')));
-results.push(check('every rock variant is stone: over 90% grey, in at least 4 tones plus the dark edge', report.rocks.every((rock) => rock.greyShare > 0.9 && rock.greyTones >= 5), report.rocks.map((rock) => `${Math.round(rock.greyShare * 100)}% in ${rock.greyTones} tones`).join(', ')));
-results.push(check('every rock variant fills the height of its tile: it starts within 3 rows of the top edge, or above it, and stands near the bottom', report.rocks.every((rock) => rock.topRow < rowsAboveTheTile + 3 && rock.bottomRow >= ROCK.frameHeight - 3), report.rocks.map((rock) => `rows ${rock.topRow}-${rock.bottomRow}`).join(', ')));
-results.push(check('every rock variant casts a soft shadow on the ground', report.rocks.every((rock) => rock.shadowPixels > 0)));
+results.push(check('every rock variant stands at least half a tile tall and goes into the ground near the bottom of its tile', report.rocks.every((rock) => rock.bottomRow - rock.topRow + 1 >= TILE_PIXELS / 2 && rock.bottomRow >= ROCK.frameHeight - 4), report.rocks.map((rock) => `rows ${rock.topRow}-${rock.bottomRow}`).join(', ')));
 results.push(check('no two rock variants are the same', new Set(rockFrames.map((frame) => frame.signature)).size === ROCK.variantCount));
 
 // ---- Grass ----
 results.push(check('the grass sheet has `variantCount` tiles of the declared size side by side', sheets.grass.width === GRASS.tilePixels * GRASS.variantCount && sheets.grass.height === GRASS.tilePixels && GRASS.tilePixels === TILE_PIXELS, `${sheets.grass.width}x${sheets.grass.height}`));
 const grassTiles = Array.from({ length: GRASS.variantCount }, (_, variant) => frameOf(sheets.grass, { variant, width: GRASS.tilePixels, height: GRASS.tilePixels }));
+const grassColours = new Set(grassTiles.flatMap((tile) => tile.pixels.map((pixel) => pixel.colour)));
+results.push(check("every rock variant is sunk into the ground: its lowest row is grass, in colours the grass sheet uses, at least 6 pixels wide", report.rocks.every((rock) => rock.footPixels >= 6 && rock.footColours.every((colour) => grassColours.has(colour))), report.rocks.map((rock) => `${rock.footPixels} px`).join(', ')));
+const stoneShares = rockFrames.map((frame) => {
+  const aboveTheGrass = frame.pixels.filter((pixel) => pixel.alpha === 255 && !grassColours.has(pixel.colour));
+  return { greyShare: aboveTheGrass.filter(isGrey).length / aboveTheGrass.length, greyTones: new Set(aboveTheGrass.filter(isGrey).map((pixel) => pixel.colour)).size };
+});
+results.push(check('every rock variant is stone above its grass: all grey, in at least 4 tones plus the dark edge', stoneShares.every((stone) => stone.greyShare === 1 && stone.greyTones >= 5), stoneShares.map((stone) => `${Math.round(stone.greyShare * 100)}% in ${stone.greyTones} tones`).join(', ')));
+results.push(check('no rock variant has a shadow or anything else translucent under it', report.rocks.every((rock) => rock.translucentPixels === 0)));
 results.push(check('every pixel of every grass tile is opaque', grassTiles.every((tile) => tile.pixels.every((pixel) => pixel.alpha === 255))));
-const flatPatches = grassTiles.map((tile) => flatPatchesOf(tile, 4));
-results.push(check('grass is textured all over: no 4x4 patch of any tile is one flat colour', flatPatches.every((count) => count === 0), `${flatPatches.reduce((sum, count) => sum + count, 0)} flat patches in ${GRASS.variantCount} tiles`));
+const flatPatches = grassTiles.map((tile) => flatPatchesOf(tile, 6));
+results.push(check('grass is textured all over: no 6x6 patch of any tile is one flat colour', flatPatches.every((count) => count === 0), `${flatPatches.reduce((sum, count) => sum + count, 0)} flat patches in ${GRASS.variantCount} tiles`));
 const baseColour = mostCommon(grassTiles.flatMap((tile) => tile.pixels.map((pixel) => pixel.colour)));
 const bladeShares = grassTiles.map((tile) => tile.pixels.filter((pixel) => pixel.colour !== baseColour).length / tile.pixels.length);
-results.push(check('in every grass tile between a quarter and two thirds of the pixels are blades, the rest turf', bladeShares.every((share) => share > 0.25 && share < 0.67), `${Math.round(Math.min(...bladeShares) * 100)}%-${Math.round(Math.max(...bladeShares) * 100)}%`));
+results.push(check('grass is sparse: in every tile between a tenth and a third of the pixels are blades, the rest turf', bladeShares.every((share) => share > 0.1 && share < 0.34), `${Math.round(Math.min(...bladeShares) * 100)}%-${Math.round(Math.max(...bladeShares) * 100)}%`));
 results.push(check('the blade share is even across tiles, so no tile stands out as lighter or darker', Math.max(...bladeShares) - Math.min(...bladeShares) < 0.15));
+const [turfRed, turfGreen, turfBlue] = baseColour.split(',').map(Number);
+const furthestFromTurf = Math.max(...grassTiles.flatMap((tile) => tile.pixels.filter(isGreen).map((pixel) => Math.max(Math.abs(pixel.red - turfRed), Math.abs(pixel.green - turfGreen), Math.abs(pixel.blue - turfBlue)))));
+results.push(check('grass is calm: no green of any tile is more than 32 of 255 away from the turf in any channel', furthestFromTurf <= 32, `furthest ${furthestFromTurf}`));
 results.push(check('every grass tile is green everywhere but in its flower', grassTiles.every((tile) => tile.pixels.filter((pixel) => !isGreen(pixel)).length <= 6)));
 const flowerTiles = grassTiles.filter((tile) => tile.pixels.some((pixel) => !isGreen(pixel))).length;
 results.push(check('flowers are the exception: on at least one tile and on fewer than one in eight', flowerTiles >= 1 && flowerTiles < GRASS.variantCount / 8, `${flowerTiles} of ${GRASS.variantCount} tiles`));
 results.push(check('no two grass tiles are the same', new Set(grassTiles.map((tile) => tile.signature)).size === GRASS.variantCount));
-report.grass = { baseColour, bladeShares, flowerTiles, flatPatches };
+report.grass = { baseColour, bladeShares, flowerTiles, flatPatches, furthestFromTurf };
 
 // ---- Contact sheet ----
 writeFileSync(path.join(PROOF, '02-sheets-contact.png'), PNG.sync.write(contactSheet()));

@@ -11,9 +11,9 @@
       "rockDepth": 48,
       "relation": "in front of",
       "overlap": {
-        "rockPixelsUnderTheSprite": 112,
-        "showingTheRock": 46,
-        "showingSomethingElse": 66
+        "rockPixelsUnderTheSprite": 105,
+        "showingTheRock": 43,
+        "showingSomethingElse": 62
       }
     },
     {
@@ -85,9 +85,9 @@
     "grassTilesChecked": 218,
     "grassPixelsCompared": 55808,
     "grassPixelsWrong": 0,
-    "fewestColoursInAGrassTile": 4,
+    "fewestColoursInAGrassTile": 3,
     "rocksChecked": 2,
-    "rockPixelsCompared": 328,
+    "rockPixelsCompared": 264,
     "rockPixelsWrong": 0,
     "blocksNotFlat": 0
   },
@@ -106,9 +106,9 @@
       "grassTilesChecked": 211,
       "grassPixelsCompared": 54016,
       "grassPixelsWrong": 0,
-      "fewestColoursInAGrassTile": 4,
+      "fewestColoursInAGrassTile": 3,
       "rocksChecked": 3,
-      "rockPixelsCompared": 444,
+      "rockPixelsCompared": 357,
       "rockPixelsWrong": 0,
       "blocksNotFlat": 0
     },
@@ -121,9 +121,9 @@
       "grassTilesChecked": 193,
       "grassPixelsCompared": 49408,
       "grassPixelsWrong": 0,
-      "fewestColoursInAGrassTile": 4,
+      "fewestColoursInAGrassTile": 3,
       "rocksChecked": 3,
-      "rockPixelsCompared": 444,
+      "rockPixelsCompared": 357,
       "rockPixelsWrong": 0,
       "blocksNotFlat": 0
     },
@@ -136,9 +136,9 @@
       "grassTilesChecked": 173,
       "grassPixelsCompared": 44288,
       "grassPixelsWrong": 0,
-      "fewestColoursInAGrassTile": 4,
+      "fewestColoursInAGrassTile": 3,
       "rocksChecked": 3,
-      "rockPixelsCompared": 444,
+      "rockPixelsCompared": 357,
       "rockPixelsWrong": 0,
       "blocksNotFlat": 0
     }
@@ -287,12 +287,12 @@
     {
       "name": "at the spawn: the grass in view is textured, not a flat fill: several greens in every tile",
       "pass": true,
-      "details": "fewest colours in a tile: 4"
+      "details": "fewest colours in a tile: 3"
     },
     {
       "name": "at the spawn: every rock in view shows the rock sheet's own pixels",
       "pass": true,
-      "details": "2 rocks, 328 pixels, 0 wrong"
+      "details": "2 rocks, 264 pixels, 0 wrong"
     },
     {
       "name": "the level has a rock with open grass two tiles around it to walk around",
@@ -316,7 +316,7 @@
     {
       "name": "2-in-front-of-a-rock: on screen the player covers part of the rock",
       "pass": true,
-      "details": "{\"rockPixelsUnderTheSprite\":112,\"showingTheRock\":46,\"showingSomethingElse\":66}"
+      "details": "{\"rockPixelsUnderTheSprite\":105,\"showingTheRock\":43,\"showingSomethingElse\":62}"
     },
     {
       "name": "walked round to two tiles north of the rock",

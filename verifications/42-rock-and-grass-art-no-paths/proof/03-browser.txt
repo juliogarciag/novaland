@@ -26,13 +26,13 @@ PASS  every rock image is drawn at one texture pixel per world pixel, on whole p
 PASS  the rocks of the level show more than one variant, all of them frames of the sheet  (variants 0, 1, 2, 3 of 4)
 PASS  the rock sheet is drawn with nearest-neighbour filtering  (4 frames, scaleMode 1)
 PASS  at the spawn: every grass tile in view is, pixel for pixel, the sheet tile the layer says  (218 tiles, 55808 pixels, 0 wrong)
-PASS  at the spawn: the grass in view is textured, not a flat fill: several greens in every tile  (fewest colours in a tile: 4)
-PASS  at the spawn: every rock in view shows the rock sheet's own pixels  (2 rocks, 328 pixels, 0 wrong)
+PASS  at the spawn: the grass in view is textured, not a flat fill: several greens in every tile  (fewest colours in a tile: 3)
+PASS  at the spawn: every rock in view shows the rock sheet's own pixels  (2 rocks, 264 pixels, 0 wrong)
 PASS  the level has a rock with open grass two tiles around it to walk around  ({"column":14,"row":17,"defId":203})
 PASS  walked to two tiles south of the rock
 PASS  2-in-front-of-a-rock: the player is drawn in front of the rock, as their bottom edges say  (sprite depth 60.8, rock depth 48)
 PASS  2-in-front-of-a-rock: the sim stopped the player at the south face of the rock tile, as before  (y=3.400, face + radius at 3.400)
-PASS  2-in-front-of-a-rock: on screen the player covers part of the rock  ({"rockPixelsUnderTheSprite":112,"showingTheRock":46,"showingSomethingElse":66})
+PASS  2-in-front-of-a-rock: on screen the player covers part of the rock  ({"rockPixelsUnderTheSprite":105,"showingTheRock":43,"showingSomethingElse":62})
 PASS  walked round to two tiles north of the rock
 PASS  3-behind-a-rock: the player is drawn behind the rock, as their bottom edges say  (sprite depth 32.0, rock depth 48)
 PASS  3-behind-a-rock: the sim stopped the player at the north face of the rock tile, as before  (y=1.600, face - radius at 1.600)

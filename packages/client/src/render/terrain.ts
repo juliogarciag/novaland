@@ -49,8 +49,8 @@ export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilem
     if (isTextureLoaded(sprite.key)) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
   }
   const slots = groundTilesetSlots(terrainDefs, isTextureLoaded);
-  ensureGroundTileset(scene, slots);
-  const tileIndexRows = groundTileIndexRows({ grid, slots, isTextureLoaded });
+  buildGroundTileset(scene, slots);
+  const tileIndexRows = groundTileIndexRows({ grid, slots, isStandingImageDrawn: (sprite) => isTextureLoaded(sprite.key) });
   const tilemap = scene.make.tilemap({ data: tileIndexRows, tileWidth: GROUND_TILE_PIXELS, tileHeight: GROUND_TILE_PIXELS });
   const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS, 0, 0);
   if (!tileset) throw new Error('The terrain tileset texture is missing');
@@ -86,24 +86,25 @@ function standingTileSprites(): StandingTileSprite[] {
  * other gets one flat-colour tile, with a darker rim when the def is solid
  * so that a tree or rock whose image is missing still reads as an object.
  */
-function ensureGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSlot[]): void {
-  if (scene.textures.exists(TILESET_TEXTURE_KEY)) return;
+function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSlot[]): void {
+  // Built again on every draw: the slots depend on which sheets loaded, and a strip from an earlier draw may be laid out differently.
+  if (scene.textures.exists(TILESET_TEXTURE_KEY)) scene.textures.remove(TILESET_TEXTURE_KEY);
   const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
   const tileset = scene.textures.createCanvas(TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS * tileCount, GROUND_TILE_PIXELS);
   if (!tileset) throw new Error('Could not create the terrain tileset texture');
   const context = tileset.getContext();
   for (const slot of slots) {
-    const x = slot.firstTileIndex * GROUND_TILE_PIXELS;
+    const slotLeft = slot.firstTileIndex * GROUND_TILE_PIXELS;
     if (slot.groundSprite) {
-      for (let variant = 0; variant < slot.tileCount; variant += 1) tileset.drawFrame(slot.groundSprite.key, variant, x + variant * GROUND_TILE_PIXELS, 0, false);
+      for (let variant = 0; variant < slot.tileCount; variant += 1) tileset.drawFrame(slot.groundSprite.key, variant, slotLeft + variant * GROUND_TILE_PIXELS, 0, false);
       continue;
     }
     context.fillStyle = cssColor(slot.def.color);
-    context.fillRect(x, 0, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS);
+    context.fillRect(slotLeft, 0, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS);
     if (slot.def.solid) {
       context.strokeStyle = cssColor(darken(slot.def.color));
       context.lineWidth = 1;
-      context.strokeRect(x + 0.5, 0.5, GROUND_TILE_PIXELS - 1, GROUND_TILE_PIXELS - 1);
+      context.strokeRect(slotLeft + 0.5, 0.5, GROUND_TILE_PIXELS - 1, GROUND_TILE_PIXELS - 1);
     }
   }
   tileset.refresh();

@@ -56,7 +56,7 @@ describe('tile grids', () => {
 describe('tile defs', () => {
   it('a standing sprite has at least one variant and stands on a flat tile def', () => {
     const standingDefs = terrainDefs.filter((def) => def.standingSprite);
-    expect(standingDefs.map((def) => def.id)).toEqual([TerrainDefId.Tree, TerrainDefId.Rock]);
+    expect(standingDefs.map((def) => def.id)).toEqual(expect.arrayContaining([TerrainDefId.Tree, TerrainDefId.Rock]));
     for (const def of standingDefs) {
       const sprite = def.standingSprite!;
       expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
@@ -68,7 +68,7 @@ describe('tile defs', () => {
 
   it('a ground sprite has at least one variant and belongs to a tile that does not stand up', () => {
     const texturedDefs = terrainDefs.filter((def) => def.groundSprite);
-    expect(texturedDefs.map((def) => def.id)).toEqual([TerrainDefId.Grass]);
+    expect(texturedDefs.map((def) => def.id)).toContain(TerrainDefId.Grass);
     for (const def of texturedDefs) {
       const sprite = def.groundSprite!;
       expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);

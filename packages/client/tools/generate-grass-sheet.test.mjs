@@ -21,7 +21,7 @@ describe('grass sheet generator', () => {
 
   it('textures every tile and paints no two alike', () => {
     const sheet = paintGrassSheet();
-    const tiles = Array.from({ length: GRASS_VARIANT_COUNT }, (_, variant) => tilePixels(sheet, variant));
+    const tiles = Array.from({ length: GRASS_VARIANT_COUNT }, (_, variant) => coloursOfTile(sheet, variant));
     for (const tile of tiles) expect(new Set(tile).size).toBeGreaterThanOrEqual(3);
     expect(new Set(tiles.map((tile) => tile.join(' '))).size).toBe(GRASS_VARIANT_COUNT);
   });
@@ -30,13 +30,13 @@ describe('grass sheet generator', () => {
 // ---- Helpers ----
 
 /** The colour of every pixel of one tile of the sheet, as `r,g,b` strings, row by row. */
-function tilePixels(sheet, variant) {
-  const pixels = [];
+function coloursOfTile(sheet, variant) {
+  const colours = [];
   for (let y = 0; y < TILE_PIXELS; y += 1) {
     for (let x = 0; x < TILE_PIXELS; x += 1) {
       const offset = (y * sheet.width + variant * TILE_PIXELS + x) * 4;
-      pixels.push(`${sheet.data[offset]},${sheet.data[offset + 1]},${sheet.data[offset + 2]}`);
+      colours.push(`${sheet.data[offset]},${sheet.data[offset + 1]},${sheet.data[offset + 2]}`);
     }
   }
-  return pixels;
+  return colours;
 }

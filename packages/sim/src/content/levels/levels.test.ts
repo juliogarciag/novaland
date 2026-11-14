@@ -35,8 +35,6 @@ describe('the starter level', () => {
 
   it('is ringed by trees with no gap, so nothing walks off the map', () => {
     const grid = readTileGrid(starterLevel);
-    const outside = new Set(walkableTilesReachableFrom(starterLevel.spawn).filter(({ column, row }) => column === 0 || row === 0 || column === grid.columns - 1 || row === grid.rows - 1));
-    expect(outside.size).toBe(0);
     const edgeTiles = [...grid.defIds[0]!, ...grid.defIds[grid.rows - 1]!, ...grid.defIds.map((row) => row[0]!), ...grid.defIds.map((row) => row[grid.columns - 1]!)];
     expect(new Set(edgeTiles)).toEqual(new Set([TerrainDefId.Tree]));
   });

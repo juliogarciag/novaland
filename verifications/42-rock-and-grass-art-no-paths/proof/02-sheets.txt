@@ -1,20 +1,22 @@
-PASS  public/sprites/rock.png is byte for byte what generate-rock-sheet.mjs writes  (468 bytes)
-PASS  public/sprites/grass.png is byte for byte what generate-grass-sheet.mjs writes  (2225 bytes)
+PASS  public/sprites/rock.png is byte for byte what generate-rock-sheet.mjs writes  (387 bytes)
+PASS  public/sprites/grass.png is byte for byte what generate-grass-sheet.mjs writes  (1262 bytes)
 PASS  public/sprites/tree.png is byte for byte what generate-tree-sheet.mjs writes  (709 bytes)
 PASS  the rock sheet has `variantCount` frames of the declared size side by side  (64x20)
 PASS  a rock frame is as wide as its one-metre tile and taller than it  (16x20 at 16 px/m)
-PASS  every rock variant is a solid lump: at least a third of the tile, opaque  (172, 156, 132, 176)
-PASS  every rock variant is stone: over 90% grey, in at least 4 tones plus the dark edge  (98% in 5 tones, 99% in 5 tones, 98% in 5 tones, 98% in 5 tones)
-PASS  every rock variant fills the height of its tile: it starts within 3 rows of the top edge, or above it, and stands near the bottom  (rows 4-18, rows 4-18, rows 6-18, rows 2-18)
-PASS  every rock variant casts a soft shadow on the ground
+PASS  every rock variant is a solid lump: at least a third of the tile, opaque  (140, 124, 109, 142)
+PASS  every rock variant stands at least half a tile tall and goes into the ground near the bottom of its tile  (rows 6-17, rows 6-17, rows 8-17, rows 4-17)
 PASS  no two rock variants are the same
 PASS  the grass sheet has `variantCount` tiles of the declared size side by side  (384x16)
+PASS  every rock variant is sunk into the ground: its lowest row is grass, in colours the grass sheet uses, at least 6 pixels wide  (15 px, 15 px, 15 px, 14 px)
+PASS  every rock variant is stone above its grass: all grey, in at least 4 tones plus the dark edge  (100% in 5 tones, 100% in 5 tones, 100% in 5 tones, 100% in 5 tones)
+PASS  no rock variant has a shadow or anything else translucent under it
 PASS  every pixel of every grass tile is opaque
-PASS  grass is textured all over: no 4x4 patch of any tile is one flat colour  (0 flat patches in 24 tiles)
-PASS  in every grass tile between a quarter and two thirds of the pixels are blades, the rest turf  (40%-50%)
+PASS  grass is textured all over: no 6x6 patch of any tile is one flat colour  (0 flat patches in 24 tiles)
+PASS  grass is sparse: in every tile between a tenth and a third of the pixels are blades, the rest turf  (12%-17%)
 PASS  the blade share is even across tiles, so no tile stands out as lighter or darker
+PASS  grass is calm: no green of any tile is more than 32 of 255 away from the turf in any channel  (furthest 28)
 PASS  every grass tile is green everywhere but in its flower
 PASS  flowers are the exception: on at least one tile and on fewer than one in eight  (2 of 24 tiles)
 PASS  no two grass tiles are the same
 
-ALL 18 CHECKS PASSED
+ALL 20 CHECKS PASSED
