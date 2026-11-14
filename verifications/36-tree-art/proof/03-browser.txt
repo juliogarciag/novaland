@@ -23,28 +23,28 @@ PASS  walked west past the corner of the clump
 PASS  walked north until level with the south-west tree
 PASS  3-beside: the player's depth is the bottom edge of its body in pixels
 PASS  3-beside: every tree overlapping the player is drawn on the side its bottom edge says  (2 overlapping tree image(s): in front of the tree at depth -64, behind the tree at depth -48)
-PASS  3-beside: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":143,"hiddenByATree":7,"skipped":12,"wrong":0})
+PASS  3-beside: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":147,"hiddenByATree":6,"skipped":9,"wrong":0})
 PASS  3-beside: the sim stopped the player at the west face of the tree tile, as before  (x=-6.400, face - radius at -6.400)
 PASS  3-beside: the tree's foot is further south than the player's, so the tree is in front of the player  (behind)
 PASS  3-beside: the player is in front of the tree to the north-east, whose foot is further north  (in front of)
-PASS  3-beside: the canopy overhanging to the west covers a few pixels of the player, the rest is visible  (143 visible, 7 hidden)
+PASS  3-beside: the canopy overhanging to the west covers a few pixels of the player, the rest is visible  (147 visible, 6 hidden)
 PASS  walked north past the corner of the clump
 PASS  walked east to the column of the north-west tree
 PASS  4-behind: the player's depth is the bottom edge of its body in pixels
 PASS  4-behind: every tree overlapping the player is drawn on the side its bottom edge says  (2 overlapping tree image(s): behind the tree at depth -64, behind the tree at depth -64)
-PASS  4-behind: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":77,"hiddenByATree":97,"skipped":12,"wrong":0})
+PASS  4-behind: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":75,"hiddenByATree":98,"skipped":13,"wrong":0})
 PASS  4-behind: the sim stopped the player at the north face of the tree tile, as before  (y=-5.400, face - radius at -5.400)
 PASS  4-behind: the player is behind the tree it stands north of  (behind)
-PASS  4-behind: the canopy hides the lower part of the player and the head shows above it  (97 hidden (sprite rows 11-22), 77 visible (rows 2-11))
+PASS  4-behind: the canopy hides the lower part of the player and the head shows above it  (98 hidden (sprite rows 11-22), 75 visible (rows 2-11))
 PASS  the three stops saw the player both in front of and behind the same clump
 PASS  the level has a tree that sticks out of the forest edge, with open ground on three sides  ({"column":11,"row":4})
-PASS  walked to the tree that sticks out of the forest edge  ((-8.82, -8.73))
+PASS  walked to the tree that sticks out of the forest edge  ((-8.65, -8.65))
 PASS  960x720: the camera zoom is a whole number  (zoom 3)
-PASS  960x720: every texture pixel of every tree checked is one flat 3x3 block of screen pixels  ({"treesChecked":27,"treesOffTheScreenGrid":0,"blocksChecked":20736,"blocksNotFlat":0,"sheetPixelsCompared":9172,"sheetPixelsWrong":0,"sheetColoursSeen":9})
-PASS  960x720: those trees show the sheet's own colours, unblended  (9172 pixels compared, 9 sheet colours seen)
+PASS  960x720: every texture pixel of every tree checked is one flat 3x3 block of screen pixels  ({"treesChecked":28,"treesOffTheScreenGrid":0,"blocksChecked":21504,"blocksNotFlat":0,"sheetPixelsCompared":9541,"sheetPixelsWrong":0,"sheetColoursSeen":9})
+PASS  960x720: those trees show the sheet's own colours, unblended  (9541 pixels compared, 9 sheet colours seen)
 PASS  640x480: the camera zoom is a whole number  (zoom 2)
-PASS  640x480: every texture pixel of every tree checked is one flat 2x2 block of screen pixels  ({"treesChecked":16,"treesOffTheScreenGrid":0,"blocksChecked":12288,"blocksNotFlat":0,"sheetPixelsCompared":5553,"sheetPixelsWrong":0,"sheetColoursSeen":9})
-PASS  640x480: those trees show the sheet's own colours, unblended  (5553 pixels compared, 9 sheet colours seen)
+PASS  640x480: every texture pixel of every tree checked is one flat 2x2 block of screen pixels  ({"treesChecked":17,"treesOffTheScreenGrid":0,"blocksChecked":13056,"blocksNotFlat":0,"sheetPixelsCompared":5922,"sheetPixelsWrong":0,"sheetColoursSeen":9})
+PASS  640x480: those trees show the sheet's own colours, unblended  (5922 pixels compared, 9 sheet colours seen)
 PASS  1920x1080: the camera zoom is a whole number  (zoom 6)
 PASS  1920x1080: every texture pixel of every tree checked is one flat 6x6 block of screen pixels  ({"treesChecked":21,"treesOffTheScreenGrid":0,"blocksChecked":16128,"blocksNotFlat":0,"sheetPixelsCompared":7507,"sheetPixelsWrong":0,"sheetColoursSeen":9})
 PASS  1920x1080: those trees show the sheet's own colours, unblended  (7507 pixels compared, 9 sheet colours seen)

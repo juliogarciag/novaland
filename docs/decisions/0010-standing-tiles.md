@@ -8,7 +8,7 @@ A tree drawn as a tree is taller than its tile: the canopy overhangs the tile to
 
 ## Decision
 
-- A `TileDef` may carry `standing`, a `StandingTileSprite` (`features/terrain/defs.ts`): the image key, its frame size, its pixels per metre, how many variants the sheet holds side by side (`variantCount`), and `groundDefId`, the flat tile drawn under it. It is data for views; nothing in the sim reads it.
+- A `TileDef` may carry `standingSprite`, a `StandingTileSprite` (`features/terrain/defs.ts`): the image key, its frame size, its pixels per metre, how many variants the sheet holds side by side (`variantCount`), and `groundDefId`, the flat tile drawn under it. It is data for views; nothing in the sim reads it.
 - The client draws such a tile as one Phaser image, with its bottom centre on the bottom centre of the tile, on top of the ground tilemap, which shows the `groundDefId` tile there (`render/terrain.ts`, `render/standingTiles.ts`). The level rows are still the only source of where things are.
 - The image's depth is the tile's bottom edge in pixels. Entities are sorted by the bottom edge of their body (`render/entities.ts`), so one rule orders everything that stands on the ground: whatever has its foot further south is drawn in front. A character north of a tree is behind its canopy and south of it in front. Beside it and level with it the character is behind, because the tile's foot is further south than the body's; a little further south the character is in front. Both get their depth from `depthOfBottomEdge` (`render/depth.ts`).
 - Which variant a tile shows is a hash of its column and row, computed in the client. It is the same for every player and every visit, and it is looks only, so it is not sim state.
@@ -18,7 +18,7 @@ A tree drawn as a tree is taller than its tile: the canopy overhangs the tile to
 
 ## Consequences
 
-- A new tall thing that is still one solid tile (a bush, a pillar, a lamp post) is a `standing` entry on its def and a PNG. No client code.
+- A new tall thing that is still one solid tile (a bush, a pillar, a lamp post) is a `standingSprite` entry on its def and a PNG. No client code.
 - One image per tile: the starter level has 345. That is fine for Phaser; if a level ever has tens of thousands, the images need culling or a layer per row, and only `drawTerrain` changes.
 - An image may be wider than its tile, so it covers a few pixels of a character standing beside it. Keep the overhang to the sides small: the collider is still the tile.
 - Trees in the same row have the same depth and are drawn left to right, so where two canopies overlap the eastern one is on top. That relies on Phaser sorting equal depths stably (`DisplayList.depthSort` uses `StableSort`). Art must look right either way.

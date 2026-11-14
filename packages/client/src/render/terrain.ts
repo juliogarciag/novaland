@@ -33,7 +33,7 @@ export function loadStandingTileSprites(scene: Phaser.Scene): void {
  * the order of `terrainDefs`, so the tile index of a def is its position in
  * that list.
  *
- * A def with a `standing` sprite (a tree) is one image per tile on top of
+ * A def with a `standingSprite` (a tree) is one image per tile on top of
  * that, standing on the tile's bottom edge and depth-sorted among the
  * entities by it, with the def's ground tile under it. If the image failed
  * to load, the tile is drawn flat in the def's own colour instead.
@@ -45,8 +45,8 @@ export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilem
   for (const sprite of loadedStandingSprites) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
   const tileIndexByDefId = new Map(terrainDefs.map((def, index) => [def.id, index]));
   const groundTileIndex = (defId: number): number => {
-    const standing = getTileDef(defId).standing;
-    const groundDefId = standing && loadedStandingSprites.includes(standing) ? standing.groundDefId : defId;
+    const sprite = getTileDef(defId).standingSprite;
+    const groundDefId = sprite && loadedStandingSprites.includes(sprite) ? sprite.groundDefId : defId;
     return tileIndexByDefId.get(groundDefId) ?? 0;
   };
   const tileIndexRows = grid.defIds.map((row) => row.map(groundTileIndex));
@@ -71,7 +71,7 @@ export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilem
 
 /** The standing sprite of every terrain def that has one, in def order. */
 function standingTileSprites(): StandingTileSprite[] {
-  return terrainDefs.flatMap((def) => (def.standing ? [def.standing] : []));
+  return terrainDefs.flatMap((def) => (def.standingSprite ? [def.standingSprite] : []));
 }
 
 /** A strip of flat-colour tiles, one per terrain def. Solid tiles get a darker rim so single trees and rocks read as objects. */

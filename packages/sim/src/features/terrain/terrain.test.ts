@@ -55,18 +55,18 @@ describe('tile grids', () => {
 
 describe('tile defs', () => {
   it('a standing sprite has at least one variant and stands on a flat tile def', () => {
-    const standingDefs = terrainDefs.filter((def) => def.standing);
+    const standingDefs = terrainDefs.filter((def) => def.standingSprite);
     expect(standingDefs.map((def) => def.id)).toContain(TerrainDefId.Tree);
     for (const def of standingDefs) {
-      const sprite = def.standing!;
+      const sprite = def.standingSprite!;
       expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
       expect(sprite.frameWidth > 0 && sprite.frameHeight > 0 && sprite.pixelsPerMetre > 0, def.name).toBe(true);
-      expect(getTileDef(sprite.groundDefId).standing, def.name).toBeUndefined();
+      expect(getTileDef(sprite.groundDefId).standingSprite, def.name).toBeUndefined();
     }
   });
 
   it('no standing sprite shares its key with another sprite: they are one folder and one texture namespace', () => {
-    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...terrainDefs.flatMap((def) => (def.standing ? [def.standing.key] : []))];
+    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...terrainDefs.flatMap((def) => (def.standingSprite ? [def.standingSprite.key] : []))];
     expect(new Set(keys).size).toBe(keys.length);
   });
 

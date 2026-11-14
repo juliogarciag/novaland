@@ -25,7 +25,7 @@ export function standingTilePlacements(grid: TileGrid): StandingTilePlacement[] 
   const placements: StandingTilePlacement[] = [];
   grid.defIds.forEach((defIdsOfRow, row) => {
     defIdsOfRow.forEach((defId, column) => {
-      const sprite = getTileDef(defId).standing;
+      const sprite = getTileDef(defId).standingSprite;
       if (!sprite) return;
       const centre = tileCentre(grid, { column, row });
       const bottomEdge = centre.y + grid.tileSize / 2;

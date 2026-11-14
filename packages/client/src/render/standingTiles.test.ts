@@ -14,7 +14,7 @@ describe('standingTilePlacements', () => {
       [2, 0],
       [1, 2],
     ]);
-    for (const placement of placements) expect(placement.sprite).toBe(getTileDef(treeDefId()).standing);
+    for (const placement of placements) expect(placement.sprite).toBe(getTileDef(treeDefId()).standingSprite);
   });
 
   it('stands the image on the bottom centre of its tile', () => {

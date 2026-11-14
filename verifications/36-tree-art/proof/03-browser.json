@@ -33,10 +33,10 @@
       "description": "west of the clump, level with its south-west tree",
       "player": {
         "x": -6.399977684020996,
-        "y": -3.5999977588653564,
-        "bottomEdge": -3.1999977588653565
+        "y": -3.683330774307251,
+        "bottomEdge": -3.283330774307251
       },
-      "spriteDepth": -51.199964141845705,
+      "spriteDepth": -52.53329238891602,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -50,9 +50,9 @@
         }
       ],
       "pixels": {
-        "visible": 143,
-        "hiddenByATree": 7,
-        "skipped": 12,
+        "visible": 147,
+        "hiddenByATree": 6,
+        "skipped": 9,
         "wrong": 0
       }
     },
@@ -60,11 +60,11 @@
       "name": "4-behind",
       "description": "north of the clump, against its north face",
       "player": {
-        "x": -5.14998722076416,
-        "y": -5.3999834060668945,
-        "bottomEdge": -4.999983406066894
+        "x": -5.233321189880371,
+        "y": -5.399977684020996,
+        "bottomEdge": -4.999977684020996
       },
-      "spriteDepth": -79.9997344970703,
+      "spriteDepth": -79.99964294433593,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -78,9 +78,9 @@
         }
       ],
       "pixels": {
-        "visible": 77,
-        "hiddenByATree": 97,
-        "skipped": 12,
+        "visible": 75,
+        "hiddenByATree": 98,
+        "skipped": 13,
         "wrong": 0
       }
     }
@@ -92,7 +92,7 @@
       "shape": "box",
       "color": 3107642,
       "solid": true,
-      "standing": {
+      "standingSprite": {
         "key": "tree",
         "frameWidth": 24,
         "frameHeight": 32,
@@ -122,11 +122,11 @@
         "height": 720
       },
       "zoom": 3,
-      "treesChecked": 27,
+      "treesChecked": 28,
       "treesOffTheScreenGrid": 0,
-      "blocksChecked": 20736,
+      "blocksChecked": 21504,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 9172,
+      "sheetPixelsCompared": 9541,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },
@@ -136,11 +136,11 @@
         "height": 480
       },
       "zoom": 2,
-      "treesChecked": 16,
+      "treesChecked": 17,
       "treesOffTheScreenGrid": 0,
-      "blocksChecked": 12288,
+      "blocksChecked": 13056,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 5553,
+      "sheetPixelsCompared": 5922,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },

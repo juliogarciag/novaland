@@ -1,7 +1,7 @@
 /**
  * Generates the tree sheet at public/sprites/tree.png: TREE_VARIANT_COUNT frames
  * side by side, each FRAME_WIDTH x FRAME_HEIGHT. The frame layout must match
- * the tree's `standing` def in packages/sim/src/features/terrain/defs.ts.
+ * the tree's `standingSprite` in packages/sim/src/features/terrain/defs.ts.
  *
  * A frame is one tree standing on the bottom-centre of its frame: a trunk in
  * the lowest tile and a canopy that overhangs the tile to the north and a few

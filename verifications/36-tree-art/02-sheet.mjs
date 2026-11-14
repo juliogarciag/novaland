@@ -1,6 +1,6 @@
 /**
  * V2: the committed tree sheet is what the generator produces, its layout
- * matches the tree's `standing` def, and every variant is a tree: a brown
+ * matches the tree's `standingSprite`, and every variant is a tree: a brown
  * trunk standing in the tile, a green canopy that overhangs the tile to the
  * north and to both sides, and nothing but a soft shadow outside them. The
  * variants differ from each other.
@@ -26,11 +26,11 @@ const report = {};
 
 // The def the sheet must match, scraped from the sim's own source: the defs file is plain data.
 const defsSource = readFileSync(path.join(ROOT, 'packages/sim/src/features/terrain/defs.ts'), 'utf8');
-const standingSource = /standing: \{([^}]*)\}/.exec(defsSource)?.[1] ?? '';
+const standingSource = /standingSprite: \{([^}]*)\}/.exec(defsSource)?.[1] ?? '';
 const number = (field) => Number(new RegExp(`${field}:\\s*(\\d+)`).exec(standingSource)?.[1]);
 const def = { key: /key: '([^']+)'/.exec(standingSource)?.[1], frameWidth: number('frameWidth'), frameHeight: number('frameHeight'), pixelsPerMetre: number('pixelsPerMetre'), variantCount: number('variantCount') };
 report.def = def;
-results.push(check('exactly one terrain def has a standing sprite, and it parses', (defsSource.match(/standing: \{/g) || []).length === 1 && def.key === 'tree' && [def.frameWidth, def.frameHeight, def.pixelsPerMetre, def.variantCount].every(Number.isFinite), JSON.stringify(def)));
+results.push(check('exactly one terrain def has a standing sprite, and it parses', (defsSource.match(/standingSprite: \{/g) || []).length === 1 && def.key === 'tree' && [def.frameWidth, def.frameHeight, def.pixelsPerMetre, def.variantCount].every(Number.isFinite), JSON.stringify(def)));
 results.push(check('the sheet is drawn at the tile scale, 16 pixels per metre, so it needs no resampling', def.pixelsPerMetre === TILE_PIXELS));
 
 const committedBytes = readFileSync(COMMITTED);

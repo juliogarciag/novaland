@@ -60,7 +60,7 @@ try {
   });
   const { grid, tiles, avatar, pixelsPerMetre: PIXELS_PER_METRE } = content;
   const tree = tiles.find((def) => def.name === 'tree');
-  const TREE = tree.standing;
+  const TREE = tree.standingSprite;
   const RADIUS = avatar.radius;
   const tileCentre = ({ column, row }) => ({ x: (column + 0.5) * grid.tileSize - grid.width / 2, y: (row + 0.5) * grid.tileSize - grid.height / 2 });
   const treeTiles = [];
