@@ -1,6 +1,6 @@
-import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type TileCoordinate, type WorldMap } from '@novaland/sim';
+import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
-import { chunkCoordinatesIn, chunkRangeAround, DRAW_MARGIN_TILES, isInChunkRange, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
+import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, DRAW_MARGIN_TILES, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
 import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
 import { spriteSheetUrl } from './sprites';
 import { standingTilePlacements } from './standingTiles';
@@ -36,6 +36,8 @@ export interface TerrainReport {
   readonly groundTiles: number;
   /** Standing images alive (trees, rocks). */
   readonly standingImages: number;
+  /** How far from what the camera shows a drawn chunk is kept, in tiles: with the view's size, the most chunks that can ever be drawn. */
+  readonly keepMarginTiles: number;
 }
 
 interface DrawnChunk {
@@ -66,6 +68,8 @@ interface DrawnChunk {
 export class TerrainRenderer {
   private readonly tiles: MapTiles;
   private readonly slots: readonly GroundTilesetSlot[];
+  /** Every chunk the map could hold: nothing outside it is ever looked for. */
+  private readonly chunksOfMap: ChunkRange;
   private readonly drawnChunks = new Map<string, DrawnChunk>();
   private lastView: { readonly draw: ChunkRange; readonly keep: ChunkRange } | undefined;
 
@@ -74,6 +78,7 @@ export class TerrainRenderer {
     map: WorldMap,
   ) {
     this.tiles = readMapTiles(map);
+    this.chunksOfMap = chunkRangeOfTiles(this.tiles.bounds);
     for (const sprite of standingTileSprites()) {
       if (this.isTextureLoaded(sprite.key)) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
@@ -81,23 +86,27 @@ export class TerrainRenderer {
     buildGroundTileset(scene, this.slots);
   }
 
-  /** Draws the chunks near `view` (what the camera shows, in world pixels) and drops those far from it. Call every frame. */
+  /**
+   * Draws the chunks near `view` (what the camera shows, in world pixels) and drops those far from it. Call every frame.
+   * The camera follows a position that online comes from the server, so the view is not trusted: one that is not
+   * finite changes nothing, and however large it is, only chunks inside the map are looked at.
+   */
   show(view: PixelRect): void {
-    const draw = chunkRangeAround(view, DRAW_MARGIN_TILES);
-    const keep = chunkRangeAround(view, KEEP_MARGIN_TILES);
+    if (![view.x, view.y, view.width, view.height].every(Number.isFinite)) return;
+    const draw = chunkRangeWithin(chunkRangeAround(view, DRAW_MARGIN_TILES), this.chunksOfMap);
+    const keep = chunkRangeWithin(chunkRangeAround(view, KEEP_MARGIN_TILES), this.chunksOfMap);
     if (this.lastView && sameChunkRange(this.lastView.draw, draw) && sameChunkRange(this.lastView.keep, keep)) return;
     this.lastView = { draw, keep };
-    for (const [key, drawn] of this.drawnChunks) {
-      if (isInChunkRange(keep, chunkCoordinateFromKey(key))) continue;
-      drawn.tilemap.destroy();
-      for (const image of drawn.standingImages) image.destroy();
+    const { drop, build } = chunksToDropAndBuild({ drawnKeys: this.drawnChunks.keys(), draw, keep });
+    for (const key of drop) {
+      const drawn = this.drawnChunks.get(key);
+      drawn?.tilemap.destroy();
+      for (const image of drawn?.standingImages ?? []) image.destroy();
       this.drawnChunks.delete(key);
     }
-    for (const coordinate of chunkCoordinatesIn(draw)) {
-      const key = chunkKey(coordinate);
-      if (this.drawnChunks.has(key)) continue;
+    for (const coordinate of build) {
       const chunk = findChunk(this.tiles, coordinate);
-      if (chunk) this.drawnChunks.set(key, this.drawChunk(chunk));
+      if (chunk) this.drawnChunks.set(chunkKey(coordinate), this.drawChunk(chunk));
     }
   }
 
@@ -109,6 +118,7 @@ export class TerrainRenderer {
       chunksInMap: this.tiles.chunks.length,
       groundTiles: this.drawnChunks.size * CHUNK_SIZE * CHUNK_SIZE,
       standingImages,
+      keepMarginTiles: KEEP_MARGIN_TILES,
     };
   }
 
@@ -137,15 +147,6 @@ export class TerrainRenderer {
   private isTextureLoaded(key: string): boolean {
     return this.scene.textures.exists(key);
   }
-}
-
-function chunkKey({ column, row }: TileCoordinate): string {
-  return `${column},${row}`;
-}
-
-function chunkCoordinateFromKey(key: string): TileCoordinate {
-  const [column, row] = key.split(',').map(Number) as [number, number];
-  return { column, row };
 }
 
 /** The ground sprite of every terrain def that has one, in def order. */

@@ -52,7 +52,10 @@ const promised = [
   ['worldRoom.test.ts', 'seats 5 players by room id, each welcomed with its own seat and already in the world'],
   ['OnlineWorld.test.ts', 'reports a server it cannot play on: another wire protocol or none, another map, a capacity out of range, a welcome of the wrong shape'],
   ['OnlineWorld.test.ts', 'after a drop refuses a welcome for another map: a server redeployed with new terrain'],
-  ['chunkRange.test.ts', 'does not depend on how big the world is: a screen of 60 by 34 tiles never needs more than nine chunks drawn'],
+  ['chunkRange.test.ts', 'does not depend on how big the world is: a screen of 60 by 34 tiles needs at most nine chunks built and keeps at most sixteen'],
+  ['chunkRange.test.ts', 'drops a drawn chunk only once it is outside the keep range, so stepping back over an edge builds nothing'],
+  ['chunkRange.test.ts', 'keeps a range inside a limit however large it is, and holds no chunk when it lies outside'],
+  ['camera.test.ts', 'is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)'],
   ['standingTiles.test.ts', 'draws the eastern of two trees in a row on top whichever was created first, by far less than a pixel of depth'],
   ['groundTiles.test.ts', 'shows every grass tile in the variant its world column and row pick, wherever its chunk is'],
 ];

@@ -98,6 +98,10 @@ describe('reading a map into chunks', () => {
     expect(readMapTiles(mapOf([area(['TTTT', 'T.oT', 'TTTT'])], spawn)).checksum).not.toBe(whole.checksum);
     expect(readMapTiles(mapOf([area(['TTTT', 'T..T', 'TTTT'])], { column: 2, row: 1 })).checksum).not.toBe(whole.checksum);
     expect(readMapTiles(mapOf([area(['TTTT', 'T..T', 'TTTT'], { column: 1, row: 0 })], { column: 2, row: 1 })).checksum).not.toBe(whole.checksum);
+    // The same tiles in another chunk, with the spawn where it was: only the chunk's coordinates differ.
+    const withRockAt = (origin: TileCoordinate): string => readMapTiles(mapOf([area(['TTTT', 'T..T', 'TTTT']), area(['o'], origin, 'rock')], spawn)).checksum;
+    expect(withRockAt({ column: 5, row: 5 + CHUNK_SIZE })).not.toBe(withRockAt({ column: 5, row: 5 + 2 * CHUNK_SIZE }));
+    expect(withRockAt({ column: 5 + CHUNK_SIZE, row: 5 })).not.toBe(withRockAt({ column: 5, row: 5 + CHUNK_SIZE }));
   });
 });
 
@@ -105,12 +109,14 @@ describe('a world that grows', () => {
   it('keeps every existing tile, tile coordinate and position in metres when an area is added on any side', async () => {
     const before = readMapTiles(worldMap);
     const { bounds } = before;
-    const strip = (name: string, origin: TileCoordinate, columns: number, rows: number): AreaData => area(Array.from({ length: rows }, () => '.'.repeat(columns)), origin, name);
+    // Strips of grass with a tree on every fourth tile of every fourth row: new ground with new colliders in it.
+    const strip = ({ name, origin, columns, rows }: { name: string; origin: TileCoordinate; columns: number; rows: number }): AreaData =>
+      area(Array.from({ length: rows }, (_, row) => (row % 4 === 2 ? 'T...'.repeat(columns).slice(0, columns) : '.'.repeat(columns))), origin, name);
     const added = [
-      strip('north', { column: bounds.column, row: bounds.row - 50 }, bounds.width, 50),
-      strip('south', { column: bounds.column, row: bounds.row + bounds.height }, bounds.width, 50),
-      strip('west', { column: bounds.column - 70, row: bounds.row }, 70, bounds.height),
-      strip('east', { column: bounds.column + bounds.width, row: bounds.row }, 70, bounds.height),
+      strip({ name: 'north', origin: { column: bounds.column, row: bounds.row - 50 }, columns: bounds.width, rows: 50 }),
+      strip({ name: 'south', origin: { column: bounds.column, row: bounds.row + bounds.height }, columns: bounds.width, rows: 50 }),
+      strip({ name: 'west', origin: { column: bounds.column - 70, row: bounds.row }, columns: 70, rows: bounds.height }),
+      strip({ name: 'east', origin: { column: bounds.column + bounds.width, row: bounds.row }, columns: 70, rows: bounds.height }),
     ];
     const grown: WorldMap = { ...worldMap, areas: [...worldMap.areas, ...added] };
     const after = readMapTiles(grown);
@@ -121,14 +127,16 @@ describe('a world that grows', () => {
     expect(grown.spawn).toEqual(worldMap.spawn);
     expect(spawnPoint(grown)).toEqual(spawnPoint(worldMap));
 
-    // Every collider the small world had is in the grown one, at the same metres.
+    // The colliders cover the same ground inside the old bounds, metre for metre. They need not be the same boxes:
+    // a new tree beside an old row of trees is merged into its box.
     const small = await createSimInternal({ seed: 7 });
     const big = await createSimInternal({ seed: 7, map: grown });
-    const bigBoxes = new Set(staticBoxes(big).map((box) => JSON.stringify(box)));
-    const smallBoxes = staticBoxes(small);
-    expect(smallBoxes.length).toBeGreaterThan(10);
-    for (const box of smallBoxes) expect(bigBoxes.has(JSON.stringify(box)), JSON.stringify(box)).toBe(true);
-    expect(bigBoxes.size).toBe(smallBoxes.length); // the added strips are all grass
+    const insideOldBounds = (tileKey: string): boolean => tileDefIdAt(before, tileFromKey(tileKey)) !== undefined;
+    const coveredBefore = tilesCoveredBy(staticBoxes(small));
+    const coveredAfter = tilesCoveredBy(staticBoxes(big));
+    expect(coveredBefore.size).toBeGreaterThan(300);
+    expect(new Set([...coveredAfter].filter(insideOldBounds))).toEqual(coveredBefore);
+    expect(coveredAfter.size).toBeGreaterThan(coveredBefore.size + 400); // the strips brought their own trees
 
     // And the same commands walk the same players to the same positions, bit for bit.
     for (let tick = 0; tick < 300; tick += 1) {
@@ -267,10 +275,28 @@ function walk(tick: number): Command[] {
 
 function tilesIn({ column, row, width, height }: { column: number; row: number; width: number; height: number }): TileCoordinate[] {
   const tiles: TileCoordinate[] = [];
-  for (let r = row; r < row + height; r += 1) {
-    for (let c = column; c < column + width; c += 1) tiles.push({ column: c, row: r });
+  for (let tileRow = row; tileRow < row + height; tileRow += 1) {
+    for (let tileColumn = column; tileColumn < column + width; tileColumn += 1) tiles.push({ column: tileColumn, row: tileRow });
   }
   return tiles;
+}
+
+/** The tiles a list of boxes in metres covers, as "column,row" keys. Throws if two boxes cover one tile. */
+function tilesCoveredBy(boxes: readonly { x: number; y: number; halfWidth: number; halfHeight: number }[]): Set<string> {
+  const covered = new Set<string>();
+  for (const box of boxes) {
+    const rectangle = { column: (box.x - box.halfWidth) / TILE_SIZE, row: (box.y - box.halfHeight) / TILE_SIZE, width: (2 * box.halfWidth) / TILE_SIZE, height: (2 * box.halfHeight) / TILE_SIZE };
+    for (const { column, row } of tilesIn(rectangle)) {
+      if (covered.has(`${column},${row}`)) throw new Error(`tile (${column}, ${row}) is covered twice`);
+      covered.add(`${column},${row}`);
+    }
+  }
+  return covered;
+}
+
+function tileFromKey(tileKey: string): TileCoordinate {
+  const [column, row] = tileKey.split(',').map(Number) as [number, number];
+  return { column, row };
 }
 
 function isWalkable(tile: TileCoordinate): boolean {

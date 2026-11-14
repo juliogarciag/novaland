@@ -68,7 +68,12 @@ export interface MapChunk {
   readonly defIds: Uint16Array;
 }
 
-/** A map's areas resolved into chunks of tile def ids. Only chunks that hold at least one tile exist. */
+/**
+ * A map's areas resolved into chunks of tile def ids. Only chunks that hold
+ * at least one tile exist. Pass the object `readMapTiles` returns to
+ * `findChunk` and `tileDefIdAt` as it is: they know it by identity, and a
+ * copy of it looks empty to them.
+ */
 export interface MapTiles {
   /** Side of one tile in metres. */
   readonly tileSize: number;

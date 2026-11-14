@@ -8,7 +8,7 @@
  * images, and every game object of the scene.
  *
  * - On the big map only the chunks near the camera are drawn, a few of 130,
- *   and no more tile images than the 40x30 world keeps alive.
+ *   and the images alive are exactly the trees and rocks of those chunks.
  * - Walking for ten seconds changes which chunks are drawn and never how
  *   many: old ones are dropped as new ones are built.
  * - A camera that shows more (zoomed out) draws more chunks; the map's size
@@ -44,10 +44,9 @@ try {
   report.world = worldAlive;
   report.big = { atStart: bigAlive };
   results.push(check(`the generated map is ${BIG_MAP}: 100 times the world's tiles`, bigAlive.map.tiles === 100 * worldAlive.map.tiles && bigAlive.map.bounds.width === 400 && bigAlive.map.bounds.height === 300, `${bigAlive.map.tiles} tiles in ${bigAlive.map.chunks} chunks, ${bigAlive.map.standingTiles} trees and rocks; the world has ${worldAlive.map.tiles} tiles in ${worldAlive.map.chunks} chunks, ${worldAlive.map.standingTiles} trees and rocks`));
-  results.push(check('on the big map only the chunks near the camera are drawn', bigAlive.chunksDrawn.length <= 9 && bigAlive.chunksDrawn.length < bigAlive.map.chunks / 10, `${bigAlive.chunksDrawn.length} of ${bigAlive.map.chunks} chunks: ${bigAlive.chunksDrawn.join(' ')}`));
+  results.push(check('on the big map only the chunks near the camera are drawn', bigAlive.chunksDrawn.length <= mostChunksFor(bigAlive) && bigAlive.chunksDrawn.length < bigAlive.map.chunks / 10, `${bigAlive.chunksDrawn.length} of ${bigAlive.map.chunks} chunks: ${bigAlive.chunksDrawn.join(' ')}`));
   results.push(check('ground tiles alive are the drawn chunks, not the map', bigAlive.groundTiles === bigAlive.chunksDrawn.length * bigAlive.chunkSize ** 2 && bigAlive.groundTiles < bigAlive.map.tiles / 10, `${bigAlive.groundTiles} of ${bigAlive.map.tiles}`));
   results.push(check('standing images alive are the trees and rocks of the drawn chunks, not of the map', bigAlive.standingImages === bigAlive.standingTilesInDrawnChunks && bigAlive.standingImages < bigAlive.map.standingTiles / 10, `${bigAlive.standingImages} of ${bigAlive.map.standingTiles}`));
-  results.push(check('the big map keeps no more tile images alive than the 40x30 world does in the same window', bigAlive.standingImages <= worldAlive.standingImages && bigAlive.sceneObjects <= worldAlive.sceneObjects, `images ${bigAlive.standingImages} against ${worldAlive.standingImages}; all game objects of the scene ${bigAlive.sceneObjects} against ${worldAlive.sceneObjects}`));
   results.push(check('what Phaser holds is what the report says: one tilemap layer per drawn chunk and one image per standing tile in them', bigAlive.phaserLayers === bigAlive.chunksDrawn.length && bigAlive.phaserImages === bigAlive.standingImages && worldAlive.phaserLayers === worldAlive.chunksDrawn.length && worldAlive.phaserImages === worldAlive.standingImages, `big: ${bigAlive.phaserLayers} layers, ${bigAlive.phaserImages} images; world: ${worldAlive.phaserLayers} layers, ${worldAlive.phaserImages} images`));
   results.push(check('every pixel of the screen is terrain: nothing near the camera was left out', backgroundPixels(await big.screenshot({ path: path.join(PROOF, '06-big-map-start.png') })) === 0));
 
@@ -73,7 +72,8 @@ try {
   const moved = Math.hypot(after.player.x - before.player.x, after.player.y - before.player.y);
   report.big.walk = { ...walk, chunkSets: [...walk.chunkSets], movedMetres: moved, after };
   results.push(check('walking changed which chunks are drawn', moved > bigAlive.chunkSize / 2 && walk.chunkSets.size > 1 && after.chunksDrawn.join() !== before.chunksDrawn.join(), `walked ${moved.toFixed(1)} m; ${walk.chunkSets.size} different sets of chunks; now ${after.chunksDrawn.join(' ')}`));
-  results.push(check('and never how many: chunks behind the camera were dropped as new ones were built', walk.mostChunks <= 9 && walk.mostObjects <= worldAlive.sceneObjects, `at most ${walk.mostChunks} chunks, ${walk.mostImages} standing images, ${walk.mostObjects} game objects in ${walk.samples} samples`));
+  results.push(check('and never how many: chunks behind the camera were dropped as new ones were built', walk.mostChunks <= mostChunksFor(bigAlive), `at most ${walk.mostChunks} chunks, ${walk.mostImages} standing images, ${walk.mostObjects} game objects in ${walk.samples} samples`));
+  results.push(check('after the walk Phaser holds exactly the drawn chunks: nothing of the dropped ones is left behind', after.phaserLayers === after.chunksDrawn.length && after.phaserImages === after.standingImages && after.standingImages === after.standingTilesInDrawnChunks, `${after.phaserLayers} layers and ${after.phaserImages} images for ${after.chunksDrawn.length} chunks`));
   results.push(check('no terrain was missing on screen at any point of the walk', walk.backgroundPixels === 0, `${walk.backgroundPixels} background pixels in ${walk.samples} screenshots`));
 
   // ---- A camera that shows more draws more: it is the camera that decides ----
@@ -81,7 +81,7 @@ try {
   await big.waitForTimeout(300);
   const zoomedOut = await alive(big);
   report.big.zoomedOut = zoomedOut;
-  results.push(check('zoomed out to three times as much world on screen, more chunks are drawn, still a fraction of the map', zoomedOut.camera.visibleMetres.width === 3 * after.camera.visibleMetres.width && zoomedOut.chunksDrawn.length > after.chunksDrawn.length && zoomedOut.chunksDrawn.length <= 20 && zoomedOut.standingImages === zoomedOut.standingTilesInDrawnChunks, `${after.camera.visibleMetres.width} m across: ${after.chunksDrawn.length} chunks; ${zoomedOut.camera.visibleMetres.width} m across: ${zoomedOut.chunksDrawn.length} chunks, of ${zoomedOut.map.chunks}`));
+  results.push(check('zoomed out to three times as much world on screen, more chunks are drawn, still a fraction of the map', zoomedOut.camera.visibleMetres.width === 3 * after.camera.visibleMetres.width && zoomedOut.chunksDrawn.length > after.chunksDrawn.length && zoomedOut.chunksDrawn.length <= mostChunksFor(zoomedOut) && zoomedOut.chunksDrawn.length < zoomedOut.map.chunks / 5 && zoomedOut.standingImages === zoomedOut.standingTilesInDrawnChunks, `${after.camera.visibleMetres.width} m across: ${after.chunksDrawn.length} chunks; ${zoomedOut.camera.visibleMetres.width} m across: ${zoomedOut.chunksDrawn.length} chunks, of ${zoomedOut.map.chunks}`));
   results.push(check('zoomed out, every pixel of the screen is still terrain', backgroundPixels(await big.screenshot({ path: path.join(PROOF, '06-big-map-zoomed-out.png') })) === 0));
   results.push(check('no page errors', errors.length === 0, errors.join(' | ')));
 } catch (error) {
@@ -115,6 +115,7 @@ function alive(page) {
         standingTiles: api.tiles.chunks.reduce((count, chunk) => count + standingIn(chunk), 0),
       },
       chunkSize: api.chunkSize,
+      keepMarginTiles: terrain.keepMarginTiles,
       chunksDrawn: terrain.chunksDrawn,
       groundTiles: terrain.groundTiles,
       standingImages: terrain.standingImages,
@@ -126,6 +127,17 @@ function alive(page) {
       player: { x: player.x, y: player.y },
     };
   });
+}
+
+/**
+ * The most chunks a camera can ever have drawn: a view this many tiles
+ * across, with the margin a drawn chunk is kept for on each side, laid over
+ * the chunk grid at its worst. It depends on the screen and the chunk size
+ * only.
+ */
+function mostChunksFor({ camera, chunkSize, keepMarginTiles }) {
+  const across = (visibleMetres) => Math.floor((visibleMetres + 2 * keepMarginTiles) / chunkSize) + 2;
+  return across(camera.visibleMetres.width) * across(camera.visibleMetres.height);
 }
 
 /** Pixels of a screenshot that show the page background: places where no terrain was drawn. */

@@ -90,16 +90,6 @@ export interface BoxBodyOptions {
   readonly halfHeight: number;
 }
 
-/** An immovable body: terrain and other obstacles. */
-export function attachStaticBox(sim: Sim, eid: number, { x, y, halfWidth, halfHeight }: BoxBodyOptions): RigidBody {
-  const rapier = loadedRapier();
-  const bodyDesc = rapier.RigidBodyDesc.fixed().setTranslation(x, y);
-  const rigidBody = sim.physics.createRigidBody(bodyDesc);
-  sim.physics.createCollider(rapier.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
-  register(sim, eid, rigidBody);
-  return rigidBody;
-}
-
 /**
  * One immovable body made of these boxes, belonging to no entity: scenery
  * that never changes, such as a chunk of terrain. It lives in the physics

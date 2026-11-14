@@ -12,7 +12,7 @@ import { isAvatarDefId } from './defs';
 import { findPlayerEntity } from './queries';
 
 describe('player movement (headless)', () => {
-  it('spawns a player at the level spawn point on join', async () => {
+  it('spawns a player at the spawn point of the map on join', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
     expect(findPlayerEntity(sim, 0)).toBeDefined();

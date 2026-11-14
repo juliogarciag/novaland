@@ -67,7 +67,7 @@ describe('a prediction', () => {
     expect(adoptEntity(prediction, replica, eid)).toBe(true);
     expect(findPlayerEntity(prediction, 0)).toBe(eid);
     expect(renderableOf(prediction, eid)).toEqual(renderableOf(server, eid));
-    // Far enough west to run into the trees at the edge of the level: the prediction must stop where the server stops.
+    // Far enough west to run into the trees at the edge of the clearing: the prediction must stop where the server stops.
     const move = { type: 'player/move', slot: 0, x: -1, y: 0.3 } as const;
     server.step([move]);
     prediction.step([move]);
@@ -166,7 +166,7 @@ describe('a prediction', () => {
 
 const { staticBoxes } = physicsTesting;
 
-/** A server sim with two players, a replica holding its state and an empty prediction of the same level. */
+/** A server sim with two players, a replica holding its state and an empty prediction of the same map. */
 async function serverReplicaAndPrediction(): Promise<{ server: SimHandle; replica: ReplicaHandle; prediction: PredictionHandle }> {
   const server = await createSim({ seed: 5, map: worldMap });
   server.step([

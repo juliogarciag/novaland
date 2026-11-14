@@ -1,7 +1,7 @@
 /**
  * Run once, on the code before this ticket, next to capture-sim.ts: the
  * "before" screenshots. Solo and online, the whole map with terrain only
- * (compared pixel for pixel with the new code by 02-same-world.mjs) and the
+ * (compared pixel for pixel with the new code by 04-same-look.mjs) and the
  * game as a player sees it when it opens.
  *
  *   node verifications/47-world-as-chunks/baseline/capture-browser.mjs

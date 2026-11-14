@@ -12,15 +12,19 @@ import { Player } from './components';
  * rings around the spawn tile; the first ring with any free tile wins and one
  * of its free tiles is picked with the sim's rng, so five arrivals spread
  * around the spawn instead of forming a queue. A tile is free when it is
- * walkable and no player stands on it. A map so crowded that no tile is
- * free (every walkable tile taken) falls back to the spawn tile itself:
- * players pass through each other, so a pile-up is only cosmetic.
+ * walkable and no player stands on it. The search stops `SPAWN_SEARCH_RINGS`
+ * tiles out: with no free tile that close (a spawn so crowded or so walled
+ * in) the player appears on the spawn tile itself. Players pass through each
+ * other, so a pile-up is only cosmetic, and a join must stay cheap however
+ * big the map is: it runs inside a command handler.
  */
+/** How many tiles out from the spawn tile a free tile is looked for. Far more room than every seat needs. */
+const SPAWN_SEARCH_RINGS = 32;
+
 export function pickSpawnPoint(sim: Sim): { x: number; y: number } {
   const tiles = readMapTiles(sim.map);
   const occupied = occupiedTileKeys(sim);
-  const farthestRing = Math.max(tiles.bounds.width, tiles.bounds.height);
-  for (let ring = 0; ring <= farthestRing; ring += 1) {
+  for (let ring = 0; ring <= SPAWN_SEARCH_RINGS; ring += 1) {
     const free = ringTiles(sim.map.spawn, ring).filter((tile) => isWalkable(tiles, tile) && !occupied.has(tileKey(tile)));
     if (free.length > 0) return tileCentre(free[sim.rng.nextInt(free.length)] as TileCoordinate);
   }

@@ -1,5 +1,5 @@
 /**
- * Run once, on the code before this ticket (commit named in baseline/README.md),
+ * Run once, on the code before this ticket (the commit is named in ../README.md),
  * to record what "exactly as before" means. It cannot run on the new code:
  * it reads levels, `readTileGrid` and `TerrainCollider` entities, which this
  * ticket replaces. Kept as the record of how baseline/*.json were made.

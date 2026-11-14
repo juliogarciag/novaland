@@ -20,6 +20,8 @@ import type { PlayableWorld } from './worlds/PlayableWorld';
  */
 async function boot(): Promise<void> {
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
+  // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
+  if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
   const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld({ generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
   const game = new Phaser.Game({
     type: Phaser.AUTO,

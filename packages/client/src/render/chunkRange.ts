@@ -1,4 +1,4 @@
-import { CHUNK_SIZE, TILE_SIZE, type TileCoordinate } from '@novaland/sim';
+import { CHUNK_SIZE, TILE_SIZE, type TileCoordinate, type TileRectangle } from '@novaland/sim';
 import { toPixels } from './units';
 
 /**
@@ -46,6 +46,26 @@ export function chunkRangeAround(view: PixelRect, marginTiles: number): ChunkRan
   };
 }
 
+/** The chunks that hold a tile of a rectangle of tiles, such as a map's bounds. */
+export function chunkRangeOfTiles({ column, row, width, height }: TileRectangle): ChunkRange {
+  return {
+    firstColumn: Math.floor(column / CHUNK_SIZE),
+    lastColumn: Math.floor((column + width - 1) / CHUNK_SIZE),
+    firstRow: Math.floor(row / CHUNK_SIZE),
+    lastRow: Math.floor((row + height - 1) / CHUNK_SIZE),
+  };
+}
+
+/** The part of `range` that lies inside `limit`. It holds no chunk when the two do not meet. */
+export function chunkRangeWithin(range: ChunkRange, limit: ChunkRange): ChunkRange {
+  return {
+    firstColumn: Math.max(range.firstColumn, limit.firstColumn),
+    lastColumn: Math.min(range.lastColumn, limit.lastColumn),
+    firstRow: Math.max(range.firstRow, limit.firstRow),
+    lastRow: Math.min(range.lastRow, limit.lastRow),
+  };
+}
+
 export function isInChunkRange(range: ChunkRange, { column, row }: TileCoordinate): boolean {
   return column >= range.firstColumn && column <= range.lastColumn && row >= range.firstRow && row <= range.lastRow;
 }
@@ -57,6 +77,27 @@ export function chunkCoordinatesIn(range: ChunkRange): TileCoordinate[] {
     for (let column = range.firstColumn; column <= range.lastColumn; column += 1) coordinates.push({ column, row });
   }
   return coordinates;
+}
+
+/**
+ * What a set of drawn chunks has to change to fit a new view: the drawn
+ * ones that left the `keep` range are dropped, and every chunk of the
+ * `draw` range that is not drawn yet is built. Keys are "column,row".
+ */
+export function chunksToDropAndBuild({ drawnKeys, draw, keep }: { drawnKeys: Iterable<string>; draw: ChunkRange; keep: ChunkRange }): { drop: string[]; build: TileCoordinate[] } {
+  const drawn = new Set(drawnKeys);
+  const drop = [...drawn].filter((key) => !isInChunkRange(keep, chunkCoordinateFromKey(key)));
+  const build = chunkCoordinatesIn(draw).filter((coordinate) => !drawn.has(chunkKey(coordinate)));
+  return { drop, build };
+}
+
+export function chunkKey({ column, row }: TileCoordinate): string {
+  return `${column},${row}`;
+}
+
+function chunkCoordinateFromKey(key: string): TileCoordinate {
+  const [column, row] = key.split(',').map(Number) as [number, number];
+  return { column, row };
 }
 
 export function sameChunkRange(first: ChunkRange, second: ChunkRange): boolean {

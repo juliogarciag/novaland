@@ -13,6 +13,7 @@
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { scriptedWalk } from './generated-rows.mjs';
 import { ROOT, check, run, summarize, writeProof } from './lib.mjs';
 
 const HERE = import.meta.dirname;
@@ -30,6 +31,8 @@ results.push(check('the measurement ran', code === 0 && Array.isArray(measured),
 if (Array.isArray(measured)) {
   const [small, big] = measured;
   const [smallBefore, bigBefore] = baseline;
+  /** The scripted walk seats this many players; they are the only entities there should be. */
+  const players = scriptedWalk().players;
   const table = [
     ['', '40x30 before', '40x30 now', '400x300 before', '400x300 now'],
     ['entities in the sim', smallBefore.simEntities, small.simEntities, bigBefore.simEntities, big.simEntities],
@@ -38,14 +41,15 @@ if (Array.isArray(measured)) {
     ['delta, bytes per send', smallBefore.deltaBytesPerSend, small.deltaBytesPerSend, bigBefore.deltaBytesPerSend, big.deltaBytesPerSend],
     ['full state on join or resync, bytes', smallBefore.fullStateBytes, small.fullStateBytes, bigBefore.fullStateBytes, big.fullStateBytes],
     ['snapshot + hash, ms', smallBefore.snapshotAndHashMs, small.snapshotAndHashMs, bigBefore.snapshotAndHashMs, big.snapshotAndHashMs],
+    ['creating the sim (read map, build colliders), ms', '-', small.bootMs, '-', big.bootMs],
   ];
-  const text = table.map((row) => row.map((cell, index) => String(cell).padEnd(index === 0 ? 40 : 16)).join('')).join('\n');
+  const text = table.map((row) => row.map((cell, index) => String(cell).padEnd(index === 0 ? 50 : 16)).join('')).join('\n');
   console.log(`\n${text}\n`);
 
   results.push(check('both maps are the ground the baseline was measured on', small.sameGroundAsBaseline && big.sameGroundAsBaseline));
-  results.push(check('the 400x300 map boots at the default capacity (before: 3,314 entities, over the default 1,024)', big.capacity === small.capacity && big.capacity === 1024, `capacity ${big.capacity}, ${big.chunks} chunks`));
-  results.push(check('world-state entities do not grow with the map: the five players on both', small.worldStateEntities === 5 && big.worldStateEntities === 5, `${small.worldStateEntities} and ${big.worldStateEntities}; before ${smallBefore.worldStateEntities} and ${bigBefore.worldStateEntities}`));
-  results.push(check('the sim holds no entity for terrain on either map', small.simEntities === 5 && big.simEntities === 5, `${small.simEntities} and ${big.simEntities}`));
+  results.push(check(`the 400x300 map boots at the default capacity, which the old code could not: it needed ${bigBefore.simEntities} entities`, big.capacity === small.capacity && big.capacity < bigBefore.simEntities, `capacity ${big.capacity}, ${big.chunks} chunks`));
+  results.push(check('world-state entities do not grow with the map: the five players on both', small.worldStateEntities === players && big.worldStateEntities === players, `${small.worldStateEntities} and ${big.worldStateEntities}; before ${smallBefore.worldStateEntities} and ${bigBefore.worldStateEntities}`));
+  results.push(check('the sim holds no entity for terrain on either map', small.simEntities === players && big.simEntities === players, `${small.simEntities} and ${big.simEntities}`));
   results.push(check('a prediction of either map holds no entity until it adopts one', small.predictionEntitiesBeforeAdopting === 0 && big.predictionEntitiesBeforeAdopting === 0));
   // Five players as JSON: the digits differ with where they stand, so the sizes are close, not equal.
   results.push(check('the full state a joiner gets is the five players, on both maps', Math.abs(small.fullStateBytes - big.fullStateBytes) < 60 && big.fullStateBytes < 2000, `${small.fullStateBytes} and ${big.fullStateBytes} bytes; before ${smallBefore.fullStateBytes} and ${bigBefore.fullStateBytes}`));

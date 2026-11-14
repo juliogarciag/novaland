@@ -1,4 +1,4 @@
-import { getTileDef, TILE_SIZE } from '../../features/terrain/defs';
+import { getTileDef, terrainDefs, TILE_SIZE } from '../../features/terrain/defs';
 import type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './types';
 
 /** Tiles along one side of a chunk. */
@@ -37,7 +37,10 @@ export function readMapTiles(map: WorldMap): MapTiles {
   return tiles;
 }
 
-/** The chunk at these chunk coordinates, or undefined when no area put a tile in it. */
+/**
+ * The chunk at these chunk coordinates, or undefined when no area put a tile in it.
+ * `tiles` must be the object `readMapTiles` returned: a copy of it finds nothing.
+ */
 export function findChunk(tiles: MapTiles, { column, row }: TileCoordinate): MapChunk | undefined {
   return chunkByKeyByTiles.get(tiles)?.get(chunkKey(column, row));
 }
@@ -124,7 +127,10 @@ function writeAreaIntoChunks(area: AreaData, rectangle: TileRectangle, chunkByKe
   const defIdByCharacter = new Map<string, number>();
   for (const [character, defId] of Object.entries(area.legend)) {
     if (character.length !== 1) throw new Error(`Area "${area.name}": legend key "${character}" must be one character`);
-    defIdByCharacter.set(character, getTileDef(defId).id);
+    const tileDefId = getTileDef(defId).id;
+    // A chunk keeps def ids as 16-bit numbers, and 0 means no tile.
+    if (!Number.isInteger(tileDefId) || tileDefId <= NO_TILE || tileDefId > 0xffff) throw new Error(`Area "${area.name}": tile def id ${tileDefId} does not fit a chunk`);
+    defIdByCharacter.set(character, tileDefId);
   }
   area.rows.forEach((text, rowIndex) => {
     if (text.length !== rectangle.width) {
@@ -176,9 +182,12 @@ function boundsOf(rectangles: readonly TileRectangle[]): TileRectangle {
 }
 
 /**
- * 32-bit FNV-1a over the spawn and every chunk's coordinates and def ids, as
- * 8 hex chars. Chunks come sorted and hold the tiles wherever their areas
- * were cut, so the same terrain always gives the same checksum.
+ * 32-bit FNV-1a, as 8 hex chars, over everything that decides what the
+ * ground is and what stops a player on it: the tile and chunk sizes, which
+ * tile defs are solid, the spawn, and every chunk's coordinates and def
+ * ids. Chunks come sorted and hold the tiles wherever their areas were cut,
+ * so the same terrain always gives the same checksum. How tiles look is not
+ * in it: two builds that differ only in art collide alike.
  */
 function checksumOf(chunks: readonly MapChunk[], spawn: TileCoordinate): string {
   let hash = 0x811c9dc5;
@@ -189,6 +198,12 @@ function checksumOf(chunks: readonly MapChunk[], spawn: TileCoordinate): string 
       hash = Math.imul(hash, 0x01000193) >>> 0;
     }
   };
+  mix(Math.round(TILE_SIZE * 1000));
+  mix(CHUNK_SIZE);
+  for (const def of terrainDefs) {
+    mix(def.id);
+    mix(def.solid ? 1 : 0);
+  }
   mix(spawn.column);
   mix(spawn.row);
   for (const chunk of chunks) {

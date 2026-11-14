@@ -10,6 +10,8 @@
  * - Holding W walks the player north into the forest and the first tree
  *   stops it at its face, where the map says the tree is.
  * - The terrain on screen is drawn as chunks: the report names them.
+ * - On windows wider than the map, the very first frame rendered already has
+ *   every chunk on screen (the camera has not been pointed anywhere yet).
  *
  * Expected numbers come from the map and the defs, read through the debug API.
  */
@@ -94,6 +96,38 @@ try {
     results.push(check(`${mode}: the terrain is drawn as chunks of ${content.chunkSize}x${content.chunkSize} tiles`, wholeTerrain.chunksDrawn.length === wholeTerrain.chunksInMap && terrain.chunksDrawn.length >= 1 && terrain.groundTiles === terrain.chunksDrawn.length * content.chunkSize ** 2, `whole map: chunks ${wholeTerrain.chunksDrawn.join(' ')}; playing: ${terrain.chunksDrawn.join(' ')}`));
     report[mode] = { difference, content, start, spawnTile, stopped: at, stopY, wholeTerrain, terrain };
     await page.context().close();
+  }
+  // ---- The very first frame, on windows wider than the map ----
+  // Before the player exists the camera has not been pointed anywhere; what is drawn then must still be what is rendered.
+  for (const [name, viewport, deviceScaleFactor] of [['1920x1080', { width: 1920, height: 1080 }, 1], ['1728x1000 at 2x', { width: 1728, height: 1000 }, 2]]) {
+    const context = await browser.newContext({ viewport, deviceScaleFactor });
+    const page = await context.newPage();
+    page.on('pageerror', (error) => errors.push(String(error)));
+    await page.addInitScript(() => {
+      window.__firstFrames = [];
+      const hook = () => {
+        const api = window.__novaland;
+        if (!api) return void window.setTimeout(hook, 0);
+        api.game.events.on('postrender', () => {
+          const terrain = api.terrain();
+          if (!terrain || window.__firstFrames.length >= 5) return;
+          const view = api.game.scene.getScene('world').cameras.main.worldView;
+          const chunkPixels = api.chunkSize * api.tiles.tileSize * api.pixelsPerMetre;
+          const missing = api.tiles.chunks
+            .filter((chunk) => chunk.column * chunkPixels < view.x + view.width && (chunk.column + 1) * chunkPixels > view.x && chunk.row * chunkPixels < view.y + view.height && (chunk.row + 1) * chunkPixels > view.y)
+            .map((chunk) => `${chunk.column},${chunk.row}`)
+            .filter((key) => !terrain.chunksDrawn.includes(key));
+          window.__firstFrames.push({ tick: api.sim.tick, view: { x: view.x, y: view.y, width: view.width, height: view.height }, chunksDrawn: terrain.chunksDrawn, missing });
+        });
+      };
+      hook();
+    });
+    await page.goto(`http://localhost:${SOLO_PORT}/`);
+    await page.waitForFunction(() => window.__firstFrames?.length >= 5, null, { timeout: 20000 });
+    const frames = await page.evaluate(() => window.__firstFrames);
+    report[`firstFrames ${name}`] = frames;
+    results.push(check(`${name}: from the first frame rendered, every chunk on screen is drawn`, frames.every((frame) => frame.missing.length === 0 && frame.chunksDrawn.length > 0), `first frame at tick ${frames[0].tick}: view x ${frames[0].view.x} to ${frames[0].view.x + frames[0].view.width}, chunks ${frames[0].chunksDrawn.join(' ')}`));
+    await context.close();
   }
   results.push(check('no page errors', errors.length === 0, errors.join(' | ')));
 } catch (error) {

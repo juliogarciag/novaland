@@ -174,7 +174,7 @@ describe('OnlineWorld predicting the local player', () => {
     expect(link.world.predictionReport!.correctionMetres).toBe(0);
   });
 
-  it('shows a teleport at once instead of sliding across the level', async () => {
+  it('shows a teleport at once instead of sliding across the map', async () => {
     const link = await linked(0, ROUND_TRIPS[0]);
     const here = link.drawn();
     const state = JSON.parse(JSON.stringify(worldState(link.server))) as WorldState;

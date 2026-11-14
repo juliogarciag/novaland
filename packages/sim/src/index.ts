@@ -20,7 +20,7 @@ export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from '
 export { worldMap } from './content/world';
 export { generatedWorldMap, type GeneratedMapOptions } from './content/world/generated';
 export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './content/world/types';
-export { CHUNK_SIZE, NO_TILE, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
+export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
 export { getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';

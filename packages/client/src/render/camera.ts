@@ -41,11 +41,15 @@ export class MapCamera {
 
   /**
    * The part of the world on screen right now, in world pixels. Phaser only
-   * refreshes `camera.worldView` when it renders; this is the same rectangle
-   * from the scroll and zoom as they are, so it is right straight after `lookAt`.
+   * refreshes `camera.worldView` when it renders; this is the rectangle it
+   * will render, from the scroll and zoom as they are now, so it is right
+   * straight after `lookAt` and also before the camera was ever pointed anywhere.
    */
   view(): PixelRect {
-    const { scrollX, scrollY, width, height, zoom } = this.camera;
+    const { width, height, zoom } = this.camera;
+    // Phaser keeps the scroll inside the bounds only when it renders; until then it may lie outside them (before the first `lookAt`, after a resize).
+    const scrollX = this.camera.useBounds ? this.camera.clampX(this.camera.scrollX) : this.camera.scrollX;
+    const scrollY = this.camera.useBounds ? this.camera.clampY(this.camera.scrollY) : this.camera.scrollY;
     return { x: scrollX + (width - width / zoom) / 2, y: scrollY + (height - height / zoom) / 2, width: width / zoom, height: height / zoom };
   }
 

@@ -17,8 +17,11 @@ for (const size of [{ columns: 40, rows: 30 }, { columns: 400, rows: 300 }]) {
   // The same ground the baseline was measured on.
   const rows = generatedRows(size);
   const sameGround = JSON.stringify(map.areas[0]?.rows) === JSON.stringify(rows) && JSON.stringify(map.spawn) === JSON.stringify(generatedSpawn(rows));
-  // No capacity given: the default must do, whatever the map's size.
+  // No capacity given: the default must do, whatever the map's size. Rapier is loaded by then (the loop's first pass pays for it; `bootMs` of the second is the map's own cost).
+  await (await createSim({ seed: 1 })).destroy();
+  const bootStart = performance.now();
   const sim = await createSim({ seed: 1, map });
+  const bootMs = performance.now() - bootStart;
   const walk = scriptedWalk();
   let tick = 0;
   const advance = (ticks: number): void => {
@@ -52,6 +55,7 @@ for (const size of [{ columns: 40, rows: 30 }, { columns: 400, rows: 300 }]) {
     sameGroundAsBaseline: sameGround,
     chunks: readMapTiles(map).chunks.length,
     capacity: sim.capacity,
+    bootMs: Number(bootMs.toFixed(1)),
     simEntities: sim.entityCount,
     worldStateEntities: state.entities.length,
     predictionEntitiesBeforeAdopting: prediction.entityCount,

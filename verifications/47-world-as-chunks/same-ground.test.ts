@@ -68,8 +68,8 @@ describe('the world is the same ground as before', () => {
     }
     const coveredBefore = new Set<string>();
     for (const { column, row, width, height } of baselineGround.colliders) {
-      for (let r = row; r < row + height; r += 1) {
-        for (let c = column; c < column + width; c += 1) coveredBefore.add(`${c},${r}`);
+      for (let tileRow = row; tileRow < row + height; tileRow += 1) {
+        for (let tileColumn = column; tileColumn < column + width; tileColumn += 1) coveredBefore.add(`${tileColumn},${tileRow}`);
       }
     }
     expect([...coveredNow.values()].every((times) => times === 1)).toBe(true);

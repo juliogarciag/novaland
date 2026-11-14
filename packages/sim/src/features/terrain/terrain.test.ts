@@ -296,8 +296,8 @@ function boxOver(rectangle: TileRectangle) {
 function tilesOf(rectangles: readonly TileRectangle[]): TileCoordinate[] {
   const tiles: TileCoordinate[] = [];
   for (const { column, row, width, height } of rectangles) {
-    for (let r = row; r < row + height; r += 1) {
-      for (let c = column; c < column + width; c += 1) tiles.push({ column: c, row: r });
+    for (let tileRow = row; tileRow < row + height; tileRow += 1) {
+      for (let tileColumn = column; tileColumn < column + width; tileColumn += 1) tiles.push({ column: tileColumn, row: tileRow });
     }
   }
   return tiles;
