@@ -1,5 +1,6 @@
 import { getDef, type SimHandle, type SpriteDef } from '@novaland/sim';
 import type Phaser from 'phaser';
+import { depthOfBottomEdge } from './depth';
 import { IDLE_DOWN, poseFromHeading } from './pose';
 import { walkAnimationKey } from './sprites';
 import { PIXELS_PER_METRE, toPixels } from './units';
@@ -50,7 +51,7 @@ export class EntityRenderer {
         this.views.set(renderable.eid, view);
       }
       view.gameObject.setPosition(toPixels(renderable.x), toPixels(renderable.y));
-      const depth = toPixels(renderable.y + renderable.halfHeight);
+      const depth = depthOfBottomEdge(renderable.y + renderable.halfHeight);
       if (view.gameObject.depth !== depth) view.gameObject.setDepth(depth); // setDepth queues a display-list sort even when unchanged
       if (view.sheetSprite) this.animate(view.sheetSprite, frame, renderable.eid);
     }

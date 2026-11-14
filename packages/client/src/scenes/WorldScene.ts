@@ -4,7 +4,7 @@ import { createKeyboardInput, type KeyboardInput } from '../input/keyboard';
 import { LevelCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
 import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
-import { drawTerrain } from '../render/terrain';
+import { drawTerrain, loadStandingTileSprites } from '../render/terrain';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 /**
@@ -24,6 +24,7 @@ export class WorldScene extends Phaser.Scene {
 
   preload(): void {
     loadSpriteSheets(this);
+    loadStandingTileSprites(this);
   }
 
   create(): void {

@@ -1,0 +1,57 @@
+PASS  dev server up
+PASS  the tree def is unchanged for the sim: id 202, solid
+PASS  the tree def carries a standing sprite that stands on grass  ({"key":"tree","frameWidth":24,"frameHeight":32,"pixelsPerMetre":16,"variantCount":3,"groundDefId":200})
+PASS  the level has a free-standing 2x2 clump of trees to walk around  ({"column":14,"row":10,"x":-5,"y":-4})
+PASS  the tree sheet is served as a PNG of `variantCount` frames side by side  (200 image/png 72x32)
+PASS  Phaser loaded the tree sheet with one frame per variant  (3 frames)
+PASS  the tree sheet is drawn with nearest-neighbour filtering  (scaleMode 1)
+PASS  there is one tree image per tree tile (345)  (345 images)
+PASS  every tree image stands on its tile's bottom centre and is sorted by that bottom edge
+PASS  every tree image is drawn at one texture pixel per world pixel, on whole pixels
+PASS  every variant of the sheet is used, and only those  (0,1,2)
+PASS  the ground layer draws grass under every tree and every other tile as before
+PASS  the ground layer is below every tree and the player
+PASS  trees further south are drawn over trees further north
+PASS  walked east along the path to the column of the clump
+PASS  2-in-front: the player's depth is the bottom edge of its body in pixels
+PASS  2-in-front: every tree overlapping the player is drawn on the side its bottom edge says  (2 overlapping tree image(s): in front of the tree at depth -48, in front of the tree at depth -48)
+PASS  2-in-front: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":186,"hiddenByATree":0,"skipped":0,"wrong":0})
+PASS  2-in-front: the sim stopped the player at the south face of the tree tile, as before  (y=-2.600, face + radius at -2.600)
+PASS  2-in-front: the player is in front of the tree it stands under  (in front of)
+PASS  2-in-front: the whole sprite is visible although it overlaps the tree  (186 visible, 0 hidden)
+PASS  walked west past the corner of the clump
+PASS  walked north until level with the south-west tree
+PASS  3-beside: the player's depth is the bottom edge of its body in pixels
+PASS  3-beside: every tree overlapping the player is drawn on the side its bottom edge says  (2 overlapping tree image(s): in front of the tree at depth -64, behind the tree at depth -48)
+PASS  3-beside: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":148,"hiddenByATree":3,"skipped":11,"wrong":0})
+PASS  3-beside: the sim stopped the player at the west face of the tree tile, as before  (x=-6.400, face - radius at -6.400)
+PASS  3-beside: the tree's foot is further south than the player's, so the tree is in front of the player  (behind)
+PASS  3-beside: the player is in front of the tree to the north-east, whose foot is further north  (in front of)
+PASS  3-beside: the canopy overhanging to the west covers a few pixels of the player, the rest is visible  (148 visible, 3 hidden)
+PASS  walked north past the corner of the clump
+PASS  walked east to the column of the north-west tree
+PASS  4-behind: the player's depth is the bottom edge of its body in pixels
+PASS  4-behind: every tree overlapping the player is drawn on the side its bottom edge says  (2 overlapping tree image(s): behind the tree at depth -64, behind the tree at depth -64)
+PASS  4-behind: on screen, every pixel of the player's sprite is the player or a tree, as that order says  ({"visible":75,"hiddenByATree":98,"skipped":13,"wrong":0})
+PASS  4-behind: the sim stopped the player at the north face of the tree tile, as before  (y=-5.400, face - radius at -5.400)
+PASS  4-behind: the player is behind the tree it stands north of  (behind)
+PASS  4-behind: the canopy hides the lower part of the player and the head shows above it  (98 hidden (sprite rows 11-22), 75 visible (rows 2-11))
+PASS  the three stops saw the player both in front of and behind the same clump
+PASS  the level has a tree that sticks out of the forest edge, with open ground on three sides  ({"column":11,"row":4})
+PASS  walked to the tree that sticks out of the forest edge  ((-9.15, -8.82))
+PASS  960x720: the camera zoom is a whole number  (zoom 3)
+PASS  960x720: every texture pixel of every tree checked is one flat 3x3 block of screen pixels  ({"treesChecked":28,"treesOffTheScreenGrid":0,"blocksChecked":21504,"blocksNotFlat":0,"sheetPixelsCompared":9255,"sheetPixelsWrong":0,"sheetColoursSeen":9})
+PASS  960x720: those trees show the sheet's own colours, unblended  (9255 pixels compared, 9 sheet colours seen)
+PASS  640x480: the camera zoom is a whole number  (zoom 2)
+PASS  640x480: every texture pixel of every tree checked is one flat 2x2 block of screen pixels  ({"treesChecked":15,"treesOffTheScreenGrid":0,"blocksChecked":11520,"blocksNotFlat":0,"sheetPixelsCompared":5125,"sheetPixelsWrong":0,"sheetColoursSeen":9})
+PASS  640x480: those trees show the sheet's own colours, unblended  (5125 pixels compared, 9 sheet colours seen)
+PASS  1920x1080: the camera zoom is a whole number  (zoom 6)
+PASS  1920x1080: every texture pixel of every tree checked is one flat 6x6 block of screen pixels  ({"treesChecked":21,"treesOffTheScreenGrid":0,"blocksChecked":16128,"blocksNotFlat":0,"sheetPixelsCompared":7444,"sheetPixelsWrong":0,"sheetColoursSeen":9})
+PASS  1920x1080: those trees show the sheet's own colours, unblended  (7444 pixels compared, 9 sheet colours seen)
+PASS  the trees were checked at more than one zoom  (3x, 2x, 6x)
+PASS  no page or console errors
+PASS  without the sheet: no tree image is drawn  (0 images)
+PASS  without the sheet: every tile, trees included, is drawn flat in its own def's tile
+PASS  without the sheet: the game runs and nothing throws
+
+ALL 55 CHECKS PASSED

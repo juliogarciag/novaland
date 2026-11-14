@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DefId, getDef } from '../../content/defs';
+import { DefId, entityDefs, getDef } from '../../content/defs';
 import { readTileGrid, spawnPoint, tileAt, tileCentre } from '../../content/levels/grid';
 import { starterLevel } from '../../content/levels/starter';
 import type { LevelData, TileGrid } from '../../content/levels/types';
@@ -8,7 +8,7 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from '../player/queries';
-import { getTileDef, TerrainDefId, TILE_SIZE } from './defs';
+import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from './defs';
 import { solidRectangles } from './rectangles';
 
 describe('tile grids', () => {
@@ -50,6 +50,29 @@ describe('tile grids', () => {
     const grid = readTileGrid(starterLevel);
     expect(readTileGrid(starterLevel)).toBe(grid);
     expect(readTileGrid({ ...starterLevel })).not.toBe(grid);
+  });
+});
+
+describe('tile defs', () => {
+  it('a standing sprite has at least one variant and stands on a flat tile def', () => {
+    const standingDefs = terrainDefs.filter((def) => def.standingSprite);
+    expect(standingDefs.map((def) => def.id)).toContain(TerrainDefId.Tree);
+    for (const def of standingDefs) {
+      const sprite = def.standingSprite!;
+      expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
+      expect(sprite.frameWidth > 0 && sprite.frameHeight > 0 && sprite.pixelsPerMetre > 0, def.name).toBe(true);
+      expect(getTileDef(sprite.groundDefId).standingSprite, def.name).toBeUndefined();
+    }
+  });
+
+  it('no standing sprite shares its key with another sprite: they are one folder and one texture namespace', () => {
+    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...terrainDefs.flatMap((def) => (def.standingSprite ? [def.standingSprite.key] : []))];
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('a tree is still one solid tile to the sim, whatever it looks like', () => {
+    expect(getTileDef(TerrainDefId.Tree)).toMatchObject({ id: 202, solid: true });
+    expect(solidRectangles(readTileGrid(level(['.T.'])))).toEqual([{ column: 1, row: 0, width: 1, height: 1 }]);
   });
 });
 
