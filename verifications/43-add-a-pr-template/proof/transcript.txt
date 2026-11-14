@@ -1,5 +1,5 @@
 Proof for #43 (Add a PR template): the change run once.
-Produced on 2026-11-14 21:26 UTC from branch 43-add-a-pr-template at c96bce3.
+Produced on 2026-11-14 21:29 UTC from branch 43-add-a-pr-template at 1047fe4.
 
 == 1. What `gh pr create` offers while the template is only on this branch ==
 
@@ -29,10 +29,11 @@ $ gh pr create --title "Add a PR template" --base 37-freeze-verifications-at-mer
   The body gh put in the editor:
   | - Add a PR template and tell the process to fill it in (#43)
   | - Apply the review's should-fix findings to the PR template (#43)
+  | - Proof for #43: what gh offers, and the PR body against the template
 
   Those are the commit messages. Nothing of the template is there: gh did not offer it.
 
-Why: gh asks GitHub for the repository's templates, and GitHub reads them from the default branch.
+Why: gh 2.36.0 asks GitHub for the repository's templates, and GitHub reads them from the default branch.
 
 $ gh api graphql -f query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){pullRequestTemplates{filename}}}' -f owner=juliogarciag -f name=novaland
 {"data":{"repository":{"pullRequestTemplates":[]}}}
