@@ -8,10 +8,10 @@
       html, body { margin: 0; height: 100%; background: #0b0f14; overflow: hidden; }
       #game { width: 100vw; height: 100vh; }
       canvas { display: block; }
-      /* The mouse cursor over the game and its screens: the pixel-art arrow painted by tools/generate-arrow-cursor.mjs, clicking at its tip (0 0).
+      /* The mouse cursor over the game and its screens: a pixel-art arrow painted by tools/generate-cursors.mjs, clicking at its tip (0 0).
          The first rule is for browsers without image-set(); the second gives 2x screens their own image, so the arrow stays crisp there.
-         `auto` is what shows if the image cannot load. Buttons keep their own pointer. */
-      html { cursor: url('/cursors/arrow.png') 0 0, auto; cursor: image-set(url('/cursors/arrow.png') 1x, url('/cursors/arrow@2x.png') 2x) 0 0, auto; }
+         `auto` is what shows if the image cannot load. Buttons keep their own pointer. The C key switches to the other designs (src/render/cursors.ts). */
+      html { cursor: url('/cursors/warm-arrow.png') 0 0, auto; cursor: image-set(url('/cursors/warm-arrow.png') 1x, url('/cursors/warm-arrow@2x.png') 2x) 0 0, auto; }
       /* The connection screens (online mode): plain DOM over the canvas, so they show before the game exists. */
       #screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
         background: rgba(11, 15, 20, 0.85); color: #e2e8f0; font: 16px/1.4 monospace; text-align: center; z-index: 10; }

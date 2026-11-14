@@ -1,14 +1,20 @@
 PASS  dev server up, started by this run
-PASS  1x screen: the game canvas is under the mouse  (CANVAS)
-PASS  1x screen: its cursor is the arrow for each screen, clicking at the tip, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/arrow.png") 1dppx, url("http://localhost:5950/cursors/arrow@2x.png") 2dppx) 0 0, auto)
-PASS  1x screen: every point of the window has that cursor  (1 distinct)
-PASS  1x screen: arrow.png is 32x32, so 32 CSS pixels on this screen  (32x32)
-PASS  1x screen: every pixel of arrow.png is its design pixel as one flat block (no smoothing)
-PASS  2x screen: the game canvas is under the mouse  (CANVAS)
-PASS  2x screen: its cursor is the arrow for each screen, clicking at the tip, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/arrow.png") 1dppx, url("http://localhost:5950/cursors/arrow@2x.png") 2dppx) 0 0, auto)
-PASS  2x screen: every point of the window has that cursor  (1 distinct)
-PASS  2x screen: arrow@2x.png is 64x64, so 32 CSS pixels on this screen  (64x64)
-PASS  2x screen: every pixel of arrow@2x.png is its design pixel as one flat block (no smoothing)
+PASS  1x screen: on opening the game, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/warm-arrow.png") 1dppx, url("http://localhost:5950/cursors/warm-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  1x screen: warm-arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block  (32x32)
+PASS  1x screen: after 1 press of C, every point of the window shows dark-dart, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/dark-dart.png") 1dppx, url("http://localhost:5950/cursors/dark-dart@2x.png") 2dppx) 0 0, auto)
+PASS  1x screen: dark-dart.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block  (32x32)
+PASS  1x screen: after 2 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/shaded-arrow.png") 1dppx, url("http://localhost:5950/cursors/shaded-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  1x screen: shaded-arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block  (32x32)
+PASS  1x screen: after 3 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/warm-arrow.png") 1dppx, url("http://localhost:5950/cursors/warm-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  1x screen: the picked cursor (dark-dart) survives a reload, and Ctrl+C did not switch it  (image-set(url("http://localhost:5950/cursors/dark-dart.png") 1dppx, url("http://localhost:5950/cursors/dark-dart@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: on opening the game, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/warm-arrow.png") 1dppx, url("http://localhost:5950/cursors/warm-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: warm-arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block  (64x64)
+PASS  2x screen: after 1 press of C, every point of the window shows dark-dart, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/dark-dart.png") 1dppx, url("http://localhost:5950/cursors/dark-dart@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: dark-dart@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block  (64x64)
+PASS  2x screen: after 2 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/shaded-arrow.png") 1dppx, url("http://localhost:5950/cursors/shaded-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: shaded-arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block  (64x64)
+PASS  2x screen: after 3 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/warm-arrow.png") 1dppx, url("http://localhost:5950/cursors/warm-arrow@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: the picked cursor (dark-dart) survives a reload, and Ctrl+C did not switch it  (image-set(url("http://localhost:5950/cursors/dark-dart.png") 1dppx, url("http://localhost:5950/cursors/dark-dart@2x.png") 2dppx) 0 0, auto)
 PASS  no page errors
 
-ALL 12 CHECKS PASSED
+ALL 18 CHECKS PASSED

@@ -4,6 +4,7 @@ import { OnlineWorld } from './online/OnlineWorld';
 import { createConnectionScreens } from './online/screens';
 import { worldServerUrl } from './online/serverUrl';
 import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
+import { letPlayerSwitchCursors } from './render/cursors';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
 import { WorldScene } from './scenes/WorldScene';
@@ -19,6 +20,8 @@ import type { PlayableWorld } from './worlds/PlayableWorld';
  * in both modes.
  */
 async function boot(): Promise<void> {
+  // Before anything else: the cursor is on the page from the first moment, connection screens included.
+  letPlayerSwitchCursors(document);
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
   const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld(), online: undefined };
   const game = new Phaser.Game({
