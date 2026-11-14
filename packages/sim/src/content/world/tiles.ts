@@ -1,4 +1,4 @@
-import { getTileDef, terrainDefs, TILE_SIZE } from '../../features/terrain/defs';
+import { getTileDef, terrainDefs, TILE_SIZE, type TileDef } from '../../features/terrain/defs';
 import type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './types';
 
 /** Tiles along one side of a chunk. */
@@ -97,7 +97,7 @@ function buildMapTiles(map: WorldMap): MapTiles {
     chunkSize: CHUNK_SIZE,
     chunks,
     bounds: boundsOf(reserved.map(({ rectangle }) => rectangle)),
-    checksum: checksumOf(chunks, map.spawn),
+    checksum: checksumOf({ chunks, spawn: map.spawn, tileDefs: terrainDefs }),
   };
   chunkByKeyByTiles.set(tiles, chunkByKey);
   const { column, row } = map.spawn;
@@ -189,7 +189,7 @@ function boundsOf(rectangles: readonly TileRectangle[]): TileRectangle {
  * so the same terrain always gives the same checksum. How tiles look is not
  * in it: two builds that differ only in art collide alike.
  */
-function checksumOf(chunks: readonly MapChunk[], spawn: TileCoordinate): string {
+function checksumOf({ chunks, spawn, tileDefs }: { chunks: readonly MapChunk[]; spawn: TileCoordinate; tileDefs: readonly Pick<TileDef, 'id' | 'solid'>[] }): string {
   let hash = 0x811c9dc5;
   const mix = (value: number): void => {
     // Coordinates may be negative or beyond 16 bits: mix the low 32 bits, a byte at a time.
@@ -200,7 +200,7 @@ function checksumOf(chunks: readonly MapChunk[], spawn: TileCoordinate): string 
   };
   mix(Math.round(TILE_SIZE * 1000));
   mix(CHUNK_SIZE);
-  for (const def of terrainDefs) {
+  for (const def of tileDefs) {
     mix(def.id);
     mix(def.solid ? 1 : 0);
   }
@@ -213,3 +213,5 @@ function checksumOf(chunks: readonly MapChunk[], spawn: TileCoordinate): string 
   }
   return hash.toString(16).padStart(8, '0');
 }
+
+export const __testing__ = { checksumOf };

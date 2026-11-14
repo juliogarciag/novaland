@@ -88,7 +88,7 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 
 **Functions and exports**
 
-- A function with four or more arguments takes an options object with named fields instead: `takeWholeTicks({ leftover, deltaSeconds, dt, maxFrameSeconds })`, `attachStaticBox(sim, eid, { x, y, halfWidth, halfHeight })`. A leading subject such as `sim` or `eid` may stay positional.
+- A function with four or more arguments takes an options object with named fields instead: `takeWholeTicks({ leftover, deltaSeconds, dt, maxFrameSeconds })`, `attachDynamicBall(sim, eid, { x, y, radius })`. A leading subject such as `sim` or `eid` may stay positional.
 - Anything exported only so tests can reach it goes through a single `export const __testing__ = { ... }` at the bottom of the module, never as a loose export. Lint rejects `import { __testing__ }` outside `*.test.ts`. The public surface of a module is what remains.
 
 **Commands**

@@ -4,11 +4,11 @@ import { __testing__ } from '../../core/create';
 import { __testing__ as physicsTesting } from '../../core/physics';
 import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from '../../features/player/queries';
-import { getTileDef, TerrainDefId, TILE_SIZE } from '../../features/terrain/defs';
+import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from '../../features/terrain/defs';
 import { DefId } from '../defs';
 import { generatedWorldMap } from './generated';
 import { worldMap } from './index';
-import { CHUNK_SIZE, chunkCoordinateOf, findChunk, NO_TILE, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt, WORLD_LIMIT_TILES } from './tiles';
+import { __testing__ as tilesTesting, CHUNK_SIZE, chunkCoordinateOf, findChunk, NO_TILE, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt, WORLD_LIMIT_TILES } from './tiles';
 import type { AreaData, TileCoordinate, WorldMap } from './types';
 
 describe('reading a map into chunks', () => {
@@ -102,6 +102,18 @@ describe('reading a map into chunks', () => {
     const withRockAt = (origin: TileCoordinate): string => readMapTiles(mapOf([area(['TTTT', 'T..T', 'TTTT']), area(['o'], origin, 'rock')], spawn)).checksum;
     expect(withRockAt({ column: 5, row: 5 + CHUNK_SIZE })).not.toBe(withRockAt({ column: 5, row: 5 + 2 * CHUNK_SIZE }));
     expect(withRockAt({ column: 5 + CHUNK_SIZE, row: 5 })).not.toBe(withRockAt({ column: 5, row: 5 + CHUNK_SIZE }));
+  });
+});
+
+describe('the map checksum', () => {
+  it('changes when a tile def becomes solid or stops being solid, though no tile moved: the colliders would differ', () => {
+    const { chunks } = readMapTiles(worldMap);
+    const checksumWith = (tileDefs: readonly { id: number; solid: boolean }[]): string => tilesTesting.checksumOf({ chunks, spawn: worldMap.spawn, tileDefs });
+    expect(checksumWith(terrainDefs)).toBe(readMapTiles(worldMap).checksum);
+    for (const flipped of terrainDefs) {
+      expect(checksumWith(terrainDefs.map((def) => (def === flipped ? { ...def, solid: !def.solid } : def))), flipped.name).not.toBe(checksumWith(terrainDefs));
+    }
+    expect(checksumWith(terrainDefs.slice(1))).not.toBe(checksumWith(terrainDefs));
   });
 });
 

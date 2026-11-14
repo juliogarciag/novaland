@@ -6,6 +6,9 @@ import { Position } from '../../core/transform';
 import { getTileDef } from '../terrain/defs';
 import { Player } from './components';
 
+/** How many tiles out from the spawn tile a free tile is looked for. Far more room than every seat needs. */
+const SPAWN_SEARCH_RINGS = 32;
+
 /**
  * Where a joining player appears, in metres: the centre of a free tile as
  * close to the map's spawn tile as possible. Tiles are searched in square
@@ -18,9 +21,6 @@ import { Player } from './components';
  * other, so a pile-up is only cosmetic, and a join must stay cheap however
  * big the map is: it runs inside a command handler.
  */
-/** How many tiles out from the spawn tile a free tile is looked for. Far more room than every seat needs. */
-const SPAWN_SEARCH_RINGS = 32;
-
 export function pickSpawnPoint(sim: Sim): { x: number; y: number } {
   const tiles = readMapTiles(sim.map);
   const occupied = occupiedTileKeys(sim);

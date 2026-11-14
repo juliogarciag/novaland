@@ -2,7 +2,7 @@ PASS  pnpm install passes
 PASS  pnpm typecheck passes
 PASS  pnpm lint passes
 PASS  pnpm build passes
-PASS  pnpm test passes  (416 of 416 tests in 135 suites)
+PASS  pnpm test passes  (418 of 418 tests in 136 suites)
 PASS  world.test.ts: keeps every existing tile, tile coordinate and position in metres when an area is added on any side
 PASS  world.test.ts: mounts a second area at the coordinates it reserves: its tiles and its colliders are there, in the same world
 PASS  world.test.ts: a player inside a mounted area is stopped by its walls

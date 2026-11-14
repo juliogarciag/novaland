@@ -96,6 +96,19 @@ describe('spread spawns (headless)', () => {
     sim.destroy();
   });
 
+  it('looks for a free tile no further than 32 tiles from the spawn: one 32 tiles out is used, one 33 tiles out is not', async () => {
+    // The spawn tile, a row of trees, then the only other walkable tile.
+    const withFreeTileAt = (distance: number): WorldMap => mapOf([`.${'T'.repeat(distance - 1)}.`], { column: 0, row: 0 });
+    const near = await createSimInternal({ seed: 1, map: withFreeTileAt(32) });
+    near.step([join(0), join(1)]);
+    expect([playerTile(near, 0), playerTile(near, 1)]).toEqual([{ column: 0, row: 0 }, { column: 32, row: 0 }]);
+    const far = await createSimInternal({ seed: 1, map: withFreeTileAt(33) });
+    far.step([join(0), join(1)]);
+    expect([playerTile(far, 0), playerTile(far, 1)]).toEqual([{ column: 0, row: 0 }, { column: 0, row: 0 }]);
+    near.destroy();
+    far.destroy();
+  });
+
   it('falls back to the spawn tile, without throwing, when no tile is free', async () => {
     const closet = mapOf(['TTT', 'T.T', 'TTT'], { column: 1, row: 1 });
     const sim = await createSimInternal({ seed: 1, map: closet });
