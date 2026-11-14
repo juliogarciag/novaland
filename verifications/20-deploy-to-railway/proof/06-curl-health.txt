@@ -1,0 +1,29 @@
+$ curl -si https://novaland-production.up.railway.app/health
+HTTP/2 200 
+access-control-allow-credentials: true
+access-control-allow-headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
+access-control-max-age: 2592000
+cache-control: no-store
+content-security-policy: default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'
+content-type: application/json; charset=utf-8
+cross-origin-opener-policy: same-origin
+cross-origin-resource-policy: same-origin
+date: Sat, 14 Nov 2026 18:15:53 GMT
+etag: W/"41-d52QP/UDO3ezaJnMpxu0PzfJNmQ"
+origin-agent-cluster: ?1
+referrer-policy: no-referrer
+server: railway-hikari
+vary: Origin
+x-content-type-options: nosniff
+x-dns-prefetch-control: off
+x-download-options: noopen
+x-frame-options: DENY
+x-permitted-cross-domain-policies: none
+x-railway-request-id: nv5gkKS3TYmaNMBXo3UVLg
+x-xss-protection: 0
+content-length: 65
+x-hikari-trace: mia1.nv6z
+x-railway-edge: mia1
+
+{"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":1671}

@@ -1,0 +1,10 @@
+
+Railway configuration
+Using .railway/railway.ts
+Project novaland
+Environment production
+variables: managed (default)
+
+Changes (2)
+  ✓ service.04341571-8779-4442-b1ad-6a3a629986d7
+  ✓ service.04341571-8779-4442-b1ad-6a3a629986d7/variables/ALLOWED_ORIGINS

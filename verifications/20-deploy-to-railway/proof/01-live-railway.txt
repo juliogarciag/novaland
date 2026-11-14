@@ -1,0 +1,14 @@
+PASS  GET https://novaland-production.up.railway.app/health answers 200 with the world room and its five seats  ({"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":17019})
+PASS  a matchmaking preflight from https://evil.example.com is refused with 403, and no answer carries a CORS header for it  ({"preflight":403,"allowOrigin":null})
+PASS  the page is served with its CSP, nosniff and DENY framing  ({"content-type":"text/html; charset=utf-8","content-security-policy":"default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'","x-frame-options":"DENY","x-content-type-options":"nosniff","strict-transport-security":null})
+PASS  two browser contexts on the public URL are seated in two seats of the one world (observer), screens hidden, canvases drawing  ({"playerASeated":{"screen":null,"text":"Connecting to the world…Retry nowReload page","hasDebugApi":false,"canvas":true},"playerBSeated":{"screen":null,"text":"Connecting to the world…Retry nowReload page","hasDebugApi":false,"canvas":true},"seated":[{"slot":1,"eid":47,"x":-14.5,"y":-0.5,"intentX":0,"intentY":0},{"slot":2,"eid":46,"x":-12.5,"y":0.5,"intentX":0,"intentY":0}]})
+PASS  window.__novaland is absent on both pages (production build)
+PASS  holding D on page A moves A's avatar east in the authoritative world  ({"slot":1,"start":{"slot":1,"eid":47,"x":-14.5,"y":-0.5,"intentX":0,"intentY":0},"end":{"slot":1,"eid":47,"x":-9.5,"y":-0.5,"intentX":0,"intentY":0},"distance":5})
+PASS  page B receives the deltas carrying A's movement (27 frames of mean 110 bytes, against 19 quiet frames of mean 65 bytes)
+PASS  holding S on page B moves B's avatar south, a different seat from A's  ({"slot":2,"start":{"slot":2,"eid":46,"x":-12.5,"y":0.5,"intentX":0,"intentY":0},"end":{"slot":2,"eid":46,"x":-12.5,"y":5.667,"intentX":0,"intentY":0},"distance":5.167})
+PASS  page A receives the deltas carrying B's movement (25 frames of mean 114 bytes, against 20 quiet frames of mean 65 bytes)
+captured both pages side by side for a person to look at: proof/01-live-railway-two-players.png
+PASS  every asset both pages requested came back without an error, and neither page logged one  ({"failed":[],"errors":[]})
+PASS  closing both pages frees their seats
+
+ALL 11 CHECKS PASSED

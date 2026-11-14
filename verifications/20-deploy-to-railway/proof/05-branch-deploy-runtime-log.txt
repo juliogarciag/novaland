@@ -1,0 +1,2 @@
+Starting Container
+2026-11-14T18:15:25.783595256Z [INFO]  event="world-room-listening" port=8080 roomId="world" seed=2102578540 seats=5 tickRate=60 sendRate=20 idleTimeoutSeconds=600 clientDirectory="/app/packages/client/dist" allowedOrigins=["https://novaland-production.up.railway.app"] loopbackOrigins=false
