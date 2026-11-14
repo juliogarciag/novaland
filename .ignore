@@ -1,0 +1,6 @@
+# Read by ripgrep-based search (rg, the agent Grep tool, editor search); git does not read it.
+# A ticket's verifications/<ticket>/ folder is frozen when its PR merges (see AGENTS.md),
+# so search skips all of them. Only the maintained template stays visible.
+# To search one anyway, name it: rg <pattern> verifications/<ticket>/
+/verifications/*/
+!/verifications/_template/

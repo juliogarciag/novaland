@@ -1,0 +1,6 @@
+PASS  dev server up, started by this run
+PASS  the sim is running and holds the local player  (tick 12, slot 0)
+PASS  holding D reaches the sim as a move east  ({"x":1,"y":0})
+PASS  no page errors
+
+ALL 4 CHECKS PASSED

@@ -1,0 +1,105 @@
+# Before: no .ignore. A repo-wide search lands in every ticket's folder.
+
+$ rg --version | head -1
+ripgrep 14.1.1 (rev 6634fc3b5b)
+
+$ rg -l waitForPort . | cut -d/ -f2-3 | sort | uniq -c
+   3 verifications/1-bootstrap-monorepo
+   2 verifications/10-player-sprite
+   4 verifications/18-client-online-mode
+   2 verifications/19-one-process
+   2 verifications/21-random-avatar-spread-spawns
+   2 verifications/22-idle-seats
+   2 verifications/8-pixel-perfect-camera
+   2 verifications/9-tile-based-levels
+   3 verifications/_template
+
+$ rg -l "\"pass\": true" . | cut -d/ -f2-3 | sort | uniq -c
+   2 verifications/1-bootstrap-monorepo
+   3 verifications/20-deploy-to-railway
+   1 verifications/22-idle-seats
+   2 verifications/37-freeze-verifications-at-merge
+
+$ rg --files verifications | wc -l
+     262
+
+$ git ls-files verifications | grep -v -e _template -e 37-freeze | wc -l   # tracked files in the frozen folders
+     249
+
+
+# After: the root .ignore is in place.
+
+$ cat .ignore
+# Read by ripgrep-based search (rg, the agent Grep tool, editor search); git does not read it.
+# A ticket's verifications/<ticket>/ folder is frozen when its PR merges (see AGENTS.md),
+# so search skips all of them. Only the maintained template stays visible.
+# To search one anyway, name it: rg <pattern> verifications/<ticket>/
+/verifications/*/
+!/verifications/_template/
+
+## 1. Repo-wide search no longer returns frozen folders; the template stays visible
+
+$ rg -l waitForPort . | cut -d/ -f2-3 | sort | uniq -c
+   3 verifications/_template
+
+$ rg -l "\"pass\": true" . | wc -l
+       0
+
+$ rg --files verifications | cut -d/ -f1-2 | sort | uniq -c
+   6 verifications/_template
+
+## 2. The same with the flags an agent search adds (hidden files on)
+
+$ rg --hidden --glob "!.git" -l waitForPort . | cut -d/ -f2-3 | sort | uniq -c
+   3 verifications/_template
+
+## 3. Naming a folder still searches it: relative, absolute, from inside, and a ticket's own in-progress folder
+
+$ rg -c waitForPort verifications/22-idle-seats/
+verifications/22-idle-seats/03-browser.mjs:2
+verifications/22-idle-seats/lib.mjs:1
+
+$ rg -c waitForPort "$PWD/verifications/22-idle-seats" | sed "s#$PWD#<repo>#"
+<repo>/verifications/22-idle-seats/lib.mjs:1
+<repo>/verifications/22-idle-seats/03-browser.mjs:2
+
+$ (cd verifications/22-idle-seats && rg -c waitForPort .)
+./lib.mjs:1
+./03-browser.mjs:2
+
+$ rg -c "ALL 4 CHECKS PASSED" verifications/37-freeze-verifications-at-merge/
+verifications/37-freeze-verifications-at-merge/proof/template-run/online.txt:1
+verifications/37-freeze-verifications-at-merge/proof/template-run/solo.txt:1
+
+$ rg --files --glob "*.mjs" verifications/22-idle-seats/
+verifications/22-idle-seats/02-idle-kick.mjs
+verifications/22-idle-seats/01-check.mjs
+verifications/22-idle-seats/lib.mjs
+verifications/22-idle-seats/03-browser.mjs
+
+## 4. Reading a file there by explicit path still works
+
+$ head -3 verifications/22-idle-seats/run.sh
+#!/usr/bin/env bash
+# Runs every verification for ticket #22 and writes proof into ./proof.
+# Usage: bash verifications/22-idle-seats/run.sh   (from anywhere)
+
+$ rg -n "export function check" verifications/1-bootstrap-monorepo/lib.mjs
+115:export function check(name, pass, details) {
+
+## 5. Searching everything anyway, when someone really wants to
+
+$ rg --no-ignore-dot -l waitForPort . | cut -d/ -f2-3 | sort | uniq -c | wc -l
+       9
+
+$ git grep -l waitForPort | cut -d/ -f1-2 | sort | uniq -c | wc -l
+       8
+
+## 6. Nothing was deleted
+
+$ git ls-files verifications | grep -v -e _template -e 37-freeze | wc -l   # tracked files in the frozen folders, as before
+     249
+
+$ git status --short | grep -c "^ D\|^D" || true
+0
+
