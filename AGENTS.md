@@ -22,7 +22,7 @@ This is a 2d open world that we're gonna expand with time. It is a playground: f
     - The independent code reviews (sub-agents) the ticket's size calls for have run and passed.
     - A security pass has been completed, when the ticket's size calls for one.
   - When the work is done, it should create a PR. Tickets should aim for a 1-to-1 relationship with PRs.
-  - The PR body is `.github/pull_request_template.md` filled in. `gh pr create --body` does not apply the template by itself: read the file, keep its headings and their order, replace each comment with what it asks for, and delete a section that does not apply.
+  - The PR body is `.github/pull_request_template.md` filled in. `gh pr create --body` does not apply the template by itself: read the file, keep its headings and their order, fill in the placeholders, replace each section's comment with what it asks for, and delete a section that does not apply.
   - When the PR is ready, the result must be ready to try, without being asked: leave a dev server running from the worktree on a pinned port (`PORT=<n> pnpm dev`, see "Worktrees and ports"), open it in the browser pane, and put the URL and the proof screenshots in the final message. The human should be able to play the change the moment they read the message. Keep the server running until the PR is merged or the human stops it.
   - The session then stays open for regular feedback loop with the human in charge.
   - Once the PR has been approved by a human, you merge it.
