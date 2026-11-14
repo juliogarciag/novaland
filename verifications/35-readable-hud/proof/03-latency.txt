@@ -1,0 +1,20 @@
+PASS  room server, proxy and client dev server up
+PASS  online the first line reads fps, latency and the seats taken  (fps --   latency 330 ms   1/5 online)
+PASS  with no delay the round trip to the local server is a few milliseconds  (1 ms)
+PASS  the HUD shows the connection's own measurement  (HUD 1, connection 1)
+PASS  online too, the tick counter and the movement help are gone  (fps --   latency 330 ms   1/5 online | you: player-moss   players: 1)
+PASS  who you are and the player count are kept; no J hint online  (you: player-moss   players: 1)
+PASS  the client sends the room's one-byte ping once a second and the server answers each  (5 sent, 5 answered in 5 s)
+PASS  with 60 ms added each way the HUD shows a round trip of 120 ms or a little more  (122..124 ms)
+PASS  with 150 ms each way it follows to 300 ms or a little more  (302..303 ms)
+PASS  the online HUD, wider than the solo one, is on its backdrop too: contrast >= 4.5  (10.96:1, box 323x45)
+PASS  while the connection is stalled the latency shown grows with the wait  (1111 ms, then 2611 ms 1.5 s later)
+PASS  when traffic flows again the latency is small again and the player is still seated  (1 ms, online)
+PASS  with the server gone the connection reports no latency  (undefined)
+PASS  seated again after the restart, the latency is measured again  (1 ms)
+PASS  a second room server with a 6 s idle timeout and its client are up
+PASS  a seated player who sends pings but no input is still freed after the idle timeout  (6 pings answered, away after 6.0 s)
+PASS  once away there is no latency and no more pings  (latency undefined, 0 pings in 2.5 s)
+PASS  no uncaught page errors
+
+ALL 18 CHECKS PASSED

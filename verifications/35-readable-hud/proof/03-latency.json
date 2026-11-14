@@ -1,0 +1,99 @@
+{
+  "latency": {
+    "direct": {
+      "hud": 1,
+      "connection": 1,
+      "line": "fps --   latency 1 ms   1/5 online"
+    },
+    "delayed": {
+      "hud": 122,
+      "connection": 122,
+      "line": "fps 58   latency 122 ms   1/5 online"
+    },
+    "delayedSamples": [
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      124,
+      122,
+      122,
+      122,
+      122,
+      122,
+      122,
+      122,
+      122
+    ],
+    "slowerSamples": [
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      303,
+      302,
+      302,
+      302,
+      302,
+      302,
+      302,
+      302
+    ],
+    "stalledEarly": {
+      "hud": 1111,
+      "connection": 1117,
+      "line": "fps 60   latency 1111 ms   1/5 online"
+    },
+    "stalledLate": {
+      "hud": 2611,
+      "connection": 2621,
+      "line": "fps 60   latency 2611 ms   1/5 online"
+    },
+    "afterStall": {
+      "hud": 1,
+      "connection": 1,
+      "line": "fps 60   latency 1 ms   1/5 online"
+    },
+    "pings": {
+      "sentInFiveSeconds": 5,
+      "answeredInFiveSeconds": 5
+    }
+  },
+  "reconnect": {
+    "whileDown": null,
+    "back": {
+      "hud": 1,
+      "connection": 1,
+      "line": "fps 60   latency 1 ms   1/5 online"
+    }
+  },
+  "idle": {
+    "pingsAnswered": 6,
+    "kickedAfterSeconds": 5.992
+  }
+}

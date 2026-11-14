@@ -1,0 +1,349 @@
+{
+  "lines": {
+    "first": [
+      "fps 51",
+      "you: player-ember   players: 1",
+      "J: seat another player (dev)"
+    ],
+    "afterJ": [
+      "fps 51",
+      "you: player-ember   players: 2",
+      "J: seat another player (dev)"
+    ]
+  },
+  "sizes": [
+    {
+      "pixelRatio": 1,
+      "viewport": {
+        "width": 960,
+        "height": 720
+      },
+      "lines": [
+        "fps 53",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 273,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 1271,
+      "textInset": {
+        "left": 11,
+        "top": 9,
+        "right": 12,
+        "bottom": 8
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        25,
+        44,
+        32
+      ]
+    },
+    {
+      "pixelRatio": 2,
+      "viewport": {
+        "width": 960,
+        "height": 720
+      },
+      "lines": [
+        "fps 45",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 272.5,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 4813,
+      "textInset": {
+        "left": 10.5,
+        "top": 10,
+        "right": 12,
+        "bottom": 9
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        25,
+        44,
+        32
+      ]
+    },
+    {
+      "pixelRatio": 3,
+      "viewport": {
+        "width": 960,
+        "height": 720
+      },
+      "lines": [
+        "fps 24",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 272.3333333333333,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 10972,
+      "textInset": {
+        "left": 10.333333333333334,
+        "top": 10,
+        "right": 11.666666666666666,
+        "bottom": 8.666666666666666
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        25,
+        44,
+        32
+      ]
+    },
+    {
+      "pixelRatio": 1.5,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "lines": [
+        "fps 48",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 272.6666666666667,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 2871,
+      "textInset": {
+        "left": 10.666666666666666,
+        "top": 9.333333333333334,
+        "right": 12,
+        "bottom": 8
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        25,
+        44,
+        32
+      ]
+    },
+    {
+      "pixelRatio": 2,
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "resized": true,
+      "lines": [
+        "fps 51",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 272.5,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 4781,
+      "textInset": {
+        "left": 10.5,
+        "top": 10,
+        "right": 12,
+        "bottom": 9
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        28,
+        47,
+        33
+      ]
+    },
+    {
+      "pixelRatio": 2,
+      "viewport": {
+        "width": 1400,
+        "height": 900
+      },
+      "resized": true,
+      "lines": [
+        "fps 51",
+        "you: player-ember   players: 1",
+        "J: seat another player (dev)"
+      ],
+      "css": {
+        "x": 12,
+        "y": 12,
+        "width": 272.5,
+        "height": 59.1279296875
+      },
+      "cssPadding": {
+        "left": 10,
+        "top": 8
+      },
+      "textPixels": 4770,
+      "textInset": {
+        "left": 10.5,
+        "top": 10,
+        "right": 12,
+        "bottom": 9
+      },
+      "contrast": 10.96,
+      "ringMean": [
+        24,
+        42,
+        31
+      ]
+    }
+  ],
+  "legibility": {
+    "overLightTiles": {
+      "dirt": 1840
+    },
+    "light": {
+      "box": {
+        "left": 12,
+        "top": 12,
+        "right": 285,
+        "bottom": 71
+      },
+      "ringPixels": 1932,
+      "ringMean": [
+        52,
+        46,
+        38
+      ],
+      "lightestRing": [
+        52,
+        46,
+        38
+      ],
+      "surroundingsMean": [
+        176,
+        141,
+        91
+      ],
+      "textPixels": 1305,
+      "textExtent": {
+        "left": 11,
+        "top": 9,
+        "right": 259,
+        "bottom": 50
+      },
+      "contrast": 10.89,
+      "contrastWithoutBackdrop": 2.5
+    },
+    "overDarkTiles": {
+      "tree": 1840
+    },
+    "dark": {
+      "box": {
+        "left": 12,
+        "top": 12,
+        "right": 285,
+        "bottom": 71
+      },
+      "ringPixels": 1932,
+      "ringMean": [
+        19,
+        36,
+        29
+      ],
+      "lightestRing": [
+        20,
+        38,
+        30
+      ],
+      "surroundingsMean": [
+        45,
+        103,
+        56
+      ],
+      "textPixels": 1281,
+      "textExtent": {
+        "left": 11,
+        "top": 9,
+        "right": 259,
+        "bottom": 50
+      },
+      "contrast": 12.85,
+      "contrastWithoutBackdrop": 5.48
+    },
+    "white": {
+      "box": {
+        "left": 12,
+        "top": 12,
+        "right": 285,
+        "bottom": 71
+      },
+      "ringPixels": 1932,
+      "ringMean": [
+        72,
+        75,
+        79
+      ],
+      "lightestRing": [
+        72,
+        75,
+        79
+      ],
+      "surroundingsMean": [
+        255,
+        255,
+        255
+      ],
+      "textPixels": 1375,
+      "textExtent": {
+        "left": 10,
+        "top": 9,
+        "right": 260,
+        "bottom": 50
+      },
+      "contrast": 7.11,
+      "contrastWithoutBackdrop": 1.23
+    }
+  },
+  "frameRate": {
+    "steady": {
+      "measuredFps": 60.00132599615464,
+      "hudFps": 60
+    },
+    "slow": {
+      "measuredFps": 22.29581297747466,
+      "hudFps": 22
+    },
+    "recovered": {
+      "measuredFps": 60.00198353664588,
+      "hudFps": 60
+    }
+  }
+}

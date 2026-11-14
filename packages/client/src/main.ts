@@ -58,6 +58,7 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
     online: {
       status: () => world.connection.status,
       retryNow: () => world.connection.retryNow(),
+      latencyMs: () => world.latencyMs,
       malformedUpdates: () => world.malformedUpdates,
       interpolationBufferTicks: INTERPOLATION_BUFFER_TICKS,
     },

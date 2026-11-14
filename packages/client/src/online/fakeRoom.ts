@@ -12,6 +12,7 @@ export class FakeRoom implements JoinedRoom {
   closesOnLeave = true;
   private readonly messageHandlers = new Map<string, (payload: unknown) => void>();
   private readonly leaveHandlers: Array<(code: number) => void> = [];
+  private readonly waitingPings: Array<(milliseconds: number) => void> = [];
 
   onMessage(type: string, callback: (payload: unknown) => void): void {
     this.messageHandlers.set(type, callback);
@@ -23,6 +24,20 @@ export class FakeRoom implements JoinedRoom {
 
   send(type: string, payload?: unknown): void {
     this.sent.push({ type, payload });
+  }
+
+  ping(callback: (milliseconds: number) => void): void {
+    this.waitingPings.push(callback);
+  }
+
+  /** Pings the client sent that the server has not answered yet. */
+  get unansweredPings(): number {
+    return this.waitingPings.length;
+  }
+
+  /** The server answered the oldest waiting ping; the round trip took `milliseconds`. */
+  answerPing(milliseconds: number): void {
+    this.waitingPings.shift()?.(milliseconds);
   }
 
   /** A consented leave: the client asked and, unless the server is silent, the room closes with 4000. */

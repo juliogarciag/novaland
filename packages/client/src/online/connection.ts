@@ -1,6 +1,6 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
 import { JOIN_REFUSAL, WIRE, type MoveMessage } from '@novaland/sim';
-import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
  * Where the client stands with the world server. The screens draw it, the
@@ -34,6 +34,8 @@ export interface JoinedRoom {
   onMessage(type: string, callback: (payload: unknown) => void): void;
   onLeave(callback: (code: number) => void): void;
   send(type: string, payload?: unknown): void;
+  /** Asks the server to answer at once and calls back with the milliseconds the round trip took. Never calls back when the answer is lost. */
+  ping(callback: (milliseconds: number) => void): void;
   leave(): Promise<number>;
 }
 
@@ -56,6 +58,10 @@ export interface WorldConnectionOptions {
  * a new seat.
  * Waiting is bounded by the client's own clock: a join that does not settle
  * or a room that never welcomes is abandoned, never waited on.
+ *
+ * While seated it also measures the round trip to the server with the
+ * room's own ping, once every `LATENCY_INTERVAL_MS`, for the HUD. That is a
+ * fact about the view, not about the world: nothing of it reaches the sim.
  */
 export class WorldConnection {
   private currentStatus: ConnectionStatus = { kind: 'connecting', attempt: 0 };
@@ -71,6 +77,11 @@ export class WorldConnection {
   private room: JoinedRoom | undefined;
   private retryTimer: ReturnType<typeof setTimeout> | undefined;
   private joinTimer: ReturnType<typeof setTimeout> | undefined;
+  private latencyTimer: ReturnType<typeof setInterval> | undefined;
+  /** The last round trip the server answered, in milliseconds, since the client was last seated. */
+  private answeredLatencyMs: number | undefined;
+  /** When the ping still waiting for its answer was sent (`Date.now()` milliseconds). One ping waits at a time. */
+  private pingSentAt: number | undefined;
   private closed = false;
 
   constructor(options: WorldConnectionOptions) {
@@ -82,6 +93,19 @@ export class WorldConnection {
   /** Where the client stands. Only the connection moves it. */
   get status(): ConnectionStatus {
     return this.currentStatus;
+  }
+
+  /**
+   * Milliseconds a message takes to reach the server and come back, measured
+   * while seated. Undefined until the first answer and whenever the client is
+   * not seated. A ping that has waited longer than the last answer took
+   * counts for as long as it has waited, so a stalled connection shows a
+   * growing number instead of the last good one.
+   */
+  get latencyMs(): number | undefined {
+    if (this.answeredLatencyMs === undefined) return undefined;
+    const waited = this.pingSentAt === undefined ? 0 : Date.now() - this.pingSentAt;
+    return Math.max(this.answeredLatencyMs, waited);
   }
 
   /** Starts joining. Call once. */
@@ -117,6 +141,7 @@ export class WorldConnection {
     this.generation += 1;
     this.clearRetry();
     this.clearJoinTimer();
+    this.stopMeasuringLatency();
     const room = this.room;
     this.room = undefined;
     void room?.leave().catch(() => undefined);
@@ -223,7 +248,38 @@ export class WorldConnection {
 
   private setStatus(status: ConnectionStatus): void {
     this.currentStatus = status;
+    if (status.kind === 'online') this.startMeasuringLatency();
+    else this.stopMeasuringLatency();
     this.handlers.onStatus(status);
+  }
+
+  /** Pings now and then every `LATENCY_INTERVAL_MS` for as long as the client stays seated. */
+  private startMeasuringLatency(): void {
+    this.stopMeasuringLatency();
+    this.latencyTimer = setInterval(() => this.sendPing(), LATENCY_INTERVAL_MS);
+    this.sendPing();
+  }
+
+  /** Forgets the measurement: the next seat is another connection and starts with no latency to show. */
+  private stopMeasuringLatency(): void {
+    if (this.latencyTimer !== undefined) clearInterval(this.latencyTimer);
+    this.latencyTimer = undefined;
+    this.answeredLatencyMs = undefined;
+    this.pingSentAt = undefined;
+  }
+
+  /** Sends one ping unless one is still waiting: the room times a single ping at a time, so a second one would be timed against the wrong start. */
+  private sendPing(): void {
+    if (!this.room || this.pingSentAt !== undefined) return;
+    const generation = this.generation;
+    const timer = this.latencyTimer;
+    this.pingSentAt = Date.now();
+    this.room.ping((milliseconds) => {
+      // An answer to a ping of an earlier seat, or one that arrives after the measuring stopped, measures nothing that is shown.
+      if (generation !== this.generation || timer !== this.latencyTimer) return;
+      this.pingSentAt = undefined;
+      if (Number.isFinite(milliseconds) && milliseconds >= 0) this.answeredLatencyMs = milliseconds;
+    });
   }
 }
 
@@ -243,6 +299,7 @@ export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
       room.onLeave(callback);
     },
     send: (type, payload) => room.send(type, payload),
+    ping: (callback) => room.ping(callback),
     leave: () => room.leave(true),
   };
 }

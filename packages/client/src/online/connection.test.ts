@@ -2,7 +2,7 @@ import { WIRE } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
-import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS } from './tuning';
 
 const { isWorldFullRefusal } = __testing__;
 
@@ -212,6 +212,87 @@ describe('WorldConnection', () => {
     await vi.advanceTimersByTimeAsync(60_000);
     expect(endpoints).toHaveLength(1);
     expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+  });
+
+  it('has no latency until seated, then pings at once and reports the round trip the server answered', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    expect(room.unansweredPings).toBe(0);
+    expect(connection.latencyMs).toBeUndefined();
+    room.receive(WIRE.welcome, WELCOME);
+    expect(room.unansweredPings).toBe(1);
+    expect(connection.latencyMs).toBeUndefined();
+    room.answerPing(37);
+    expect(connection.latencyMs).toBe(37);
+  });
+
+  it('measures again every interval, one ping at a time', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    room.receive(WIRE.welcome, WELCOME);
+    room.answerPing(37);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    expect(room.unansweredPings).toBe(1);
+    room.answerPing(52);
+    expect(connection.latencyMs).toBe(52);
+    // An unanswered ping is not joined by a second one, however long it waits.
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(1);
+  });
+
+  it('shows how long an unanswered ping has waited once that is longer than the last round trip', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    room.receive(WIRE.welcome, WELCOME);
+    room.answerPing(40);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    await vi.advanceTimersByTimeAsync(25);
+    expect(connection.latencyMs).toBe(40);
+    await vi.advanceTimersByTimeAsync(2475);
+    expect(connection.latencyMs).toBe(2500);
+    room.answerPing(2500);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(45);
+    expect(connection.latencyMs).toBe(45);
+  });
+
+  it('forgets the latency when the connection drops and measures the next seat afresh', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.answerPing(37);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    rooms[0]!.drop();
+    expect(connection.latencyMs).toBeUndefined();
+    // The dropped room answers late: that round trip belongs to a seat that is gone.
+    rooms[0]!.answerPing(999);
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    await settle();
+    expect(rooms[0]!.unansweredPings).toBe(0);
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    expect(connection.latencyMs).toBeUndefined();
+    rooms[1]!.answerPing(21);
+    expect(connection.latencyMs).toBe(21);
+  });
+
+  it('ignores a round trip that is not a non-negative finite number, and stops pinging once closed', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    room.receive(WIRE.welcome, WELCOME);
+    room.answerPing(Number.NaN);
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(-5);
+    expect(connection.latencyMs).toBeUndefined();
+    connection.close();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(0);
+    expect(connection.latencyMs).toBeUndefined();
   });
 
   it('is given the endpoint it was created for', async () => {

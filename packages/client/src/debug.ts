@@ -42,6 +42,8 @@ export interface OnlineDebugApi {
   status(): ConnectionStatus;
   /** Tries to join again now, like the screens' button. */
   retryNow(): void;
+  /** The round trip to the server the HUD shows, in milliseconds; undefined until measured and while not seated. */
+  latencyMs(): number | undefined;
   /** Updates the replica refused as malformed since the page loaded. */
   malformedUpdates(): number;
   /** Ticks the drawn frame stays behind the newest server state, so checks can derive the expected lag. */
