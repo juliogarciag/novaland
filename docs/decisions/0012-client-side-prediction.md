@@ -1,4 +1,4 @@
-# 0011 - Client-side prediction: a second, local sim that only ever guesses
+# 0012 - Client-side prediction: a second, local sim that only ever guesses
 
 Status: accepted. Date: 2026-11-14. Supersedes (ticket #45):
 

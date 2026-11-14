@@ -26,7 +26,7 @@ export interface OnlineWorldOptions {
   readonly onStatus?: (status: ConnectionStatus) => void;
   /** How to join; tests pass a fake room. */
   readonly join?: (endpoint: string) => Promise<JoinedRoom>;
-  /** False draws the local player from server states like everyone else (ADR 0011's comparison switch). Default true. */
+  /** False draws the local player from server states like everyone else (ADR 0012's comparison switch). Default true. */
   readonly predictsLocalPlayer?: boolean;
   /** How the prediction sim is made; it loads the physics engine. Default: the sim's `createPrediction`. */
   readonly createPrediction?: (options: PredictionOptions) => Promise<PredictionHandle>;
@@ -62,7 +62,7 @@ interface OnlineWorldParts {
  * the drawn frame comes from a buffer of the last server states, two send
  * intervals behind, interpolated to the display rate.
  *
- * The local player alone is drawn ahead of that (ADR 0011): its moves are
+ * The local player alone is drawn ahead of that (ADR 0012): its moves are
  * applied at once to a prediction sim this world steps, every server state
  * is reconciled with it, and the frame shows the predicted player among the
  * interpolated others. The prediction is a guess that the next server state

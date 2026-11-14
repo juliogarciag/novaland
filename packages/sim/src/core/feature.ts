@@ -24,7 +24,7 @@ export interface Feature {
    * Gives entity `eid` the physics body this feature attaches when it spawns
    * one, read from the entity's components. Called on a prediction after the
    * entity's components were copied from the authoritative state instead of
-   * being spawned here (`adoptEntity`, ADR 0011). The components came over
+   * being spawned here (`adoptEntity`, ADR 0012). The components came over
    * the network: ignore an entity that is not yours or whose values cannot
    * make a body, never throw.
    */

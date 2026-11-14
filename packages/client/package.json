@@ -11,7 +11,9 @@
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
     "art:player": "node tools/generate-player-sheet.mjs",
-    "art:tree": "node tools/generate-tree-sheet.mjs"
+    "art:tree": "node tools/generate-tree-sheet.mjs",
+    "art:rock": "node tools/generate-rock-sheet.mjs",
+    "art:grass": "node tools/generate-grass-sheet.mjs"
   },
   "dependencies": {
     "@colyseus/sdk": "catalog:",

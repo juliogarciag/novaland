@@ -1,8 +1,9 @@
 import { getTileDef, tileCentre, type StandingTileSprite, type TileGrid } from '@novaland/sim';
 import { depthOfBottomEdge } from './depth';
+import { variantOfTile } from './tileVariant';
 import { toPixels } from './units';
 
-/** One image to draw for a tile that stands up from the ground, such as a tree. */
+/** One image to draw for a tile that stands up from the ground, such as a tree or a rock. */
 export interface StandingTilePlacement {
   readonly column: number;
   readonly row: number;
@@ -42,16 +43,3 @@ export function standingTilePlacements(grid: TileGrid): StandingTilePlacement[] 
   });
   return placements;
 }
-
-/**
- * Which variant a tile shows: scattered so neighbours rarely match, and the
- * same for a tile every time, so the forest does not change between visits
- * or between two players looking at it. Looks only: the sim knows nothing of it.
- */
-function variantOfTile({ column, row, variantCount }: { column: number; row: number; variantCount: number }): number {
-  let hash = (Math.imul(column, 374761393) + Math.imul(row, 668265263)) | 0;
-  hash = Math.imul(hash ^ (hash >>> 13), 1274126177);
-  return ((hash ^ (hash >>> 16)) >>> 0) % variantCount;
-}
-
-export const __testing__ = { variantOfTile };

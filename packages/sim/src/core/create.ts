@@ -54,7 +54,7 @@ export type PredictionOptions = ReplicaOptions;
 
 /**
  * Creates the sim a client steps ahead of the server to guess where its own
- * player will be (ADR 0011): the level's terrain, every feature and no
+ * player will be (ADR 0012): the level's terrain, every feature and no
  * players until `adoptEntity` copies one in. Loads the physics engine on
  * first call. The capacity is checked like a replica's, for the same reason.
  */

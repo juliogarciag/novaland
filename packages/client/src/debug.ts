@@ -49,7 +49,7 @@ export interface OnlineDebugApi {
   malformedUpdates(): number;
   /** Ticks the drawn frame stays behind the newest server state, so checks can derive the expected lag. */
   readonly interpolationBufferTicks: number;
-  /** What the local player's prediction is doing (ADR 0011); undefined while there is none (still loading, switched off, failed). */
+  /** What the local player's prediction is doing (ADR 0012); undefined while there is none (still loading, switched off, failed). */
   prediction(): PredictionReport | undefined;
   /** Where the last frame drew the local player, in metres: predicted when predicting, else from server states. Undefined when it drew none. */
   localPlayerDrawnAt(): { readonly x: number; readonly y: number } | undefined;

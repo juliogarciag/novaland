@@ -1,6 +1,6 @@
 # Verifications for #45 - Client-side prediction for the local player
 
-Ticket: https://github.com/juliogarciag/novaland/issues/45. Decision: [ADR 0011](../../docs/decisions/0011-client-side-prediction.md).
+Ticket: https://github.com/juliogarciag/novaland/issues/45. Decision: [ADR 0012](../../docs/decisions/0012-client-side-prediction.md).
 
 The highest-level user of this ticket is a person playing online from far away: they press a key and their character has to move on the next frame, whatever the round trip, while the server stays the authority. So the proof is a measurement in Chromium against the real room server and the real client, with a proxy between them that adds the latency (`latency-proxy.mjs`: every WebSocket message waits half the round trip in each direction; it can also lose one of the client's messages on request).
 

@@ -50,7 +50,7 @@ export interface PredictionReport {
 const ZERO: Point = { x: 0, y: 0 };
 
 /**
- * The local player, ahead of the server (ADR 0011). It owns a prediction sim
+ * The local player, ahead of the server (ADR 0012). It owns a prediction sim
  * that holds the level's terrain and one adopted entity: the local player as
  * the replica last had it. Moves are applied to it the tick they are made;
  * every server state throws the guess away, adopts the player again and

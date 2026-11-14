@@ -4,7 +4,7 @@
  * which is what gets deployed. A production page has no debug hooks, so
  * this only proves what can be seen from outside: the page is seated, it
  * fetches the physics chunk by itself after its own bundle (prediction needs
- * it, ADR 0011), nothing warns that prediction could not start or stopped,
+ * it, ADR 0012), nothing warns that prediction could not start or stopped,
  * the security headers still let the WASM run, and a key press moves the
  * view.
  */

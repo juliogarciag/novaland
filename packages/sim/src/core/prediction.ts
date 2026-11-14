@@ -11,7 +11,7 @@ import { DefRef } from './transform';
  * What `createPrediction` returns: a sim a client steps by itself to guess
  * where the authoritative sim will put an entity, before the server says so.
  * It is never the truth: whatever it holds is replaced by `adoptEntity` each
- * time the authoritative state arrives. See ADR 0011.
+ * time the authoritative state arrives. See ADR 0012.
  */
 export interface PredictionHandle extends SimHandle {
   /** Tells the type apart from a plain SimHandle, as `isReplica` does for a replica. Inside the package, test `instanceof Prediction`. */

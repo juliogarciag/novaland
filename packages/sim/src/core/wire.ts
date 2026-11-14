@@ -7,12 +7,12 @@ import type { WorldState } from './worldState';
  * when the two differ, so a page loaded before a deploy is told to reload
  * instead of talking past the server. Count it up with every change to the
  * messages below. 2: `player/move` carries a sequence and the server
- * acknowledges it with `player/move-applied` (ADR 0011).
+ * acknowledges it with `player/move-applied` (ADR 0012).
  */
 export const WIRE_PROTOCOL = 2;
 
 /**
- * The messages between a browser and the world server, as ADR 0004 and 0011
+ * The messages between a browser and the world server, as ADR 0004 and 0012
  * fix them. The sim does no networking; the names, payload types and
  * protocol constants live here so the server room and the client online mode
  * are built against one definition. Payloads are plain JSON. A delta or full
