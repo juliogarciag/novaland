@@ -21,6 +21,8 @@ export const RECONNECT_DELAYS_MS: readonly number[] = [1000, 2000, 4000, 8000];
 export const FULL_WORLD_RETRY_MS = 5000;
 /** How long a join may take to settle, and then a joined room to send its welcome, before the client abandons it and tries again. */
 export const JOIN_TIMEOUT_MS = 10000;
+/** How often a seated client pings the server to measure the round trip the HUD shows. One byte each way; far below the server's message limit. */
+export const LATENCY_INTERVAL_MS = 1000;
 /** Out-of-sequence updates the client lets pass after asking for a full state before it asks again (the server may have dropped the request). At the default send rate this is half a second. */
 export const RESYNC_RETRY_AFTER_UPDATES = 10;
 /** Longest level name a welcome may carry; the name is shown on the incompatible screen when it is unknown. */

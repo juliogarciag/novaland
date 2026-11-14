@@ -124,6 +124,11 @@ export class OnlineWorld implements PlayableWorld {
     return { online, seats: WORLD_SEATS };
   }
 
+  /** The connection's measured round trip to the server; undefined until measured and while not seated. */
+  get latencyMs(): number | undefined {
+    return this.connection.latencyMs;
+  }
+
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
     for (const command of commands) this.queueCommand(command);
     return this.frames.nextFrame(deltaSeconds) ?? readViewFrame(this.sim);
