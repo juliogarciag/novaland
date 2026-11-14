@@ -1,0 +1,78 @@
+Proof for #43 (Add a PR template): the change run once.
+Produced on 2026-11-14 21:26 UTC from branch 43-add-a-pr-template at c96bce3.
+
+== 1. What `gh pr create` offers while the template is only on this branch ==
+
+$ gh --version | head -1
+gh version 2.36.0 (2023-10-03)
+
+$ gh pr create --title "Add a PR template" --base 37-freeze-verifications-at-merge
+  (run in a terminal through expect: "e" opens the editor, then "Cancel", so no PR is made.
+   The editor is a script that saves the body gh handed it. Colour codes and prompt redraws
+   are removed. PR #44 is already open from this branch into main and gh refuses to start a
+   second one, so this run names another base; the base does not change where gh looks for
+   templates.)
+  Warning: 1 uncommitted change
+  Creating pull request for 43-add-a-pr-template into 37-freeze-verifications-at-merge in juliogarciag/novaland
+  ? Body [(e) to launch capture-editor.sh, enter to skip] ? Body <Received>
+  ? What's next?  [Use arrows to move, type to filter]
+  > Submit
+    Submit as draft
+    Continue in browser
+    Add metadata
+    Cancel
+    Submit
+  > Cancel
+  ? What's next? Cancel
+  Discarding.
+
+  The body gh put in the editor:
+  | - Add a PR template and tell the process to fill it in (#43)
+  | - Apply the review's should-fix findings to the PR template (#43)
+
+  Those are the commit messages. Nothing of the template is there: gh did not offer it.
+
+Why: gh asks GitHub for the repository's templates, and GitHub reads them from the default branch.
+
+$ gh api graphql -f query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){pullRequestTemplates{filename}}}' -f owner=juliogarciag -f name=novaland
+{"data":{"repository":{"pullRequestTemplates":[]}}}
+The same question about a public repository whose main branch has a single .github/PULL_REQUEST_TEMPLATE.md:
+
+$ gh api graphql -f query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){pullRequestTemplates{filename}}}' -f owner=vitejs -f name=vite
+{"data":{"repository":{"pullRequestTemplates":[{"filename":"PULL_REQUEST_TEMPLATE.md"}]}}}
+So gh can offer this template only once this PR is on main, and only in a terminal:
+`gh pr create --body`, which is how agents open PRs, never reads it. AGENTS.md now tells them to.
+
+== 2. The body of PR #44 against the template, line for line ==
+
+$ grep -E '^(Closes #|Size: |Stacked on |## |🤖)' .github/pull_request_template.md
+Closes #<ticket number>
+Size: <Small | Medium | Large> (<one-line reason>)
+## What changes
+## Proof
+## Reviews
+## Try it
+## Not in this PR
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+$ gh pr view 44 --json body --jq .body | grep -E '^(Closes #|Size: |Stacked on |## |🤖)'
+Closes #43
+Size: Small (docs and config: one template file and one bullet in `AGENTS.md`)
+## What changes
+## Proof
+## Reviews
+## Not in this PR
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Same lines in the same order. The body has no "Try it": nothing in this PR runs, and a
+section that does not apply is deleted.
+
+$ gh pr view 44 --json body --jq .body | grep -cE '<!--|^Closes #<|^Size: <|^N/A$' ; true   # lines that are a comment, an unfilled placeholder or N/A
+0
+
+$ gh pr view 44 --json body --jq .body | awk '/^## /{ if (heading != "" && lines == 0) empty++; heading = $0; lines = 0; next } /^🤖/{ next } NF { lines++ } END { if (lines == 0) empty++; print "sections with nothing under the heading: " empty + 0 }'
+sections with nothing under the heading: 0
+
+$ gh pr view 44 --json body --jq .body | awk 'NF { last = $0 } END { print last }'   # the last line
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
