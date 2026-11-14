@@ -1,10 +1,10 @@
 {
-  "numTotalTestSuites": 107,
-  "numPassedTestSuites": 107,
+  "numTotalTestSuites": 109,
+  "numPassedTestSuites": 109,
   "numFailedTestSuites": 0,
   "numPendingTestSuites": 0,
-  "numTotalTests": 301,
-  "numPassedTests": 301,
+  "numTotalTests": 304,
+  "numPassedTests": 304,
   "numFailedTests": 0,
   "numPendingTests": 0,
   "numTodoTests": 0,
@@ -24,7 +24,7 @@
     "updated": 0,
     "didUpdate": false
   },
-  "startTime": 1794689271918,
+  "startTime": 1794689605527,
   "success": true,
   "testResults": [
     {
@@ -36,7 +36,7 @@
           "fullName": "server headless run drives the sim without a browser and is reproducible",
           "status": "passed",
           "title": "drives the sim without a browser and is reproducible",
-          "duration": 206.63066700000002,
+          "duration": 141.77362499999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -49,7 +49,7 @@
           "fullName": "server headless run the stop command really stops the player",
           "status": "passed",
           "title": "the stop command really stops the player",
-          "duration": 46.987916999999925,
+          "duration": 19.261124999999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -62,15 +62,15 @@
           "fullName": "server headless run runs exactly the requested number of ticks",
           "status": "passed",
           "title": "runs exactly the requested number of ticks",
-          "duration": 9.918750000000045,
+          "duration": 8.590708999999947,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272827,
-      "endTime": 1794689273091.9187,
+      "startTime": 1794689606415,
+      "endTime": 1794689606584.5908,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/headless.test.ts"
@@ -84,7 +84,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room serves index.html at / with the security headers and no long cache",
           "status": "passed",
           "title": "serves index.html at / with the security headers and no long cache",
-          "duration": 17.884165999999937,
+          "duration": 51.61816699999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -97,7 +97,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room serves the hashed assets as immutable with their content type, and the sprites under /sprites",
           "status": "passed",
           "title": "serves the hashed assets as immutable with their content type, and the sprites under /sprites",
-          "duration": 49.979582999999934,
+          "duration": 11.093666999999982,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -110,7 +110,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room answers 304 to a matching ETag, headers only to HEAD and a part of the file to a range request",
           "status": "passed",
           "title": "answers 304 to a matching ETag, headers only to HEAD and a part of the file to a range request",
-          "duration": 14.180624999999964,
+          "duration": 23.714165999999977,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -123,7 +123,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room compresses a large file for a browser that accepts it",
           "status": "passed",
           "title": "compresses a large file for a browser that accepts it",
-          "duration": 303.568584,
+          "duration": 132.07691699999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -136,7 +136,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room answers a range that cannot be satisfied, a failed precondition and a directory without a slash with their status, and logs nothing for them",
           "status": "passed",
           "title": "answers a range that cannot be satisfied, a failed precondition and a directory without a slash with their status, and logs nothing for them",
-          "duration": 10.48091599999998,
+          "duration": 14.053667000000019,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -149,7 +149,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room never serves a file outside the client directory, a dotfile or a directory listing",
           "status": "passed",
           "title": "never serves a file outside the client directory, a dotfile or a directory listing",
-          "duration": 11.595542000000023,
+          "duration": 23.25162499999999,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -162,7 +162,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room answers 404 to an unknown path and to another method on a file",
           "status": "passed",
           "title": "answers 404 to an unknown path and to another method on a file",
-          "duration": 4.7153749999999945,
+          "duration": 11.349333000000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -175,7 +175,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room closes the file when the browser gives up mid-download: no descriptor is left open",
           "status": "passed",
           "title": "closes the file when the browser gives up mid-download: no descriptor is left open",
-          "duration": 29.418833000000063,
+          "duration": 36.37445800000012,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -188,7 +188,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room drops a connection that sends its next request before the last answer is out, so a burst that hangs up leaves no file open",
           "status": "passed",
           "title": "drops a connection that sends its next request before the last answer is out, so a burst that hangs up leaves no file open",
-          "duration": 101.29887499999995,
+          "duration": 145.63587500000017,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -201,7 +201,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room leaves no file open when the first request of a burst is one Node answers itself, which the guard never sees",
           "status": "passed",
           "title": "leaves no file open when the first request of a burst is one Node answers itself, which the guard never sees",
-          "duration": 48.765499999999975,
+          "duration": 85.38441699999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -214,7 +214,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room closes the connection of a refused upgrade itself, whether the client hangs on or sends more and leaves",
           "status": "passed",
           "title": "closes the connection of a refused upgrade itself, whether the client hangs on or sends more and leaves",
-          "duration": 89.87470800000006,
+          "duration": 22.645915999999943,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -227,7 +227,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room answers /health with the room in it",
           "status": "passed",
           "title": "answers /health with the room in it",
-          "duration": 1.8470830000001115,
+          "duration": 2.171957999999904,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -240,7 +240,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room refuses a matchmaking call from a foreign origin with 403, before Colyseus, and lets listed and loopback origins through",
           "status": "passed",
           "title": "refuses a matchmaking call from a foreign origin with 403, before Colyseus, and lets listed and loopback origins through",
-          "duration": 14.751291999999921,
+          "duration": 34.15333399999986,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -253,7 +253,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room tells no origin it may read an answer unless the policy allows it: never the wildcard Colyseus sends by default",
           "status": "passed",
           "title": "tells no origin it may read an answer unless the policy allows it: never the wildcard Colyseus sends by default",
-          "duration": 7.991917000000058,
+          "duration": 23.33870899999988,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -266,7 +266,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room refuses a WebSocket upgrade from a foreign origin with 403 and completes one from an allowed origin or from no browser at all",
           "status": "passed",
           "title": "refuses a WebSocket upgrade from a foreign origin with 403 and completes one from an allowed origin or from no browser at all",
-          "duration": 86.11108300000001,
+          "duration": 7.472709000000123,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -279,7 +279,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room refuses an upgrade whose Origin matches its own Host but is not listed: a domain pointed at this server names itself in both",
           "status": "passed",
           "title": "refuses an upgrade whose Origin matches its own Host but is not listed: a domain pointed at this server names itself in both",
-          "duration": 20.755292000000054,
+          "duration": 2.8665000000000873,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -292,7 +292,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room still serves the files and the health check to a foreign origin: only what changes state is guarded",
           "status": "passed",
           "title": "still serves the files and the health check to a foreign origin: only what changes state is guarded",
-          "duration": 6.714416999999912,
+          "duration": 1.972957999999835,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -305,7 +305,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room refuses an oversized matchmaking body, declared or streamed, and a small one still reaches Colyseus",
           "status": "passed",
           "title": "refuses an oversized matchmaking body, declared or streamed, and a small one still reaches Colyseus",
-          "duration": 17.983582999999953,
+          "duration": 11.296583000000055,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -318,7 +318,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room answers 400 to every request Colyseus could not survive, on its own routes too, and keeps serving",
           "status": "passed",
           "title": "answers 400 to every request Colyseus could not survive, on its own routes too, and keeps serving",
-          "duration": 10.327625000000126,
+          "duration": 14.759167000000161,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -331,7 +331,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room seats a real client through all of it: the reservation, the upgrade and the welcome",
           "status": "passed",
           "title": "seats a real client through all of it: the reservation, the upgrade and the welcome",
-          "duration": 31.15908300000001,
+          "duration": 22.739417000000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -344,7 +344,7 @@
           "fullName": "one process: the client files, /health and the request guard in front of the world room lets a well-formed request through a proxy reach matchmaking: one forwarded protocol and the public Host",
           "status": "passed",
           "title": "lets a well-formed request through a proxy reach matchmaking: one forwarded protocol and the public Host",
-          "duration": 1.597250000000031,
+          "duration": 1.0092500000000655,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -357,7 +357,7 @@
           "fullName": "one process in production: only the listed origins get in takes an upgrade from the listed origin whatever Host a proxy presents, and refuses a loopback page and a rebound domain",
           "status": "passed",
           "title": "takes an upgrade from the listed origin whatever Host a proxy presents, and refuses a loopback page and a rebound domain",
-          "duration": 25.1273749999998,
+          "duration": 69.15095900000006,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -370,7 +370,7 @@
           "fullName": "one process in production: only the listed origins get in refuses matchmaking from a loopback page and takes it from the listed origin",
           "status": "passed",
           "title": "refuses matchmaking from a loopback page and takes it from the listed origin",
-          "duration": 11.025292000000036,
+          "duration": 12.893458999999893,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -383,7 +383,7 @@
           "fullName": "one process in production: only the listed origins get in serves no client files when given no client directory, and still answers /health with the security headers",
           "status": "passed",
           "title": "serves no client files when given no client directory, and still answers /health with the security headers",
-          "duration": 2.455791999999974,
+          "duration": 5.980624999999918,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -396,7 +396,7 @@
           "fullName": "one process with a short idle timeout never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room",
           "status": "passed",
           "title": "never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room",
-          "duration": 1530.0327499999999,
+          "duration": 1521.195167,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -409,7 +409,7 @@
           "fullName": "one process with a short idle timeout closes a plain connection that says nothing",
           "status": "passed",
           "title": "closes a plain connection that says nothing",
-          "duration": 301.6973750000002,
+          "duration": 301.38962500000025,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -422,15 +422,15 @@
           "fullName": "one process on a busy port fails the boot with the reason instead of waiting for ever",
           "status": "passed",
           "title": "fails the boot with the reason instead of waiting for ever",
-          "duration": 2.1357920000000377,
+          "duration": 1.7612090000002354,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273064,
-      "endTime": 1794689275846.1357,
+      "startTime": 1794689606741,
+      "endTime": 1794689609341.7612,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/startServer.test.ts"
@@ -444,7 +444,7 @@
           "fullName": "createFront names the caller in the matchmaking headers only when the policy allows it, and always sends nosniff and Vary",
           "status": "passed",
           "title": "names the caller in the matchmaking headers only when the policy allows it, and always sends nosniff and Vary",
-          "duration": 2.680500000000052,
+          "duration": 2.2862499999999955,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -457,15 +457,15 @@
           "fullName": "createFront closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open",
           "status": "passed",
           "title": "closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open",
-          "duration": 1569.586166,
+          "duration": 1630.349792,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272816,
-      "endTime": 1794689274387.5862,
+      "startTime": 1794689606366,
+      "endTime": 1794689607998.3499,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/front/createFront.test.ts"
@@ -479,7 +479,7 @@
           "fullName": "guardRequests wraps the server's one request listener and its one upgrade listener in place of them",
           "status": "passed",
           "title": "wraps the server's one request listener and its one upgrade listener in place of them",
-          "duration": 2.1637090000000114,
+          "duration": 2.057208000000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -492,7 +492,7 @@
           "fullName": "guardRequests refuses to install unless exactly one listener handles requests and exactly one handles upgrades, and leaves the server as it was",
           "status": "passed",
           "title": "refuses to install unless exactly one listener handles requests and exactly one handles upgrades, and leaves the server as it was",
-          "duration": 0.8494169999999883,
+          "duration": 0.8081669999999974,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -505,7 +505,7 @@
           "fullName": "guardRequests hands a request with a body to the routes with the whole body already read",
           "status": "passed",
           "title": "hands a request with a body to the routes with the whole body already read",
-          "duration": 70.87537499999999,
+          "duration": 24.271874999999994,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -518,7 +518,7 @@
           "fullName": "guardRequests hands a request without a body straight to the routes",
           "status": "passed",
           "title": "hands a request without a body straight to the routes",
-          "duration": 22.952458000000007,
+          "duration": 10.949417000000011,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -531,7 +531,7 @@
           "fullName": "guardRequests answers 413 to a body over the cap and 403 to a state-changing request from a foreign origin, and the routes never see either",
           "status": "passed",
           "title": "answers 413 to a body over the cap and 403 to a state-changing request from a foreign origin, and the routes never see either",
-          "duration": 15.306667000000004,
+          "duration": 18.704959000000002,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -544,7 +544,7 @@
           "fullName": "guardRequests lets a read from a foreign origin, and a state-changing request from the listed origin or from no browser, reach the routes",
           "status": "passed",
           "title": "lets a read from a foreign origin, and a state-changing request from the listed origin or from no browser, reach the routes",
-          "duration": 12.438832999999988,
+          "duration": 10.411625000000015,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -557,7 +557,7 @@
           "fullName": "guardRequests takes a forwarded protocol in either case, as a proxy may spell it",
           "status": "passed",
           "title": "takes a forwarded protocol in either case, as a proxy may spell it",
-          "duration": 4.9465000000000146,
+          "duration": 26.023750000000007,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -570,7 +570,7 @@
           "fullName": "guardRequests answers 400 to an upgrade whose target is not a path or whose Host is no host, 403 to one from a foreign origin, and hands the rest to the upgrade handler",
           "status": "passed",
           "title": "answers 400 to an upgrade whose target is not a path or whose Host is no host, 403 to one from a foreign origin, and hands the rest to the upgrade handler",
-          "duration": 39.85487499999999,
+          "duration": 36.18175000000002,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -583,7 +583,7 @@
           "fullName": "guardRequests destroys the connection of a refused upgrade even when the client stays on it",
           "status": "passed",
           "title": "destroys the connection of a refused upgrade even when the client stays on it",
-          "duration": 1.8534999999999968,
+          "duration": 5.579457999999988,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -596,7 +596,7 @@
           "fullName": "guardRequests closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing",
           "status": "passed",
           "title": "closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing",
-          "duration": 403.17845800000003,
+          "duration": 401.390792,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -609,7 +609,7 @@
           "fullName": "guardRequests closes a connection that sends a request before the answer to an earlier one is out, even when the earlier one never reached the guard",
           "status": "passed",
           "title": "closes a connection that sends a request before the answer to an earlier one is out, even when the earlier one never reached the guard",
-          "duration": 2.691165999999953,
+          "duration": 1.3807500000000346,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -622,7 +622,7 @@
           "fullName": "guardRequests closes a connection that sends a second request before the first is answered, and the routes never see the second",
           "status": "passed",
           "title": "closes a connection that sends a second request before the first is answered, and the routes never see the second",
-          "duration": 2.2204590000000053,
+          "duration": 1.95900000000006,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -635,15 +635,15 @@
           "fullName": "guardRequests serves one request after another on a kept-alive connection",
           "status": "passed",
           "title": "serves one request after another on a kept-alive connection",
-          "duration": 4.2555830000000014,
+          "duration": 2.5763750000000982,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272624,
-      "endTime": 1794689273207.2556,
+      "startTime": 1794689606257,
+      "endTime": 1794689606799.5764,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/front/guardRequests.test.ts"
@@ -657,7 +657,7 @@
           "fullName": "mountFrontRoutes answers /health with 503 while there is nothing to report, and with the report once there is",
           "status": "passed",
           "title": "answers /health with 503 while there is nothing to report, and with the report once there is",
-          "duration": 37.97200000000001,
+          "duration": 37.18762499999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -670,7 +670,7 @@
           "fullName": "mountFrontRoutes answers a HEAD on /health with no body",
           "status": "passed",
           "title": "answers a HEAD on /health with no body",
-          "duration": 7.10083400000002,
+          "duration": 8.113125000000025,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -683,15 +683,15 @@
           "fullName": "mountFrontRoutes serves nothing else without a client directory, and does not say what it runs on",
           "status": "passed",
           "title": "serves nothing else without a client directory, and does not say what it runs on",
-          "duration": 4.490042000000017,
+          "duration": 8.094708000000026,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272814,
-      "endTime": 1794689272863.49,
+      "startTime": 1794689606425,
+      "endTime": 1794689606478.0947,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/front/mountFrontRoutes.test.ts"
@@ -705,7 +705,7 @@
           "fullName": "isOriginAllowed lets a request without an Origin through: it did not come from a browser",
           "status": "passed",
           "title": "lets a request without an Origin through: it did not come from a browser",
-          "duration": 1.1530829999999952,
+          "duration": 1.1104590000000059,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -718,7 +718,7 @@
           "fullName": "isOriginAllowed allows the listed origins, spelled the way a browser sends them",
           "status": "passed",
           "title": "allows the listed origins, spelled the way a browser sends them",
-          "duration": 0.2458340000000021,
+          "duration": 0.2203750000000042,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -731,7 +731,7 @@
           "fullName": "isOriginAllowed refuses every other spelling of a listed origin: no browser sends one, and what is allowed must be exactly what a browser compares",
           "status": "passed",
           "title": "refuses every other spelling of a listed origin: no browser sends one, and what is allowed must be exactly what a browser compares",
-          "duration": 0.32124999999999204,
+          "duration": 0.3003750000000025,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -744,7 +744,7 @@
           "fullName": "isOriginAllowed refuses another host, another port, another scheme, a null origin, several origins at once and junk",
           "status": "passed",
           "title": "refuses another host, another port, another scheme, a null origin, several origins at once and junk",
-          "duration": 0.3450419999999923,
+          "duration": 0.36104200000001185,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -757,7 +757,7 @@
           "fullName": "isOriginAllowed never trusts the request to say who it is: an origin that is not listed is refused whatever host the request names (a rebound domain names itself)",
           "status": "passed",
           "title": "never trusts the request to say who it is: an origin that is not listed is refused whatever host the request names (a rebound domain names itself)",
-          "duration": 0.08341699999999719,
+          "duration": 0.0918750000000017,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -770,7 +770,7 @@
           "fullName": "isOriginAllowed lets any loopback page in outside production with nothing configured (dev: Vite on one port, the room on another), in any loopback spelling",
           "status": "passed",
           "title": "lets any loopback page in outside production with nothing configured (dev: Vite on one port, the room on another), in any loopback spelling",
-          "duration": 0.2338749999999976,
+          "duration": 0.23758300000000077,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -783,7 +783,7 @@
           "fullName": "isOriginAllowed does not take a remote page, nor a name that merely looks like loopback, for a loopback page",
           "status": "passed",
           "title": "does not take a remote page, nor a name that merely looks like loopback, for a loopback page",
-          "duration": 0.22612500000001035,
+          "duration": 0.21600000000000819,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -796,7 +796,7 @@
           "fullName": "isOriginAllowed turns the loopback rule off in production: a localhost page is a stranger unless it is listed",
           "status": "passed",
           "title": "turns the loopback rule off in production: a localhost page is a stranger unless it is listed",
-          "duration": 0.11533300000000679,
+          "duration": 0.11637499999999079,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -809,7 +809,7 @@
           "fullName": "isOriginAllowed allows everything only when asked for with *",
           "status": "passed",
           "title": "allows everything only when asked for with *",
-          "duration": 0.4553340000000077,
+          "duration": 0.44891700000000867,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -822,7 +822,7 @@
           "fullName": "readOriginPolicy is loopback only when unset or empty outside production",
           "status": "passed",
           "title": "is loopback only when unset or empty outside production",
-          "duration": 0.44666700000000503,
+          "duration": 0.421875,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -835,7 +835,7 @@
           "fullName": "readOriginPolicy stops the boot in production when nothing is listed: no browser could ever get in",
           "status": "passed",
           "title": "stops the boot in production when nothing is listed: no browser could ever get in",
-          "duration": 0.6837089999999932,
+          "duration": 0.580916000000002,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -848,7 +848,7 @@
           "fullName": "readOriginPolicy normalises the listed origins: case, a trailing slash, a spelled-out default port",
           "status": "passed",
           "title": "normalises the listed origins: case, a trailing slash, a spelled-out default port",
-          "duration": 0.12154199999999094,
+          "duration": 0.08808400000000915,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -861,7 +861,7 @@
           "fullName": "readOriginPolicy refuses entries that are not bare http(s) origins, so a typo stops the boot instead of refusing every player",
           "status": "passed",
           "title": "refuses entries that are not bare http(s) origins, so a typo stops the boot instead of refusing every player",
-          "duration": 0.7747090000000014,
+          "duration": 0.4930000000000092,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -874,15 +874,15 @@
           "fullName": "readOriginPolicy checks the other entries even next to a *",
           "status": "passed",
           "title": "checks the other entries even next to a *",
-          "duration": 0.24183300000001395,
+          "duration": 0.1488339999999937,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272812,
-      "endTime": 1794689272817.242,
+      "startTime": 1794689606396,
+      "endTime": 1794689606401.149,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/front/origins.test.ts"
@@ -896,7 +896,7 @@
           "fullName": "readMoveMessage accepts exactly { x, y } with finite numbers",
           "status": "passed",
           "title": "accepts exactly { x, y } with finite numbers",
-          "duration": 1.3325000000000102,
+          "duration": 1.5761250000000189,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -909,7 +909,7 @@
           "fullName": "readMoveMessage drops a payload that carries a slot or any other extra field",
           "status": "passed",
           "title": "drops a payload that carries a slot or any other extra field",
-          "duration": 0.2510000000000048,
+          "duration": 1.1087090000000046,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -922,7 +922,7 @@
           "fullName": "readMoveMessage drops anything that is not an object with both fields",
           "status": "passed",
           "title": "drops anything that is not an object with both fields",
-          "duration": 0.2195419999999899,
+          "duration": 0.385249999999985,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -935,7 +935,7 @@
           "fullName": "readMoveMessage drops values that are not finite numbers",
           "status": "passed",
           "title": "drops values that are not finite numbers",
-          "duration": 0.2582089999999937,
+          "duration": 0.28208399999999756,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -948,7 +948,7 @@
           "fullName": "readMoveMessage never throws, whatever comes in",
           "status": "passed",
           "title": "never throws, whatever comes in",
-          "duration": 0.6206659999999999,
+          "duration": 0.9372089999999957,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -961,7 +961,7 @@
           "fullName": "payloadLength measures a payload as JSON and treats the unserialisable as infinitely large",
           "status": "passed",
           "title": "measures a payload as JSON and treats the unserialisable as infinitely large",
-          "duration": 0.2757080000000087,
+          "duration": 0.3382080000000087,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -974,7 +974,7 @@
           "fullName": "MessageBudget allows a burst, then only the sustained rate",
           "status": "passed",
           "title": "allows a burst, then only the sustained rate",
-          "duration": 0.2583330000000217,
+          "duration": 0.24541700000000333,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -987,15 +987,15 @@
           "fullName": "MessageBudget refills fractionally and ignores a clock that goes backwards",
           "status": "passed",
           "title": "refills fractionally and ignores a clock that goes backwards",
-          "duration": 0.10054200000001856,
+          "duration": 0.09250000000000114,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273036,
-      "endTime": 1794689273040.1006,
+      "startTime": 1794689606574,
+      "endTime": 1794689606580.3381,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/world/inbound.test.ts"
@@ -1009,7 +1009,7 @@
           "fullName": "RoomSeats hands out the lowest free slot and refuses when every seat is taken",
           "status": "passed",
           "title": "hands out the lowest free slot and refuses when every seat is taken",
-          "duration": 1.212582999999995,
+          "duration": 2.323833999999991,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1022,7 +1022,7 @@
           "fullName": "RoomSeats gives a released seat to the next session, lowest first",
           "status": "passed",
           "title": "gives a released seat to the next session, lowest first",
-          "duration": 0.32691699999998036,
+          "duration": 0.8457080000000019,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1035,15 +1035,15 @@
           "fullName": "RoomSeats never seats the same session twice and releasing a stranger frees nothing",
           "status": "passed",
           "title": "never seats the same session twice and releasing a stranger frees nothing",
-          "duration": 0.103999999999985,
+          "duration": 0.125165999999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273113,
-      "endTime": 1794689273114.327,
+      "startTime": 1794689606702,
+      "endTime": 1794689606706.1252,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/world/roomSeats.test.ts"
@@ -1057,15 +1057,15 @@
           "fullName": "startWorldServer leaves nothing behind when the boot fails after the port opened: the port is closed and the next boot works",
           "status": "passed",
           "title": "leaves nothing behind when the boot fails after the port opened: the port is closed and the next boot works",
-          "duration": 78.49933299999998,
+          "duration": 118.2165,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273053,
-      "endTime": 1794689273131.4993,
+      "startTime": 1794689606634,
+      "endTime": 1794689606752.2166,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/world/startWorldServer.test.ts"
@@ -1079,7 +1079,7 @@
           "fullName": "takeWholeTicks (server copy of the client helper) runs zero ticks and keeps the time when a wake-up is shorter than a tick",
           "status": "passed",
           "title": "runs zero ticks and keeps the time when a wake-up is shorter than a tick",
-          "duration": 1.9208339999999993,
+          "duration": 1.6571660000000037,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1092,7 +1092,7 @@
           "fullName": "takeWholeTicks (server copy of the client helper) carries the remainder across wake-ups so no time is lost",
           "status": "passed",
           "title": "carries the remainder across wake-ups so no time is lost",
-          "duration": 0.6309579999999926,
+          "duration": 0.33612499999999557,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1105,7 +1105,7 @@
           "fullName": "takeWholeTicks (server copy of the client helper) runs several ticks after a long wake-up",
           "status": "passed",
           "title": "runs several ticks after a long wake-up",
-          "duration": 0.11775000000000091,
+          "duration": 0.09191600000001188,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1118,7 +1118,7 @@
           "fullName": "takeWholeTicks (server copy of the client helper) caps the catch-up after a stall instead of spiralling",
           "status": "passed",
           "title": "caps the catch-up after a stall instead of spiralling",
-          "duration": 0.1992919999999998,
+          "duration": 0.20524999999999238,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1131,15 +1131,15 @@
           "fullName": "takeWholeTicks (server copy of the client helper) ignores negative deltas",
           "status": "passed",
           "title": "ignores negative deltas",
-          "duration": 1.0359169999999978,
+          "duration": 0.366540999999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272957,
-      "endTime": 1794689272961.036,
+      "startTime": 1794689606625,
+      "endTime": 1794689606627.3665,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/world/takeWholeTicks.test.ts"
@@ -1153,7 +1153,7 @@
           "fullName": "WorldRoom over a real connection seats 5 players by room id, each welcomed with its own seat and already in the world",
           "status": "passed",
           "title": "seats 5 players by room id, each welcomed with its own seat and already in the world",
-          "duration": 381.858875,
+          "duration": 320.7610840000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1166,7 +1166,7 @@
           "fullName": "WorldRoom over a real connection shows every player the others moving, through deltas that chain without a gap",
           "status": "passed",
           "title": "shows every player the others moving, through deltas that chain without a gap",
-          "duration": 385.205375,
+          "duration": 359.59633399999996,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1179,7 +1179,7 @@
           "fullName": "WorldRoom over a real connection refuses the sixth player, and refuses to create or join rooms any other way",
           "status": "passed",
           "title": "refuses the sixth player, and refuses to create or join rooms any other way",
-          "duration": 106.62495799999988,
+          "duration": 148.94004199999995,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1192,7 +1192,7 @@
           "fullName": "WorldRoom over a real connection frees the seat of a player who leaves, removes their avatar for the others, and seats the next joiner there",
           "status": "passed",
           "title": "frees the seat of a player who leaves, removes their avatar for the others, and seats the next joiner there",
-          "duration": 216.00591599999984,
+          "duration": 213.71287499999994,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1205,7 +1205,7 @@
           "fullName": "WorldRoom over a real connection drops oversized, unknown, slot-carrying and malformed messages while the world keeps running",
           "status": "passed",
           "title": "drops oversized, unknown, slot-carrying and malformed messages while the world keeps running",
-          "duration": 422.4341670000001,
+          "duration": 475.0096249999999,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1218,7 +1218,7 @@
           "fullName": "WorldRoom over a real connection spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses",
           "status": "passed",
           "title": "spends a flooding player's budget instead of the sim, and disconnects a frame the transport refuses",
-          "duration": 317.71775000000025,
+          "duration": 308.13320799999974,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1231,7 +1231,7 @@
           "fullName": "WorldRoom over a real connection closes a session that floods unknown message types once its budget is spent, and keeps the others",
           "status": "passed",
           "title": "closes a session that floods unknown message types once its budget is spent, and keeps the others",
-          "duration": 173.2182499999999,
+          "duration": 194.48624999999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1244,7 +1244,7 @@
           "fullName": "WorldRoom over a real connection answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget",
           "status": "passed",
           "title": "answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget",
-          "duration": 1217.88875,
+          "duration": 1218.2539579999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1257,7 +1257,7 @@
           "fullName": "WorldRoom over a real connection closes a connection that never acknowledges its join after 5000 ms and frees the seat",
           "status": "passed",
           "title": "closes a connection that never acknowledges its join after 5000 ms and frees the seat",
-          "duration": 5164.162417,
+          "duration": 5178.663374999999,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1270,7 +1270,7 @@
           "fullName": "WorldRoom over a real connection frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 \"idle\", and keeps one that plays, also while it holds one direction for several timeouts",
           "status": "passed",
           "title": "frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 \"idle\", and keeps one that plays, also while it holds one direction for several timeouts",
-          "duration": 697.8383749999994,
+          "duration": 730.3822500000006,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1283,7 +1283,7 @@
           "fullName": "WorldRoom driven directly frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
           "status": "passed",
           "title": "frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
-          "duration": 106.17250000000058,
+          "duration": 101.92274999999972,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1296,7 +1296,7 @@
           "fullName": "WorldRoom driven directly frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive",
           "status": "passed",
           "title": "frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive",
-          "duration": 67.96154200000092,
+          "duration": 68.19970900000044,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1309,15 +1309,15 @@
           "fullName": "WorldRoom driven directly fails a join that is waiting for a tick when the room is disposed instead of hanging it",
           "status": "passed",
           "title": "fails a join that is waiting for a tick when the room is disposed instead of hanging it",
-          "duration": 0.6891670000004524,
+          "duration": 0.6364160000011907,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272933,
-      "endTime": 1794689282191.6892,
+      "startTime": 1794689606561,
+      "endTime": 1794689615880.6365,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/server/src/world/worldRoom.test.ts"
@@ -1331,7 +1331,7 @@
           "fullName": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
           "status": "passed",
           "title": "has one palette per avatar def, under the sprite key the def declares",
-          "duration": 1.2838749999999663,
+          "duration": 1.2934169999999767,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1344,7 +1344,7 @@
           "fullName": "avatar sheet generator paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
           "status": "passed",
           "title": "paints each avatar's shirt in the colour its def carries for the flat-shape fallback",
-          "duration": 0.4026670000000081,
+          "duration": 0.40570900000000165,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1357,18 +1357,53 @@
           "fullName": "avatar sheet generator paints sheets in the frame layout the defs declare",
           "status": "passed",
           "title": "paints sheets in the frame layout the defs declare",
-          "duration": 7.570458999999971,
+          "duration": 5.322416999999973,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272231,
-      "endTime": 1794689272239.5706,
+      "startTime": 1794689605813,
+      "endTime": 1794689605820.3225,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/tools/generate-player-sheet.test.mjs"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "tree sheet generator"
+          ],
+          "fullName": "tree sheet generator paints the sheet under the key and in the frame layout the tree def declares",
+          "status": "passed",
+          "title": "paints the sheet under the key and in the frame layout the tree def declares",
+          "duration": 4.880625000000009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tree sheet generator"
+          ],
+          "fullName": "tree sheet generator paints the same sheet every time",
+          "status": "passed",
+          "title": "paints the same sheet every time",
+          "duration": 3.0553749999999695,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689605814,
+      "endTime": 1794689605821.0554,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/tools/generate-tree-sheet.test.mjs"
     },
     {
       "assertionResults": [
@@ -1379,7 +1414,7 @@
           "fullName": "seats the local player sits in seat 0 and the first empty seat of a fresh world is that one",
           "status": "passed",
           "title": "the local player sits in seat 0 and the first empty seat of a fresh world is that one",
-          "duration": 108.294083,
+          "duration": 95.012709,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1392,7 +1427,7 @@
           "fullName": "seats skips seats that are taken in the sim and seats a queued join is about to take",
           "status": "passed",
           "title": "skips seats that are taken in the sim and seats a queued join is about to take",
-          "duration": 52.98433399999999,
+          "duration": 31.250499999999988,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -1405,731 +1440,18 @@
           "fullName": "seats reports no seat once every one is spoken for",
           "status": "passed",
           "title": "reports no seat once every one is spoken for",
-          "duration": 1.1508750000000418,
+          "duration": 0.9394589999999994,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272271,
-      "endTime": 1794689272434.151,
+      "startTime": 1794689605812,
+      "endTime": 1794689605938.9395,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/seats.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "takeWholeTicks"
-          ],
-          "fullName": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-          "status": "passed",
-          "title": "runs zero ticks and keeps the time when a frame is shorter than a tick",
-          "duration": 1.1048749999999927,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "takeWholeTicks"
-          ],
-          "fullName": "takeWholeTicks carries the remainder across frames so no time is lost",
-          "status": "passed",
-          "title": "carries the remainder across frames so no time is lost",
-          "duration": 0.31866600000000744,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "takeWholeTicks"
-          ],
-          "fullName": "takeWholeTicks runs several ticks for a long frame",
-          "status": "passed",
-          "title": "runs several ticks for a long frame",
-          "duration": 0.0871659999999963,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "takeWholeTicks"
-          ],
-          "fullName": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-          "status": "passed",
-          "title": "clamps huge frames (tab switch) instead of spiralling",
-          "duration": 0.1963750000000175,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "takeWholeTicks"
-          ],
-          "fullName": "takeWholeTicks ignores negative deltas",
-          "status": "passed",
-          "title": "ignores negative deltas",
-          "duration": 0.6538749999999993,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272545,
-      "endTime": 1794689272547.6538,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/loop/takeWholeTicks.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
-          "status": "passed",
-          "title": "resolves once welcomed, with a replica that holds the world, the seat and the count of players",
-          "duration": 130.54945900000007,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld never steps: the replica throws, the frame comes from server updates",
-          "status": "passed",
-          "title": "never steps: the replica throws, the frame comes from server updates",
-          "duration": 4.173667000000023,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld follows deltas and draws between them, two send intervals behind",
-          "status": "passed",
-          "title": "follows deltas and draws between them, two send intervals behind",
-          "duration": 14.619709000000057,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld answers a delta that does not chain with one resync request, and is whole again after the full state",
-          "status": "passed",
-          "title": "answers a delta that does not chain with one resync request, and is whole again after the full state",
-          "duration": 8.538416999999981,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld asks again after enough further misses, in case the server dropped the request",
-          "status": "passed",
-          "title": "asks again after enough further misses, in case the server dropped the request",
-          "duration": 9.622834000000012,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
-          "status": "passed",
-          "title": "asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
-          "duration": 5.294332999999938,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld counts malformed updates and sends nothing for them",
-          "status": "passed",
-          "title": "counts malformed updates and sends nothing for them",
-          "duration": 1.9592079999999896,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld sends the move of a player/move command without its slot, and nothing for other commands",
-          "status": "passed",
-          "title": "sends the move of a player/move command without its slot, and nothing for other commands",
-          "duration": 3.5302919999999176,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)",
-          "status": "passed",
-          "title": "sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)",
-          "duration": 2.8882090000000744,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
-          "status": "passed",
-          "title": "after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
-          "duration": 1008.9726670000001,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld stops walking when the page loses focus, once, and does not walk again after a reconnect",
-          "status": "passed",
-          "title": "stops walking when the page loses focus, once, and does not walk again after a reconnect",
-          "duration": 1004.1890419999997,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
-          "status": "passed",
-          "title": "reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
-          "duration": 0.5544579999996131,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "OnlineWorld"
-          ],
-          "fullName": "OnlineWorld after a drop refuses a welcome for another world, so the page can reload",
-          "status": "passed",
-          "title": "after a drop refuses a welcome for another world, so the page can reload",
-          "duration": 1006.5991669999999,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "readWelcome"
-          ],
-          "fullName": "readWelcome accepts the wire shape and refuses anything else",
-          "status": "passed",
-          "title": "accepts the wire shape and refuses anything else",
-          "duration": 0.21758300000010422,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272332,
-      "endTime": 1794689275534.2175,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/online/OnlineWorld.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection joins, is online once the welcome is accepted, and forwards updates only from then on",
-          "status": "passed",
-          "title": "joins, is online once the welcome is accepted, and forwards updates only from then on",
-          "duration": 4.7587500000000205,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection sends a move as exactly { x, y } while online, and nothing before",
-          "status": "passed",
-          "title": "sends a move as exactly { x, y } while online, and nothing before",
-          "duration": 0.8974169999999617,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection shows a full world and asks again by itself, or at once on retryNow",
-          "status": "passed",
-          "title": "shows a full world and asks again by itself, or at once on retryNow",
-          "duration": 1.8124589999999898,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
-          "status": "passed",
-          "title": "treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
-          "duration": 2.8268749999999727,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
-          "status": "passed",
-          "title": "comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
-          "duration": 0.9156249999999773,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection stays away after the server frees an idle seat (close 4100), and rejoins only when asked",
-          "status": "passed",
-          "title": "stays away after the server frees an idle seat (close 4100), and rejoins only when asked",
-          "duration": 0.711166999999989,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection stays away after a 4100 that comes before the welcome, past the join timeout too",
-          "status": "passed",
-          "title": "stays away after a 4100 that comes before the welcome, past the join timeout too",
-          "duration": 1.2843340000000012,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection still comes back by itself after every other close code, Colyseus's own and unknown room codes included",
-          "status": "passed",
-          "title": "still comes back by itself after every other close code, Colyseus's own and unknown room codes included",
-          "duration": 4.333250000000021,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
-          "status": "passed",
-          "title": "abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
-          "duration": 2.352041999999983,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection abandons a join that never settles and tries again",
-          "status": "passed",
-          "title": "abandons a join that never settles and tries again",
-          "duration": 1.180166999999983,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection does not let a full world grow the wait of a later connection failure",
-          "status": "passed",
-          "title": "does not let a full world grow the wait of a later connection failure",
-          "duration": 1.1936249999999973,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection leaves a room whose join settles only after close()",
-          "status": "passed",
-          "title": "leaves a room whose join settles only after close()",
-          "duration": 0.24045799999998962,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection stops for good on a welcome the world cannot use",
-          "status": "passed",
-          "title": "stops for good on a welcome the world cannot use",
-          "duration": 0.705833000000041,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection leaves and never comes back once closed",
-          "status": "passed",
-          "title": "leaves and never comes back once closed",
-          "duration": 0.8906669999999508,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "WorldConnection"
-          ],
-          "fullName": "WorldConnection is given the endpoint it was created for",
-          "status": "passed",
-          "title": "is given the endpoint it was created for",
-          "duration": 0.3792500000000132,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "isWorldFullRefusal"
-          ],
-          "fullName": "isWorldFullRefusal recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
-          "status": "passed",
-          "title": "recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
-          "duration": 0.10795799999999645,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "isWorldFullRefusal"
-          ],
-          "fullName": "isWorldFullRefusal does not mistake a booting server, a network failure or junk for a full world",
-          "status": "passed",
-          "title": "does not mistake a booting server, a network failure or junk for a full world",
-          "duration": 0.0957920000000172,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272330,
-      "endTime": 1794689272355.0957,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/online/connection.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer has nothing to draw before a frame arrives, then draws the first frame",
-          "status": "passed",
-          "title": "has nothing to draw before a frame arrives, then draws the first frame",
-          "duration": 1.7614999999999554,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
-          "status": "passed",
-          "title": "draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
-          "duration": 2.0268330000000105,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer keeps the lag when frames arrive as the clock runs",
-          "status": "passed",
-          "title": "keeps the lag when frames arrive as the clock runs",
-          "duration": 2.400374999999997,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
-          "status": "passed",
-          "title": "never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
-          "duration": 0.5324999999999704,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer closes a small drift gradually instead of jumping",
-          "status": "passed",
-          "title": "closes a small drift gradually instead of jumping",
-          "duration": 0.10591699999997672,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer starts over when a frame does not come after the newest one (a full state after a server restart)",
-          "status": "passed",
-          "title": "starts over when a frame does not come after the newest one (a full state after a server restart)",
-          "duration": 0.17258300000003146,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "ViewFrameBuffer"
-          ],
-          "fullName": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
-          "status": "passed",
-          "title": "keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
-          "duration": 0.5439169999999649,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272413,
-      "endTime": 1794689272420.544,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/online/frameBuffer.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "describeStatus"
-          ],
-          "fullName": "describeStatus tells the player what is going on, with the seats of a full world and the seconds until the next try",
-          "status": "passed",
-          "title": "tells the player what is going on, with the seats of a full world and the seconds until the next try",
-          "duration": 1.8075409999999579,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272224,
-      "endTime": 1794689272225.8076,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/online/screens.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "worldServerUrl"
-          ],
-          "fullName": "worldServerUrl is the configured server when VITE_SERVER_URL is set, in dev and in production",
-          "status": "passed",
-          "title": "is the configured server when VITE_SERVER_URL is set, in dev and in production",
-          "duration": 1.0105419999999867,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "worldServerUrl"
-          ],
-          "fullName": "worldServerUrl is the page origin in production when nothing is configured: the server that served the page runs the world",
-          "status": "passed",
-          "title": "is the page origin in production when nothing is configured: the server that served the page runs the world",
-          "duration": 0.2115829999999903,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "worldServerUrl"
-          ],
-          "fullName": "worldServerUrl is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
-          "status": "passed",
-          "title": "is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
-          "duration": 0.11045899999999165,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272563,
-      "endTime": 1794689272564.2117,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/online/serverUrl.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "LocalWorld"
-          ],
-          "fullName": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-          "status": "passed",
-          "title": "seats the local player on the first tick and steps only whole ticks of real time",
-          "duration": 158.944458,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "LocalWorld"
-          ],
-          "fullName": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-          "status": "passed",
-          "title": "runs queued commands on the next earned tick, like keyboard commands",
-          "duration": 2.1132499999999936,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "LocalWorld"
-          ],
-          "fullName": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-          "status": "passed",
-          "title": "seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-          "duration": 16.891583999999966,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689272262,
-      "endTime": 1794689272440.8916,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/client/src/worlds/LocalWorld.test.ts"
     },
     {
       "assertionResults": [
@@ -2140,7 +1462,7 @@
           "fullName": "directionFromKeys is zero with nothing pressed",
           "status": "passed",
           "title": "is zero with nothing pressed",
-          "duration": 1.8202500000000015,
+          "duration": 1.3025409999999908,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2153,7 +1475,7 @@
           "fullName": "directionFromKeys maps single keys to unit axes, y pointing down",
           "status": "passed",
           "title": "maps single keys to unit axes, y pointing down",
-          "duration": 0.3879170000000016,
+          "duration": 0.4036670000000129,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2166,7 +1488,7 @@
           "fullName": "directionFromKeys cancels opposite keys",
           "status": "passed",
           "title": "cancels opposite keys",
-          "duration": 0.12212499999999693,
+          "duration": 0.12079199999999446,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2179,7 +1501,7 @@
           "fullName": "directionFromKeys reports diagonals raw; the sim normalises them",
           "status": "passed",
           "title": "reports diagonals raw; the sim normalises them",
-          "duration": 0.20066700000000992,
+          "duration": 0.18787499999999113,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2192,15 +1514,15 @@
           "fullName": "directionFromKeys compares directions by value",
           "status": "passed",
           "title": "compares directions by value",
-          "duration": 0.2044999999999959,
+          "duration": 0.19762499999998795,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272369,
-      "endTime": 1794689272372.2046,
+      "startTime": 1794689605976,
+      "endTime": 1794689605978.1975,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/input/direction.test.ts"
@@ -2214,7 +1536,7 @@
           "fullName": "createKeyboardInput registers WASD and the arrow keys with the scene",
           "status": "passed",
           "title": "registers WASD and the arrow keys with the scene",
-          "duration": 2.724250000000012,
+          "duration": 1.827165999999977,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2227,7 +1549,7 @@
           "fullName": "createKeyboardInput emits nothing while no key is held",
           "status": "passed",
           "title": "emits nothing while no key is held",
-          "duration": 0.288708999999983,
+          "duration": 0.3785000000000025,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2240,7 +1562,7 @@
           "fullName": "createKeyboardInput emits one player/move for the given slot when a key goes down",
           "status": "passed",
           "title": "emits one player/move for the given slot when a key goes down",
-          "duration": 0.21399999999999864,
+          "duration": 0.2132079999999803,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2253,7 +1575,7 @@
           "fullName": "createKeyboardInput emits only on change: holding a key produces no repeats",
           "status": "passed",
           "title": "emits only on change: holding a key produces no repeats",
-          "duration": 2.2785829999999976,
+          "duration": 0.7020419999999774,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2266,7 +1588,7 @@
           "fullName": "createKeyboardInput emits a stop (0, 0) when the last key is released",
           "status": "passed",
           "title": "emits a stop (0, 0) when the last key is released",
-          "duration": 0.24195900000000847,
+          "duration": 0.18475000000000819,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2279,7 +1601,7 @@
           "fullName": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
           "status": "passed",
           "title": "treats arrows and WASD as the same direction, so switching between them is silent",
-          "duration": 0.18675000000001774,
+          "duration": 0.1681250000000034,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2292,7 +1614,7 @@
           "fullName": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
           "status": "passed",
           "title": "reports diagonals and opposite-key cancellation as the direction mapping does",
-          "duration": 0.22891599999999812,
+          "duration": 0.21058300000001395,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2305,7 +1627,7 @@
           "fullName": "createKeyboardInput collapses a press and release between drains into nothing",
           "status": "passed",
           "title": "collapses a press and release between drains into nothing",
-          "duration": 0.09329099999999357,
+          "duration": 0.07625000000001592,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2318,18 +1640,731 @@
           "fullName": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
           "status": "passed",
           "title": "produces no commands when the scene has no keyboard plugin",
-          "duration": 2.8729160000000036,
+          "duration": 0.5009589999999946,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272436,
-      "endTime": 1794689272444.8728,
+      "startTime": 1794689605926,
+      "endTime": 1794689605930.501,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/input/keyboard.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "status": "passed",
+          "title": "runs zero ticks and keeps the time when a frame is shorter than a tick",
+          "duration": 1.0347079999999949,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks carries the remainder across frames so no time is lost",
+          "status": "passed",
+          "title": "carries the remainder across frames so no time is lost",
+          "duration": 0.3190840000000037,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks runs several ticks for a long frame",
+          "status": "passed",
+          "title": "runs several ticks for a long frame",
+          "duration": 0.09287500000002069,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+          "status": "passed",
+          "title": "clamps huge frames (tab switch) instead of spiralling",
+          "duration": 0.19541699999999196,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "takeWholeTicks"
+          ],
+          "fullName": "takeWholeTicks ignores negative deltas",
+          "status": "passed",
+          "title": "ignores negative deltas",
+          "duration": 0.3542910000000177,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689606105,
+      "endTime": 1794689606107.3542,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/loop/takeWholeTicks.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
+          "status": "passed",
+          "title": "resolves once welcomed, with a replica that holds the world, the seat and the count of players",
+          "duration": 131.40175,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld never steps: the replica throws, the frame comes from server updates",
+          "status": "passed",
+          "title": "never steps: the replica throws, the frame comes from server updates",
+          "duration": 7.802458999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld follows deltas and draws between them, two send intervals behind",
+          "status": "passed",
+          "title": "follows deltas and draws between them, two send intervals behind",
+          "duration": 14.783166999999935,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld answers a delta that does not chain with one resync request, and is whole again after the full state",
+          "status": "passed",
+          "title": "answers a delta that does not chain with one resync request, and is whole again after the full state",
+          "duration": 7.822625000000016,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld asks again after enough further misses, in case the server dropped the request",
+          "status": "passed",
+          "title": "asks again after enough further misses, in case the server dropped the request",
+          "duration": 5.234916999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
+          "status": "passed",
+          "title": "asks for a full state once online when the welcome carried a state the replica refused, and is whole after it",
+          "duration": 4.589291000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld counts malformed updates and sends nothing for them",
+          "status": "passed",
+          "title": "counts malformed updates and sends nothing for them",
+          "duration": 2.424374999999941,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld sends the move of a player/move command without its slot, and nothing for other commands",
+          "status": "passed",
+          "title": "sends the move of a player/move command without its slot, and nothing for other commands",
+          "duration": 1.7305830000000242,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)",
+          "status": "passed",
+          "title": "sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)",
+          "duration": 2.278707999999938,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
+          "status": "passed",
+          "title": "after a drop takes the new seat and the new state from the next welcome, and repeats the move still held",
+          "duration": 1007.17225,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld stops walking when the page loses focus, once, and does not walk again after a reconnect",
+          "status": "passed",
+          "title": "stops walking when the page loses focus, once, and does not walk again after a reconnect",
+          "duration": 1012.102834,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
+          "status": "passed",
+          "title": "reports a server it cannot play on: an unknown level, a capacity out of range, a welcome of the wrong shape",
+          "duration": 0.38858399999980975,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "OnlineWorld"
+          ],
+          "fullName": "OnlineWorld after a drop refuses a welcome for another world, so the page can reload",
+          "status": "passed",
+          "title": "after a drop refuses a welcome for another world, so the page can reload",
+          "duration": 1006.493708,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "readWelcome"
+          ],
+          "fullName": "readWelcome accepts the wire shape and refuses anything else",
+          "status": "passed",
+          "title": "accepts the wire shape and refuses anything else",
+          "duration": 0.20983400000022812,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689605971,
+      "endTime": 1794689609176.4937,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/online/OnlineWorld.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection joins, is online once the welcome is accepted, and forwards updates only from then on",
+          "status": "passed",
+          "title": "joins, is online once the welcome is accepted, and forwards updates only from then on",
+          "duration": 5.284708000000023,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection sends a move as exactly { x, y } while online, and nothing before",
+          "status": "passed",
+          "title": "sends a move as exactly { x, y } while online, and nothing before",
+          "duration": 0.9070830000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection shows a full world and asks again by itself, or at once on retryNow",
+          "status": "passed",
+          "title": "shows a full world and asks again by itself, or at once on retryNow",
+          "duration": 1.8603329999999687,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
+          "status": "passed",
+          "title": "treats an unreachable server, and one still booting, as disconnected and retries with a growing wait",
+          "duration": 8.661042000000009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
+          "status": "passed",
+          "title": "comes back after a drop with a fresh join and the new seat, ignoring the dead room from then on",
+          "duration": 4.457916999999952,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection stays away after the server frees an idle seat (close 4100), and rejoins only when asked",
+          "status": "passed",
+          "title": "stays away after the server frees an idle seat (close 4100), and rejoins only when asked",
+          "duration": 9.240499999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection stays away after a 4100 that comes before the welcome, past the join timeout too",
+          "status": "passed",
+          "title": "stays away after a 4100 that comes before the welcome, past the join timeout too",
+          "duration": 3.27054099999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection still comes back by itself after every other close code, Colyseus's own and unknown room codes included",
+          "status": "passed",
+          "title": "still comes back by itself after every other close code, Colyseus's own and unknown room codes included",
+          "duration": 12.001915999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
+          "status": "passed",
+          "title": "abandons a room that never welcomes, even one whose server never closes the socket, and tries again",
+          "duration": 14.744083000000046,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection abandons a join that never settles and tries again",
+          "status": "passed",
+          "title": "abandons a join that never settles and tries again",
+          "duration": 3.9905410000000074,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection does not let a full world grow the wait of a later connection failure",
+          "status": "passed",
+          "title": "does not let a full world grow the wait of a later connection failure",
+          "duration": 5.079041000000018,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection leaves a room whose join settles only after close()",
+          "status": "passed",
+          "title": "leaves a room whose join settles only after close()",
+          "duration": 0.24662499999999454,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection stops for good on a welcome the world cannot use",
+          "status": "passed",
+          "title": "stops for good on a welcome the world cannot use",
+          "duration": 0.5648750000000291,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection leaves and never comes back once closed",
+          "status": "passed",
+          "title": "leaves and never comes back once closed",
+          "duration": 0.6173330000000306,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "WorldConnection"
+          ],
+          "fullName": "WorldConnection is given the endpoint it was created for",
+          "status": "passed",
+          "title": "is given the endpoint it was created for",
+          "duration": 0.6638750000000186,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "isWorldFullRefusal"
+          ],
+          "fullName": "isWorldFullRefusal recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
+          "status": "passed",
+          "title": "recognises the locked room the matchmaker answers for a full world, and the room guard's own refusal",
+          "duration": 0.5583750000000123,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "isWorldFullRefusal"
+          ],
+          "fullName": "isWorldFullRefusal does not mistake a booting server, a network failure or junk for a full world",
+          "status": "passed",
+          "title": "does not mistake a booting server, a network failure or junk for a full world",
+          "duration": 0.255833999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689605904,
+      "endTime": 1794689605977.2559,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/online/connection.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer has nothing to draw before a frame arrives, then draws the first frame",
+          "status": "passed",
+          "title": "has nothing to draw before a frame arrives, then draws the first frame",
+          "duration": 3.040124999999989,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
+          "status": "passed",
+          "title": "draws two send intervals behind the newest frame, moving the entity between frames at the display rate",
+          "duration": 1.7100830000000258,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer keeps the lag when frames arrive as the clock runs",
+          "status": "passed",
+          "title": "keeps the lag when frames arrive as the clock runs",
+          "duration": 1.343958999999984,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
+          "status": "passed",
+          "title": "never draws past the newest frame when frames stop, and jumps back behind them when they resume far ahead",
+          "duration": 0.4425410000000056,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer closes a small drift gradually instead of jumping",
+          "status": "passed",
+          "title": "closes a small drift gradually instead of jumping",
+          "duration": 0.09562499999998408,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer starts over when a frame does not come after the newest one (a full state after a server restart)",
+          "status": "passed",
+          "title": "starts over when a frame does not come after the newest one (a full state after a server restart)",
+          "duration": 0.16562500000000568,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "ViewFrameBuffer"
+          ],
+          "fullName": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
+          "status": "passed",
+          "title": "keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
+          "duration": 0.46633399999998915,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689606069,
+      "endTime": 1794689606076.4663,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/online/frameBuffer.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "describeStatus"
+          ],
+          "fullName": "describeStatus tells the player what is going on, with the seats of a full world and the seconds until the next try",
+          "status": "passed",
+          "title": "tells the player what is going on, with the seats of a full world and the seconds until the next try",
+          "duration": 2.8726660000000095,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689606081,
+      "endTime": 1794689606083.8726,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/online/screens.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "worldServerUrl"
+          ],
+          "fullName": "worldServerUrl is the configured server when VITE_SERVER_URL is set, in dev and in production",
+          "status": "passed",
+          "title": "is the configured server when VITE_SERVER_URL is set, in dev and in production",
+          "duration": 1.04929199999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "worldServerUrl"
+          ],
+          "fullName": "worldServerUrl is the page origin in production when nothing is configured: the server that served the page runs the world",
+          "status": "passed",
+          "title": "is the page origin in production when nothing is configured: the server that served the page runs the world",
+          "duration": 0.22079199999998878,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "worldServerUrl"
+          ],
+          "fullName": "worldServerUrl is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
+          "status": "passed",
+          "title": "is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
+          "duration": 0.11262500000000841,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689606104,
+      "endTime": 1794689606106.1125,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/online/serverUrl.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "LocalWorld"
+          ],
+          "fullName": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+          "status": "passed",
+          "title": "seats the local player on the first tick and steps only whole ticks of real time",
+          "duration": 100.282917,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "LocalWorld"
+          ],
+          "fullName": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+          "status": "passed",
+          "title": "runs queued commands on the next earned tick, like keyboard commands",
+          "duration": 1.6061660000000302,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "LocalWorld"
+          ],
+          "fullName": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+          "status": "passed",
+          "title": "seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+          "duration": 9.852582999999981,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689605834,
+      "endTime": 1794689605945.8525,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/client/src/worlds/LocalWorld.test.ts"
     },
     {
       "assertionResults": [
@@ -2340,7 +2375,7 @@
           "fullName": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
           "status": "passed",
           "title": "puts the top-left corner of the view on a whole device pixel",
-          "duration": 1.1172920000000204,
+          "duration": 1.3425419999999804,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2353,7 +2388,7 @@
           "fullName": "snapViewToDevicePixels moves the scroll by less than one device pixel",
           "status": "passed",
           "title": "moves the scroll by less than one device pixel",
-          "duration": 0.26116700000000037,
+          "duration": 0.3081250000000182,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2366,7 +2401,7 @@
           "fullName": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
           "status": "passed",
           "title": "leaves a scroll alone that is already on the grid",
-          "duration": 0.13575000000003,
+          "duration": 0.15770799999995688,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2379,15 +2414,15 @@
           "fullName": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
           "status": "passed",
           "title": "keeps the clamped edges of a level on the grid, so the map edge never drifts",
-          "duration": 0.2071669999999699,
+          "duration": 0.2714159999999879,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272681,
-      "endTime": 1794689272683.2073,
+      "startTime": 1794689606270,
+      "endTime": 1794689606272.2715,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/render/camera.test.ts"
@@ -2401,7 +2436,7 @@
           "fullName": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
           "status": "passed",
           "title": "walks in the direction of a non-zero move intent, whatever the facing says",
-          "duration": 1.2727079999999944,
+          "duration": 1.328249999999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2414,7 +2449,7 @@
           "fullName": "poseFromHeading stands facing the last direction when the move intent is zero",
           "status": "passed",
           "title": "stands facing the last direction when the move intent is zero",
-          "duration": 0.2761249999999791,
+          "duration": 0.27241700000001856,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2427,15 +2462,15 @@
           "fullName": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
           "status": "passed",
           "title": "picks the dominant axis, horizontal on ties, down for a zero vector",
-          "duration": 0.5467920000000106,
+          "duration": 0.30475000000001273,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272377,
-      "endTime": 1794689272379.5469,
+      "startTime": 1794689606108,
+      "endTime": 1794689606110.3047,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/render/pose.test.ts"
@@ -2449,7 +2484,7 @@
           "fullName": "standingTilePlacements places one image per tree tile and none for flat tiles",
           "status": "passed",
           "title": "places one image per tree tile and none for flat tiles",
-          "duration": 2.1712079999999787,
+          "duration": 1.7635839999999803,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2462,7 +2497,7 @@
           "fullName": "standingTilePlacements stands the image on the bottom centre of its tile",
           "status": "passed",
           "title": "stands the image on the bottom centre of its tile",
-          "duration": 0.5044579999999996,
+          "duration": 0.4468750000000341,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2475,7 +2510,7 @@
           "fullName": "standingTilePlacements sorts by the bottom edge of the tile, like an entity by the bottom edge of its body",
           "status": "passed",
           "title": "sorts by the bottom edge of the tile, like an entity by the bottom edge of its body",
-          "duration": 0.20237500000001774,
+          "duration": 0.19724999999999682,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2488,7 +2523,7 @@
           "fullName": "standingTilePlacements draws trees further south over trees further north",
           "status": "passed",
           "title": "draws trees further south over trees further north",
-          "duration": 0.47516600000000153,
+          "duration": 0.4766670000000204,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2501,7 +2536,7 @@
           "fullName": "standingTilePlacements covers every tree of the starter level with a frame the sheet has",
           "status": "passed",
           "title": "covers every tree of the starter level with a frame the sheet has",
-          "duration": 2.897708000000023,
+          "duration": 4.604499999999973,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2514,7 +2549,7 @@
           "fullName": "variantOfTile gives a tile the same variant every time",
           "status": "passed",
           "title": "gives a tile the same variant every time",
-          "duration": 0.1149159999999938,
+          "duration": 0.12641700000000355,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2527,7 +2562,7 @@
           "fullName": "variantOfTile uses every variant about as often across a forest",
           "status": "passed",
           "title": "uses every variant about as often across a forest",
-          "duration": 0.42216700000000174,
+          "duration": 0.43766699999997627,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2540,15 +2575,15 @@
           "fullName": "variantOfTile does not paint whole rows or columns in one variant",
           "status": "passed",
           "title": "does not paint whole rows or columns in one variant",
-          "duration": 0.8011250000000132,
+          "duration": 0.7724579999999719,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272230,
-      "endTime": 1794689272237.801,
+      "startTime": 1794689605833,
+      "endTime": 1794689605841.7725,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/render/standingTiles.test.ts"
@@ -2562,7 +2597,7 @@
           "fullName": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
           "status": "passed",
           "title": "reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
-          "duration": 124.79091600000004,
+          "duration": 106.97833399999996,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2575,7 +2610,7 @@
           "fullName": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
           "status": "passed",
           "title": "moves an entity part of the way between two frames and gives the frame a fractional tick",
-          "duration": 0.31095899999996846,
+          "duration": 0.347959000000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2588,7 +2623,7 @@
           "fullName": "interpolateViewFrames clamps alpha to [0, 1]",
           "status": "passed",
           "title": "clamps alpha to [0, 1]",
-          "duration": 0.1596670000000131,
+          "duration": 0.17437499999999773,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2601,7 +2636,7 @@
           "fullName": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
           "status": "passed",
           "title": "draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
-          "duration": 0.35325000000000273,
+          "duration": 0.3373340000000553,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2614,7 +2649,7 @@
           "fullName": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
           "status": "passed",
           "title": "snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
-          "duration": 0.10491599999994605,
+          "duration": 0.10649999999998272,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2627,15 +2662,15 @@
           "fullName": "interpolateViewFrames takes the newer frame's headings",
           "status": "passed",
           "title": "takes the newer frame's headings",
-          "duration": 0.18100000000004002,
+          "duration": 0.18670900000000756,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272229,
-      "endTime": 1794689272355.3533,
+      "startTime": 1794689605827,
+      "endTime": 1794689605935.3374,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/render/viewFrame.test.ts"
@@ -2649,7 +2684,7 @@
           "fullName": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
           "status": "passed",
           "title": "is the largest whole zoom that still shows the minimum metres",
-          "duration": 1.0332500000000095,
+          "duration": 1.0292910000000006,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2662,7 +2697,7 @@
           "fullName": "wholeZoomFor is always a whole number that shows at least the minimum metres",
           "status": "passed",
           "title": "is always a whole number that shows at least the minimum metres",
-          "duration": 7.720458000000008,
+          "duration": 7.4122919999999795,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2675,7 +2710,7 @@
           "fullName": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
           "status": "passed",
           "title": "never goes below 1, even for a window too narrow for the minimum metres",
-          "duration": 0.12604200000001242,
+          "duration": 0.12012500000000159,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2688,15 +2723,15 @@
           "fullName": "wholeZoomFor is 1 for a width that makes no sense",
           "status": "passed",
           "title": "is 1 for a width that makes no sense",
-          "duration": 0.20766700000001492,
+          "duration": 0.21916699999999878,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689272089,
-      "endTime": 1794689272098.2078,
+      "startTime": 1794689605699,
+      "endTime": 1794689605708.2192,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/client/src/render/zoom.test.ts"
@@ -2710,7 +2745,7 @@
           "fullName": "entity definitions have unique, stable ids inside their feature block and resolve by id",
           "status": "passed",
           "title": "have unique, stable ids inside their feature block and resolve by id",
-          "duration": 1.9547090000000082,
+          "duration": 2.6672920000000033,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2723,7 +2758,7 @@
           "fullName": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
           "status": "passed",
           "title": "a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
-          "duration": 0.7154580000000124,
+          "duration": 0.7790829999999858,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2736,15 +2771,15 @@
           "fullName": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
           "status": "passed",
           "title": "terrain colliders come from level data, so a new obstacle is only a character in a row",
-          "duration": 81.887667,
+          "duration": 61.25191700000002,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274610,
-      "endTime": 1794689274694.8877,
+      "startTime": 1794689608096,
+      "endTime": 1794689608161.252,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/content/defs.test.ts"
@@ -2758,7 +2793,7 @@
           "fullName": "determinism same seed + same commands = identical state, including physics bytes",
           "status": "passed",
           "title": "same seed + same commands = identical state, including physics bytes",
-          "duration": 469.442,
+          "duration": 373.14295899999996,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2771,7 +2806,7 @@
           "fullName": "determinism two live sims never share component data",
           "status": "passed",
           "title": "two live sims never share component data",
-          "duration": 6.055124999999975,
+          "duration": 4.99837500000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2784,7 +2819,7 @@
           "fullName": "determinism different commands diverge",
           "status": "passed",
           "title": "different commands diverge",
-          "duration": 25.801000000000045,
+          "duration": 23.54779199999996,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2797,15 +2832,15 @@
           "fullName": "determinism different seeds diverge in the rng state",
           "status": "passed",
           "title": "different seeds diverge in the rng state",
-          "duration": 39.86533300000008,
+          "duration": 23.424582999999984,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273365,
-      "endTime": 1794689273906.8652,
+      "startTime": 1794689607001,
+      "endTime": 1794689607426.4246,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/determinism.test.ts"
@@ -2819,7 +2854,7 @@
           "fullName": "physics loads on demand builds a replica and reads it with no physics loaded",
           "status": "passed",
           "title": "builds a replica and reads it with no physics loaded",
-          "duration": 3.0886250000000075,
+          "duration": 1.6978330000000028,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2832,7 +2867,7 @@
           "fullName": "physics loads on demand refuses to build a physics world before initPhysics has finished, saying so",
           "status": "passed",
           "title": "refuses to build a physics world before initPhysics has finished, saying so",
-          "duration": 1.6497079999999755,
+          "duration": 0.6156660000000045,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2845,15 +2880,15 @@
           "fullName": "physics loads on demand loads Rapier once however often it is asked, and builds a physics world after",
           "status": "passed",
           "title": "loads Rapier once however often it is asked, and builds a physics world after",
-          "duration": 92.485791,
+          "duration": 51.38341599999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274591,
-      "endTime": 1794689274688.4858,
+      "startTime": 1794689608167,
+      "endTime": 1794689608220.3833,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/physics.test.ts"
@@ -2867,7 +2902,7 @@
           "fullName": "a replica fed full world states every tick draws exactly what the sim draws, tick after tick, through JSON",
           "status": "passed",
           "title": "draws exactly what the sim draws, tick after tick, through JSON",
-          "duration": 1079.604042,
+          "duration": 905.645917,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2880,7 +2915,7 @@
           "fullName": "a replica fed deltas at a send rate matches the sim at every send with a delta every 1 tick(s), through joins, leaves and a recycled entity id",
           "status": "passed",
           "title": "matches the sim at every send with a delta every 1 tick(s), through joins, leaves and a recycled entity id",
-          "duration": 278.997875,
+          "duration": 365.98754199999985,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2893,7 +2928,7 @@
           "fullName": "a replica fed deltas at a send rate matches the sim at every send with a delta every 3 tick(s), through joins, leaves and a recycled entity id",
           "status": "passed",
           "title": "matches the sim at every send with a delta every 3 tick(s), through joins, leaves and a recycled entity id",
-          "duration": 58.38766600000008,
+          "duration": 56.64754199999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2906,7 +2941,7 @@
           "fullName": "a replica fed deltas at a send rate never sends the terrain again: deltas carry only the players that moved",
           "status": "passed",
           "title": "never sends the terrain again: deltas carry only the players that moved",
-          "duration": 3.532790999999861,
+          "duration": 3.00912500000004,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2919,7 +2954,7 @@
           "fullName": "a replica fed deltas at a send rate removes an entity that left and reports a delta it cannot continue from",
           "status": "passed",
           "title": "removes an entity that left and reports a delta it cannot continue from",
-          "duration": 8.96179200000006,
+          "duration": 3.554875000000038,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2932,7 +2967,7 @@
           "fullName": "a replica fed deltas at a send rate shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five",
           "status": "passed",
           "title": "shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five",
-          "duration": 5.1772920000000795,
+          "duration": 4.597166000000016,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2945,7 +2980,7 @@
           "fullName": "a replica fed deltas at a send rate a late joiner built from one full state sees the same renderables, in the same order, as the sim with its history",
           "status": "passed",
           "title": "a late joiner built from one full state sees the same renderables, in the same order, as the sim with its history",
-          "duration": 9.784459000000197,
+          "duration": 11.432375000000093,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2958,7 +2993,7 @@
           "fullName": "a replica fed deltas at a send rate is replaced whole by a full state, even one from an earlier tick (the server restarted)",
           "status": "passed",
           "title": "is replaced whole by a full state, even one from an earlier tick (the server restarted)",
-          "duration": 4.754832999999962,
+          "duration": 4.924416000000065,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2971,7 +3006,7 @@
           "fullName": "createReplica is a SimHandle with the level, capacity and dt of a sim but no physics or rng",
           "status": "passed",
           "title": "is a SimHandle with the level, capacity and dt of a sim but no physics or rng",
-          "duration": 0.8824590000001535,
+          "duration": 1.1187079999999696,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2984,7 +3019,7 @@
           "fullName": "createReplica refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything",
           "status": "passed",
           "title": "refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything",
-          "duration": 0.3555830000000242,
+          "duration": 0.41495800000006966,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -2997,7 +3032,7 @@
           "fullName": "createReplica refuses to step: a replica only shows what the server sent",
           "status": "passed",
           "title": "refuses to step: a replica only shows what the server sent",
-          "duration": 0.5179999999998017,
+          "duration": 0.5148340000000644,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3010,7 +3045,7 @@
           "fullName": "createReplica only a replica takes world states; a live sim or a foreign object is refused loudly",
           "status": "passed",
           "title": "only a replica takes world states; a live sim or a foreign object is refused loudly",
-          "duration": 0.7921670000000631,
+          "duration": 0.8158750000000055,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3023,7 +3058,7 @@
           "fullName": "createReplica needs a full state before it takes deltas",
           "status": "passed",
           "title": "needs a full state before it takes deltas",
-          "duration": 2.116999999999962,
+          "duration": 2.1277909999998883,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3036,7 +3071,7 @@
           "fullName": "createReplica a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica",
           "status": "passed",
           "title": "a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica",
-          "duration": 1.2994160000000647,
+          "duration": 1.6104579999998805,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3049,7 +3084,7 @@
           "fullName": "the wire contract the server and the client are built against pins the message names, the refusal reasons and the default send rate ADR 0004 lists",
           "status": "passed",
           "title": "pins the message names, the refusal reasons and the default send rate ADR 0004 lists",
-          "duration": 0.0838330000001406,
+          "duration": 0.10304199999995944,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3062,7 +3097,7 @@
           "fullName": "applyWorldState with data from the network ignores anything that is not a world state or delta and leaves the replica untouched",
           "status": "passed",
           "title": "ignores anything that is not a world state or delta and leaves the replica untouched",
-          "duration": 4.233124999999973,
+          "duration": 3.9550000000001546,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3075,7 +3110,7 @@
           "fullName": "applyWorldState with data from the network refuses a whole delta when one entry is malformed, and leaves the replica untouched",
           "status": "passed",
           "title": "refuses a whole delta when one entry is malformed, and leaves the replica untouched",
-          "duration": 4.943917000000056,
+          "duration": 3.85608400000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3088,7 +3123,7 @@
           "fullName": "applyWorldState with data from the network skips what depends on the world: ids beyond its capacity, unknown components and unknown fields",
           "status": "passed",
           "title": "skips what depends on the world: ids beyond its capacity, unknown components and unknown fields",
-          "duration": 5.090458000000126,
+          "duration": 3.3359579999998914,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3101,7 +3136,7 @@
           "fullName": "applyWorldState with data from the network drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had",
           "status": "passed",
           "title": "drops a null field, which is how JSON writes NaN and Infinity, and keeps the value the replica had",
-          "duration": 3.0425420000001395,
+          "duration": 2.756834000000026,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3114,7 +3149,7 @@
           "fullName": "applyWorldState with data from the network refuses lists longer than MAX_CAPACITY before touching the replica",
           "status": "passed",
           "title": "refuses lists longer than MAX_CAPACITY before touching the replica",
-          "duration": 6.4282499999999345,
+          "duration": 8.008833999999979,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3127,7 +3162,7 @@
           "fullName": "applyWorldState with data from the network rejects a delta whose ticks do not make sense, including ticks beyond the safe integer range",
           "status": "passed",
           "title": "rejects a delta whose ticks do not make sense, including ticks beyond the safe integer range",
-          "duration": 2.6828330000000733,
+          "duration": 2.9694999999999254,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3140,7 +3175,7 @@
           "fullName": "applyWorldState with data from the network keeps the view alive when an entity points at a def that does not exist",
           "status": "passed",
           "title": "keeps the view alive when an entity points at a def that does not exist",
-          "duration": 3.452540999999883,
+          "duration": 3.7550410000001193,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3153,15 +3188,15 @@
           "fullName": "applyWorldState with data from the network refuses a full state with a malformed entry whole, and drops only an entity whose id is beyond the capacity",
           "status": "passed",
           "title": "refuses a full state with a malformed entry whole, and drops only an entity whose id is beyond the capacity",
-          "duration": 5.150916999999936,
+          "duration": 3.4152910000000247,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273375,
-      "endTime": 1794689274866.151,
+      "startTime": 1794689606906,
+      "endTime": 1794689608301.4153,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/replica.test.ts"
@@ -3175,7 +3210,7 @@
           "fullName": "allocation cost of writing a message into a replica a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity",
           "status": "passed",
           "title": "a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity",
-          "duration": 58.73362500000002,
+          "duration": 55.20979199999999,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3188,15 +3223,15 @@
           "fullName": "allocation cost of writing a message into a replica a full state with every id in a bad order stays within one pass per message, and so does a delta",
           "status": "passed",
           "title": "a full state with every id in a bad order stays within one pass per message, and so does a delta",
-          "duration": 49.395625000000024,
+          "duration": 93.71566699999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274588,
-      "endTime": 1794689274696.3955,
+      "startTime": 1794689607951,
+      "endTime": 1794689608099.7156,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/restore.allocation.test.ts"
@@ -3210,7 +3245,7 @@
           "fullName": "ensureEntityExists creates exactly the asked-for id in an empty world, leaving no other entity behind",
           "status": "passed",
           "title": "creates exactly the asked-for id in an empty world, leaving no other entity behind",
-          "duration": 1.8344999999999914,
+          "duration": 1.9029590000000098,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3223,7 +3258,7 @@
           "fullName": "ensureEntityExists is a no-op for a live id",
           "status": "passed",
           "title": "is a no-op for a live id",
-          "duration": 0.3157500000000084,
+          "duration": 0.25329200000000185,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3236,7 +3271,7 @@
           "fullName": "ensureEntityExists brings back a freed id, however the world was used before",
           "status": "passed",
           "title": "brings back a freed id, however the world was used before",
-          "duration": 0.28000000000000114,
+          "duration": 0.2764590000000027,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3249,7 +3284,7 @@
           "fullName": "ensureEntityExists refuses ids outside 1..capacity and never allocates past the capacity",
           "status": "passed",
           "title": "refuses ids outside 1..capacity and never allocates past the capacity",
-          "duration": 0.32399999999999807,
+          "duration": 0.3675410000000028,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3262,7 +3297,7 @@
           "fullName": "ensureEntityExists agrees with a plain model over a long scripted mix of adds, removes and ensures",
           "status": "passed",
           "title": "agrees with a plain model over a long scripted mix of adds, removes and ensures",
-          "duration": 18.724666999999997,
+          "duration": 17.023541999999992,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3275,7 +3310,7 @@
           "fullName": "ensureEntitiesExist creates every wanted id in one pass and reports which are alive, dropping invalid ones",
           "status": "passed",
           "title": "creates every wanted id in one pass and reports which are alive, dropping invalid ones",
-          "duration": 0.2887920000000008,
+          "duration": 0.27104199999999423,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3288,7 +3323,7 @@
           "fullName": "writeEntityComponents attaches the component and writes every field, zeroing what a fresh component is not given",
           "status": "passed",
           "title": "attaches the component and writes every field, zeroing what a fresh component is not given",
-          "duration": 0.49049999999999727,
+          "duration": 0.49262500000000387,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3301,7 +3336,7 @@
           "fullName": "writeEntityComponents keeps the fields it is not given once the component is there",
           "status": "passed",
           "title": "keeps the fields it is not given once the component is there",
-          "duration": 0.36404199999998355,
+          "duration": 0.13845800000001418,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3314,7 +3349,7 @@
           "fullName": "writeEntityComponents skips unknown components, unknown fields, non-objects and values that are not finite numbers",
           "status": "passed",
           "title": "skips unknown components, unknown fields, non-objects and values that are not finite numbers",
-          "duration": 0.872917000000001,
+          "duration": 0.9025409999999852,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3327,7 +3362,7 @@
           "fullName": "removeEntityComponents and restoreEntity detaches named components and ignores names that are not there or not components",
           "status": "passed",
           "title": "detaches named components and ignores names that are not there or not components",
-          "duration": 0.2915000000000134,
+          "duration": 0.3648330000000044,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3340,15 +3375,15 @@
           "fullName": "removeEntityComponents and restoreEntity restoreEntity leaves the entity with exactly the given components",
           "status": "passed",
           "title": "restoreEntity leaves the entity with exactly the given components",
-          "duration": 0.31887499999999136,
+          "duration": 0.3317920000000072,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274830,
-      "endTime": 1794689274854.3188,
+      "startTime": 1794689608218,
+      "endTime": 1794689608241.3318,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/restore.test.ts"
@@ -3362,7 +3397,7 @@
           "fullName": "snapshot is plain JSON that survives a round trip",
           "status": "passed",
           "title": "is plain JSON that survives a round trip",
-          "duration": 120.965375,
+          "duration": 114.80037499999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3375,7 +3410,7 @@
           "fullName": "snapshot records every component field of every entity plus level, capacity, tick and rng",
           "status": "passed",
           "title": "records every component field of every entity plus level, capacity, tick and rng",
-          "duration": 4.2737920000000145,
+          "duration": 3.262790999999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3388,7 +3423,7 @@
           "fullName": "snapshot hashes the same regardless of the order components were attached in",
           "status": "passed",
           "title": "hashes the same regardless of the order components were attached in",
-          "duration": 2.220792000000017,
+          "duration": 0.589458000000036,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3401,7 +3436,7 @@
           "fullName": "snapshot has a stable hash (known answer)",
           "status": "passed",
           "title": "has a stable hash (known answer)",
-          "duration": 0.49450000000001637,
+          "duration": 0.4037089999999921,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3414,15 +3449,15 @@
           "fullName": "snapshot encodes base64 like the standard",
           "status": "passed",
           "title": "encodes base64 like the standard",
-          "duration": 0.22062499999998408,
+          "duration": 0.20308299999999235,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274574,
-      "endTime": 1794689274703.2207,
+      "startTime": 1794689607933,
+      "endTime": 1794689608052.4038,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/snapshot.test.ts"
@@ -3436,7 +3471,7 @@
           "fullName": "worldState is the entities of the snapshot plus the tick, with no physics and no rng",
           "status": "passed",
           "title": "is the entities of the snapshot plus the tick, with no physics and no rng",
-          "duration": 156.31895899999998,
+          "duration": 162.606708,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3449,7 +3484,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta a delta between two states of a running sim rebuilds the later state exactly, through JSON",
           "status": "passed",
           "title": "a delta between two states of a running sim rebuilds the later state exactly, through JSON",
-          "duration": 343.071125,
+          "duration": 309.85825,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3462,7 +3497,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta the delta of identical states is empty",
           "status": "passed",
           "title": "the delta of identical states is empty",
-          "duration": 0.40220800000008694,
+          "duration": 0.24491699999998673,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3475,7 +3510,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta carries only changed components, whole, plus added entities, removed entities and lost components",
           "status": "passed",
           "title": "carries only changed components, whole, plus added entities, removed entities and lost components",
-          "duration": 0.48566700000003493,
+          "duration": 0.4347500000000082,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3488,7 +3523,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta keeps components and fields in name order, so two routes to the same state serialise the same",
           "status": "passed",
           "title": "keeps components and fields in name order, so two routes to the same state serialise the same",
-          "duration": 0.2287499999999909,
+          "duration": 0.22295900000005986,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3501,7 +3536,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta does not touch the state it is given",
           "status": "passed",
           "title": "does not touch the state it is given",
-          "duration": 0.12825000000009368,
+          "duration": 0.1324170000000322,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3514,7 +3549,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta returns undefined for a delta that does not continue from the state or is not a delta",
           "status": "passed",
           "title": "returns undefined for a delta that does not continue from the state or is not a delta",
-          "duration": 0.30274999999994634,
+          "duration": 0.3031659999999192,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3527,7 +3562,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta returns undefined for a state that is not a world state, instead of throwing",
           "status": "passed",
           "title": "returns undefined for a state that is not a world state, instead of throwing",
-          "duration": 0.2768750000000182,
+          "duration": 0.279042000000004,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3540,7 +3575,7 @@
           "fullName": "diffWorldState and applyWorldStateDelta validates component names, fields and values exactly like a replica would, so both agree on bad input",
           "status": "passed",
           "title": "validates component names, fields and values exactly like a replica would, so both agree on bad input",
-          "duration": 7.064958000000047,
+          "duration": 6.7253330000000915,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3553,15 +3588,15 @@
           "fullName": "diffWorldState and applyWorldStateDelta refuses a whole delta when one entry is malformed, and agrees with a replica on it",
           "status": "passed",
           "title": "refuses a whole delta when one entry is malformed, and agrees with a replica on it",
-          "duration": 8.615458999999987,
+          "duration": 28.333124999999995,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273365,
-      "endTime": 1794689273882.6155,
+      "startTime": 1794689606957,
+      "endTime": 1794689607470.333,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/core/worldState.test.ts"
@@ -3575,7 +3610,7 @@
           "fullName": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
           "status": "passed",
           "title": "resolves the name a snapshot or a welcome message carries to the level object",
-          "duration": 89.02324999999996,
+          "duration": 70.647292,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3588,7 +3623,7 @@
           "fullName": "levels by name answers undefined for a name it does not know, including prototype names",
           "status": "passed",
           "title": "answers undefined for a name it does not know, including prototype names",
-          "duration": 1.1614580000000387,
+          "duration": 0.3422090000000253,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3601,235 +3636,18 @@
           "fullName": "levels by name lists every level once, under a unique name",
           "status": "passed",
           "title": "lists every level once, under a unique name",
-          "duration": 0.41295900000000074,
+          "duration": 0.20829200000000014,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274594,
-      "endTime": 1794689274684.4128,
+      "startTime": 1794689608063,
+      "endTime": 1794689608134.3423,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/content/levels/levels.test.ts"
-    },
-    {
-      "assertionResults": [
-        {
-          "ancestorTitles": [
-            "tile grids"
-          ],
-          "fullName": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
-          "status": "passed",
-          "title": "reads ASCII rows through the legend into tile def ids, centred on the origin",
-          "duration": 2.239040999999986,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "tile grids"
-          ],
-          "fullName": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
-          "status": "passed",
-          "title": "rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
-          "duration": 1.0419589999999914,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "tile grids"
-          ],
-          "fullName": "tile grids a bad level fails when the sim is created, never inside a command handler",
-          "status": "passed",
-          "title": "a bad level fails when the sim is created, never inside a command handler",
-          "duration": 140.55608400000003,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "tile grids"
-          ],
-          "fullName": "tile grids reads a level object once and hands back the same grid",
-          "status": "passed",
-          "title": "reads a level object once and hands back the same grid",
-          "duration": 1.892832999999996,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "tile defs"
-          ],
-          "fullName": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
-          "status": "passed",
-          "title": "a standing sprite has at least one variant and stands on a flat tile def",
-          "duration": 0.44179100000002336,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "tile defs"
-          ],
-          "fullName": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
-          "status": "passed",
-          "title": "a tree is still one solid tile to the sim, whatever it looks like",
-          "duration": 0.25745799999998553,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "solid tile merging"
-          ],
-          "fullName": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-          "status": "passed",
-          "title": "merges horizontal runs so a whole row of trees is one rectangle",
-          "duration": 0.16275000000001683,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "solid tile merging"
-          ],
-          "fullName": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-          "status": "passed",
-          "title": "stacks identical runs vertically and keeps different ones apart",
-          "duration": 0.11704199999996945,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "solid tile merging"
-          ],
-          "fullName": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
-          "status": "passed",
-          "title": "treats rocks and trees alike (solid) and leaves grass and dirt out",
-          "duration": 0.478999999999985,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "solid tile merging"
-          ],
-          "fullName": "solid tile merging covers every solid tile exactly once",
-          "status": "passed",
-          "title": "covers every solid tile exactly once",
-          "duration": 8.249374999999986,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
-          "status": "passed",
-          "title": "spawns one static collider per merged rectangle and none of them is drawn",
-          "duration": 76.87208400000003,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) places each collider box over its tiles in metres",
-          "status": "passed",
-          "title": "places each collider box over its tiles in metres",
-          "duration": 0.9680000000000177,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
-          "status": "passed",
-          "title": "the starter level spawns the player on a dirt path inside the forest",
-          "duration": 2.359874999999988,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) a player walks freely along a path and over grass",
-          "status": "passed",
-          "title": "a player walks freely along a path and over grass",
-          "duration": 48.24962499999998,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-          "status": "passed",
-          "title": "trees block the player: walking into the forest border stops at the first tree face",
-          "duration": 127.27962500000001,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        },
-        {
-          "ancestorTitles": [
-            "terrain feature (headless)"
-          ],
-          "fullName": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
-          "status": "passed",
-          "title": "a rock blocks the player too, and nothing escapes the level",
-          "duration": 112.582583,
-          "failureMessages": [],
-          "meta": {},
-          "tags": [],
-          "benchmarks": []
-        }
-      ],
-      "startTime": 1794689273369,
-      "endTime": 1794689273893.5825,
-      "status": "passed",
-      "message": "",
-      "name": "<repo>/packages/sim/src/features/terrain/terrain.test.ts"
     },
     {
       "assertionResults": [
@@ -3840,7 +3658,7 @@
           "fullName": "avatars on join (headless) dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own",
           "status": "passed",
           "title": "dresses every joining player in one of the avatar defs, which all share speed, radius and a sprite sheet of their own",
-          "duration": 158.26758399999997,
+          "duration": 160.66249999999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3853,7 +3671,7 @@
           "fullName": "avatars on join (headless) picks the same avatars for the same seed and the same joins, and other avatars for another seed",
           "status": "passed",
           "title": "picks the same avatars for the same seed and the same joins, and other avatars for another seed",
-          "duration": 200.27162499999997,
+          "duration": 152.16949999999997,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3866,7 +3684,7 @@
           "fullName": "avatars on join (headless) never hands out an avatar somebody present wears while an unworn one is left",
           "status": "passed",
           "title": "never hands out an avatar somebody present wears while an unworn one is left",
-          "duration": 26.386874999999918,
+          "duration": 13.567665999999917,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3879,7 +3697,7 @@
           "fullName": "avatars on join (headless) falls back to a worn avatar once every one is taken, instead of refusing the join",
           "status": "passed",
           "title": "falls back to a worn avatar once every one is taken, instead of refusing the join",
-          "duration": 1.5104169999999613,
+          "duration": 1.792791999999963,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3892,7 +3710,7 @@
           "fullName": "avatars on join (headless) frees an avatar when its player leaves, so the next arrival takes the only unworn one",
           "status": "passed",
           "title": "frees an avatar when its player leaves, so the next arrival takes the only unworn one",
-          "duration": 6.293915999999967,
+          "duration": 2.7045419999999467,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3905,7 +3723,7 @@
           "fullName": "avatars on join (headless) ignores any avatar a client puts in the join command: the sim chooses",
           "status": "passed",
           "title": "ignores any avatar a client puts in the join command: the sim chooses",
-          "duration": 1.9940420000000358,
+          "duration": 4.099250000000097,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3918,15 +3736,15 @@
           "fullName": "avatars on join (headless) keeps the avatar in the snapshot through the DefRef component, so it survives serialization",
           "status": "passed",
           "title": "keeps the avatar in the snapshot through the DefRef component, so it survives serialization",
-          "duration": 1.4497920000000022,
+          "duration": 1.1330419999999322,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689273419,
-      "endTime": 1794689273826.4497,
+      "startTime": 1794689606910,
+      "endTime": 1794689607274.133,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/features/player/avatars.test.ts"
@@ -3940,7 +3758,7 @@
           "fullName": "player facing (headless) spawns facing down with no move intent",
           "status": "passed",
           "title": "spawns facing down with no move intent",
-          "duration": 136.38000000000002,
+          "duration": 199.093958,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3953,7 +3771,7 @@
           "fullName": "player facing (headless) turns to face a non-zero move intent and keeps facing it after a stop",
           "status": "passed",
           "title": "turns to face a non-zero move intent and keeps facing it after a stop",
-          "duration": 33.441584000000034,
+          "duration": 12.90016700000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3966,7 +3784,7 @@
           "fullName": "player facing (headless) stores the facing as a unit vector even when the intent is shorter or longer than one",
           "status": "passed",
           "title": "stores the facing as a unit vector even when the intent is shorter or longer than one",
-          "duration": 1.9422500000000014,
+          "duration": 3.325290999999993,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3979,7 +3797,7 @@
           "fullName": "player facing (headless) treats a malformed or negligible move as a stop and leaves the facing alone",
           "status": "passed",
           "title": "treats a malformed or negligible move as a stop and leaves the facing alone",
-          "duration": 1.8272499999999923,
+          "duration": 4.479083000000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -3992,7 +3810,7 @@
           "fullName": "player facing (headless) is part of the snapshot, so it survives serialization and feeds the state hash",
           "status": "passed",
           "title": "is part of the snapshot, so it survives serialization and feeds the state hash",
-          "duration": 76.37479200000001,
+          "duration": 4.785167000000001,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4005,7 +3823,7 @@
           "fullName": "player facing (headless) resets to facing down when a recycled entity id is reused by a new join",
           "status": "passed",
           "title": "resets to facing down when a recycled entity id is reused by a new join",
-          "duration": 5.066333000000043,
+          "duration": 2.091374999999971,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4018,15 +3836,15 @@
           "fullName": "player facing (headless) has no heading for entities that do not move and face, or do not exist",
           "status": "passed",
           "title": "has no heading for entities that do not move and face, or do not exist",
-          "duration": 1.5753750000000082,
+          "duration": 1.6908339999999953,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274106,
-      "endTime": 1794689274363.5754,
+      "startTime": 1794689607630,
+      "endTime": 1794689607858.691,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/features/player/facing.test.ts"
@@ -4040,7 +3858,7 @@
           "fullName": "player movement (headless) spawns a player at the level spawn point on join",
           "status": "passed",
           "title": "spawns a player at the level spawn point on join",
-          "duration": 131.68275000000003,
+          "duration": 144.997291,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4053,7 +3871,7 @@
           "fullName": "player movement (headless) moves at the def speed for N ticks in open space",
           "status": "passed",
           "title": "moves at the def speed for N ticks in open space",
-          "duration": 15.07020799999998,
+          "duration": 34.57883300000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4066,7 +3884,7 @@
           "fullName": "player movement (headless) keeps moving with the last intent and stops on a zero move",
           "status": "passed",
           "title": "keeps moving with the last intent and stops on a zero move",
-          "duration": 8.56495799999999,
+          "duration": 4.308042,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4079,7 +3897,7 @@
           "fullName": "player movement (headless) normalises diagonal and oversized move vectors to the def speed",
           "status": "passed",
           "title": "normalises diagonal and oversized move vectors to the def speed",
-          "duration": 3.6974589999999807,
+          "duration": 23.462833999999987,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4092,7 +3910,7 @@
           "fullName": "player movement (headless) treats absurdly large components as full input, not as a stop",
           "status": "passed",
           "title": "treats absurdly large components as full input, not as a stop",
-          "duration": 2.0644169999999917,
+          "duration": 1.7843330000000037,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4105,7 +3923,7 @@
           "fullName": "player movement (headless) is stopped by the forest border (Rapier collision), then slides along it",
           "status": "passed",
           "title": "is stopped by the forest border (Rapier collision), then slides along it",
-          "duration": 169.39829099999997,
+          "duration": 73.86266599999999,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4118,7 +3936,7 @@
           "fullName": "player movement (headless) ignores commands for empty or invalid slots and duplicate joins",
           "status": "passed",
           "title": "ignores commands for empty or invalid slots and duplicate joins",
-          "duration": 9.771791000000007,
+          "duration": 2.3929999999999723,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4131,7 +3949,7 @@
           "fullName": "player movement (headless) drops malformed command values instead of throwing (the network will send garbage)",
           "status": "passed",
           "title": "drops malformed command values instead of throwing (the network will send garbage)",
-          "duration": 2.8770000000000664,
+          "duration": 1.2337500000000432,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4144,7 +3962,7 @@
           "fullName": "player movement (headless) removes the player and its body on leave, and a re-join starts fresh at spawn",
           "status": "passed",
           "title": "removes the player and its body on leave, and a re-join starts fresh at spawn",
-          "duration": 13.881457999999952,
+          "duration": 9.439707999999996,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4157,15 +3975,15 @@
           "fullName": "player movement (headless) ignores a join when the sim is full instead of throwing",
           "status": "passed",
           "title": "ignores a join when the sim is full instead of throwing",
-          "duration": 2.468499999999949,
+          "duration": 3.145500000000027,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274074,
-      "endTime": 1794689274435.4685,
+      "startTime": 1794689607466,
+      "endTime": 1794689607766.1455,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/features/player/movement.test.ts"
@@ -4179,7 +3997,7 @@
           "fullName": "players pass through each other (headless) two players walking at each other cross and each keeps walking at full speed",
           "status": "passed",
           "title": "two players walking at each other cross and each keeps walking at full speed",
-          "duration": 122.83262500000001,
+          "duration": 122.67104200000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4192,7 +4010,7 @@
           "fullName": "players pass through each other (headless) a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond",
           "status": "passed",
           "title": "a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond",
-          "duration": 141.926292,
+          "duration": 77.11595900000003,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4205,15 +4023,15 @@
           "fullName": "players pass through each other (headless) gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
           "status": "passed",
           "title": "gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
-          "duration": 2.290292000000022,
+          "duration": 7.56370800000002,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274108,
-      "endTime": 1794689274376.2903,
+      "startTime": 1794689607652,
+      "endTime": 1794689607860.5637,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/features/player/passThrough.test.ts"
@@ -4227,7 +4045,7 @@
           "fullName": "spread spawns (headless) puts the first player on the spawn tile itself",
           "status": "passed",
           "title": "puts the first player on the spawn tile itself",
-          "duration": 210.77412500000003,
+          "duration": 168.02458299999998,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4240,7 +4058,7 @@
           "fullName": "spread spawns (headless) lands five joins on five distinct, walkable tiles, all next to the spawn tile",
           "status": "passed",
           "title": "lands five joins on five distinct, walkable tiles, all next to the spawn tile",
-          "duration": 29.11987499999998,
+          "duration": 4.321374999999989,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4253,7 +4071,7 @@
           "fullName": "spread spawns (headless) picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn",
           "status": "passed",
           "title": "picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn",
-          "duration": 13.87337500000001,
+          "duration": 20.284500000000037,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4266,7 +4084,7 @@
           "fullName": "spread spawns (headless) chooses the same tiles for the same seed and joins",
           "status": "passed",
           "title": "chooses the same tiles for the same seed and joins",
-          "duration": 3.1119999999999663,
+          "duration": 9.002584000000013,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4279,7 +4097,7 @@
           "fullName": "spread spawns (headless) skips solid tiles and tiles a player stands on, reaching further out when the first ring is full",
           "status": "passed",
           "title": "skips solid tiles and tiles a player stands on, reaching further out when the first ring is full",
-          "duration": 0.898208000000011,
+          "duration": 1.208915999999988,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4292,7 +4110,7 @@
           "fullName": "spread spawns (headless) treats a tile a player walked onto as taken and a tile a player left as free again",
           "status": "passed",
           "title": "treats a tile a player walked onto as taken and a tile a player left as free again",
-          "duration": 3.21466700000002,
+          "duration": 11.183791999999983,
           "failureMessages": [],
           "meta": {},
           "tags": [],
@@ -4305,18 +4123,248 @@
           "fullName": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
           "status": "passed",
           "title": "falls back to the spawn tile, without throwing, when no tile is free",
-          "duration": 1.077791999999988,
+          "duration": 2.254542000000015,
           "failureMessages": [],
           "meta": {},
           "tags": [],
           "benchmarks": []
         }
       ],
-      "startTime": 1794689274097,
-      "endTime": 1794689274366.078,
+      "startTime": 1794689607506,
+      "endTime": 1794689607723.2546,
       "status": "passed",
       "message": "",
       "name": "<repo>/packages/sim/src/features/player/spawn.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
+          "status": "passed",
+          "title": "reads ASCII rows through the legend into tile def ids, centred on the origin",
+          "duration": 2.036457999999982,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+          "status": "passed",
+          "title": "rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile",
+          "duration": 0.9826659999999947,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids a bad level fails when the sim is created, never inside a command handler",
+          "status": "passed",
+          "title": "a bad level fails when the sim is created, never inside a command handler",
+          "duration": 94.86070800000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile grids"
+          ],
+          "fullName": "tile grids reads a level object once and hands back the same grid",
+          "status": "passed",
+          "title": "reads a level object once and hands back the same grid",
+          "duration": 1.7428330000000187,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile defs"
+          ],
+          "fullName": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
+          "status": "passed",
+          "title": "a standing sprite has at least one variant and stands on a flat tile def",
+          "duration": 0.444500000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile defs"
+          ],
+          "fullName": "tile defs no standing sprite shares its key with another sprite: they are one folder and one texture namespace",
+          "status": "passed",
+          "title": "no standing sprite shares its key with another sprite: they are one folder and one texture namespace",
+          "duration": 0.2377079999999978,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tile defs"
+          ],
+          "fullName": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
+          "status": "passed",
+          "title": "a tree is still one solid tile to the sim, whatever it looks like",
+          "duration": 0.17933299999998553,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+          "status": "passed",
+          "title": "merges horizontal runs so a whole row of trees is one rectangle",
+          "duration": 0.14470800000003692,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+          "status": "passed",
+          "title": "stacks identical runs vertically and keeps different ones apart",
+          "duration": 0.4717920000000504,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging treats rocks and trees alike (solid) and leaves grass and dirt out",
+          "status": "passed",
+          "title": "treats rocks and trees alike (solid) and leaves grass and dirt out",
+          "duration": 0.1424159999999688,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "solid tile merging"
+          ],
+          "fullName": "solid tile merging covers every solid tile exactly once",
+          "status": "passed",
+          "title": "covers every solid tile exactly once",
+          "duration": 7.8059579999999755,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) spawns one static collider per merged rectangle and none of them is drawn",
+          "status": "passed",
+          "title": "spawns one static collider per merged rectangle and none of them is drawn",
+          "duration": 8.028666999999984,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) places each collider box over its tiles in metres",
+          "status": "passed",
+          "title": "places each collider box over its tiles in metres",
+          "duration": 2.882499999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+          "status": "passed",
+          "title": "the starter level spawns the player on a dirt path inside the forest",
+          "duration": 1.8910410000000297,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) a player walks freely along a path and over grass",
+          "status": "passed",
+          "title": "a player walks freely along a path and over grass",
+          "duration": 12.429208000000017,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+          "status": "passed",
+          "title": "trees block the player: walking into the forest border stops at the first tree face",
+          "duration": 125.13358299999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "terrain feature (headless)"
+          ],
+          "fullName": "terrain feature (headless) a rock blocks the player too, and nothing escapes the level",
+          "status": "passed",
+          "title": "a rock blocks the player too, and nothing escapes the level",
+          "duration": 66.37495799999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794689606911,
+      "endTime": 1794689607237.375,
+      "status": "passed",
+      "message": "",
+      "name": "<repo>/packages/sim/src/features/terrain/terrain.test.ts"
     }
   ]
 }

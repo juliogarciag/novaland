@@ -1,5 +1,6 @@
 import { getTileDef, readTileGrid, starterLevel, terrainDefs, tileCentre, TILE_SIZE, type LevelData } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
+import { depthOfBottomEdge } from './depth';
 import { __testing__, standingTilePlacements } from './standingTiles';
 import { PIXELS_PER_METRE } from './units';
 
@@ -27,7 +28,7 @@ describe('standingTilePlacements', () => {
     const grid = readTileGrid(level(['.', 'T', '.']));
     const [tree] = standingTilePlacements(grid);
     const bodyHalfHeight = 0.4;
-    const depthOfBodyAt = (y: number): number => (y + bodyHalfHeight) * PIXELS_PER_METRE;
+    const depthOfBodyAt = (y: number): number => depthOfBottomEdge(y + bodyHalfHeight); // as render/entities.ts does
     const treeCentre = tileCentre(grid, { column: 0, row: 1 });
     // The closest a body can stand on either side: touching the solid tile.
     const touchingFromNorth = treeCentre.y - TILE_SIZE / 2 - bodyHalfHeight;
@@ -50,28 +51,28 @@ describe('standingTilePlacements', () => {
     const treeTiles = grid.defIds.flat().filter((defId) => defId === treeDefId()).length;
     expect(placements).toHaveLength(treeTiles);
     for (const { frame, sprite } of placements) {
-      expect(Number.isInteger(frame) && frame >= 0 && frame < sprite.variants).toBe(true);
+      expect(Number.isInteger(frame) && frame >= 0 && frame < sprite.variantCount).toBe(true);
     }
   });
 });
 
 describe('variantOfTile', () => {
   it('gives a tile the same variant every time', () => {
-    expect(variantOfTile({ column: 7, row: 3, variants: 3 })).toBe(variantOfTile({ column: 7, row: 3, variants: 3 }));
+    expect(variantOfTile({ column: 7, row: 3, variantCount: 3 })).toBe(variantOfTile({ column: 7, row: 3, variantCount: 3 }));
   });
 
   it('uses every variant about as often across a forest', () => {
     const counts = [0, 0, 0];
     for (let row = 0; row < 30; row += 1) {
-      for (let column = 0; column < 40; column += 1) counts[variantOfTile({ column, row, variants: 3 })]! += 1;
+      for (let column = 0; column < 40; column += 1) counts[variantOfTile({ column, row, variantCount: 3 })]! += 1;
     }
     for (const count of counts) expect(count).toBeGreaterThan(300);
   });
 
   it('does not paint whole rows or columns in one variant', () => {
     for (let line = 0; line < 30; line += 1) {
-      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: index, row: line, variants: 3 }))).size).toBeGreaterThan(1);
-      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: line, row: index, variants: 3 }))).size).toBeGreaterThan(1);
+      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: index, row: line, variantCount: 3 }))).size).toBeGreaterThan(1);
+      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: line, row: index, variantCount: 3 }))).size).toBeGreaterThan(1);
     }
   });
 });

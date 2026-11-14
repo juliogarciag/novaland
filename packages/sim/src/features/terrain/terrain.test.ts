@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DefId, getDef } from '../../content/defs';
+import { DefId, entityDefs, getDef } from '../../content/defs';
 import { readTileGrid, spawnPoint, tileAt, tileCentre } from '../../content/levels/grid';
 import { starterLevel } from '../../content/levels/starter';
 import type { LevelData, TileGrid } from '../../content/levels/types';
@@ -59,10 +59,15 @@ describe('tile defs', () => {
     expect(standingDefs.map((def) => def.id)).toContain(TerrainDefId.Tree);
     for (const def of standingDefs) {
       const sprite = def.standing!;
-      expect(Number.isInteger(sprite.variants) && sprite.variants >= 1, def.name).toBe(true);
+      expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
       expect(sprite.frameWidth > 0 && sprite.frameHeight > 0 && sprite.pixelsPerMetre > 0, def.name).toBe(true);
       expect(getTileDef(sprite.groundDefId).standing, def.name).toBeUndefined();
     }
+  });
+
+  it('no standing sprite shares its key with another sprite: they are one folder and one texture namespace', () => {
+    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...terrainDefs.flatMap((def) => (def.standing ? [def.standing.key] : []))];
+    expect(new Set(keys).size).toBe(keys.length);
   });
 
   it('a tree is still one solid tile to the sim, whatever it looks like', () => {

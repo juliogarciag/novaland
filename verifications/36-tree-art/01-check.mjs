@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { PROOF, check, run, summarize, writeProof } from './lib.mjs';
 
-/** What `pnpm sim:headless` printed on main before this ticket (also in verifications/9-tile-based-levels/proof/02-headless.json). */
+/** What `pnpm sim:headless` printed on main before this ticket (also in verifications/19-one-process/proof/01-check-output.txt). */
 const STATE_HASH_BEFORE_THE_TICKET = '50b21d74';
 
 const results = [];
@@ -31,6 +31,8 @@ results.push(check('all tests passed, none skipped', report.numFailedTests === 0
 results.push(check('client: standing tile placement tests passed', passedNamed(/standingTilePlacements/) === 5, `${passedNamed(/standingTilePlacements/)} tests`));
 results.push(check('client: variant picking tests passed', passedNamed(/variantOfTile/) === 3, `${passedNamed(/variantOfTile/)} tests`));
 results.push(check('sim: a standing sprite stands on a flat tile def', passedNamed(/tile defs a standing sprite has at least one variant and stands on a flat tile def/) === 1));
+results.push(check('sim: sprite keys are unique', passedNamed(/tile defs no standing sprite shares its key/) === 1));
+results.push(check('client: the generator paints what the tree def declares', passedNamed(/tree sheet generator/) === 2));
 results.push(check('sim: a tree is still one solid tile', passedNamed(/tile defs a tree is still one solid tile to the sim/) === 1));
 results.push(check('determinism test still passes', passedNamed(/determinism same seed \+ same commands = identical state/) === 1));
 

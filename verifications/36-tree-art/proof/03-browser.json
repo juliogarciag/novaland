@@ -4,7 +4,7 @@
       "name": "2-in-front",
       "description": "south of the clump, against its south face",
       "player": {
-        "x": -5.166728973388672,
+        "x": -5.333396911621094,
         "y": -2.600023031234741,
         "bottomEdge": -2.2000230312347413
       },
@@ -33,10 +33,10 @@
       "description": "west of the clump, level with its south-west tree",
       "player": {
         "x": -6.399977684020996,
-        "y": -3.683330774307251,
-        "bottomEdge": -3.283330774307251
+        "y": -3.5999977588653564,
+        "bottomEdge": -3.1999977588653565
       },
-      "spriteDepth": -52.53329238891602,
+      "spriteDepth": -51.199964141845705,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -50,9 +50,9 @@
         }
       ],
       "pixels": {
-        "visible": 147,
-        "hiddenByATree": 6,
-        "skipped": 9,
+        "visible": 143,
+        "hiddenByATree": 7,
+        "skipped": 12,
         "wrong": 0
       }
     },
@@ -60,11 +60,11 @@
       "name": "4-behind",
       "description": "north of the clump, against its north face",
       "player": {
-        "x": -5.316655158996582,
-        "y": -5.399977684020996,
-        "bottomEdge": -4.999977684020996
+        "x": -5.14998722076416,
+        "y": -5.3999834060668945,
+        "bottomEdge": -4.999983406066894
       },
-      "spriteDepth": -79.99964294433593,
+      "spriteDepth": -79.9997344970703,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -78,9 +78,9 @@
         }
       ],
       "pixels": {
-        "visible": 72,
-        "hiddenByATree": 104,
-        "skipped": 10,
+        "visible": 77,
+        "hiddenByATree": 97,
+        "skipped": 12,
         "wrong": 0
       }
     }
@@ -97,7 +97,7 @@
         "frameWidth": 24,
         "frameHeight": 32,
         "pixelsPerMetre": 16,
-        "variants": 3,
+        "variantCount": 3,
         "groundDefId": 200
       }
     },
@@ -126,7 +126,7 @@
       "treesOffTheScreenGrid": 0,
       "blocksChecked": 20736,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 9113,
+      "sheetPixelsCompared": 9172,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },
@@ -140,7 +140,7 @@
       "treesOffTheScreenGrid": 0,
       "blocksChecked": 12288,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 5494,
+      "sheetPixelsCompared": 5553,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },
@@ -150,14 +150,19 @@
         "height": 1080
       },
       "zoom": 6,
-      "treesChecked": 20,
+      "treesChecked": 21,
       "treesOffTheScreenGrid": 0,
-      "blocksChecked": 15360,
+      "blocksChecked": 16128,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 7079,
+      "sheetPixelsCompared": 7507,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     }
   ],
-  "errors": []
+  "errors": [],
+  "withoutTheSheet": {
+    "textureLoaded": false,
+    "images": 0,
+    "crashes": []
+  }
 }

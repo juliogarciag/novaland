@@ -15,7 +15,8 @@
  * bottom centre of its tile with grass under it; that the sim is untouched
  * (a tree still stops the player at the tile's faces); and that trees stay
  * crisp at several whole-number zooms: every texture pixel is one flat block
- * of zoom x zoom screen pixels.
+ * of zoom x zoom screen pixels; and that when the sheet cannot be loaded the
+ * trees fall back to flat tiles.
  *
  * Expected numbers come from the level grid, the defs and the camera, read
  * through the debug API. Screenshots are the proof.
@@ -72,13 +73,13 @@ try {
 
   const treeSheet = await servedPng(page, `sprites/${TREE.key}.png`);
   const avatarSheet = await servedPng(page, `sprites/${avatar.sprite.key}.png`);
-  results.push(check('the tree sheet is served as a PNG of `variants` frames side by side', treeSheet.ok && treeSheet.png.width === TREE.frameWidth * TREE.variants && treeSheet.png.height === TREE.frameHeight, `${treeSheet.status} ${treeSheet.contentType} ${treeSheet.png.width}x${treeSheet.png.height}`));
+  results.push(check('the tree sheet is served as a PNG of `variantCount` frames side by side', treeSheet.ok && treeSheet.png.width === TREE.frameWidth * TREE.variantCount && treeSheet.png.height === TREE.frameHeight, `${treeSheet.status} ${treeSheet.contentType} ${treeSheet.png.width}x${treeSheet.png.height}`));
 
   const loaded = await page.evaluate((key) => {
     const { game } = window.__novaland;
     return { exists: game.textures.exists(key), frames: game.textures.get(key).frameTotal - 1, scaleMode: game.textures.get(key).source[0].scaleMode, pixelArt: game.config.pixelArt }; // frameTotal counts the __BASE frame
   }, TREE.key);
-  results.push(check('Phaser loaded the tree sheet with one frame per variant', loaded.exists && loaded.frames === TREE.variants, `${loaded.frames} frames`));
+  results.push(check('Phaser loaded the tree sheet with one frame per variant', loaded.exists && loaded.frames === TREE.variantCount, `${loaded.frames} frames`));
   results.push(check('the tree sheet is drawn with nearest-neighbour filtering', loaded.scaleMode === PHASER_NEAREST_SCALE_MODE && loaded.pixelArt === true, `scaleMode ${loaded.scaleMode}`));
 
   /** Sim state, the camera and the drawn objects, read between two frames. */
@@ -140,7 +141,7 @@ try {
   results.push(check("every tree image stands on its tile's bottom centre and is sorted by that bottom edge", initial.trees.every((image) => image.originX === 0.5 && image.originY === 1 && image.depth === image.y)));
   results.push(check('every tree image is drawn at one texture pixel per world pixel, on whole pixels', initial.trees.every((image) => image.scaleX === PIXELS_PER_METRE / TREE.pixelsPerMetre && image.scaleY === image.scaleX && image.width === TREE.frameWidth && image.height === TREE.frameHeight && Number.isInteger(image.x - image.width / 2) && Number.isInteger(image.y))));
   const variantsUsed = new Set(initial.trees.map((image) => image.frame));
-  results.push(check('every variant of the sheet is used, and only those', variantsUsed.size === TREE.variants && [...variantsUsed].every((frame) => Number.isInteger(frame) && frame >= 0 && frame < TREE.variants), [...variantsUsed].sort().join(',')));
+  results.push(check('every variant of the sheet is used, and only those', variantsUsed.size === TREE.variantCount && [...variantsUsed].every((frame) => Number.isInteger(frame) && frame >= 0 && frame < TREE.variantCount), [...variantsUsed].sort().join(',')));
   const tileIndexOfDef = new Map(tiles.map((def, index) => [def.id, index]));
   const groundAsExpected = grid.defIds.every((defIds, row) => defIds.every((defId, column) => initial.terrain.tileIndexRows[row][column] === tileIndexOfDef.get(defId === tree.id ? TREE.groundDefId : defId)));
   results.push(check('the ground layer draws grass under every tree and every other tile as before', groundAsExpected));
@@ -155,7 +156,6 @@ try {
   const northWest = tileCentre(northWestTree);
   const half = grid.tileSize / 2;
   const clear = RADIUS + 0.1; // far enough from a face to walk past it
-  const stops = [];
   /** Records a stop: the state, a screenshot of the whole screen, and what the pixels and the display list say about the draw order. */
   const recordStop = async (name, description, expectations) => {
     const sample = await state();
@@ -163,7 +163,6 @@ try {
     await closeUp(`03-browser-${name}-close-up.png`, sample, { x: clump.x, y: clump.y - 0.5 });
     const order = drawOrderAgainstTrees(sample);
     const pixels = playerPixelsOnScreen({ sample, screenshot, treeSheet: treeSheet.png, avatarSheet: avatarSheet.png, tree: TREE, avatarSprite: avatar.sprite });
-    stops.push(sample);
     report.stops.push({ name, description, player: { x: sample.x, y: sample.y, bottomEdge: sample.y + RADIUS }, spriteDepth: sample.sprite.depth, overlappingTrees: order.overlapping, pixels: pixels.summary });
     results.push(check(`${name}: the player's depth is the bottom edge of its body in pixels`, near(sample.sprite.depth, (sample.y + RADIUS) * PIXELS_PER_METRE)));
     results.push(check(`${name}: every tree overlapping the player is drawn on the side its bottom edge says`, order.overlapping.length > 0 && order.wrong.length === 0, `${order.overlapping.length} overlapping tree image(s): ${order.overlapping.map((entry) => `${entry.relation} the tree at depth ${entry.treeDepth}`).join(', ')}`));
@@ -208,6 +207,7 @@ try {
   // The level has no tree with open ground all around it; the nearest thing is one that sticks out of the forest edge.
   const jutting = nearestJuttingTree(grid, tree.id, { x: behind.x, y: behind.y });
   report.juttingTree = jutting;
+  results.push(check('the level has a tree that sticks out of the forest edge, with open ground on three sides', jutting !== undefined, JSON.stringify(jutting)));
   if (jutting) {
     const target = tileCentre({ column: jutting.column, row: jutting.row + 2 });
     const vertical = target.y < behind.y ? ['KeyW', (sample) => sample.y <= target.y] : ['KeyS', (sample) => sample.y >= target.y];
@@ -242,6 +242,26 @@ try {
 
   results.push(check('no page or console errors', errors.length === 0, errors.join(' | ').slice(0, 200)));
   report.errors = errors;
+
+  // ---- Without the sheet, trees fall back to flat tiles and the game still runs ----
+  const pageWithoutTheSheet = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  const crashes = [];
+  pageWithoutTheSheet.on('pageerror', (error) => crashes.push(String(error)));
+  await pageWithoutTheSheet.route(`**/sprites/${TREE.key}.png`, (route) => route.abort());
+  await pageWithoutTheSheet.goto(`http://localhost:${PORT}/`);
+  await pageWithoutTheSheet.waitForFunction(() => window.__novaland && window.__novaland.sim.tick > 10 && window.__novaland.camera(), null, { timeout: 15000 });
+  const withoutTheSheet = await pageWithoutTheSheet.evaluate((treeKey) => {
+    const api = window.__novaland;
+    const objects = api.game.scene.getScene('world').children.list;
+    const terrain = objects.find((object) => object.type === 'TilemapLayer');
+    return { textureLoaded: api.game.textures.exists(treeKey), images: objects.filter((object) => object.type === 'Image').length, tileIndexRows: terrain.layer.data.map((row) => row.map((tile) => tile.index)), tick: api.sim.tick };
+  }, TREE.key);
+  await pageWithoutTheSheet.screenshot({ path: path.join(PROOF, '03-browser-7-without-the-sheet.png') });
+  const flatAsBefore = grid.defIds.every((defIds, row) => defIds.every((defId, column) => withoutTheSheet.tileIndexRows[row][column] === tileIndexOfDef.get(defId)));
+  report.withoutTheSheet = { textureLoaded: withoutTheSheet.textureLoaded, images: withoutTheSheet.images, crashes };
+  results.push(check('without the sheet: no tree image is drawn', withoutTheSheet.textureLoaded === false && withoutTheSheet.images === 0, `${withoutTheSheet.images} images`));
+  results.push(check("without the sheet: every tile, trees included, is drawn flat in its own def's tile", flatAsBefore));
+  results.push(check('without the sheet: the game runs and nothing throws', withoutTheSheet.tick > 10 && crashes.length === 0, crashes.join(' | ').slice(0, 200)));
 } finally {
   if (browser) await browser.close();
   server.stop();

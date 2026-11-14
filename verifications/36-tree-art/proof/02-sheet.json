@@ -4,7 +4,7 @@
     "frameWidth": 24,
     "frameHeight": 32,
     "pixelsPerMetre": 16,
-    "variants": 3
+    "variantCount": 3
   },
   "committed": {
     "width": 72,

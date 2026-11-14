@@ -1,5 +1,5 @@
 /**
- * Generates the tree sheet at public/sprites/tree.png: TREE_VARIANTS frames
+ * Generates the tree sheet at public/sprites/tree.png: TREE_VARIANT_COUNT frames
  * side by side, each FRAME_WIDTH x FRAME_HEIGHT. The frame layout must match
  * the tree's `standing` def in packages/sim/src/features/terrain/defs.ts.
  *
@@ -46,7 +46,7 @@ const TRUNK_FOOT_ROW = FRAME_HEIGHT - 3;
  * in frame pixels; `trunkColumn` is the left column of the four-pixel trunk;
  * `seed` scatters the leaf texture so no two variants share it.
  */
-const TREE_VARIANTS_SPEC = [
+const TREE_VARIANTS = [
   {
     seed: 11,
     trunkColumn: 10,
@@ -81,12 +81,12 @@ const TREE_VARIANTS_SPEC = [
   },
 ];
 
-export const TREE_VARIANTS = TREE_VARIANTS_SPEC.length;
+export const TREE_VARIANT_COUNT = TREE_VARIANTS.length;
 
 /** The whole sheet: every variant side by side. */
 export function paintTreeSheet() {
-  const sheet = createCanvas(FRAME_WIDTH * TREE_VARIANTS, FRAME_HEIGHT);
-  TREE_VARIANTS_SPEC.forEach((variant, index) => blit(sheet, paintTree(variant), index * FRAME_WIDTH, 0));
+  const sheet = createCanvas(FRAME_WIDTH * TREE_VARIANT_COUNT, FRAME_HEIGHT);
+  TREE_VARIANTS.forEach((variant, index) => blit(sheet, paintTree(variant), index * FRAME_WIDTH, 0));
   return sheet;
 }
 

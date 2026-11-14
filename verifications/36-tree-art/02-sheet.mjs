@@ -28,15 +28,15 @@ const report = {};
 const defsSource = readFileSync(path.join(ROOT, 'packages/sim/src/features/terrain/defs.ts'), 'utf8');
 const standingSource = /standing: \{([^}]*)\}/.exec(defsSource)?.[1] ?? '';
 const number = (field) => Number(new RegExp(`${field}:\\s*(\\d+)`).exec(standingSource)?.[1]);
-const def = { key: /key: '([^']+)'/.exec(standingSource)?.[1], frameWidth: number('frameWidth'), frameHeight: number('frameHeight'), pixelsPerMetre: number('pixelsPerMetre'), variants: number('variants') };
+const def = { key: /key: '([^']+)'/.exec(standingSource)?.[1], frameWidth: number('frameWidth'), frameHeight: number('frameHeight'), pixelsPerMetre: number('pixelsPerMetre'), variantCount: number('variantCount') };
 report.def = def;
-results.push(check('exactly one terrain def has a standing sprite, and it parses', (defsSource.match(/standing: \{/g) || []).length === 1 && def.key === 'tree' && [def.frameWidth, def.frameHeight, def.pixelsPerMetre, def.variants].every(Number.isFinite), JSON.stringify(def)));
+results.push(check('exactly one terrain def has a standing sprite, and it parses', (defsSource.match(/standing: \{/g) || []).length === 1 && def.key === 'tree' && [def.frameWidth, def.frameHeight, def.pixelsPerMetre, def.variantCount].every(Number.isFinite), JSON.stringify(def)));
 results.push(check('the sheet is drawn at the tile scale, 16 pixels per metre, so it needs no resampling', def.pixelsPerMetre === TILE_PIXELS));
 
 const committedBytes = readFileSync(COMMITTED);
 const sheet = PNG.sync.read(committedBytes);
 report.committed = { width: sheet.width, height: sheet.height, bytes: committedBytes.length };
-results.push(check(`the sheet is ${def.variants} frames of ${def.frameWidth}x${def.frameHeight} side by side`, sheet.width === def.frameWidth * def.variants && sheet.height === def.frameHeight, `${sheet.width}x${sheet.height}`));
+results.push(check(`the sheet is ${def.variantCount} frames of ${def.frameWidth}x${def.frameHeight} side by side`, sheet.width === def.frameWidth * def.variantCount && sheet.height === def.frameHeight, `${sheet.width}x${sheet.height}`));
 
 const temporary = mkdtempSync(path.join(os.tmpdir(), 'novaland-tree-'));
 const generated = await run('node', [GENERATOR, '--out', temporary]);
@@ -59,7 +59,7 @@ const isInsideTheOutline = (pixel) => pixel.alpha === 255 && brightness(pixel) !
 const tileLeft = (def.frameWidth - TILE_PIXELS) / 2;
 const tileTop = def.frameHeight - TILE_PIXELS;
 const variants = [];
-for (let variant = 0; variant < def.variants; variant += 1) {
+for (let variant = 0; variant < def.variantCount; variant += 1) {
   const count = (matches, region) => {
     let total = 0;
     for (let y = region.top; y < region.bottom; y += 1) {
@@ -92,7 +92,7 @@ for (let variant = 0; variant < def.variants; variant += 1) {
 }
 report.variants = variants;
 const frameBytes = (variant) => Array.from({ length: def.frameHeight }, (_, y) => sheet.data.subarray((y * sheet.width + variant * def.frameWidth) * 4, (y * sheet.width + (variant + 1) * def.frameWidth) * 4).toString('hex')).join('');
-results.push(check('no two variants are the same picture', new Set(variants.map((_, variant) => frameBytes(variant))).size === def.variants));
+results.push(check('no two variants are the same picture', new Set(variants.map((_, variant) => frameBytes(variant))).size === def.variantCount));
 
 writeFileSync(path.join(PROOF, '02-sheet-contact.png'), PNG.sync.write(contactSheet()));
 writeProof('02-sheet.json', report);
@@ -103,7 +103,7 @@ process.exit(summarize(results) ? 0 : 1);
 /** The variants alone on grass, then a 4x3 block of trees, each standing on the bottom centre of its tile, enlarged 6x. */
 function contactSheet() {
   const ENLARGED = 6;
-  const columns = def.variants * 2 + 6;
+  const columns = def.variantCount * 2 + 6;
   const rows = 5;
   const small = new PNG({ width: columns * TILE_PIXELS, height: rows * TILE_PIXELS });
   for (let offset = 0; offset < small.data.length; offset += 4) small.data.set([...GRASS, 255], offset);
@@ -121,9 +121,9 @@ function contactSheet() {
       }
     }
   };
-  for (let variant = 0; variant < def.variants; variant += 1) drawTree(variant, 1 + variant * 2, 2);
+  for (let variant = 0; variant < def.variantCount; variant += 1) drawTree(variant, 1 + variant * 2, 2);
   for (let row = 1; row < 4; row += 1) {
-    for (let column = 0; column < 4; column += 1) drawTree((column * 2 + row) % def.variants, def.variants * 2 + 1 + column, row);
+    for (let column = 0; column < 4; column += 1) drawTree((column * 2 + row) % def.variantCount, def.variantCount * 2 + 1 + column, row);
   }
   const large = new PNG({ width: small.width * ENLARGED, height: small.height * ENLARGED });
   for (let y = 0; y < large.height; y += 1) {

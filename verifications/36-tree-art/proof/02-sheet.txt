@@ -1,4 +1,4 @@
-PASS  exactly one terrain def has a standing sprite, and it parses  ({"key":"tree","frameWidth":24,"frameHeight":32,"pixelsPerMetre":16,"variants":3})
+PASS  exactly one terrain def has a standing sprite, and it parses  ({"key":"tree","frameWidth":24,"frameHeight":32,"pixelsPerMetre":16,"variantCount":3})
 PASS  the sheet is drawn at the tile scale, 16 pixels per metre, so it needs no resampling
 PASS  the sheet is 3 frames of 24x32 side by side  (72x32)
 PASS  the committed sheet is byte for byte what the generator writes  (exit 0, 709 bytes)

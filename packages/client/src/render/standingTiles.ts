@@ -1,4 +1,5 @@
 import { getTileDef, tileCentre, type StandingTileSprite, type TileGrid } from '@novaland/sim';
+import { depthOfBottomEdge } from './depth';
 import { toPixels } from './units';
 
 /** One image to draw for a tile that stands up from the ground, such as a tree. */
@@ -12,9 +13,9 @@ export interface StandingTilePlacement {
   readonly x: number;
   readonly y: number;
   /**
-   * The tile's bottom edge in pixels. Entities are depth-sorted by the bottom
-   * edge of their body (render/entities.ts), so with this depth a character
-   * south of the tile is drawn over the image and one north of it under it.
+   * The depth of the tile's bottom edge. Entities get theirs from the bottom
+   * edge of their body through the same function (render/depth.ts), so a
+   * character south of the tile is drawn over the image and one north of it under it.
    */
   readonly depth: number;
 }
@@ -27,8 +28,16 @@ export function standingTilePlacements(grid: TileGrid): StandingTilePlacement[] 
       const sprite = getTileDef(defId).standing;
       if (!sprite) return;
       const centre = tileCentre(grid, { column, row });
-      const bottomEdge = toPixels(centre.y + grid.tileSize / 2);
-      placements.push({ column, row, sprite, frame: variantOfTile({ column, row, variants: sprite.variants }), x: toPixels(centre.x), y: bottomEdge, depth: bottomEdge });
+      const bottomEdge = centre.y + grid.tileSize / 2;
+      placements.push({
+        column,
+        row,
+        sprite,
+        frame: variantOfTile({ column, row, variantCount: sprite.variantCount }),
+        x: toPixels(centre.x),
+        y: toPixels(bottomEdge),
+        depth: depthOfBottomEdge(bottomEdge),
+      });
     });
   });
   return placements;
@@ -39,10 +48,10 @@ export function standingTilePlacements(grid: TileGrid): StandingTilePlacement[] 
  * same for a tile every time, so the forest does not change between visits
  * or between two players looking at it. Looks only: the sim knows nothing of it.
  */
-function variantOfTile({ column, row, variants }: { column: number; row: number; variants: number }): number {
+function variantOfTile({ column, row, variantCount }: { column: number; row: number; variantCount: number }): number {
   let hash = (Math.imul(column, 374761393) + Math.imul(row, 668265263)) | 0;
   hash = Math.imul(hash ^ (hash >>> 13), 1274126177);
-  return ((hash ^ (hash >>> 16)) >>> 0) % variants;
+  return ((hash ^ (hash >>> 16)) >>> 0) % variantCount;
 }
 
 export const __testing__ = { variantOfTile };
