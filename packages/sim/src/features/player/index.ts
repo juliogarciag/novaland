@@ -19,8 +19,8 @@ const SPAWN_FACING = { x: 0, y: 1 } as const;
  * Rapier interaction groups: the upper 16 bits are the layers a collider
  * belongs to, the lower 16 the layers it touches. Players sit in their own
  * layer and touch every layer but that one, so two players pass through
- * each other (the paths are two tiles wide and a standing player would
- * otherwise block them) while terrain, which keeps Rapier's default of
+ * each other (a standing player would otherwise block the narrow gaps
+ * between trees and rocks) while terrain, which keeps Rapier's default of
  * every layer, still stops them.
  */
 const PLAYER_LAYER = 1 << 0;

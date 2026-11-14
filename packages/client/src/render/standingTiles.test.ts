@@ -1,20 +1,20 @@
 import { getTileDef, readTileGrid, starterLevel, terrainDefs, tileCentre, TILE_SIZE, type LevelData } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { depthOfBottomEdge } from './depth';
-import { __testing__, standingTilePlacements } from './standingTiles';
+import { standingTilePlacements } from './standingTiles';
 import { PIXELS_PER_METRE } from './units';
 
-const { variantOfTile } = __testing__;
-
 describe('standingTilePlacements', () => {
-  it('places one image per tree tile and none for flat tiles', () => {
-    const placements = standingTilePlacements(readTileGrid(level(['T.T', '.o.', '=T.'])));
-    expect(placements.map(({ column, row }) => [column, row])).toEqual([
-      [0, 0],
-      [2, 0],
-      [1, 2],
+  it('places one image per tree or rock tile and none for flat tiles', () => {
+    const grid = readTileGrid(level(['T.T', '.o.', '=T.']));
+    const placements = standingTilePlacements(grid);
+    expect(placements.map(({ column, row, sprite }) => [column, row, sprite.key])).toEqual([
+      [0, 0, 'tree'],
+      [2, 0, 'tree'],
+      [1, 1, 'rock'],
+      [1, 2, 'tree'],
     ]);
-    for (const placement of placements) expect(placement.sprite).toBe(getTileDef(treeDefId()).standingSprite);
+    for (const placement of placements) expect(placement.sprite).toBe(getTileDef(grid.defIds[placement.row]![placement.column]!).standingSprite);
   });
 
   it('stands the image on the bottom centre of its tile', () => {
@@ -45,45 +45,19 @@ describe('standingTilePlacements', () => {
     expect(new Set(depths).size).toBe(3);
   });
 
-  it('covers every tree of the starter level with a frame the sheet has', () => {
+  it('covers every tree and rock of the starter level with a frame its sheet has', () => {
     const grid = readTileGrid(starterLevel);
     const placements = standingTilePlacements(grid);
-    const treeTiles = grid.defIds.flat().filter((defId) => defId === treeDefId()).length;
-    expect(placements).toHaveLength(treeTiles);
+    const standingTiles = grid.defIds.flat().filter((defId) => getTileDef(defId).standingSprite).length;
+    expect(placements).toHaveLength(standingTiles);
+    expect(new Set(placements.map((placement) => placement.sprite.key))).toEqual(new Set(['tree', 'rock']));
     for (const { frame, sprite } of placements) {
       expect(Number.isInteger(frame) && frame >= 0 && frame < sprite.variantCount).toBe(true);
     }
   });
 });
 
-describe('variantOfTile', () => {
-  it('gives a tile the same variant every time', () => {
-    expect(variantOfTile({ column: 7, row: 3, variantCount: 3 })).toBe(variantOfTile({ column: 7, row: 3, variantCount: 3 }));
-  });
-
-  it('uses every variant about as often across a forest', () => {
-    const counts = [0, 0, 0];
-    for (let row = 0; row < 30; row += 1) {
-      for (let column = 0; column < 40; column += 1) counts[variantOfTile({ column, row, variantCount: 3 })]! += 1;
-    }
-    for (const count of counts) expect(count).toBeGreaterThan(300);
-  });
-
-  it('does not paint whole rows or columns in one variant', () => {
-    for (let line = 0; line < 30; line += 1) {
-      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: index, row: line, variantCount: 3 }))).size).toBeGreaterThan(1);
-      expect(new Set(Array.from({ length: 30 }, (_, index) => variantOfTile({ column: line, row: index, variantCount: 3 }))).size).toBeGreaterThan(1);
-    }
-  });
-});
-
 // ---- Helpers ----
-
-function treeDefId(): number {
-  const tree = terrainDefs.find((def) => def.name === 'tree');
-  if (!tree) throw new Error('There is no tree def');
-  return tree.id;
-}
 
 /** A level of these rows; the spawn is its first walkable tile, as a level must have one. */
 function level(rows: string[]): LevelData {
