@@ -8,7 +8,7 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from '../player/queries';
-import { getTileDef, TerrainDefId, TILE_SIZE } from './defs';
+import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from './defs';
 import { solidRectangles } from './rectangles';
 
 describe('tile grids', () => {
@@ -50,6 +50,24 @@ describe('tile grids', () => {
     const grid = readTileGrid(starterLevel);
     expect(readTileGrid(starterLevel)).toBe(grid);
     expect(readTileGrid({ ...starterLevel })).not.toBe(grid);
+  });
+});
+
+describe('tile defs', () => {
+  it('a standing sprite has at least one variant and stands on a flat tile def', () => {
+    const standingDefs = terrainDefs.filter((def) => def.standing);
+    expect(standingDefs.map((def) => def.id)).toContain(TerrainDefId.Tree);
+    for (const def of standingDefs) {
+      const sprite = def.standing!;
+      expect(Number.isInteger(sprite.variants) && sprite.variants >= 1, def.name).toBe(true);
+      expect(sprite.frameWidth > 0 && sprite.frameHeight > 0 && sprite.pixelsPerMetre > 0, def.name).toBe(true);
+      expect(getTileDef(sprite.groundDefId).standing, def.name).toBeUndefined();
+    }
+  });
+
+  it('a tree is still one solid tile to the sim, whatever it looks like', () => {
+    expect(getTileDef(TerrainDefId.Tree)).toMatchObject({ id: 202, solid: true });
+    expect(solidRectangles(readTileGrid(level(['.T.'])))).toEqual([{ column: 1, row: 0, width: 1, height: 1 }]);
   });
 });
 

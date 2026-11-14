@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
-    "art:player": "node tools/generate-player-sheet.mjs"
+    "art:player": "node tools/generate-player-sheet.mjs",
+    "art:tree": "node tools/generate-tree-sheet.mjs"
   },
   "dependencies": {
     "@colyseus/sdk": "catalog:",

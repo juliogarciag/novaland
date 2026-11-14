@@ -20,7 +20,7 @@ export { starterLevel } from './content/levels/starter';
 export { findLevel, levels } from './content/levels';
 export type { LevelData, TileCoordinate, TileGrid } from './content/levels/types';
 export { readTileGrid, spawnPoint, tileAt, tileCentre } from './content/levels/grid';
-export { getTileDef, terrainDefs, TILE_SIZE, type TileDef } from './features/terrain/defs';
+export { getTileDef, terrainDefs, TILE_SIZE, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';
 export { avatarDefIds, isAvatarDefId } from './features/player/defs';

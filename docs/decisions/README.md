@@ -11,3 +11,4 @@ One file per decision, numbered, never edited after the fact (write a new one th
 - [0007 - Physics loads on demand](0007-physics-loads-on-demand.md)
 - [0008 - The server's HTTP front: its own half, libraries for the work, Colyseus's hooks for the wiring](0008-http-front.md)
 - [0009 - Hosting on Railway: one service, settings as code, deploys gated by CI](0009-hosting-on-railway.md)
+- [0010 - Standing tiles: tall tile art is one image per tile, sorted among the entities](0010-standing-tiles.md)

@@ -1,6 +1,8 @@
-import { readTileGrid, terrainDefs, tileCentre, TILE_SIZE, type LevelData } from '@novaland/sim';
+import { getTileDef, readTileGrid, terrainDefs, tileCentre, TILE_SIZE, type LevelData, type StandingTileSprite } from '@novaland/sim';
 import Phaser from 'phaser';
-import { toPixels } from './units';
+import { spriteSheetUrl } from './sprites';
+import { standingTilePlacements } from './standingTiles';
+import { PIXELS_PER_METRE, toPixels } from './units';
 
 /** Side of a generated placeholder tile in texture pixels. The layer is scaled up to TILE_SIZE metres on screen. */
 export const PLACEHOLDER_TILE_PIXELS = 16;
@@ -15,17 +17,39 @@ const TILESET_NAME = 'terrain';
  */
 const TERRAIN_DEPTH = Number.MIN_SAFE_INTEGER;
 
+/** Queues the image of every terrain def that stands up from the ground. Call from a scene's `preload`. */
+export function loadStandingTileSprites(scene: Phaser.Scene): void {
+  for (const sprite of standingTileSprites()) {
+    scene.load.spritesheet(sprite.key, spriteSheetUrl(sprite.key), { frameWidth: sprite.frameWidth, frameHeight: sprite.frameHeight });
+  }
+}
+
 /**
- * Draws a level as a Phaser tilemap from the same level data the sim builds
- * its colliders from. Until there is art, the tileset is generated here: one
- * flat-colour 16x16 tile per terrain def, in the order of `terrainDefs`, so
- * the tile index of a cell is the position of its def in that list.
+ * Draws a level from the same level data the sim builds its colliders from,
+ * in two parts.
+ *
+ * The ground is a Phaser tilemap below everything. Its tileset is generated
+ * here until there is art: one flat-colour 16x16 tile per terrain def, in
+ * the order of `terrainDefs`, so the tile index of a def is its position in
+ * that list.
+ *
+ * A def with a `standing` sprite (a tree) is one image per tile on top of
+ * that, standing on the tile's bottom edge and depth-sorted among the
+ * entities by it, with the def's ground tile under it. If the image failed
+ * to load, the tile is drawn flat in the def's own colour instead.
  */
 export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilemaps.TilemapLayer {
   const grid = readTileGrid(level);
   ensurePlaceholderTileset(scene);
+  const loadedStandingSprites = standingTileSprites().filter((sprite) => scene.textures.exists(sprite.key));
+  for (const sprite of loadedStandingSprites) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
   const tileIndexByDefId = new Map(terrainDefs.map((def, index) => [def.id, index]));
-  const tileIndexRows = grid.defIds.map((row) => row.map((defId) => tileIndexByDefId.get(defId) ?? 0));
+  const groundTileIndex = (defId: number): number => {
+    const standing = getTileDef(defId).standing;
+    const groundDefId = standing && loadedStandingSprites.includes(standing) ? standing.groundDefId : defId;
+    return tileIndexByDefId.get(groundDefId) ?? 0;
+  };
+  const tileIndexRows = grid.defIds.map((row) => row.map(groundTileIndex));
   const tilemap = scene.make.tilemap({ data: tileIndexRows, tileWidth: PLACEHOLDER_TILE_PIXELS, tileHeight: PLACEHOLDER_TILE_PIXELS });
   const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, PLACEHOLDER_TILE_PIXELS, PLACEHOLDER_TILE_PIXELS, 0, 0);
   if (!tileset) throw new Error('The terrain tileset texture is missing');
@@ -35,7 +59,19 @@ export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilem
   if (!layer) throw new Error('Could not create the terrain layer');
   layer.setScale(toPixels(TILE_SIZE) / PLACEHOLDER_TILE_PIXELS);
   layer.setDepth(TERRAIN_DEPTH);
+  for (const placement of standingTilePlacements(grid)) {
+    if (!loadedStandingSprites.includes(placement.sprite)) continue;
+    const image = scene.add.image(placement.x, placement.y, placement.sprite.key, placement.frame);
+    image.setOrigin(0.5, 1);
+    image.setScale(PIXELS_PER_METRE / placement.sprite.pixelsPerMetre);
+    image.setDepth(placement.depth);
+  }
   return layer as Phaser.Tilemaps.TilemapLayer;
+}
+
+/** The standing sprite of every terrain def that has one, in def order. */
+function standingTileSprites(): StandingTileSprite[] {
+  return terrainDefs.flatMap((def) => (def.standing ? [def.standing] : []));
 }
 
 /** A strip of flat-colour tiles, one per terrain def. Solid tiles get a darker rim so single trees and rocks read as objects. */
