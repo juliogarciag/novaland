@@ -1,0 +1,59 @@
+PASS  dev server up, started by this run
+PASS  the defs are unchanged for the sim: grass 200 walkable, dirt 201 walkable, tree 202 solid, rock 203 solid
+PASS  the level holds no dirt tile  (0 dirt tiles)
+PASS  the level legend no longer maps a character to dirt  ({"T":202,".":200,"o":203})
+PASS  every tile of the level is grass, a tree or a rock  ({"grass":842,"dirt":0,"tree":347,"rock":11})
+PASS  the outer edge of the level is trees all the way round  (136 edge tiles)
+PASS  the spawn is on a grass tile  ({"column":6,"row":14})
+PASS  walking from the spawn never reaches the edge of the level: the ring of trees is closed  (842 tiles reached)
+PASS  every walkable tile can be reached from the spawn  (842 of 842)
+PASS  where the old path left the clearing at the top (row 2, columns 20-21) there are trees now
+PASS  the grass def carries a ground sprite and no standing sprite  ({"key":"grass","tilePixels":16,"variantCount":24})
+PASS  the rock def carries a standing sprite that stands on grass  ({"key":"rock","frameWidth":16,"frameHeight":20,"pixelsPerMetre":16,"variantCount":4,"groundDefId":200})
+PASS  the grass sheet is served as a PNG of `variantCount` square tiles side by side  (384x16)
+PASS  the rock sheet is served as a PNG of `variantCount` frames side by side  (64x20)
+PASS  the ground is one tilemap layer below every image and the player
+PASS  its tileset has one tile per grass variant and one per other def, drawn with nearest-neighbour filtering  (432x16, scaleMode 1)
+PASS  the grass tiles of the tileset are the served grass sheet's pixels, one for one  (0 of 6144 pixels differ)
+PASS  every grass tile shows a tile of the grass sheet  (842 grass tiles)
+PASS  the ground under every tree and every rock is a tile of the grass sheet too  (347 trees, 11 rocks)
+PASS  every variant of the grass sheet is used somewhere in the level  (24 of 24)
+PASS  a field does not repeat: fewer than one in ten neighbouring tiles show the same variant  (101 of 2330 pairs)
+PASS  no row or column shows the same variant more than three tiles running  (longest run 3)
+PASS  there is one rock image per rock tile (11)  (11 images)
+PASS  every rock image stands on its tile's bottom centre and is sorted by that bottom edge
+PASS  every rock image is drawn at one texture pixel per world pixel, on whole pixels, inside the width of its tile
+PASS  the rocks of the level show more than one variant, all of them frames of the sheet  (variants 0, 1, 2, 3 of 4)
+PASS  the rock sheet is drawn with nearest-neighbour filtering  (4 frames, scaleMode 1)
+PASS  at the spawn: every grass tile in view is, pixel for pixel, the sheet tile the layer says  (218 tiles, 55808 pixels, 0 wrong)
+PASS  at the spawn: the grass in view is textured, not a flat fill: several greens in every tile  (fewest colours in a tile: 4)
+PASS  at the spawn: every rock in view shows the rock sheet's own pixels  (2 rocks, 328 pixels, 0 wrong)
+PASS  the level has a rock with open grass two tiles around it to walk around  ({"column":14,"row":17,"defId":203})
+PASS  walked to two tiles south of the rock
+PASS  2-in-front-of-a-rock: the player is drawn in front of the rock, as their bottom edges say  (sprite depth 60.8, rock depth 48)
+PASS  2-in-front-of-a-rock: the sim stopped the player at the south face of the rock tile, as before  (y=3.400, face + radius at 3.400)
+PASS  2-in-front-of-a-rock: on screen the player covers part of the rock  ({"rockPixelsUnderTheSprite":112,"showingTheRock":46,"showingSomethingElse":66})
+PASS  walked round to two tiles north of the rock
+PASS  3-behind-a-rock: the player is drawn behind the rock, as their bottom edges say  (sprite depth 32.0, rock depth 48)
+PASS  3-behind-a-rock: the sim stopped the player at the north face of the rock tile, as before  (y=1.600, face - radius at 1.600)
+PASS  3-behind-a-rock: on screen the player covers no pixel of the rock  ({"rockPixelsUnderTheSprite":0,"showingTheRock":0,"showingSomethingElse":0})
+PASS  walked to where the two main paths used to cross
+PASS  there, every ground tile in view is a grass sheet tile, pixel for pixel, and nothing is dirt-coloured  (211 tiles checked, 0 dirt-coloured pixels)
+PASS  960x720: the camera zoom is a whole number  (zoom 3)
+PASS  960x720: every texture pixel of the grass and rocks checked is one flat 3x3 block in the sheet's own colour  (211 grass tiles, 3 rocks, 0 blocks not flat)
+PASS  640x480: the camera zoom is a whole number  (zoom 2)
+PASS  640x480: every texture pixel of the grass and rocks checked is one flat 2x2 block in the sheet's own colour  (193 grass tiles, 3 rocks, 0 blocks not flat)
+PASS  1920x1080: the camera zoom is a whole number  (zoom 6)
+PASS  1920x1080: every texture pixel of the grass and rocks checked is one flat 6x6 block in the sheet's own colour  (173 grass tiles, 3 rocks, 0 blocks not flat)
+PASS  the art was checked at more than one zoom  (3x, 2x, 6x)
+PASS  a rock was on screen at one zoom at least  (3, 3, 3)
+PASS  no page or console errors
+PASS  a second page shows every tile in the same grass variant
+PASS  a second page shows every rock and tree in the same variant
+PASS  after a reload the ground and the standing images are the same again
+PASS  without the sheets: no rock image is drawn, and the trees still are  (0 rock images, 347 tree images)
+PASS  without the sheets: grass and rocks are each drawn as the flat tile of their own def, grass still under the trees
+PASS  without the sheets: the screen shows the flat grass and rock colours  (577827 grass-coloured pixels, 3528 rock-coloured)
+PASS  without the sheets: the game runs and nothing throws
+
+ALL 57 CHECKS PASSED

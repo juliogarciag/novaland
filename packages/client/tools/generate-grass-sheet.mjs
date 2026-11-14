@@ -4,9 +4,9 @@
  * grass's `groundSprite` in packages/sim/src/features/terrain/defs.ts.
  *
  * Every tile is grass all over: short blades in a darker and a lighter green
- * than the turf, a few of them with a bright tip, scattered evenly so that
- * any two tiles can sit side by side without a seam and a field reads as
- * one lawn. The tiles differ only in where the blades fall, which is what
+ * than the turf, a few of them with a bright tip, dealt out evenly so that
+ * no patch of a tile is bare, any two tiles can sit side by side without a
+ * seam and a field reads as one lawn. The tiles differ only in where the blades fall, which is what
  * keeps a field from repeating. Two tiles of the sheet also have a flower.
  * The greens sit between the tree canopy's light tones, so the forest still
  * stands out from the ground.
@@ -39,9 +39,18 @@ const FLOWERS_BY_VARIANT = new Map([
   [17, { x: 4, y: 11, petal: COLORS.pinkPetal }],
 ]);
 
-/** Out of every 100 pixels of a tile, how many start a dark blade and how many a light one. */
-const DARK_BLADES_PER_HUNDRED = 9;
-const LIGHT_BLADES_PER_HUNDRED = 8;
+/**
+ * Blades are dealt out evenly: the tile is cut into cells of this many
+ * pixels a side and every cell gets the same number of dark and of light
+ * blades, each somewhere in the cell. Scattering them freely over the tile
+ * leaves bald patches in one tile and thickets in the next.
+ */
+const CELL_PIXELS = 4;
+const DARK_BLADES_PER_CELL = 2;
+const LIGHT_BLADES_PER_CELL = 2;
+
+/** No square of turf this many pixels a side is left without a blade. */
+const LARGEST_BARE_PATCH = 4;
 
 /** The whole sheet: every variant side by side. */
 export function paintGrassSheet() {
@@ -57,24 +66,54 @@ function paintGrassTile(variant) {
     for (let x = 0; x < TILE_PIXELS; x += 1) pixel(tile, x, y, COLORS.turf);
   }
   // Dark blades first, light ones over them: the light reads as blades standing in front of the shade between them.
-  forEachBladeFoot({ seed, perHundred: DARK_BLADES_PER_HUNDRED }, (x, y) => paintBlade(tile, { x, y, height: 2, color: COLORS.turfShade }));
-  forEachBladeFoot({ seed: seed + 1, perHundred: LIGHT_BLADES_PER_HUNDRED }, (x, y) => {
-    const height = noise(x, y, seed + 2) < 0.35 ? 3 : 2;
-    paintBlade(tile, { x, y, height, color: COLORS.bladeLight });
-    if (noise(x, y, seed + 3) < 0.3) paintBlade(tile, { x, y: y - height + 1, height: 1, color: COLORS.bladeTip });
-  });
+  forEachBladeFoot({ seed, bladesPerCell: DARK_BLADES_PER_CELL }, (x, y) => paintBlade(tile, { x, y, height: 2, color: COLORS.turfShade }));
+  forEachBladeFoot({ seed: seed + 1, bladesPerCell: LIGHT_BLADES_PER_CELL }, (x, y) => paintLightBlade(tile, { x, y, seed }));
+  coverBarePatches(tile, seed);
   const flower = FLOWERS_BY_VARIANT.get(variant);
   if (flower) paintFlower(tile, flower);
   return tile;
 }
 
-/** Calls `paint(x, y)` for the pixel each blade of this tile grows from. */
-function forEachBladeFoot({ seed, perHundred }, paint) {
-  for (let y = 0; y < TILE_PIXELS; y += 1) {
-    for (let x = 0; x < TILE_PIXELS; x += 1) {
-      if (noise(x, y, seed) * 100 < perHundred) paint(x, y);
+/** Calls `paint(x, y)` for the pixel each blade of this tile grows from: `bladesPerCell` of them in every cell. */
+function forEachBladeFoot({ seed, bladesPerCell }, paint) {
+  for (let cellY = 0; cellY < TILE_PIXELS; cellY += CELL_PIXELS) {
+    for (let cellX = 0; cellX < TILE_PIXELS; cellX += CELL_PIXELS) {
+      for (let blade = 0; blade < bladesPerCell; blade += 1) {
+        const x = cellX + Math.floor(noise(cellX + blade * 31, cellY, seed) * CELL_PIXELS);
+        const y = cellY + Math.floor(noise(cellX, cellY + blade * 31, seed + 50) * CELL_PIXELS);
+        paint(x, y);
+      }
     }
   }
+}
+
+/** A light blade two or three pixels tall, some with a bright tip. */
+function paintLightBlade(tile, { x, y, seed }) {
+  const height = noise(x, y, seed + 2) < 0.35 ? 3 : 2;
+  paintBlade(tile, { x, y, height, color: COLORS.bladeLight });
+  if (noise(x, y, seed + 3) < 0.3) paintBlade(tile, { x, y: y - height + 1, height: 1, color: COLORS.bladeTip });
+}
+
+/** Wherever a square of plain turf is left between the blades, grows one more light blade in it, until there is none. */
+function coverBarePatches(tile, seed) {
+  for (let top = 0; top + LARGEST_BARE_PATCH <= TILE_PIXELS; top += 1) {
+    for (let left = 0; left + LARGEST_BARE_PATCH <= TILE_PIXELS; left += 1) {
+      if (!isPlainTurf(tile, { left, top, size: LARGEST_BARE_PATCH })) continue;
+      const x = left + Math.floor(noise(left, top, seed + 4) * LARGEST_BARE_PATCH);
+      const y = top + 1 + Math.floor(noise(left, top, seed + 5) * (LARGEST_BARE_PATCH - 1));
+      paintBlade(tile, { x, y, height: 2, color: COLORS.bladeLight });
+    }
+  }
+}
+
+function isPlainTurf(tile, { left, top, size }) {
+  for (let y = top; y < top + size; y += 1) {
+    for (let x = left; x < left + size; x += 1) {
+      const offset = (y * tile.width + x) * 4;
+      if (tile.data[offset] !== COLORS.turf[0] || tile.data[offset + 1] !== COLORS.turf[1] || tile.data[offset + 2] !== COLORS.turf[2]) return false;
+    }
+  }
+  return true;
 }
 
 /** A blade one pixel wide growing up from (x, y). What would leave the tile at the top is left out, so tiles need no particular neighbour. */

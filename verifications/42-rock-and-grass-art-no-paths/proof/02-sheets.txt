@@ -1,0 +1,20 @@
+PASS  public/sprites/rock.png is byte for byte what generate-rock-sheet.mjs writes  (468 bytes)
+PASS  public/sprites/grass.png is byte for byte what generate-grass-sheet.mjs writes  (2225 bytes)
+PASS  public/sprites/tree.png is byte for byte what generate-tree-sheet.mjs writes  (709 bytes)
+PASS  the rock sheet has `variantCount` frames of the declared size side by side  (64x20)
+PASS  a rock frame is as wide as its one-metre tile and taller than it  (16x20 at 16 px/m)
+PASS  every rock variant is a solid lump: at least a third of the tile, opaque  (172, 156, 132, 176)
+PASS  every rock variant is stone: over 90% grey, in at least 4 tones plus the dark edge  (98% in 5 tones, 99% in 5 tones, 98% in 5 tones, 98% in 5 tones)
+PASS  every rock variant fills the height of its tile: it starts within 3 rows of the top edge, or above it, and stands near the bottom  (rows 4-18, rows 4-18, rows 6-18, rows 2-18)
+PASS  every rock variant casts a soft shadow on the ground
+PASS  no two rock variants are the same
+PASS  the grass sheet has `variantCount` tiles of the declared size side by side  (384x16)
+PASS  every pixel of every grass tile is opaque
+PASS  grass is textured all over: no 4x4 patch of any tile is one flat colour  (0 flat patches in 24 tiles)
+PASS  in every grass tile between a quarter and two thirds of the pixels are blades, the rest turf  (40%-50%)
+PASS  the blade share is even across tiles, so no tile stands out as lighter or darker
+PASS  every grass tile is green everywhere but in its flower
+PASS  flowers are the exception: on at least one tile and on fewer than one in eight  (2 of 24 tiles)
+PASS  no two grass tiles are the same
+
+ALL 18 CHECKS PASSED

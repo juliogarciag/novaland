@@ -1,0 +1,196 @@
+{
+  "sprites": {
+    "rock": {
+      "frameWidth": 16,
+      "frameHeight": 20,
+      "pixelsPerMetre": 16,
+      "variantCount": 4
+    },
+    "grass": {
+      "tilePixels": 16,
+      "variantCount": 24
+    },
+    "tree": {
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "pixelsPerMetre": 16,
+      "variantCount": 3
+    }
+  },
+  "rocks": [
+    {
+      "opaquePixels": 172,
+      "greyTones": 5,
+      "greyShare": 0.9825581395348837,
+      "topRow": 4,
+      "bottomRow": 18,
+      "shadowPixels": 20
+    },
+    {
+      "opaquePixels": 156,
+      "greyTones": 5,
+      "greyShare": 0.9871794871794872,
+      "topRow": 4,
+      "bottomRow": 18,
+      "shadowPixels": 25
+    },
+    {
+      "opaquePixels": 132,
+      "greyTones": 5,
+      "greyShare": 0.9848484848484849,
+      "topRow": 6,
+      "bottomRow": 18,
+      "shadowPixels": 27
+    },
+    {
+      "opaquePixels": 176,
+      "greyTones": 5,
+      "greyShare": 0.9829545454545454,
+      "topRow": 2,
+      "bottomRow": 18,
+      "shadowPixels": 20
+    }
+  ],
+  "grass": {
+    "baseColour": "92,158,74",
+    "bladeShares": [
+      0.43359375,
+      0.453125,
+      0.4453125,
+      0.44921875,
+      0.453125,
+      0.49609375,
+      0.4375,
+      0.4453125,
+      0.4296875,
+      0.421875,
+      0.4609375,
+      0.42578125,
+      0.41796875,
+      0.42578125,
+      0.3984375,
+      0.453125,
+      0.43359375,
+      0.4609375,
+      0.41796875,
+      0.42578125,
+      0.40625,
+      0.44140625,
+      0.43359375,
+      0.4296875
+    ],
+    "flowerTiles": 2,
+    "flatPatches": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "results": [
+    {
+      "name": "public/sprites/rock.png is byte for byte what generate-rock-sheet.mjs writes",
+      "pass": true,
+      "details": "468 bytes"
+    },
+    {
+      "name": "public/sprites/grass.png is byte for byte what generate-grass-sheet.mjs writes",
+      "pass": true,
+      "details": "2225 bytes"
+    },
+    {
+      "name": "public/sprites/tree.png is byte for byte what generate-tree-sheet.mjs writes",
+      "pass": true,
+      "details": "709 bytes"
+    },
+    {
+      "name": "the rock sheet has `variantCount` frames of the declared size side by side",
+      "pass": true,
+      "details": "64x20"
+    },
+    {
+      "name": "a rock frame is as wide as its one-metre tile and taller than it",
+      "pass": true,
+      "details": "16x20 at 16 px/m"
+    },
+    {
+      "name": "every rock variant is a solid lump: at least a third of the tile, opaque",
+      "pass": true,
+      "details": "172, 156, 132, 176"
+    },
+    {
+      "name": "every rock variant is stone: over 90% grey, in at least 4 tones plus the dark edge",
+      "pass": true,
+      "details": "98% in 5 tones, 99% in 5 tones, 98% in 5 tones, 98% in 5 tones"
+    },
+    {
+      "name": "every rock variant fills the height of its tile: it starts within 3 rows of the top edge, or above it, and stands near the bottom",
+      "pass": true,
+      "details": "rows 4-18, rows 4-18, rows 6-18, rows 2-18"
+    },
+    {
+      "name": "every rock variant casts a soft shadow on the ground",
+      "pass": true
+    },
+    {
+      "name": "no two rock variants are the same",
+      "pass": true
+    },
+    {
+      "name": "the grass sheet has `variantCount` tiles of the declared size side by side",
+      "pass": true,
+      "details": "384x16"
+    },
+    {
+      "name": "every pixel of every grass tile is opaque",
+      "pass": true
+    },
+    {
+      "name": "grass is textured all over: no 4x4 patch of any tile is one flat colour",
+      "pass": true,
+      "details": "0 flat patches in 24 tiles"
+    },
+    {
+      "name": "in every grass tile between a quarter and two thirds of the pixels are blades, the rest turf",
+      "pass": true,
+      "details": "40%-50%"
+    },
+    {
+      "name": "the blade share is even across tiles, so no tile stands out as lighter or darker",
+      "pass": true
+    },
+    {
+      "name": "every grass tile is green everywhere but in its flower",
+      "pass": true
+    },
+    {
+      "name": "flowers are the exception: on at least one tile and on fewer than one in eight",
+      "pass": true,
+      "details": "2 of 24 tiles"
+    },
+    {
+      "name": "no two grass tiles are the same",
+      "pass": true
+    }
+  ]
+}

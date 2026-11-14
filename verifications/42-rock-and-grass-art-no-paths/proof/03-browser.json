@@ -1,0 +1,426 @@
+{
+  "stops": [
+    {
+      "name": "2-in-front-of-a-rock",
+      "player": {
+        "x": -5.416730880737305,
+        "y": 3.399976968765259,
+        "halfHeight": 0.4
+      },
+      "spriteDepth": 60.79963150024414,
+      "rockDepth": 48,
+      "relation": "in front of",
+      "overlap": {
+        "rockPixelsUnderTheSprite": 112,
+        "showingTheRock": 46,
+        "showingSomethingElse": 66
+      }
+    },
+    {
+      "name": "3-behind-a-rock",
+      "player": {
+        "x": -5.500064849853516,
+        "y": 1.6000231504440308,
+        "halfHeight": 0.4
+      },
+      "spriteDepth": 32.00037040710449,
+      "rockDepth": 48,
+      "relation": "behind",
+      "overlap": {
+        "rockPixelsUnderTheSprite": 0,
+        "showingTheRock": 0,
+        "showingSomethingElse": 0
+      }
+    }
+  ],
+  "content": {
+    "grass": {
+      "id": 200,
+      "name": "grass",
+      "shape": "box",
+      "color": 6069834,
+      "solid": false,
+      "groundSprite": {
+        "key": "grass",
+        "tilePixels": 16,
+        "variantCount": 24
+      }
+    },
+    "rock": {
+      "id": 203,
+      "name": "rock",
+      "shape": "box",
+      "color": 9080729,
+      "solid": true,
+      "standingSprite": {
+        "key": "rock",
+        "frameWidth": 16,
+        "frameHeight": 20,
+        "pixelsPerMetre": 16,
+        "variantCount": 4,
+        "groundDefId": 200
+      }
+    },
+    "tiles": {
+      "grass": 842,
+      "dirt": 0,
+      "tree": 347,
+      "rock": 11
+    },
+    "spawn": {
+      "column": 6,
+      "row": 14
+    }
+  },
+  "drawn": {
+    "tileset": {
+      "width": 432,
+      "height": 16,
+      "scaleMode": 1
+    },
+    "rocks": 11,
+    "trees": 347
+  },
+  "atSpawn": {
+    "grassTilesChecked": 218,
+    "grassPixelsCompared": 55808,
+    "grassPixelsWrong": 0,
+    "fewestColoursInAGrassTile": 4,
+    "rocksChecked": 2,
+    "rockPixelsCompared": 328,
+    "rockPixelsWrong": 0,
+    "blocksNotFlat": 0
+  },
+  "openRock": {
+    "column": 14,
+    "row": 17,
+    "defId": 203
+  },
+  "zooms": [
+    {
+      "viewport": {
+        "width": 960,
+        "height": 720
+      },
+      "zoom": 3,
+      "grassTilesChecked": 211,
+      "grassPixelsCompared": 54016,
+      "grassPixelsWrong": 0,
+      "fewestColoursInAGrassTile": 4,
+      "rocksChecked": 3,
+      "rockPixelsCompared": 444,
+      "rockPixelsWrong": 0,
+      "blocksNotFlat": 0
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "zoom": 2,
+      "grassTilesChecked": 193,
+      "grassPixelsCompared": 49408,
+      "grassPixelsWrong": 0,
+      "fewestColoursInAGrassTile": 4,
+      "rocksChecked": 3,
+      "rockPixelsCompared": 444,
+      "rockPixelsWrong": 0,
+      "blocksNotFlat": 0
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "zoom": 6,
+      "grassTilesChecked": 173,
+      "grassPixelsCompared": 44288,
+      "grassPixelsWrong": 0,
+      "fewestColoursInAGrassTile": 4,
+      "rocksChecked": 3,
+      "rockPixelsCompared": 444,
+      "rockPixelsWrong": 0,
+      "blocksNotFlat": 0
+    }
+  ],
+  "errors": [],
+  "withoutTheSheets": {
+    "rocks": 0,
+    "trees": 347,
+    "crashes": []
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the defs are unchanged for the sim: grass 200 walkable, dirt 201 walkable, tree 202 solid, rock 203 solid",
+      "pass": true
+    },
+    {
+      "name": "the level holds no dirt tile",
+      "pass": true,
+      "details": "0 dirt tiles"
+    },
+    {
+      "name": "the level legend no longer maps a character to dirt",
+      "pass": true,
+      "details": "{\"T\":202,\".\":200,\"o\":203}"
+    },
+    {
+      "name": "every tile of the level is grass, a tree or a rock",
+      "pass": true,
+      "details": "{\"grass\":842,\"dirt\":0,\"tree\":347,\"rock\":11}"
+    },
+    {
+      "name": "the outer edge of the level is trees all the way round",
+      "pass": true,
+      "details": "136 edge tiles"
+    },
+    {
+      "name": "the spawn is on a grass tile",
+      "pass": true,
+      "details": "{\"column\":6,\"row\":14}"
+    },
+    {
+      "name": "walking from the spawn never reaches the edge of the level: the ring of trees is closed",
+      "pass": true,
+      "details": "842 tiles reached"
+    },
+    {
+      "name": "every walkable tile can be reached from the spawn",
+      "pass": true,
+      "details": "842 of 842"
+    },
+    {
+      "name": "where the old path left the clearing at the top (row 2, columns 20-21) there are trees now",
+      "pass": true
+    },
+    {
+      "name": "the grass def carries a ground sprite and no standing sprite",
+      "pass": true,
+      "details": "{\"key\":\"grass\",\"tilePixels\":16,\"variantCount\":24}"
+    },
+    {
+      "name": "the rock def carries a standing sprite that stands on grass",
+      "pass": true,
+      "details": "{\"key\":\"rock\",\"frameWidth\":16,\"frameHeight\":20,\"pixelsPerMetre\":16,\"variantCount\":4,\"groundDefId\":200}"
+    },
+    {
+      "name": "the grass sheet is served as a PNG of `variantCount` square tiles side by side",
+      "pass": true,
+      "details": "384x16"
+    },
+    {
+      "name": "the rock sheet is served as a PNG of `variantCount` frames side by side",
+      "pass": true,
+      "details": "64x20"
+    },
+    {
+      "name": "the ground is one tilemap layer below every image and the player",
+      "pass": true
+    },
+    {
+      "name": "its tileset has one tile per grass variant and one per other def, drawn with nearest-neighbour filtering",
+      "pass": true,
+      "details": "432x16, scaleMode 1"
+    },
+    {
+      "name": "the grass tiles of the tileset are the served grass sheet's pixels, one for one",
+      "pass": true,
+      "details": "0 of 6144 pixels differ"
+    },
+    {
+      "name": "every grass tile shows a tile of the grass sheet",
+      "pass": true,
+      "details": "842 grass tiles"
+    },
+    {
+      "name": "the ground under every tree and every rock is a tile of the grass sheet too",
+      "pass": true,
+      "details": "347 trees, 11 rocks"
+    },
+    {
+      "name": "every variant of the grass sheet is used somewhere in the level",
+      "pass": true,
+      "details": "24 of 24"
+    },
+    {
+      "name": "a field does not repeat: fewer than one in ten neighbouring tiles show the same variant",
+      "pass": true,
+      "details": "101 of 2330 pairs"
+    },
+    {
+      "name": "no row or column shows the same variant more than three tiles running",
+      "pass": true,
+      "details": "longest run 3"
+    },
+    {
+      "name": "there is one rock image per rock tile (11)",
+      "pass": true,
+      "details": "11 images"
+    },
+    {
+      "name": "every rock image stands on its tile's bottom centre and is sorted by that bottom edge",
+      "pass": true
+    },
+    {
+      "name": "every rock image is drawn at one texture pixel per world pixel, on whole pixels, inside the width of its tile",
+      "pass": true
+    },
+    {
+      "name": "the rocks of the level show more than one variant, all of them frames of the sheet",
+      "pass": true,
+      "details": "variants 0, 1, 2, 3 of 4"
+    },
+    {
+      "name": "the rock sheet is drawn with nearest-neighbour filtering",
+      "pass": true,
+      "details": "4 frames, scaleMode 1"
+    },
+    {
+      "name": "at the spawn: every grass tile in view is, pixel for pixel, the sheet tile the layer says",
+      "pass": true,
+      "details": "218 tiles, 55808 pixels, 0 wrong"
+    },
+    {
+      "name": "at the spawn: the grass in view is textured, not a flat fill: several greens in every tile",
+      "pass": true,
+      "details": "fewest colours in a tile: 4"
+    },
+    {
+      "name": "at the spawn: every rock in view shows the rock sheet's own pixels",
+      "pass": true,
+      "details": "2 rocks, 328 pixels, 0 wrong"
+    },
+    {
+      "name": "the level has a rock with open grass two tiles around it to walk around",
+      "pass": true,
+      "details": "{\"column\":14,\"row\":17,\"defId\":203}"
+    },
+    {
+      "name": "walked to two tiles south of the rock",
+      "pass": true
+    },
+    {
+      "name": "2-in-front-of-a-rock: the player is drawn in front of the rock, as their bottom edges say",
+      "pass": true,
+      "details": "sprite depth 60.8, rock depth 48"
+    },
+    {
+      "name": "2-in-front-of-a-rock: the sim stopped the player at the south face of the rock tile, as before",
+      "pass": true,
+      "details": "y=3.400, face + radius at 3.400"
+    },
+    {
+      "name": "2-in-front-of-a-rock: on screen the player covers part of the rock",
+      "pass": true,
+      "details": "{\"rockPixelsUnderTheSprite\":112,\"showingTheRock\":46,\"showingSomethingElse\":66}"
+    },
+    {
+      "name": "walked round to two tiles north of the rock",
+      "pass": true
+    },
+    {
+      "name": "3-behind-a-rock: the player is drawn behind the rock, as their bottom edges say",
+      "pass": true,
+      "details": "sprite depth 32.0, rock depth 48"
+    },
+    {
+      "name": "3-behind-a-rock: the sim stopped the player at the north face of the rock tile, as before",
+      "pass": true,
+      "details": "y=1.600, face - radius at 1.600"
+    },
+    {
+      "name": "3-behind-a-rock: on screen the player covers no pixel of the rock",
+      "pass": true,
+      "details": "{\"rockPixelsUnderTheSprite\":0,\"showingTheRock\":0,\"showingSomethingElse\":0}"
+    },
+    {
+      "name": "walked to where the two main paths used to cross",
+      "pass": true
+    },
+    {
+      "name": "there, every ground tile in view is a grass sheet tile, pixel for pixel, and nothing is dirt-coloured",
+      "pass": true,
+      "details": "211 tiles checked, 0 dirt-coloured pixels"
+    },
+    {
+      "name": "960x720: the camera zoom is a whole number",
+      "pass": true,
+      "details": "zoom 3"
+    },
+    {
+      "name": "960x720: every texture pixel of the grass and rocks checked is one flat 3x3 block in the sheet's own colour",
+      "pass": true,
+      "details": "211 grass tiles, 3 rocks, 0 blocks not flat"
+    },
+    {
+      "name": "640x480: the camera zoom is a whole number",
+      "pass": true,
+      "details": "zoom 2"
+    },
+    {
+      "name": "640x480: every texture pixel of the grass and rocks checked is one flat 2x2 block in the sheet's own colour",
+      "pass": true,
+      "details": "193 grass tiles, 3 rocks, 0 blocks not flat"
+    },
+    {
+      "name": "1920x1080: the camera zoom is a whole number",
+      "pass": true,
+      "details": "zoom 6"
+    },
+    {
+      "name": "1920x1080: every texture pixel of the grass and rocks checked is one flat 6x6 block in the sheet's own colour",
+      "pass": true,
+      "details": "173 grass tiles, 3 rocks, 0 blocks not flat"
+    },
+    {
+      "name": "the art was checked at more than one zoom",
+      "pass": true,
+      "details": "3x, 2x, 6x"
+    },
+    {
+      "name": "a rock was on screen at one zoom at least",
+      "pass": true,
+      "details": "3, 3, 3"
+    },
+    {
+      "name": "no page or console errors",
+      "pass": true,
+      "details": ""
+    },
+    {
+      "name": "a second page shows every tile in the same grass variant",
+      "pass": true
+    },
+    {
+      "name": "a second page shows every rock and tree in the same variant",
+      "pass": true
+    },
+    {
+      "name": "after a reload the ground and the standing images are the same again",
+      "pass": true
+    },
+    {
+      "name": "without the sheets: no rock image is drawn, and the trees still are",
+      "pass": true,
+      "details": "0 rock images, 347 tree images"
+    },
+    {
+      "name": "without the sheets: grass and rocks are each drawn as the flat tile of their own def, grass still under the trees",
+      "pass": true
+    },
+    {
+      "name": "without the sheets: the screen shows the flat grass and rock colours",
+      "pass": true,
+      "details": "577827 grass-coloured pixels, 3528 rock-coloured"
+    },
+    {
+      "name": "without the sheets: the game runs and nothing throws",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
