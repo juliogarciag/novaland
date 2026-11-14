@@ -13,7 +13,8 @@
     "art:player": "node tools/generate-player-sheet.mjs",
     "art:tree": "node tools/generate-tree-sheet.mjs",
     "art:rock": "node tools/generate-rock-sheet.mjs",
-    "art:grass": "node tools/generate-grass-sheet.mjs"
+    "art:grass": "node tools/generate-grass-sheet.mjs",
+    "art:cursor": "node tools/generate-arrow-cursor.mjs"
   },
   "dependencies": {
     "@colyseus/sdk": "catalog:",

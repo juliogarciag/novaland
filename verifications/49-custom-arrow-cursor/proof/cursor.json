@@ -1,0 +1,87 @@
+{
+  "screens": {
+    "1x screen": {
+      "underMouse": {
+        "tag": "CANVAS",
+        "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+      },
+      "image": {
+        "name": "arrow.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    "2x screen": {
+      "underMouse": {
+        "tag": "CANVAS",
+        "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+      },
+      "image": {
+        "name": "arrow@2x.png",
+        "width": 64,
+        "height": 64
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "1x screen: the game canvas is under the mouse",
+      "pass": true,
+      "details": "CANVAS"
+    },
+    {
+      "name": "1x screen: its cursor is the arrow for each screen, clicking at the tip, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "1x screen: every point of the window has that cursor",
+      "pass": true,
+      "details": "1 distinct"
+    },
+    {
+      "name": "1x screen: arrow.png is 32x32, so 32 CSS pixels on this screen",
+      "pass": true,
+      "details": "32x32"
+    },
+    {
+      "name": "1x screen: every pixel of arrow.png is its design pixel as one flat block (no smoothing)",
+      "pass": true,
+      "details": ""
+    },
+    {
+      "name": "2x screen: the game canvas is under the mouse",
+      "pass": true,
+      "details": "CANVAS"
+    },
+    {
+      "name": "2x screen: its cursor is the arrow for each screen, clicking at the tip, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "2x screen: every point of the window has that cursor",
+      "pass": true,
+      "details": "1 distinct"
+    },
+    {
+      "name": "2x screen: arrow@2x.png is 64x64, so 32 CSS pixels on this screen",
+      "pass": true,
+      "details": "64x64"
+    },
+    {
+      "name": "2x screen: every pixel of arrow@2x.png is its design pixel as one flat block (no smoothing)",
+      "pass": true,
+      "details": ""
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
