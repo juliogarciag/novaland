@@ -5,6 +5,10 @@ Closes #<ticket number>
 
 Size: <Small | Medium | Large> (<one-line reason>)
 
+## ELI5
+
+<!-- The change explained to someone who has never seen the code: two or three plain sentences on what it does and why it is worth having, with no file names and no jargon. -->
+
 ## What changes
 
 <!-- What is different for the player or the developer, in plain sentences, before any mention of files. How it works and anything done outside the repo come after that, under `###` sub-headings when they are long. -->
