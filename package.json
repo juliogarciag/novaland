@@ -14,7 +14,7 @@
     "start": "pnpm --filter @novaland/server start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "tsc -p tsconfig.json && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check": "pnpm test && pnpm typecheck && pnpm lint",

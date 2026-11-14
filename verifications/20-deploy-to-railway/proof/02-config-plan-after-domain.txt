@@ -1,0 +1,8 @@
+
+Railway configuration
+Using .railway/railway.ts
+Project novaland
+Environment production
+variables: managed (default)
+
+✓ Your Railway configuration is already up to date.

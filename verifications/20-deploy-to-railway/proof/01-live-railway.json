@@ -1,6 +1,6 @@
 {
   "url": "https://novaland-production.up.railway.app",
-  "startedAt": "2026-11-14T18:15:58.181Z",
+  "startedAt": "2026-11-14T18:20:08.643Z",
   "health": {
     "status": 200,
     "body": {
@@ -8,7 +8,7 @@
       "roomId": "world",
       "seats": 5,
       "seatsTaken": 0,
-      "tick": 1981
+      "tick": 17019
     }
   },
   "foreignOrigin": {
@@ -24,30 +24,10 @@
   },
   "playersBefore": 0,
   "walks": {
-    "aWalk": {
+    "playerAWalk": {
       "slot": 1,
       "start": {
         "slot": 1,
-        "eid": 46,
-        "x": -12.5,
-        "y": -1.5,
-        "intentX": 0,
-        "intentY": 0
-      },
-      "end": {
-        "slot": 1,
-        "eid": 46,
-        "x": -7.417,
-        "y": -1.5,
-        "intentX": 0,
-        "intentY": 0
-      },
-      "distance": 5.083
-    },
-    "bWalk": {
-      "slot": 2,
-      "start": {
-        "slot": 2,
         "eid": 47,
         "x": -14.5,
         "y": -0.5,
@@ -55,21 +35,41 @@
         "intentY": 0
       },
       "end": {
-        "slot": 2,
+        "slot": 1,
         "eid": 47,
-        "x": -14.5,
-        "y": 4.75,
+        "x": -9.5,
+        "y": -0.5,
         "intentX": 0,
         "intentY": 0
       },
-      "distance": 5.25
+      "distance": 5
+    },
+    "playerBWalk": {
+      "slot": 2,
+      "start": {
+        "slot": 2,
+        "eid": 46,
+        "x": -12.5,
+        "y": 0.5,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "end": {
+        "slot": 2,
+        "eid": 46,
+        "x": -12.5,
+        "y": 5.667,
+        "intentX": 0,
+        "intentY": 0
+      },
+      "distance": 5.167
     }
   },
   "results": [
     {
       "name": "GET https://novaland-production.up.railway.app/health answers 200 with the world room and its five seats",
       "pass": true,
-      "details": "{\"ok\":true,\"roomId\":\"world\",\"seats\":5,\"seatsTaken\":0,\"tick\":1981}"
+      "details": "{\"ok\":true,\"roomId\":\"world\",\"seats\":5,\"seatsTaken\":0,\"tick\":17019}"
     },
     {
       "name": "a matchmaking preflight from https://evil.example.com is refused with 403, and no answer carries a CORS header for it",
@@ -84,7 +84,7 @@
     {
       "name": "two browser contexts on the public URL are seated in two seats of the one world (observer), screens hidden, canvases drawing",
       "pass": true,
-      "details": "{\"aSeated\":{\"screen\":null,\"text\":\"Connecting to the world…Retry nowReload page\",\"hasDebugApi\":false,\"canvas\":true},\"bSeated\":{\"screen\":null,\"text\":\"Connecting to the world…Retry nowReload page\",\"hasDebugApi\":false,\"canvas\":true},\"seated\":[{\"slot\":1,\"eid\":46,\"x\":-12.5,\"y\":-1.5,\"intentX\":0,\"intentY\":0},{\"slot\":2,\"eid\":47,\"x\":-14.5,\"y\":-0.5,\"intentX\":0,\"intentY\":0}]}"
+      "details": "{\"playerASeated\":{\"screen\":null,\"text\":\"Connecting to the world…Retry nowReload page\",\"hasDebugApi\":false,\"canvas\":true},\"playerBSeated\":{\"screen\":null,\"text\":\"Connecting to the world…Retry nowReload page\",\"hasDebugApi\":false,\"canvas\":true},\"seated\":[{\"slot\":1,\"eid\":47,\"x\":-14.5,\"y\":-0.5,\"intentX\":0,\"intentY\":0},{\"slot\":2,\"eid\":46,\"x\":-12.5,\"y\":0.5,\"intentX\":0,\"intentY\":0}]}"
     },
     {
       "name": "window.__novaland is absent on both pages (production build)",
@@ -93,23 +93,19 @@
     {
       "name": "holding D on page A moves A's avatar east in the authoritative world",
       "pass": true,
-      "details": "{\"slot\":1,\"start\":{\"slot\":1,\"eid\":46,\"x\":-12.5,\"y\":-1.5,\"intentX\":0,\"intentY\":0},\"end\":{\"slot\":1,\"eid\":46,\"x\":-7.417,\"y\":-1.5,\"intentX\":0,\"intentY\":0},\"distance\":5.083}"
+      "details": "{\"slot\":1,\"start\":{\"slot\":1,\"eid\":47,\"x\":-14.5,\"y\":-0.5,\"intentX\":0,\"intentY\":0},\"end\":{\"slot\":1,\"eid\":47,\"x\":-9.5,\"y\":-0.5,\"intentX\":0,\"intentY\":0},\"distance\":5}"
     },
     {
-      "name": "page B receives the deltas carrying A's movement (25 frames of mean 113 bytes, against 20 quiet frames of mean 65 bytes)",
+      "name": "page B receives the deltas carrying A's movement (27 frames of mean 110 bytes, against 19 quiet frames of mean 65 bytes)",
       "pass": true
     },
     {
       "name": "holding S on page B moves B's avatar south, a different seat from A's",
       "pass": true,
-      "details": "{\"slot\":2,\"start\":{\"slot\":2,\"eid\":47,\"x\":-14.5,\"y\":-0.5,\"intentX\":0,\"intentY\":0},\"end\":{\"slot\":2,\"eid\":47,\"x\":-14.5,\"y\":4.75,\"intentX\":0,\"intentY\":0},\"distance\":5.25}"
+      "details": "{\"slot\":2,\"start\":{\"slot\":2,\"eid\":46,\"x\":-12.5,\"y\":0.5,\"intentX\":0,\"intentY\":0},\"end\":{\"slot\":2,\"eid\":46,\"x\":-12.5,\"y\":5.667,\"intentX\":0,\"intentY\":0},\"distance\":5.167}"
     },
     {
-      "name": "page A receives the deltas carrying B's movement (25 frames of mean 115 bytes, against 20 quiet frames of mean 65 bytes)",
-      "pass": true
-    },
-    {
-      "name": "both pages are captured side by side: proof/01-live-railway-two-players.png",
+      "name": "page A receives the deltas carrying B's movement (25 frames of mean 114 bytes, against 20 quiet frames of mean 65 bytes)",
       "pass": true
     },
     {

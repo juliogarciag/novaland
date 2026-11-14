@@ -47,7 +47,7 @@ Any host that runs one always-on container with WebSockets works. The public gam
 
 The game is live at **https://novaland-production.up.railway.app**. Every merge to `main` deploys it: Railway's GitHub autodeploy builds the root `Dockerfile` once the CI checks on that commit pass. No deploy token is stored in GitHub. Each deploy starts an empty world. [ADR 0009](docs/decisions/0009-hosting-on-railway.md) has the reasoning.
 
-How the service is built and run lives in [`.railway/railway.ts`](.railway/railway.ts), Railway's Infrastructure as Code: the Dockerfile builder, the `/health` check, restart on failure, exactly one replica in US East that never sleeps, Wait for CI, and `ALLOWED_ORIGINS`. Railway does not read that file on deploy. After changing it, apply it from the repo root with the project linked (Railway CLI 5.42.1 or newer):
+How the service is built and run lives in [`.railway/railway.ts`](.railway/railway.ts), Railway's Infrastructure as Code: the Dockerfile builder, the `/health` check, restart on failure, exactly one replica in US East that never sleeps, Wait for CI, the domain and `ALLOWED_ORIGINS`. `pnpm typecheck` checks it against the SDK's types. Railway does not read that file on deploy. After changing it, apply it from the repo root with the project linked (Railway CLI 5.42.1 or newer):
 
 ```bash
 railway config plan
@@ -57,10 +57,12 @@ railway config plan
 railway config apply
 ```
 
+The Railway account holds other projects. Before applying, check that the plan's header reads `Project novaland` and `Environment production` and that it destroys nothing, and never pass `--confirm-destructive`. The file exports a named partial (`novaland`), which only ever deletes resources it owns, so a wrong link cannot remove anything outside it.
+
 Setting it up from nothing, once. The Novaland project is its own Railway project and shares nothing with other projects in the account:
 
-1. Create the project: `railway init --name novaland` at the repo root, or New Project → Empty Project in the dashboard and then `railway link`.
-2. Connect the repo: give Railway's GitHub app access to `juliogarciag/novaland` (dashboard, Account Settings → GitHub). Then `railway config apply` creates the `novaland` service from `main` with every setting above.
-3. Turn on Wait for CI: the file sets it (`checkSuites`). Check it under the service's Settings → Source, where the toggle shows because `.github/workflows/ci.yml` runs on pushes to `main`.
-4. Generate the domain: `railway domain`, or the service's Settings → Networking → Generate Domain.
-5. Set `ALLOWED_ORIGINS`: the file sets it to `https://${{RAILWAY_PUBLIC_DOMAIN}}`, which Railway fills in from the domain. With no domain yet the value is not a valid origin and the server refuses to boot, so generate the domain before the first deploy, or redeploy after it. A second address (a custom domain) goes into the file as a comma-separated list.
+1. Create the project: `railway init --name novaland` at the repo root (it also links the folder), or New Project → Empty Project in the dashboard and then `railway link`.
+2. Connect the repo: give Railway's GitHub app access to `juliogarciag/novaland` only ("Only select repositories", in the dashboard under Account Settings → GitHub).
+3. Remove the `networking` line from the file, since a new project gets a domain of its own, then run `railway config apply`. It creates the `novaland` service from `main` with every other setting, including Wait for CI (`checkSuites`) and `ALLOWED_ORIGINS`, and Railway starts a first deploy. Wait for CI shows under the service's Settings → Source, because `.github/workflows/ci.yml` runs on pushes to `main`.
+4. Generate the domain: `railway domain --service novaland`, or the service's Settings → Networking → Generate Domain. Put its name back in the file's `networking` line, and check that `railway config plan` reports nothing to do.
+5. `ALLOWED_ORIGINS` is `https://${{RAILWAY_PUBLIC_DOMAIN}}`, which Railway fills in from the domain. Before the domain exists it is not a valid origin and the server refuses to boot, so the first deploy from step 3 fails. Run `railway redeploy --service novaland` once the domain exists. A second address, such as a custom domain, goes into the file as a comma-separated list.

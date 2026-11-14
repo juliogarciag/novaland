@@ -17,6 +17,10 @@ import { defineRailway, github, project, service } from 'railway/iac';
 
 const REGION = 'us-east4-eqdc4a'; // US East, Virginia: nearest most players.
 
+// A named partial only ever deletes resources it owns. The account holds other projects: if this file is ever
+// applied to the wrong one, nothing there can be removed.
+export const partial = 'novaland';
+
 export default defineRailway(() => {
   const web = service('novaland', {
     // checkSuites is the dashboard's "Wait for CI": a push deploys only after the GitHub Actions checks pass.
