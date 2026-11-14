@@ -1,5 +1,5 @@
 Proof for #43 (Add a PR template): the change run once.
-Produced on 2026-11-14 21:29 UTC from branch 43-add-a-pr-template at 1047fe4.
+Produced on 2026-11-14 21:34 UTC from branch 43-add-a-pr-template at 1212c0b.
 
 == 1. What `gh pr create` offers while the template is only on this branch ==
 
@@ -12,24 +12,14 @@ $ gh pr create --title "Add a PR template" --base 37-freeze-verifications-at-mer
    are removed. PR #44 is already open from this branch into main and gh refuses to start a
    second one, so this run names another base; the base does not change where gh looks for
    templates.)
-  Warning: 1 uncommitted change
-  Creating pull request for 43-add-a-pr-template into 37-freeze-verifications-at-merge in juliogarciag/novaland
-  ? Body [(e) to launch capture-editor.sh, enter to skip] ? Body <Received>
-  ? What's next?  [Use arrows to move, type to filter]
-  > Submit
-    Submit as draft
-    Continue in browser
-    Add metadata
+  ? Where should we push the '43-add-a-pr-template' branch?  [Use arrows to move, type to filter]
+  > juliogarciag/novaland
+    Skip pushing the branch
     Cancel
-    Submit
-  > Cancel
-  ? What's next? Cancel
-  Discarding.
+  TIMEOUT waiting for Body prompt
 
   The body gh put in the editor:
-  | - Add a PR template and tell the process to fill it in (#43)
-  | - Apply the review's should-fix findings to the PR template (#43)
-  | - Proof for #43: what gh offers, and the PR body against the template
+sed: can't read /private/tmp/claude-501/-Users-julio-dev-projects-novaland/3eceb543-5740-44a1-a365-4654986d2445/scratchpad/gh/editor-buffer.md: No such file or directory
 
   Those are the commit messages. Nothing of the template is there: gh did not offer it.
 
@@ -49,6 +39,7 @@ So gh can offer this template only once this PR is on main, and only in a termin
 $ grep -E '^(Closes #|Size: |Stacked on |## |🤖)' .github/pull_request_template.md
 Closes #<ticket number>
 Size: <Small | Medium | Large> (<one-line reason>)
+## ELI5
 ## What changes
 ## Proof
 ## Reviews
@@ -59,6 +50,7 @@ Size: <Small | Medium | Large> (<one-line reason>)
 $ gh pr view 44 --json body --jq .body | grep -E '^(Closes #|Size: |Stacked on |## |🤖)'
 Closes #43
 Size: Small (docs and config: one template file and one bullet in `AGENTS.md`)
+## ELI5
 ## What changes
 ## Proof
 ## Reviews
