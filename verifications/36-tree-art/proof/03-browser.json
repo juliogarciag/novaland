@@ -4,7 +4,7 @@
       "name": "2-in-front",
       "description": "south of the clump, against its south face",
       "player": {
-        "x": -5.333396911621094,
+        "x": -5.250062942504883,
         "y": -2.600023031234741,
         "bottomEdge": -2.2000230312347413
       },
@@ -33,10 +33,10 @@
       "description": "west of the clump, level with its south-west tree",
       "player": {
         "x": -6.399977684020996,
-        "y": -3.683330774307251,
-        "bottomEdge": -3.283330774307251
+        "y": -3.84999680519104,
+        "bottomEdge": -3.44999680519104
       },
-      "spriteDepth": -52.53329238891602,
+      "spriteDepth": -55.19994888305664,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -50,9 +50,9 @@
         }
       ],
       "pixels": {
-        "visible": 147,
-        "hiddenByATree": 6,
-        "skipped": 9,
+        "visible": 148,
+        "hiddenByATree": 3,
+        "skipped": 11,
         "wrong": 0
       }
     },
@@ -61,10 +61,10 @@
       "description": "north of the clump, against its north face",
       "player": {
         "x": -5.233321189880371,
-        "y": -5.399977684020996,
-        "bottomEdge": -4.999977684020996
+        "y": -5.3999834060668945,
+        "bottomEdge": -4.999983406066894
       },
-      "spriteDepth": -79.99964294433593,
+      "spriteDepth": -79.9997344970703,
       "overlappingTrees": [
         {
           "treeDepth": -64,
@@ -126,7 +126,7 @@
       "treesOffTheScreenGrid": 0,
       "blocksChecked": 21504,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 9541,
+      "sheetPixelsCompared": 9255,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },
@@ -136,11 +136,11 @@
         "height": 480
       },
       "zoom": 2,
-      "treesChecked": 17,
+      "treesChecked": 15,
       "treesOffTheScreenGrid": 0,
-      "blocksChecked": 13056,
+      "blocksChecked": 11520,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 5922,
+      "sheetPixelsCompared": 5125,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     },
@@ -154,7 +154,7 @@
       "treesOffTheScreenGrid": 0,
       "blocksChecked": 16128,
       "blocksNotFlat": 0,
-      "sheetPixelsCompared": 7507,
+      "sheetPixelsCompared": 7444,
       "sheetPixelsWrong": 0,
       "sheetColoursSeen": 9
     }

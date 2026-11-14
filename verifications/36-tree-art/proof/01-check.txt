@@ -2,7 +2,7 @@ PASS  pnpm install exits 0  (exit 0)
 PASS  pnpm test exits 0  (exit 0)
 PASS  pnpm typecheck exits 0  (exit 0)
 PASS  pnpm lint exits 0  (exit 0)
-PASS  all tests passed, none skipped  (304/304)
+PASS  all tests passed, none skipped  (324/324)
 PASS  client: standing tile placement tests passed  (5 tests)
 PASS  client: variant picking tests passed  (3 tests)
 PASS  sim: a standing sprite stands on a flat tile def
