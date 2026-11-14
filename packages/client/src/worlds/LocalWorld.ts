@@ -16,6 +16,7 @@ const MAX_FRAME_SECONDS = 0.25;
 export class LocalWorld implements PlayableWorld {
   readonly localSlot = LOCAL_SLOT;
   readonly occupancy = undefined;
+  readonly latencyMs = undefined;
   private leftover = 0;
   private pendingCommands: Command[] = [{ type: 'player/join', slot: LOCAL_SLOT }];
 
