@@ -55,7 +55,7 @@ packages/
               steps it at TICK_RATE and sends world-state deltas. src/world/ holds the room, the seats, the inbound gate and the boot.
               src/front/ is everything between the port and the room: the HTTP server, the routes, the origin policy, the request guard.
               The two never import each other and are reached through their entry files only; src/startServer.ts joins them (ADR 0008).
-docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0010 before drawing tiles, 0004 and 0005 before touching replication or networking, 0006 before touching the client's boot or its online mode, 0008 before touching the server's HTTP front.
+docs/decisions/   Architecture decision records (ADRs). Read 0001, 0002 and 0003 before touching core or levels, 0010 and 0011 before drawing tiles, 0004 and 0005 before touching replication or networking, 0006 before touching the client's boot or its online mode, 0008 before touching the server's HTTP front.
 verifications/    One folder per ticket with its verification scripts and proof, frozen when the ticket's PR merges.
                   _template/ is the maintained starting point for a new one.
 scripts/          Root dev scripts: dev-online.mjs runs the world server and the client together (`pnpm dev:online`).
