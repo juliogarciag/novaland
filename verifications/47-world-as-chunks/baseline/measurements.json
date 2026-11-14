@@ -1,0 +1,22 @@
+[
+ {
+  "columns": 40,
+  "rows": 30,
+  "simEntities": 38,
+  "worldStateEntities": 38,
+  "perSendMs": 0.088,
+  "deltaBytesPerSend": 466,
+  "fullStateBytes": 7574,
+  "snapshotAndHashMs": 0.56
+ },
+ {
+  "columns": 400,
+  "rows": 300,
+  "simEntities": 3314,
+  "worldStateEntities": 3314,
+  "perSendMs": 5.959,
+  "deltaBytesPerSend": 472,
+  "fullStateBytes": 650849,
+  "snapshotAndHashMs": 84.53
+ }
+]
