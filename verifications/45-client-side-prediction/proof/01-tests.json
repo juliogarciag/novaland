@@ -505,6 +505,26 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator paints the sheet under the key and in the tile layout the grass def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator paints the same sheet every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator covers every pixel: ground has no holes",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator textures every tile and paints no two alike",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
     "status": "passed"
@@ -517,6 +537,31 @@
   {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator paints sheets in the frame layout the defs declare",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints the sheet under the key and in the frame layout the rock def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints the same sheet every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator keeps every rock inside the width of its one-metre tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints a rock in every frame, and no two alike",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator buries every rock: its lowest row is grass in the greens of the grass sheet, with nothing under it",
     "status": "passed"
   },
   {
@@ -680,6 +725,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
     "status": "passed"
@@ -700,6 +760,56 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots gives a def with a loaded ground sprite one tile per variant and every other def one flat tile, end to end in def order",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots falls back to one flat tile for a ground sprite whose sheet did not load",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots every ground sprite of the terrain defs has tiles of the size the tileset is built from",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots refuses a ground sprite whose tiles are another size",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows shows every grass tile in the variant its column and row pick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows puts the grass a tile would have had under a tree or a rock",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows shows a flat tile without a sprite as its one tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows draws a standing tile flat in its own tile when its image did not load, and still textures the grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows with no sheet loaded at all, every tile is the flat tile of its own def, as before there was art",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows uses every grass variant somewhere in the starter level",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/render/pose.test.ts",
     "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
     "status": "passed"
@@ -716,7 +826,7 @@
   },
   {
     "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements places one image per tree tile and none for flat tiles",
+    "name": "standingTilePlacements places one image per tree or rock tile and none for flat tiles",
     "status": "passed"
   },
   {
@@ -736,22 +846,27 @@
   },
   {
     "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements covers every tree of the starter level with a frame the sheet has",
+    "name": "standingTilePlacements covers every tree and rock of the starter level with a frame its sheet has",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "variantOfTile gives a tile the same variant every time",
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile gives a tile the variant it has always had: a changed hash would redraw every tree, rock and grass tile",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "variantOfTile uses every variant about as often across a forest",
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile uses every variant about as often across a level, however many there are",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/render/standingTiles.test.ts",
+    "file": "packages/client/src/render/tileVariant.test.ts",
     "name": "variantOfTile does not paint whole rows or columns in one variant",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile picks the only variant there is when there is one",
     "status": "passed"
   },
   {
@@ -802,21 +917,6 @@
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor is 1 for a width that makes no sense",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
     "status": "passed"
   },
   {
@@ -1341,7 +1441,7 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004 and 0011 list",
+    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004 and 0012 list",
     "status": "passed"
   },
   {
@@ -1540,6 +1640,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level has no paths: every tile is grass, a tree or a rock",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level is ringed by trees with no gap, so nothing walks off the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level spawns on grass, with every other grass tile within reach",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
     "status": "passed"
@@ -1566,12 +1681,22 @@
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs no standing sprite shares its key with another sprite: they are one folder and one texture namespace",
+    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
     "status": "passed"
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
     "status": "passed"
   },
   {
@@ -1606,12 +1731,12 @@
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "name": "terrain feature (headless) the starter level spawns the player on the grass inside the forest",
     "status": "passed"
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
     "status": "passed"
   },
   {
