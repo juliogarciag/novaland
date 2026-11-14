@@ -25,6 +25,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
+    "railway": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
     "vite": "catalog:",

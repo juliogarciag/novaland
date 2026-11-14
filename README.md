@@ -41,4 +41,26 @@ What the process does and reads:
 - The world lives in the process's memory: a restart is a fresh world with a new seed, and there must be exactly one instance (one room, five seats).
 - Production builds carry no debug API: `window.__novaland` exists only under `pnpm dev`.
 
-The host itself is not chosen here; whatever runs one always-on container with WebSockets works.
+Any host that runs one always-on container with WebSockets works. The public game runs on Railway, below.
+
+## Deploying
+
+The game is live at **PUBLIC_URL**. Every merge to `main` deploys it: Railway's GitHub autodeploy builds the root `Dockerfile` once the CI checks on that commit pass. No deploy token is stored in GitHub. Each deploy starts an empty world. [ADR 0009](docs/decisions/0009-hosting-on-railway.md) has the reasoning.
+
+How the service is built and run lives in [`.railway/railway.ts`](.railway/railway.ts), Railway's Infrastructure as Code: the Dockerfile builder, the `/health` check, restart on failure, exactly one replica in US East that never sleeps, Wait for CI, and `ALLOWED_ORIGINS`. Railway does not read that file on deploy. After changing it, apply it from the repo root with the project linked (Railway CLI 5.42.1 or newer):
+
+```bash
+railway config plan
+```
+
+```bash
+railway config apply
+```
+
+Setting it up from nothing, once. The Novaland project is its own Railway project and shares nothing with other projects in the account:
+
+1. Create the project: `railway init --name novaland` at the repo root, or New Project → Empty Project in the dashboard and then `railway link`.
+2. Connect the repo: give Railway's GitHub app access to `juliogarciag/novaland` (dashboard, Account Settings → GitHub). Then `railway config apply` creates the `novaland` service from `main` with every setting above.
+3. Turn on Wait for CI: the file sets it (`checkSuites`). Check it under the service's Settings → Source, where the toggle shows because `.github/workflows/ci.yml` runs on pushes to `main`.
+4. Generate the domain: `railway domain`, or the service's Settings → Networking → Generate Domain.
+5. Set `ALLOWED_ORIGINS`: the file sets it to `https://${{RAILWAY_PUBLIC_DOMAIN}}`, which Railway fills in from the domain. With no domain yet the value is not a valid origin and the server refuses to boot, so generate the domain before the first deploy, or redeploy after it. A second address (a custom domain) goes into the file as a comma-separated list.

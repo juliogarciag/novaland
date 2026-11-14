@@ -1,0 +1,43 @@
+/**
+ * Novaland on Railway: one service that builds the root Dockerfile and serves
+ * the client and the world room on one port (ADR 0008, ADR 0009).
+ *
+ * Railway does not read this file on deploy. A push to main deploys through
+ * Railway's GitHub autodeploy once CI passes; this file sets how that service
+ * is built and run. Apply it after changing it, from the repo root, with the
+ * Novaland project linked (see "Deploying" in the README):
+ *
+ *   railway config plan
+ *   railway config apply
+ *
+ * The world lives in the process's memory, so there is exactly one replica and
+ * it never sleeps. Nothing secret belongs here.
+ */
+import { defineRailway, github, project, service } from 'railway/iac';
+
+const REGION = 'us-east4-eqdc4a'; // US East, Virginia: nearest most players.
+
+export default defineRailway(() => {
+  const web = service('novaland', {
+    // checkSuites is the dashboard's "Wait for CI": a push deploys only after the GitHub Actions checks pass.
+    source: github('juliogarciag/novaland', { branch: 'main', checkSuites: true }),
+    build: { builder: 'DOCKERFILE', dockerfilePath: 'Dockerfile' },
+    deploy: {
+      healthcheckPath: '/health',
+      healthcheckTimeout: 60,
+      restartPolicyType: 'ON_FAILURE',
+      restartPolicyMaxRetries: 10,
+      sleepApplication: false,
+      multiRegionConfig: { [REGION]: { numReplicas: 1 } },
+      // Each deploy starts an empty world. Stop the old one as soon as the new one is healthy, so nobody is left playing in it.
+      overlapSeconds: 0,
+      drainingSeconds: 10,
+    },
+    env: {
+      // The address players open. Railway fills in the generated domain; production refuses to boot without it.
+      ALLOWED_ORIGINS: 'https://${{RAILWAY_PUBLIC_DOMAIN}}',
+    },
+  });
+
+  return project('novaland', { resources: [web] });
+});
