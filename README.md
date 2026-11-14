@@ -57,7 +57,7 @@ railway config plan
 railway config apply
 ```
 
-The Railway account holds other projects. Before applying, check that the plan's header reads `Project novaland` and `Environment production` and that it destroys nothing, and never pass `--confirm-destructive`. The file exports a named partial (`novaland`), which only ever deletes resources it owns, so a wrong link cannot remove anything outside it.
+The Railway account holds other projects, and an apply manages the whole project it is linked to: a file applied while linked to another project would plan to delete that project's services. Before applying, check that the plan's header reads `Project novaland` and `Environment production` and that it destroys nothing, and never pass `--confirm-destructive`.
 
 Setting it up from nothing, once. The Novaland project is its own Railway project and shares nothing with other projects in the account:
 

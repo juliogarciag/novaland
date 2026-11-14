@@ -16,6 +16,7 @@ node 01-live.mjs https://novaland-production.up.railway.app
 | `proof/01-live-local*` | The same script dry-run against `pnpm build` + `pnpm start` in production mode on port 5120, before the deploy |
 | `proof/02-config-plan.txt`, `03-config-apply.txt` | `railway config plan` / `apply` of `.railway/railway.ts` on the new `novaland` project: one service created, nothing else |
 | `proof/02-config-plan-after-domain.txt` | `railway config plan` once the domain was in the file: nothing to change, so the file matches the live service |
+| `proof/03-config-partials-list.txt` | After applying a file that exported a named partial: Railway recorded no ownership, so the repo does not rely on partials (ADR 0009) |
 | `proof/04-domain.txt` | The generated domain |
 | `proof/05-branch-deploy-build-log.txt`, `05-branch-deploy-runtime-log.txt` | Railway's build log (Dockerfile builder, health check on `/health` succeeded) and deploy log (`allowedOrigins` resolved to the public URL) for the by-hand deploy of this branch |
 | `proof/06-curl-health.txt` | `curl -si` of `/health` on the public URL |
