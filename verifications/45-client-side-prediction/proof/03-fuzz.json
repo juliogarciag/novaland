@@ -10,6 +10,8 @@
     "sent": 500,
     "wellFormed": 120,
     "acknowledged": 132,
+    "acknowledgedShare": 1,
+    "lastWellFormedAcknowledged": true,
     "badAcknowledgements": []
   },
   "garbage": {
@@ -17,14 +19,14 @@
     "frames": 35
   },
   "witness": {
-    "updates": 819,
+    "updates": 821,
     "gaps": 0,
-    "acknowledged": 163,
+    "acknowledged": 162,
     "unknownSequences": 0,
     "outOfOrder": 0,
     "ticksBack": 0,
     "updateBeforeTick": 0,
-    "sent": 163
+    "sent": 162
   },
   "results": [
     {
@@ -42,9 +44,9 @@
       "details": "4 of 4 seated"
     },
     {
-      "name": "500 random messages from a seated client: it stays seated, and is acknowledged only for payloads that were well-formed moves, each with a real tick",
+      "name": "500 random messages from a seated client: it stays seated, its well-formed moves are acknowledged (the last one always), and nothing else ever is",
       "pass": true,
-      "details": "{\"sent\":500,\"wellFormed\":120,\"acknowledged\":132,\"badAcknowledgements\":[]}"
+      "details": "{\"sent\":500,\"wellFormed\":120,\"acknowledged\":132,\"acknowledgedShare\":1,\"lastWellFormedAcknowledged\":true,\"badAcknowledgements\":[]}"
     },
     {
       "name": "400 moves at once: the room closes the flooding client",
@@ -54,12 +56,12 @@
     {
       "name": "the witness kept playing through all of it: its deltas chain without a gap",
       "pass": true,
-      "details": "819 updates, 0 gaps"
+      "details": "821 updates, 0 gaps"
     },
     {
       "name": "every acknowledgement the witness got names a move it sent, in order, with a tick that never goes back and that the next update has reached",
       "pass": true,
-      "details": "{\"updates\":819,\"gaps\":0,\"acknowledged\":163,\"unknownSequences\":0,\"outOfOrder\":0,\"ticksBack\":0,\"updateBeforeTick\":0,\"sent\":163}"
+      "details": "{\"updates\":821,\"gaps\":0,\"acknowledged\":162,\"unknownSequences\":0,\"outOfOrder\":0,\"ticksBack\":0,\"updateBeforeTick\":0,\"sent\":162}"
     },
     {
       "name": "after 35 garbage frames from 12 joined sockets the room is alive, has not crashed and still seats a player",

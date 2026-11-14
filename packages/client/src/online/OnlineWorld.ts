@@ -40,6 +40,20 @@ interface Direction {
   readonly y: number;
 }
 
+/** A place in the world, in metres. */
+interface Position {
+  readonly x: number;
+  readonly y: number;
+}
+
+/** What an online world is built from, once the first welcome has given the seat and the replica. */
+interface OnlineWorldParts {
+  readonly connection: WorldConnection;
+  readonly replica: ReplicaHandle;
+  readonly slot: number;
+  readonly options: OnlineWorldOptions;
+}
+
 /**
  * Online play: the server owns the sim and this client holds a replica of
  * it. The welcome gives the seat, the level and a full state; deltas keep
@@ -80,13 +94,13 @@ export class OnlineWorld implements PlayableWorld {
   /** When the prediction's clock started, on `now`'s scale. */
   private predictionStartedAt = 0;
   /** Where the last frame drew the local player, in metres; undefined when it drew none. */
-  private drawnLocalPlayer: Direction | undefined;
+  private drawnLocalPlayer: Position | undefined;
   /** Out-of-sequence updates seen since the last full state; a resync is asked for at 1 and again every `RESYNC_RETRY_AFTER_UPDATES`. */
   private outOfSequenceUpdates = 0;
   /** The welcome's own state was refused: ask for a full state as soon as the connection is online. */
   private needsFullState = false;
 
-  private constructor(connection: WorldConnection, replica: ReplicaHandle, slot: number, options: OnlineWorldOptions) {
+  private constructor({ connection, replica, slot, options }: OnlineWorldParts) {
     this.connection = connection;
     this.sim = replica;
     this.slot = slot;
@@ -126,13 +140,13 @@ export class OnlineWorld implements PlayableWorld {
           } catch {
             return { incompatible: `the server's capacity (${String(welcome.capacity)}) is out of this client's range` };
           }
-          world = new OnlineWorld(connection, replica, welcome.slot, options);
+          world = new OnlineWorld({ connection, replica, slot: welcome.slot, options });
           world.applyWelcomeState(welcome);
           resolveSeated(world);
           return 'seated';
         },
         onUpdate: (payload) => world?.applyUpdate(payload),
-        onMoveApplied: (payload) => world?.predict((prediction) => prediction.moveApplied(payload)),
+        onMoveApplied: (payload) => world?.withPrediction((prediction) => prediction.moveApplied(payload)),
         onStatus: (status) => {
           world?.onStatus(status);
           options.onStatus?.(status);
@@ -178,9 +192,9 @@ export class OnlineWorld implements PlayableWorld {
 
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
     for (const command of commands) this.queueCommand(command);
-    this.predict((prediction) => prediction.advanceTo(this.predictionClientTime(), this.sim));
+    this.withPrediction((prediction) => prediction.advanceTo(this.predictionClientTicks(), this.sim));
     const fromServer = this.frames.nextFrame(deltaSeconds) ?? readViewFrame(this.sim);
-    const frame = this.predict((prediction) => prediction.withLocalPlayer(fromServer)) ?? fromServer;
+    const frame = this.withPrediction((prediction) => prediction.withLocalPlayer(fromServer)) ?? fromServer;
     const eid = findPlayerEntity(this.sim, this.slot);
     const drawn = eid === undefined ? undefined : frame.renderables.find((renderable) => renderable.eid === eid);
     this.drawnLocalPlayer = drawn ? { x: drawn.x, y: drawn.y } : undefined;
@@ -200,7 +214,7 @@ export class OnlineWorld implements PlayableWorld {
     const sequence = this.nextMoveSequence;
     if (!this.connection.sendMove({ x: move.x, y: move.y, sequence })) return;
     this.nextMoveSequence += 1;
-    this.predict((prediction) => prediction.recordMove(move, sequence));
+    this.withPrediction((prediction) => prediction.recordMove(move, sequence, this.predictionClientTicks()));
   }
 
   /**
@@ -213,14 +227,17 @@ export class OnlineWorld implements PlayableWorld {
       const prediction = new LocalPlayerPrediction(await create({ level: this.sim.level, capacity: this.sim.capacity }));
       this.predictionStartedAt = this.now();
       this.prediction = prediction;
-      if (this.connection.status.kind === 'online') this.predict((ready) => ready.follow(this.sim, this.slot));
+      if (this.connection.status.kind !== 'online') return;
+      this.withPrediction((ready) => ready.follow(this.sim, this.slot, this.drawnLocalPlayer));
+      // A key held since before the prediction existed was never recorded: sent again, its acknowledgement ties the prediction to the server's timeline.
+      if (this.lastMove.x !== 0 || this.lastMove.y !== 0) this.sendMove(this.lastMove);
     } catch (error) {
       console.warn('Novaland: no prediction, the local player follows the server', error);
     }
   }
 
   /** The prediction's clock: real time since it started, in sim ticks, fraction included. */
-  private predictionClientTime(): number {
+  private predictionClientTicks(): number {
     return ((this.now() - this.predictionStartedAt) / 1000) * TICK_RATE;
   }
 
@@ -231,7 +248,7 @@ export class OnlineWorld implements PlayableWorld {
    * what it holds came from the network, and it must never take the page
    * down with it.
    */
-  private predict<Result>(use: (prediction: LocalPlayerPrediction) => Result): Result | undefined {
+  private withPrediction<Result>(use: (prediction: LocalPlayerPrediction) => Result): Result | undefined {
     const prediction = this.prediction;
     if (!prediction) return undefined;
     try {
@@ -273,7 +290,7 @@ export class OnlineWorld implements PlayableWorld {
     // The connection is not online yet while the welcome is being read, so a refused state is asked for again once it is.
     this.needsFullState = applyWorldState(this.sim, welcome.state) !== 'applied';
     if (!this.needsFullState) this.frames.push(readViewFrame(this.sim));
-    this.predict((prediction) => prediction.follow(this.sim, this.slot));
+    this.withPrediction((prediction) => prediction.follow(this.sim, this.slot));
   }
 
   /**
@@ -287,7 +304,7 @@ export class OnlineWorld implements PlayableWorld {
     if (result === 'applied') {
       if ((payload as WorldStateUpdate).kind === 'full') this.outOfSequenceUpdates = 0;
       this.frames.push(readViewFrame(this.sim));
-      this.predict((prediction) => prediction.reconcile(this.sim));
+      this.withPrediction((prediction) => prediction.reconcile(this.sim));
       return;
     }
     if (result === 'malformed') {
@@ -301,7 +318,7 @@ export class OnlineWorld implements PlayableWorld {
   /** Seated again: a welcome whose state was refused needs a full state, and the key the player still holds never reached the new seat. */
   private onStatus(status: ConnectionStatus): void {
     if (status.kind !== 'online') {
-      this.predict((prediction) => prediction.stop());
+      this.withPrediction((prediction) => prediction.stop());
       return;
     }
     if (this.needsFullState) {

@@ -14,6 +14,7 @@ import { DefRef } from './transform';
  * time the authoritative state arrives. See ADR 0011.
  */
 export interface PredictionHandle extends SimHandle {
+  /** Tells the type apart from a plain SimHandle, as `isReplica` does for a replica. Inside the package, test `instanceof Prediction`. */
   readonly isPrediction: true;
 }
 
@@ -23,8 +24,13 @@ export interface PredictionHandle extends SimHandle {
  */
 export class Prediction extends Sim implements PredictionHandle {
   readonly isPrediction = true;
-  /** Ids of the entities copied in with `adoptEntity`; everything else the prediction made itself. */
-  readonly adopted = new Set<number>();
+  /**
+   * Ids of the entities copied in with `adoptEntity`; everything else the
+   * prediction made itself. Kept outside components on purpose (rule 3 is
+   * about sims whose state is saved or replicated): a prediction is never
+   * snapshotted or restored, only thrown away and rebuilt.
+   */
+  readonly adoptedEntityIds = new Set<number>();
 }
 
 /**
@@ -42,7 +48,7 @@ export class Prediction extends Sim implements PredictionHandle {
 export function adoptEntity(handle: PredictionHandle, source: SimHandle, eid: number): boolean {
   const prediction = asPrediction(handle);
   const sourceWorld = asEntityWorld(source);
-  const ownsId = entityExists(prediction.world, eid) && !prediction.adopted.has(eid);
+  const ownsId = entityExists(prediction.world, eid) && !prediction.adoptedEntityIds.has(eid);
   if (ownsId || !isEntityId(eid, Math.min(prediction.capacity, sourceWorld.capacity)) || !entityExists(sourceWorld.world, eid)) {
     releaseAdoptedEntity(prediction, eid);
     return false;
@@ -50,12 +56,12 @@ export function adoptEntity(handle: PredictionHandle, source: SimHandle, eid: nu
   // Everything but Body: its handle names a body in the server's physics world.
   const components = Object.fromEntries(Object.entries(snapshotEntity(sourceWorld, eid).components).filter(([name]) => name !== Body.name));
   const defId = components[DefRef.name]?.id;
-  if (defId !== undefined && !findDef(defId)) {
+  if (defId === undefined || !findDef(defId)) {
     releaseAdoptedEntity(prediction, eid);
     return false;
   }
-  if (prediction.adopted.has(eid)) detachBody(prediction, eid);
-  prediction.adopted.add(eid);
+  if (prediction.adoptedEntityIds.has(eid)) detachBody(prediction, eid);
+  prediction.adoptedEntityIds.add(eid);
   restoreEntity(prediction, eid, components);
   for (const feature of prediction.features) feature.attachBody?.(prediction, eid);
   if (!hasComponent(prediction.world, eid, prediction.store(Body))) {
@@ -68,11 +74,11 @@ export function adoptEntity(handle: PredictionHandle, source: SimHandle, eid: nu
 /** Removes every entity the prediction adopted, bodies included. What it made itself (terrain) stays. */
 export function releaseAdoptedEntities(handle: PredictionHandle): void {
   const prediction = asPrediction(handle);
-  for (const eid of [...prediction.adopted]) releaseAdoptedEntity(prediction, eid);
+  for (const eid of [...prediction.adoptedEntityIds]) releaseAdoptedEntity(prediction, eid);
 }
 
 function releaseAdoptedEntity(prediction: Prediction, eid: number): void {
-  if (!prediction.adopted.delete(eid)) return;
+  if (!prediction.adoptedEntityIds.delete(eid)) return;
   if (entityExists(prediction.world, eid)) prediction.destroyEntity(eid);
 }
 

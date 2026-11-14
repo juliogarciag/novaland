@@ -228,7 +228,7 @@ export class WorldRoom extends Room {
         const commands = this.pendingCommands;
         this.pendingCommands = [];
         sim.step(commands);
-        if (commands.length > 0) this.noteAppliedMoves(sim.tick);
+        if (commands.length > 0) this.queueMoveAcknowledgements(sim.tick);
         this.settleTickWaiters(true);
       }
       if (sim.tick - this.lastSendTick >= TICKS_PER_SEND) {
@@ -243,7 +243,7 @@ export class WorldRoom extends Room {
   }
 
   /** The tick that made the sim's tick `tick` applied every command that was waiting: each session's queued move becomes the one to acknowledge. */
-  private noteAppliedMoves(tick: number): void {
+  private queueMoveAcknowledgements(tick: number): void {
     for (const session of this.sessions.values()) {
       if (session.queuedMoveSequence === undefined) continue;
       session.moveToAcknowledge = { sequence: session.queuedMoveSequence, tick };

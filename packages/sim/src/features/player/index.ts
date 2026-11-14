@@ -8,7 +8,7 @@ import type { Sim } from '../../core/sim';
 import { DefRef, Extents, Position } from '../../core/transform';
 import { pickAvatarDefId } from './avatars';
 import { Facing, MoveIntent, Player } from './components';
-import { MAX_ADOPTED_RADIUS, MIN_MOVE_INTENT } from './defs';
+import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MIN_MOVE_INTENT } from './defs';
 import { findPlayerEntity } from './queries';
 import { pickSpawnPoint } from './spawn';
 
@@ -92,7 +92,8 @@ export const playerFeature: Feature = {
     const x = position.x[eid] as number;
     const y = position.y[eid] as number;
     const radius = extents.halfWidth[eid] as number;
-    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(radius) || radius <= 0 || radius > MAX_ADOPTED_RADIUS) return;
+    // NaN fails every comparison, so these also refuse values that are not numbers at all.
+    if (!(Math.abs(x) <= MAX_ADOPTED_COORDINATE) || !(Math.abs(y) <= MAX_ADOPTED_COORDINATE) || !(radius > 0) || !(radius <= MAX_ADOPTED_RADIUS)) return;
     attachPlayerBody(sim, eid, { x, y, radius });
   },
 };
