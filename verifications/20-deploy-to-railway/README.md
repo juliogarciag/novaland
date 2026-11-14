@@ -20,4 +20,6 @@ node 01-live.mjs https://novaland-production.up.railway.app
 | `proof/04-domain.txt` | The generated domain |
 | `proof/05-branch-deploy-build-log.txt`, `05-branch-deploy-runtime-log.txt` | Railway's build log (Dockerfile builder, health check on `/health` succeeded) and deploy log (`allowedOrigins` resolved to the public URL) for the by-hand deploy of this branch |
 | `proof/06-curl-health.txt` | `curl -si` of `/health` on the public URL |
-| `proof/07-*` (added after the merge) | The first automatic deploy after the PR merged: CI passed, then Railway built `main` |
+| `proof/07-auto-deploy-list.txt`, `07-auto-deploy-build-log.jsonl` | The first automatic deploy, of merge commit `0094581` (PR #33). Railway created it at 20:23:34Z, two seconds after the merge, and held it until CI on that commit passed at 20:24:21Z; the build's first line is at 20:24:30Z and its health check succeeded at 20:24:59Z. That is Wait for CI working |
+| `proof/07-auto-deploy-runtime-log.txt`, `07-curl-health.txt` | The new process listening with `allowedOrigins` set to the public URL, and `curl -si` of `/health` after it |
+| `proof/07-live-railway.json`, `07-live-railway-two-players.png` | `01-live.mjs` against the automatically deployed `main`: 11/11, with a third player already in the world, each page drawing the others |
