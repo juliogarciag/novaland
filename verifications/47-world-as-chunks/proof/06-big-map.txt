@@ -1,0 +1,15 @@
+PASS  the generated map is 400x300: 100 times the world's tiles  (120000 tiles in 130 chunks, 6273 trees and rocks; the world has 1200 tiles in 2 chunks, 358 trees and rocks)
+PASS  on the big map only the chunks near the camera are drawn  (4 of 130 chunks: 5,4 6,4 5,5 6,5)
+PASS  ground tiles alive are the drawn chunks, not the map  (4096 of 120000)
+PASS  standing images alive are the trees and rocks of the drawn chunks, not of the map  (126 of 6273)
+PASS  what Phaser holds is what the report says: one tilemap layer per drawn chunk and one image per standing tile in them  (big: 4 layers, 126 images; world: 2 layers, 358 images)
+PASS  every pixel of the screen is terrain: nothing near the camera was left out
+PASS  walking changed which chunks are drawn  (walked 26.2 m; 3 different sets of chunks; now 6,4 6,5 7,4 7,5)
+PASS  and never how many: chunks behind the camera were dropped as new ones were built  (at most 6 chunks, 189 standing images, 196 game objects in 20 samples)
+PASS  after the walk Phaser holds exactly the drawn chunks: nothing of the dropped ones is left behind  (4 layers and 118 images for 4 chunks)
+PASS  no terrain was missing on screen at any point of the walk  (0 background pixels in 20 screenshots)
+PASS  zoomed out to three times as much world on screen, more chunks are drawn, still a fraction of the map  (20 m across: 4 chunks; 60 m across: 6 chunks, of 130)
+PASS  zoomed out, every pixel of the screen is still terrain
+PASS  no page errors
+
+ALL 13 CHECKS PASSED

@@ -1,0 +1,31 @@
+PASS  pnpm install passes
+PASS  pnpm typecheck passes
+PASS  pnpm lint passes
+PASS  pnpm build passes
+PASS  pnpm test passes  (416 of 416 tests in 135 suites)
+PASS  world.test.ts: keeps every existing tile, tile coordinate and position in metres when an area is added on any side
+PASS  world.test.ts: mounts a second area at the coordinates it reserves: its tiles and its colliders are there, in the same world
+PASS  world.test.ts: a player inside a mounted area is stopped by its walls
+PASS  world.test.ts: refuses an area that overlaps another by even one tile, naming both, and two areas with one name
+PASS  world.test.ts: gives the same checksum to the same terrain however it is cut into areas, and another to any other terrain or spawn
+PASS  world.test.ts: stores tiles in chunks of CHUNK_SIZE, top row first then left to right, and only the chunks that hold a tile
+PASS  terrain.test.ts: builds one static box per merged rectangle, chunk by chunk, and no entity at all
+PASS  terrain.test.ts: builds the same boxes in the same order every time, and the same physics bytes
+PASS  terrain.test.ts: a wall that crosses a chunk edge is as solid at the seam as anywhere else
+PASS  determinism.test.ts: same seed + same commands = identical state, including physics bytes
+PASS  prediction.test.ts: starts with the same terrain colliders as a sim of the map and no entity at all, and steps like a sim
+PASS  prediction.test.ts: takes no entity id for terrain, however big the map: the first id a server hands a player is free to adopt
+PASS  prediction.test.ts: adopts a player from a replica under the same id and walks it exactly as the server does, walls included
+PASS  replica.test.ts: never sends terrain at all: a full state holds the players and nothing else, deltas only the players that moved
+PASS  replica.test.ts: pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012 and 0013 list
+PASS  worldRoom.test.ts: seats 5 players by room id, each welcomed with its own seat and already in the world
+PASS  OnlineWorld.test.ts: reports a server it cannot play on: another wire protocol or none, another map, a capacity out of range, a welcome of the wrong shape
+PASS  OnlineWorld.test.ts: after a drop refuses a welcome for another map: a server redeployed with new terrain
+PASS  chunkRange.test.ts: does not depend on how big the world is: a screen of 60 by 34 tiles needs at most nine chunks built and keeps at most sixteen
+PASS  chunkRange.test.ts: drops a drawn chunk only once it is outside the keep range, so stepping back over an edge builds nothing
+PASS  chunkRange.test.ts: keeps a range inside a limit however large it is, and holds no chunk when it lies outside
+PASS  camera.test.ts: is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)
+PASS  standingTiles.test.ts: draws the eastern of two trees in a row on top whichever was created first, by far less than a pixel of depth
+PASS  groundTiles.test.ts: shows every grass tile in the variant its world column and row pick, wherever its chunk is
+
+ALL 29 CHECKS PASSED
