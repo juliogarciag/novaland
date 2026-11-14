@@ -1,0 +1,257 @@
+fetched snapshot sha256:7d1fd5d62d14695b75c7e8866437905fb2795d1f58f8225f8287d32a38c0fad0 (1.0 MB bytes)
+[INFO] fetching snapshot
+[INFO] unpacking archive
+[INFO] [internal] load build definition from Dockerfile
+[INFO] [internal] load build definition from Dockerfile
+[INFO] [internal] load build definition from Dockerfile
+[INFO] [internal] load build definition from Dockerfile
+[INFO] resolve image config for docker-image://docker.io/docker/dockerfile:1
+[INFO] resolve image config for docker-image://docker.io/docker/dockerfile:1
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[INFO] [internal] load metadata for docker.io/library/node:24-alpine
+[INFO] [internal] load metadata for docker.io/library/node:24-alpine
+[INFO] [internal] load .dockerignore
+[INFO] [internal] load .dockerignore
+[INFO] [internal] load .dockerignore
+[INFO] [internal] load .dockerignore
+[INFO] importing cache manifest from s3:9030405925439967209
+[INFO] [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+[INFO] [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
+[INFO] [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
+[INFO] [base 7/7] COPY packages/server/package.json packages/server/
+[INFO] [base 6/7] COPY packages/client/package.json packages/client/
+[INFO] [build 1/4] RUN pnpm install --frozen-lockfile
+[INFO] [base 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+[INFO] [internal] load build context
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 2/7] RUN corepack enable
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
+[INFO] [build 2/4] COPY tsconfig.base.json ./
+[INFO] [base 1/7] FROM docker.io/library/node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5
+[INFO] [base 5/7] COPY packages/sim/package.json packages/sim/
+[INFO] [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
+[INFO] [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
+[INFO] [build 4/4] RUN pnpm build
+[INFO] [build 3/4] COPY packages ./packages
+[INFO] [base 1/7] FROM docker.io/library/node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5
+[INFO] [internal] load build context
+[INFO] [base 1/7] FROM docker.io/library/node:24-alpine@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9adeea09ea8017f6e85f5
+[INFO] importing cache manifest from s3:9030405925439967209
+[INFO] [internal] load build context
+[INFO] [internal] load build context
+[INFO] [base 2/7] RUN corepack enable
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 3/7] WORKDIR /app
+[INFO] [base 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+[INFO] [base 4/7] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+[INFO] [base 5/7] COPY packages/sim/package.json packages/sim/
+[INFO] [base 5/7] COPY packages/sim/package.json packages/sim/
+[INFO] [base 6/7] COPY packages/client/package.json packages/client/
+[INFO] [base 6/7] COPY packages/client/package.json packages/client/
+[INFO] [base 7/7] COPY packages/server/package.json packages/server/
+[INFO] [base 7/7] COPY packages/server/package.json packages/server/
+[INFO] [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
+[INFO] [build 1/4] RUN pnpm install --frozen-lockfile
+[INFO] (node:7) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[INFO] (node:1) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[INFO] Scope: all 4 workspace projects
+
+[INFO] Lockfile is up to date, resolution step is skipped
+
+[INFO] Lockfile is up to date, resolution step is skipped
+
+[INFO] Progress: resolved 1, reused 0, downloaded 0, added 0
+
+[INFO] Progress: resolved 1, reused 0, downloaded 0, added 0
+
+[INFO] .                                        |  +99 ++++++++++
+
+[INFO] Packages: +246
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[INFO] 
+   ╭───────────────────────────────────────────────╮
+   │                                               │
+   │      Update available! 10.9.0 → 12.18.0.      │
+   │     Changelog: https://pnpm.io/v/12.18.0      │
+   │   To update, run: corepack use pnpm@12.18.0   │
+   │                                               │
+   ╰───────────────────────────────────────────────╯
+
+
+[INFO] 
+   ╭───────────────────────────────────────────────╮
+   │                                               │
+   │      Update available! 10.9.0 → 12.18.0.      │
+   │     Changelog: https://pnpm.io/v/12.18.0      │
+   │   To update, run: corepack use pnpm@12.18.0   │
+   │                                               │
+   ╰───────────────────────────────────────────────╯
+
+
+[INFO] Progress: resolved 99, reused 0, downloaded 99, added 99, done
+
+[INFO] Done in 1.4s using pnpm v10.9.0
+
+[INFO] [production-deps 1/1] RUN pnpm install --frozen-lockfile --prod --filter @novaland/server  && rm -rf packages/server/node_modules/@novaland
+[INFO] Progress: resolved 246, reused 0, downloaded 102, added 55
+
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 2/7] WORKDIR /app
+[INFO] [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
+[INFO] [runtime 3/7] COPY --from=production-deps /app/node_modules ./node_modules
+[INFO] [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+[INFO] [runtime 4/7] COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
+[INFO] [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
+[INFO] [runtime 5/7] COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
+[INFO] Progress: resolved 246, reused 0, downloaded 245, added 245
+
+[INFO] Progress: resolved 246, reused 0, downloaded 246, added 246, done
+
+[INFO] .../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
+
+[INFO] .../esbuild@0.28.2/node_modules/esbuild postinstall: Done
+
+[INFO] 
+devDependencies:
++ @eslint/js 10.0.1
++ @types/node 24.19.2
++ eslint 10.14.0
++ globals 16.5.0
++ railway 3.17.0
++ typescript 6.0.3
++ typescript-eslint 8.72.1
++ vite 8.3.6
++ vitest 5.1.0
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: msgpackr-extract.                                   │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[INFO] Done in 3.4s using pnpm v10.9.0
+
+[INFO] [build 1/4] RUN pnpm install --frozen-lockfile
+[INFO] [build 2/4] COPY tsconfig.base.json ./
+[INFO] [build 2/4] COPY tsconfig.base.json ./
+[INFO] [build 3/4] COPY packages ./packages
+[INFO] [build 3/4] COPY packages ./packages
+[INFO] [build 4/4] RUN pnpm build
+[INFO] 
+> novaland@0.0.0 build /app
+> pnpm -r build
+
+
+[INFO] (node:18) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[INFO] Scope: 3 of 4 workspace projects
+
+[INFO] packages/client build$ vite build
+
+[INFO] packages/server build$ vite build
+
+[INFO] packages/server build: vite v8.3.6 building ssr environment for production...
+
+[INFO] packages/server build: transforming...
+
+[INFO] packages/client build: vite v8.3.6 building client environment for production...
+
+[INFO] packages/client build: transforming...
+
+[INFO] packages/server build: ✓ 145 modules transformed.
+
+[INFO] packages/server build: rendering chunks...
+
+[INFO] packages/server build: computing gzip size...
+
+[INFO] packages/server build: dist/index.mjs                    277.07 kB │ gzip:    71.61 kB │ map:   712.18 kB
+
+[INFO] packages/server build: dist/assets/rapier-CIsgl35y.js  3,488.08 kB │ gzip: 1,316.44 kB │ map: 3,650.85 kB
+
+[INFO] packages/server build: ✓ built in 261ms
+
+[INFO] packages/server build: Done
+
+[INFO] packages/client build: ✓ 204 modules transformed.
+
+[INFO] packages/client build: rendering chunks...
+
+[INFO] packages/client build: computing gzip size...
+
+[INFO] packages/client build: dist/index.html                     0.89 kB │ gzip:     0.54 kB
+
+[INFO] packages/client build: dist/assets/index-HoAshkqB.js   1,679.47 kB │ gzip:   453.57 kB
+
+[INFO] packages/client build: dist/assets/rapier-C1NO8tr2.js  3,446.04 kB │ gzip: 1,313.58 kB
+
+[INFO] packages/client build: ✓ built in 969ms
+
+[INFO] packages/client build: [plugin builtin:vite-reporter] 
+
+[INFO] packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
+
+[INFO] packages/client build: - Using dynamic import() to code-split the application
+
+[INFO] packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+
+[INFO] packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+[INFO] packages/client build: Done
+
+[INFO] [build 4/4] RUN pnpm build
+[INFO] [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
+[INFO] [runtime 6/7] COPY --from=build /app/packages/server/dist ./packages/server/dist
+[INFO] [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
+[INFO] [runtime 7/7] COPY --from=build /app/packages/client/dist ./packages/client/dist
+[INFO] exporting to docker image format
+[INFO] exporting to docker image format
+[INFO] exporting cache to Amazon S3
+[INFO] exporting cache to Amazon S3
+containerimage.config.digest: sha256:3dbca693e8cfb61cfbb560ae5958fd42cd5e64a07d16b1e8c1441fc4e69aa539
+containerimage.digest: sha256:d6c9eff95f8ea252b2a544a45a5e1acab3f4abc8d5a63ae6abe7c0aad9fd752f
+containerimage.descriptor: eyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQub2NpLmltYWdlLm1hbmlmZXN0LnYxK2pzb24iLCJkaWdlc3QiOiJzaGEyNTY6ZDZjOWVmZjk1ZjhlYTI1MmIyYTU0NGE0NWE1ZTFhY2FiM2Y0YWJjOGQ1YTYzYWU2YWJlN2MwYWFkOWZkNzUyZiIsInNpemUiOjIxOTMsImFubm90YXRpb25zIjp7Im9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkIjoiMjAyNi0xMS0xNFQxODoxNTowNVoifSwicGxhdGZvcm0iOnsiYXJjaGl0ZWN0dXJlIjoiYW1kNjQiLCJvcyI6ImxpbnV4In19
+
+====================
+Starting Healthcheck
+====================
+
+Path: /health
+Retry window: 1m0s
+
+[1/1] Healthcheck succeeded!
