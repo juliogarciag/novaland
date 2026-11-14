@@ -45,7 +45,7 @@ Any host that runs one always-on container with WebSockets works. The public gam
 
 ## Deploying
 
-The game is live at **PUBLIC_URL**. Every merge to `main` deploys it: Railway's GitHub autodeploy builds the root `Dockerfile` once the CI checks on that commit pass. No deploy token is stored in GitHub. Each deploy starts an empty world. [ADR 0009](docs/decisions/0009-hosting-on-railway.md) has the reasoning.
+The game is live at **https://novaland-production.up.railway.app**. Every merge to `main` deploys it: Railway's GitHub autodeploy builds the root `Dockerfile` once the CI checks on that commit pass. No deploy token is stored in GitHub. Each deploy starts an empty world. [ADR 0009](docs/decisions/0009-hosting-on-railway.md) has the reasoning.
 
 How the service is built and run lives in [`.railway/railway.ts`](.railway/railway.ts), Railway's Infrastructure as Code: the Dockerfile builder, the `/health` check, restart on failure, exactly one replica in US East that never sleeps, Wait for CI, and `ALLOWED_ORIGINS`. Railway does not read that file on deploy. After changing it, apply it from the repo root with the project linked (Railway CLI 5.42.1 or newer):
 
