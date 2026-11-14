@@ -1,7 +1,7 @@
 import type { World as PhysicsWorld } from '@dimforge/rapier2d-deterministic-compat';
 import { addEntity, createWorld, getAllEntities, removeEntity, type World } from 'bitecs';
 import { FIXED_DT } from '../content/tuning';
-import type { LevelData } from '../content/levels/types';
+import type { WorldMap } from '../content/world/types';
 import { isCommandShaped, type Command } from './commands';
 import { ComponentStores, type ComponentDef, type NumericStore } from './components';
 import { registerEntityWorld, type EntityWorld } from './entityWorld';
@@ -13,7 +13,8 @@ import { takeSnapshot, type SimSnapshot } from './snapshot';
 export interface SimConfig {
   /** Seed for sim.rng. Same seed + same commands = same state. */
   readonly seed: number;
-  readonly level: LevelData;
+  /** The terrain the sim is built on. */
+  readonly map: WorldMap;
   /** Maximum live entities. */
   readonly capacity: number;
 }
@@ -27,7 +28,8 @@ export interface SimHandle {
   readonly tick: number;
   readonly dt: number;
   readonly seed: number;
-  readonly level: LevelData;
+  /** The terrain this sim is built on: the same object for a server's sim, a replica of it and a prediction. */
+  readonly map: WorldMap;
   readonly capacity: number;
   readonly entityCount: number;
   /** Advances the sim by exactly one fixed tick, applying `commands` first. A replica (ADR 0004) throws instead: it never advances by itself. */
@@ -53,7 +55,7 @@ export class Sim implements SimHandle, EntityWorld {
   readonly physics: PhysicsWorld;
   readonly rng: Rng;
   readonly seed: number;
-  readonly level: LevelData;
+  readonly map: WorldMap;
   readonly capacity: number;
   readonly dt: number = FIXED_DT;
   readonly features: readonly Feature[];
@@ -63,7 +65,7 @@ export class Sim implements SimHandle, EntityWorld {
 
   constructor(config: SimConfig, features: readonly Feature[]) {
     this.seed = config.seed;
-    this.level = config.level;
+    this.map = config.map;
     this.capacity = config.capacity;
     this.stores = new ComponentStores(this.capacity);
     this.rng = createRng(this.seed);

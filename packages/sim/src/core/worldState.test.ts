@@ -128,7 +128,7 @@ describe('diffWorldState and applyWorldStateDelta', () => {
       removed: [],
     } as unknown as WorldStateDelta;
     const pure = applyWorldStateDelta(state, delta);
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     applyWorldState(replica, state);
     expect(applyWorldState(replica, delta)).toBe('applied');
     expect(pure).toEqual(worldState(replica));
@@ -152,7 +152,7 @@ describe('diffWorldState and applyWorldStateDelta', () => {
       { changed: [good], removed: [-1] },
     ].map((rest) => ({ kind: 'delta', fromTick: 5, tick: 6, ...rest }) as unknown as WorldStateDelta);
     const sim = await createSim();
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     applyWorldState(replica, state);
     for (const delta of deltas) {
       expect(applyWorldStateDelta(state, delta), JSON.stringify(delta)).toBeUndefined();

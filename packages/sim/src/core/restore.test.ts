@@ -1,6 +1,6 @@
 import { addEntity, entityExists, getAllEntities, hasComponent, removeEntity } from 'bitecs';
 import { describe, expect, it } from 'vitest';
-import { starterLevel } from '../content/levels/starter';
+import { worldMap } from '../content/world';
 import { Facing, MoveIntent } from '../features/player/components';
 import { Replica } from './replica';
 import { ensureEntitiesExist, ensureEntityExists, removeEntityComponents, restoreEntity, writeEntityComponents } from './restore';
@@ -143,7 +143,7 @@ describe('removeEntityComponents and restoreEntity', () => {
 
 /** A replica is the simplest EntityWorld: no features, no physics. */
 function emptyWorld(capacity: number): Replica {
-  return new Replica({ level: starterLevel, capacity });
+  return new Replica({ map: worldMap, capacity });
 }
 
 function alive(world: Replica): number[] {

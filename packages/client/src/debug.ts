@@ -1,11 +1,13 @@
-import type { Command, EntityDef, LevelData, SimHandle, SimSnapshot, TileGrid } from '@novaland/sim';
-import { avatarDefIds, entityDefs, hashSnapshot, readTileGrid, tileAt, tileCentre } from '@novaland/sim';
+import type { Command, EntityDef, MapTiles, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
+import { avatarDefIds, CHUNK_SIZE, entityDefs, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
 import type Phaser from 'phaser';
 import type { ConnectionStatus } from './online/connection';
 import type { PredictionReport } from './online/prediction';
 import { cameraView, type CameraView } from './render/camera';
+import type { TerrainReport } from './render/terrain';
 import { PIXELS_PER_METRE } from './render/units';
 import { MIN_VISIBLE_METRES } from './render/zoom';
+import type { WorldScene } from './scenes/WorldScene';
 import type { PlayableWorld } from './worlds/PlayableWorld';
 
 /** What dev tooling and end-to-end checks can reach from the page. Dev builds only. */
@@ -13,12 +15,19 @@ export interface NovalandDebugApi {
   /** The live sim solo, the replica online. */
   readonly sim: SimHandle;
   readonly game: Phaser.Game;
-  readonly level: LevelData;
-  /** The level's rows resolved into tile def ids, in metres. */
-  readonly grid: TileGrid;
+  /** The terrain the sim is built on: its areas and its spawn tile. */
+  readonly map: WorldMap;
+  /** The map's areas resolved into chunks of tile def ids, with its bounds in tiles and its checksum. */
+  readonly tiles: MapTiles;
+  /** Tiles along one side of a chunk. */
+  readonly chunkSize: number;
   /** The sim's own tile/metre conversions, so checks derive positions from content instead of recomputing them. */
   readonly tileAt: typeof tileAt;
   readonly tileCentre: typeof tileCentre;
+  /** The tile def id at a world tile, or undefined where no area put a tile. */
+  tileDefIdAt(tile: TileCoordinate): number | undefined;
+  /** How much terrain is drawn right now: which chunks, how many ground tiles and standing images. Undefined until the world scene runs. */
+  terrain(): TerrainReport | undefined;
   readonly defs: readonly EntityDef[];
   /** The def ids a joining player may be dressed in, so checks need not guess which defs are avatars. */
   readonly avatarDefIds: readonly number[];
@@ -69,13 +78,17 @@ export interface DebugApiOptions {
 
 export function exposeDebugApi({ world, game, online }: DebugApiOptions): void {
   const { sim } = world;
+  const tiles = readMapTiles(sim.map);
   window.__novaland = {
     sim,
     game,
-    level: sim.level,
-    grid: readTileGrid(sim.level),
+    map: sim.map,
+    tiles,
+    chunkSize: CHUNK_SIZE,
     tileAt,
     tileCentre,
+    tileDefIdAt: (tile) => tileDefIdAt(tiles, tile),
+    terrain: () => (game.scene.isActive('world') ? (game.scene.getScene('world') as WorldScene).terrainReport() : undefined),
     defs: entityDefs,
     avatarDefIds,
     pixelsPerMetre: PIXELS_PER_METRE,

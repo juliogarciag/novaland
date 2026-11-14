@@ -3,7 +3,6 @@ import { Client, CloseCode, type Room } from '@colyseus/sdk';
 import {
   applyWorldState,
   createReplica,
-  findLevel,
   findPlayerEntity,
   getHeading,
   getRenderables,
@@ -11,8 +10,9 @@ import {
   JOIN_REFUSAL,
   WIRE,
   WIRE_PROTOCOL,
-  readTileGrid,
+  readMapTiles,
   tileAt,
+  worldMap,
   type Heading,
   type MoveAppliedMessage,
   type Renderable,
@@ -57,7 +57,9 @@ describe('WorldRoom over a real connection', () => {
     for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port));
     expect(players.map((player) => player.welcome.slot)).toEqual([0, 1, 2, 3, 4]);
     for (const player of players) {
-      expect(findLevel(player.welcome.level)).toBeDefined();
+      expect(player.welcome.map).toBe(readMapTiles(worldMap).checksum);
+      // Terrain does not travel: the state holds the players who were seated by then and nothing else.
+      expect(player.welcome.state.entities).toHaveLength(player.welcome.slot + 1);
       expect(player.welcome.capacity).toBe(player.replica.capacity);
       expect(player.welcome.state.kind).toBe('full');
       expect(findPlayerEntity(player.replica, player.welcome.slot)).toBeDefined();
@@ -70,7 +72,7 @@ describe('WorldRoom over a real connection', () => {
     expect(avatars).toHaveLength(MAX_SEATS);
     expect(avatars.every((avatar) => isAvatarDefId(avatar.defId))).toBe(true);
     expect(new Set(avatars.map((avatar) => avatar.defId)).size).toBe(MAX_SEATS);
-    expect(new Set(avatars.map((avatar) => tileKeyOf(last.replica, avatar))).size).toBe(MAX_SEATS);
+    expect(new Set(avatars.map((avatar) => tileKeyOf(avatar))).size).toBe(MAX_SEATS);
     expect(server.room.seatsTaken).toBe(MAX_SEATS);
   });
 
@@ -467,9 +469,8 @@ async function join(port: number): Promise<Player> {
   const movesApplied: Player['movesApplied'] = [];
   room.onMessage(WIRE.moveApplied, (message: MoveAppliedMessage) => movesApplied.push({ message, updatesBefore: updates.length }));
   const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
-  const level = findLevel(welcome.level);
-  if (!level) throw new Error(`unknown level ${welcome.level}`);
-  const replica = createReplica({ level, capacity: welcome.capacity });
+  if (welcome.map !== readMapTiles(worldMap).checksum) throw new Error(`the server runs another map: ${welcome.map}`);
+  const replica = createReplica({ capacity: welcome.capacity });
   applyResults.push(applyWorldState(replica, welcome.state));
   for (const update of pending.splice(0)) applyResults.push(applyWorldState(replica, update));
   bound.replica = replica;
@@ -548,9 +549,9 @@ function playerRenderables(replica: ReplicaHandle): Renderable[] {
 }
 
 /** The tile a renderable's centre stands on, as one comparable string. */
-function tileKeyOf(replica: ReplicaHandle, renderable: Renderable): string {
-  const tile = tileAt(readTileGrid(replica.level), renderable.x, renderable.y);
-  return tile ? `${tile.column},${tile.row}` : 'off-grid';
+function tileKeyOf(renderable: Renderable): string {
+  const tile = tileAt(renderable.x, renderable.y);
+  return tile ? `${tile.column},${tile.row}` : 'nowhere';
 }
 
 /** What the player in `slot` was told to do: the sim's own record of the commands that reached it. */

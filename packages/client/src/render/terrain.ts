@@ -1,5 +1,6 @@
-import { readTileGrid, terrainDefs, tileCentre, TILE_SIZE, type GroundTileSprite, type LevelData, type StandingTileSprite } from '@novaland/sim';
+import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type TileCoordinate, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
+import { chunkCoordinatesIn, chunkRangeAround, DRAW_MARGIN_TILES, isInChunkRange, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
 import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
 import { spriteSheetUrl } from './sprites';
 import { standingTilePlacements } from './standingTiles';
@@ -10,7 +11,7 @@ const TILESET_NAME = 'terrain';
 
 /**
  * Draws below every entity. Entities are depth-sorted by their bottom edge in
- * pixels (render/entities.ts), which is negative north of the level centre, so
+ * pixels (render/entities.ts), which is negative north of the world's origin, so
  * the ground has to sit below any pixel coordinate, not just below zero.
  */
 const TERRAIN_DEPTH = Number.MIN_SAFE_INTEGER;
@@ -25,15 +26,35 @@ export function loadTerrainSprites(scene: Phaser.Scene): void {
   }
 }
 
+/** How much terrain is drawn right now. Read by dev tooling and end-to-end checks. */
+export interface TerrainReport {
+  /** Chunk coordinates of the chunks that have game objects, as "column,row". */
+  readonly chunksDrawn: readonly string[];
+  /** Chunks the map holds. */
+  readonly chunksInMap: number;
+  /** Tiles alive in the ground tilemaps: `CHUNK_SIZE` squared for each drawn chunk. */
+  readonly groundTiles: number;
+  /** Standing images alive (trees, rocks). */
+  readonly standingImages: number;
+}
+
+interface DrawnChunk {
+  readonly tilemap: Phaser.Tilemaps.Tilemap;
+  readonly standingImages: readonly Phaser.GameObjects.Image[];
+}
+
 /**
- * Draws a level from the same level data the sim builds its colliders from,
- * in two parts.
+ * Draws the map's terrain from the same chunks the sim builds its
+ * colliders from, and only the chunks near the camera: what is alive
+ * depends on the screen, not on the size of the world (ADR 0013).
  *
- * The ground is a Phaser tilemap below everything. Its tileset is put
- * together here (render/groundTiles.ts says which tile is where): a def
- * with a `groundSprite` (grass) brings the variants of its sheet and each
- * tile of the level shows the one its column and row pick; any other def
- * is one flat tile in its colour.
+ * Each drawn chunk is two things. The ground is a Phaser tilemap of
+ * `CHUNK_SIZE` by `CHUNK_SIZE` tiles below everything; all chunks share one
+ * tileset, put together here once (render/groundTiles.ts says which tile is
+ * where): a def with a `groundSprite` (grass) brings the variants of its
+ * sheet and each tile shows the one its world column and row pick; any
+ * other def is one flat tile in its colour. Where no area put a tile,
+ * nothing is drawn.
  *
  * A def with a `standingSprite` (a tree, a rock) is one image per tile on
  * top of that, standing on the tile's bottom edge and depth-sorted among
@@ -42,32 +63,89 @@ export function loadTerrainSprites(scene: Phaser.Scene): void {
  * A sheet that failed to load is not fatal: its def is drawn flat in its
  * own colour instead.
  */
-export function drawTerrain(scene: Phaser.Scene, level: LevelData): Phaser.Tilemaps.TilemapLayer {
-  const grid = readTileGrid(level);
-  const isTextureLoaded = (key: string): boolean => scene.textures.exists(key);
-  for (const sprite of standingTileSprites()) {
-    if (isTextureLoaded(sprite.key)) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+export class TerrainRenderer {
+  private readonly tiles: MapTiles;
+  private readonly slots: readonly GroundTilesetSlot[];
+  private readonly drawnChunks = new Map<string, DrawnChunk>();
+  private lastView: { readonly draw: ChunkRange; readonly keep: ChunkRange } | undefined;
+
+  constructor(
+    private readonly scene: Phaser.Scene,
+    map: WorldMap,
+  ) {
+    this.tiles = readMapTiles(map);
+    for (const sprite of standingTileSprites()) {
+      if (this.isTextureLoaded(sprite.key)) scene.textures.get(sprite.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    this.slots = groundTilesetSlots(terrainDefs, (key) => this.isTextureLoaded(key));
+    buildGroundTileset(scene, this.slots);
   }
-  const slots = groundTilesetSlots(terrainDefs, isTextureLoaded);
-  buildGroundTileset(scene, slots);
-  const tileIndexRows = groundTileIndexRows({ grid, slots, isStandingImageDrawn: (sprite) => isTextureLoaded(sprite.key) });
-  const tilemap = scene.make.tilemap({ data: tileIndexRows, tileWidth: GROUND_TILE_PIXELS, tileHeight: GROUND_TILE_PIXELS });
-  const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS, 0, 0);
-  if (!tileset) throw new Error('The terrain tileset texture is missing');
-  // The sim decides where tiles are; the layer's corner is the top-left tile's centre minus half a tile.
-  const firstTileCentre = tileCentre(grid, { column: 0, row: 0 });
-  const layer = tilemap.createLayer(0, tileset, toPixels(firstTileCentre.x - grid.tileSize / 2), toPixels(firstTileCentre.y - grid.tileSize / 2));
-  if (!layer) throw new Error('Could not create the terrain layer');
-  layer.setScale(toPixels(TILE_SIZE) / GROUND_TILE_PIXELS);
-  layer.setDepth(TERRAIN_DEPTH);
-  for (const placement of standingTilePlacements(grid)) {
-    if (!isTextureLoaded(placement.sprite.key)) continue;
-    const image = scene.add.image(placement.x, placement.y, placement.sprite.key, placement.frame);
-    image.setOrigin(0.5, 1);
-    image.setScale(PIXELS_PER_METRE / placement.sprite.pixelsPerMetre);
-    image.setDepth(placement.depth);
+
+  /** Draws the chunks near `view` (what the camera shows, in world pixels) and drops those far from it. Call every frame. */
+  show(view: PixelRect): void {
+    const draw = chunkRangeAround(view, DRAW_MARGIN_TILES);
+    const keep = chunkRangeAround(view, KEEP_MARGIN_TILES);
+    if (this.lastView && sameChunkRange(this.lastView.draw, draw) && sameChunkRange(this.lastView.keep, keep)) return;
+    this.lastView = { draw, keep };
+    for (const [key, drawn] of this.drawnChunks) {
+      if (isInChunkRange(keep, chunkCoordinateFromKey(key))) continue;
+      drawn.tilemap.destroy();
+      for (const image of drawn.standingImages) image.destroy();
+      this.drawnChunks.delete(key);
+    }
+    for (const coordinate of chunkCoordinatesIn(draw)) {
+      const key = chunkKey(coordinate);
+      if (this.drawnChunks.has(key)) continue;
+      const chunk = findChunk(this.tiles, coordinate);
+      if (chunk) this.drawnChunks.set(key, this.drawChunk(chunk));
+    }
   }
-  return layer as Phaser.Tilemaps.TilemapLayer;
+
+  report(): TerrainReport {
+    let standingImages = 0;
+    for (const drawn of this.drawnChunks.values()) standingImages += drawn.standingImages.length;
+    return {
+      chunksDrawn: [...this.drawnChunks.keys()],
+      chunksInMap: this.tiles.chunks.length,
+      groundTiles: this.drawnChunks.size * CHUNK_SIZE * CHUNK_SIZE,
+      standingImages,
+    };
+  }
+
+  private drawChunk(chunk: MapChunk): DrawnChunk {
+    const tileIndexRows = groundTileIndexRows({ chunk, slots: this.slots, isStandingImageDrawn: (sprite) => this.isTextureLoaded(sprite.key) });
+    const tilemap = this.scene.make.tilemap({ data: tileIndexRows, tileWidth: GROUND_TILE_PIXELS, tileHeight: GROUND_TILE_PIXELS });
+    const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS, 0, 0);
+    if (!tileset) throw new Error('The terrain tileset texture is missing');
+    // The sim decides where tiles are: the layer's corner is the corner of the chunk's first tile.
+    const layer = tilemap.createLayer(0, tileset, toPixels(chunk.firstTile.column * TILE_SIZE), toPixels(chunk.firstTile.row * TILE_SIZE));
+    if (!layer) throw new Error('Could not create a terrain layer');
+    layer.setScale(toPixels(TILE_SIZE) / GROUND_TILE_PIXELS);
+    layer.setDepth(TERRAIN_DEPTH);
+    const standingImages: Phaser.GameObjects.Image[] = [];
+    for (const placement of standingTilePlacements(chunk)) {
+      if (!this.isTextureLoaded(placement.sprite.key)) continue;
+      const image = this.scene.add.image(placement.x, placement.y, placement.sprite.key, placement.frame);
+      image.setOrigin(0.5, 1);
+      image.setScale(PIXELS_PER_METRE / placement.sprite.pixelsPerMetre);
+      image.setDepth(placement.depth);
+      standingImages.push(image);
+    }
+    return { tilemap, standingImages };
+  }
+
+  private isTextureLoaded(key: string): boolean {
+    return this.scene.textures.exists(key);
+  }
+}
+
+function chunkKey({ column, row }: TileCoordinate): string {
+  return `${column},${row}`;
+}
+
+function chunkCoordinateFromKey(key: string): TileCoordinate {
+  const [column, row] = key.split(',').map(Number) as [number, number];
+  return { column, row };
 }
 
 /** The ground sprite of every terrain def that has one, in def order. */
@@ -87,7 +165,7 @@ function standingTileSprites(): StandingTileSprite[] {
  * so that a tree or rock whose image is missing still reads as an object.
  */
 function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSlot[]): void {
-  // Built again on every draw: the slots depend on which sheets loaded, and a strip from an earlier draw may be laid out differently.
+  // Built again for every renderer: the slots depend on which sheets loaded, and a strip from an earlier scene may be laid out differently.
   if (scene.textures.exists(TILESET_TEXTURE_KEY)) scene.textures.remove(TILESET_TEXTURE_KEY);
   const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
   const tileset = scene.textures.createCanvas(TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS * tileCount, GROUND_TILE_PIXELS);

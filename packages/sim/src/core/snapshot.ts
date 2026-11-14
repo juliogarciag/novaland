@@ -1,4 +1,5 @@
 import { getAllEntities, getEntityComponents } from 'bitecs';
+import { readMapTiles } from '../content/world/tiles';
 import type { EntityWorld } from './entityWorld';
 import type { Sim } from './sim';
 
@@ -6,6 +7,10 @@ import type { Sim } from './sim';
  * A snapshot is the complete, JSON-safe state of a sim: every entity with
  * every component field, plus the physics world and the rng. Two sims with
  * equal snapshots will evolve identically given the same commands.
+ *
+ * Terrain is in it twice over, and never as entities: `map` names the
+ * terrain the sim was built from, and `physics` holds the colliders that
+ * were built from it.
  *
  * Entities, components and fields are sorted so that the hash does not depend
  * on the order things were attached in.
@@ -16,10 +21,10 @@ export interface EntitySnapshot {
 }
 
 export interface SimSnapshot {
-  readonly version: 1;
+  readonly version: 2;
   readonly seed: number;
-  /** Name of the level the sim was built from. */
-  readonly level: string;
+  /** Checksum of the map the sim was built from (`MapTiles.checksum`): which terrain this state stands on. */
+  readonly map: string;
   readonly capacity: number;
   readonly tick: number;
   readonly rng: number;
@@ -30,9 +35,9 @@ export interface SimSnapshot {
 
 export function takeSnapshot(sim: Sim): SimSnapshot {
   return {
-    version: 1,
+    version: 2,
     seed: sim.seed,
-    level: sim.level.name,
+    map: readMapTiles(sim.map).checksum,
     capacity: sim.capacity,
     tick: sim.tick,
     rng: sim.rng.state(),

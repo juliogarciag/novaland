@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { DefId, getDef } from '../../content/defs';
-import { readTileGrid, spawnPoint, tileCentre } from '../../content/levels/grid';
-import { starterLevel } from '../../content/levels/starter';
+import { readMapTiles, spawnPoint, tileDefIdAt } from '../../content/world/tiles';
+import { worldMap } from '../../content/world';
 import { MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
@@ -54,7 +54,8 @@ describe('player movement (headless)', () => {
     const { x, y } = playerPosition(sim);
     const travelled = Math.hypot(x - SPAWN.x, y - SPAWN.y);
     expect(travelled).toBeCloseTo(SPEED * 60 * sim.dt, 3);
-    expect(x - SPAWN.x).toBeCloseTo(y - SPAWN.y, 5);
+    // Rapier keeps positions as 32-bit floats, so sixty steps a few metres from the origin agree to a tenth of a millimetre, not better.
+    expect(x - SPAWN.x).toBeCloseTo(y - SPAWN.y, 3);
     sim.destroy();
   });
 
@@ -155,7 +156,7 @@ const { createSimInternal } = __testing__;
 const playerDef = getDef(DefId.PlayerSky);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
-const SPAWN = spawnPoint(starterLevel);
+const SPAWN = spawnPoint(worldMap);
 
 beforeAll(() => {
   if (!(SPEED > 0) || !(RADIUS > 0)) throw new Error('the player def must define a positive speed and radius');
@@ -166,12 +167,15 @@ const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move'
 
 /** West edge, in metres, of the first solid tile east of the spawn on its row. */
 function firstTreeFaceEastOfSpawn(): number {
-  const grid = readTileGrid(starterLevel);
-  const row = grid.defIds[starterLevel.spawn.row] as readonly number[];
-  let column = starterLevel.spawn.column;
-  while (column < grid.columns && !getTileDef(row[column] as number).solid) column += 1;
-  if (column === grid.columns) throw new Error('the starter level has no tree east of the spawn');
-  return tileCentre(grid, { column, row: starterLevel.spawn.row }).x - grid.tileSize / 2;
+  const tiles = readMapTiles(worldMap);
+  const { row } = worldMap.spawn;
+  let column = worldMap.spawn.column;
+  for (;;) {
+    const defId = tileDefIdAt(tiles, { column, row });
+    if (defId === undefined) throw new Error('the world has no tree east of the spawn');
+    if (getTileDef(defId).solid) return column * tiles.tileSize;
+    column += 1;
+  }
 }
 
 function playerPosition(sim: Sim, slot = 0) {

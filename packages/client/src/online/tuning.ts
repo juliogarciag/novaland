@@ -25,8 +25,8 @@ export const JOIN_TIMEOUT_MS = 10000;
 export const LATENCY_INTERVAL_MS = 1000;
 /** Out-of-sequence updates the client lets pass after asking for a full state before it asks again (the server may have dropped the request). At the default send rate this is half a second. */
 export const RESYNC_RETRY_AFTER_UPDATES = 10;
-/** Longest level name a welcome may carry; the name is shown on the incompatible screen when it is unknown. */
-export const MAX_LEVEL_NAME_LENGTH = 64;
+/** Longest map checksum a welcome may carry. The sim's is 8 characters; this only keeps a nonsense welcome from being read at all. */
+export const MAX_MAP_CHECKSUM_LENGTH = 64;
 /** Largest seat number a welcome may carry. The sim refuses slots past its own limit; this keeps a nonsense welcome from being seated at all. */
 export const MAX_SLOT = 1024;
 

@@ -1,4 +1,4 @@
-import { getTileDef, type GroundTileSprite, type StandingTileSprite, type TileDef, type TileGrid } from '@novaland/sim';
+import { CHUNK_SIZE, getTileDef, NO_TILE, type GroundTileSprite, type MapChunk, type StandingTileSprite, type TileDef } from '@novaland/sim';
 import { variantOfTile } from './tileVariant';
 
 /** Side of one tile of the ground tileset in texture pixels. A ground sprite's tiles must be this size. */
@@ -37,22 +37,30 @@ export function groundTilesetSlots(tileDefs: readonly TileDef[], isTextureLoaded
   return slots;
 }
 
+/** What a tilemap shows where there is no tile: nothing is drawn there. */
+export const EMPTY_GROUND_TILE = -1;
+
 /**
- * The tileset index of the ground at every tile of the grid, row by row.
- * A tile whose def stands up from the ground shows its `groundDefId` there
- * when its image is drawn (`isStandingImageDrawn`), and its own flat tile
- * when it is not. A def with several tiles shows the variant its column and row
- * pick, so the ground under a tree is the grass that tile would have had.
+ * The tileset index of the ground at every tile of a chunk, row by row:
+ * `CHUNK_SIZE` rows of `CHUNK_SIZE` indices, `EMPTY_GROUND_TILE` where no
+ * area put a tile. A tile whose def stands up from the ground shows its
+ * `groundDefId` there when its image is drawn (`isStandingImageDrawn`), and
+ * its own flat tile when it is not. A def with several tiles shows the
+ * variant its world column and row pick, so the ground under a tree is the
+ * grass that tile would have had, and a tile looks the same whichever chunk
+ * it is drawn with.
  */
-export function groundTileIndexRows({ grid, slots, isStandingImageDrawn }: { grid: TileGrid; slots: readonly GroundTilesetSlot[]; isStandingImageDrawn: (sprite: StandingTileSprite) => boolean }): number[][] {
+export function groundTileIndexRows({ chunk, slots, isStandingImageDrawn }: { chunk: MapChunk; slots: readonly GroundTilesetSlot[]; isStandingImageDrawn: (sprite: StandingTileSprite) => boolean }): number[][] {
   const slotByDefId = new Map(slots.map((slot) => [slot.def.id, slot]));
-  return grid.defIds.map((defIdsOfRow, row) =>
-    defIdsOfRow.map((defId, column) => {
+  return Array.from({ length: CHUNK_SIZE }, (_, localRow) =>
+    Array.from({ length: CHUNK_SIZE }, (_, localColumn) => {
+      const defId = chunk.defIds[localRow * CHUNK_SIZE + localColumn] as number;
+      if (defId === NO_TILE) return EMPTY_GROUND_TILE;
       const standingSprite = getTileDef(defId).standingSprite;
       const groundDefId = standingSprite && isStandingImageDrawn(standingSprite) ? standingSprite.groundDefId : defId;
       const slot = slotByDefId.get(groundDefId);
       if (!slot) throw new Error(`Def id ${groundDefId} has no tile in the ground tileset`);
-      return slot.firstTileIndex + variantOfTile({ column, row, variantCount: slot.tileCount });
+      return slot.firstTileIndex + variantOfTile({ column: chunk.firstTile.column + localColumn, row: chunk.firstTile.row + localRow, variantCount: slot.tileCount });
     }),
   );
 }

@@ -23,6 +23,9 @@ export type ConnectionStatus =
 /** What the incompatible screen says when the page and the server were built against different wire protocols; the screen offers the reload that fetches the server's build. */
 export const PROTOCOL_MISMATCH_REASON = 'this page and the server are different versions of the game';
 
+/** What the incompatible screen says when the server's map is not the one this page was built with: its terrain would be drawn and predicted wrong. The reload fetches the server's build. */
+export const MAP_MISMATCH_REASON = 'this page and the server have different versions of the world';
+
 /** What the online world does with what arrives. Payloads are untrusted: they come off the network as the server sent them. */
 export interface WorldConnectionHandlers {
   /** A welcome arrived. `'seated'` when the client can play on this server; otherwise why it cannot, and the connection stops. */

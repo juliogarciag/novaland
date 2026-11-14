@@ -382,7 +382,7 @@ describe('isWorldFullRefusal', () => {
 
 // ---- Helpers ----
 
-const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
+const WELCOME = { slot: 2, map: 'a1b2c3d4', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
   const script = scriptedJoin(outcomes);

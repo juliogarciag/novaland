@@ -1,14 +1,8 @@
-import { readTileGrid, type LevelData } from '@novaland/sim';
+import { readMapTiles, type WorldMap } from '@novaland/sim';
 import type Phaser from 'phaser';
+import type { PixelRect } from './chunkRange';
 import { PIXELS_PER_METRE, toPixels } from './units';
 import { wholeZoomFor } from './zoom';
-
-export interface PixelRect {
-  readonly x: number;
-  readonly y: number;
-  readonly width: number;
-  readonly height: number;
-}
 
 /** What a camera is looking at, in pixels. Read by dev tooling and end-to-end checks. */
 export interface CameraView {
@@ -18,7 +12,7 @@ export interface CameraView {
   /** Canvas size in device pixels. */
   readonly width: number;
   readonly height: number;
-  /** The level, as the camera may not look past it. */
+  /** The map, as the camera may not look past it. */
   readonly bounds: PixelRect;
   /** The part of the world on screen. */
   readonly worldView: PixelRect;
@@ -27,16 +21,17 @@ export interface CameraView {
 
 /**
  * A camera that keeps one target in the middle of the screen, never looks
- * past the level and draws texture pixels as whole screen pixels. The zoom
- * is a whole number picked from the canvas width.
+ * past the map (the rectangle that holds every area) and draws texture
+ * pixels as whole screen pixels. The zoom is a whole number picked from the
+ * canvas width.
  */
-export class LevelCamera {
+export class MapCamera {
   constructor(
     private readonly camera: Phaser.Cameras.Scene2D.Camera,
-    level: LevelData,
+    map: WorldMap,
   ) {
-    const { width, height } = readTileGrid(level);
-    camera.setBounds(toPixels(-width / 2), toPixels(-height / 2), toPixels(width), toPixels(height));
+    const { bounds, tileSize } = readMapTiles(map);
+    camera.setBounds(toPixels(bounds.column * tileSize), toPixels(bounds.row * tileSize), toPixels(bounds.width * tileSize), toPixels(bounds.height * tileSize));
   }
 
   /** Picks the zoom for a canvas this many device pixels wide. Call again whenever the canvas changes size. */
@@ -44,7 +39,17 @@ export class LevelCamera {
     this.camera.setZoom(wholeZoomFor(canvasWidth));
   }
 
-  /** Centres the camera on a pixel position, as far as the level bounds allow. */
+  /**
+   * The part of the world on screen right now, in world pixels. Phaser only
+   * refreshes `camera.worldView` when it renders; this is the same rectangle
+   * from the scroll and zoom as they are, so it is right straight after `lookAt`.
+   */
+  view(): PixelRect {
+    const { scrollX, scrollY, width, height, zoom } = this.camera;
+    return { x: scrollX + (width - width / zoom) / 2, y: scrollY + (height - height / zoom) / 2, width: width / zoom, height: height / zoom };
+  }
+
+  /** Centres the camera on a pixel position, as far as the map bounds allow. */
   lookAt(x: number, y: number): void {
     const camera = this.camera;
     camera.centerOn(x, y);

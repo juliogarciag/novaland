@@ -1,6 +1,6 @@
 /**
  * Which variant of its art a tile shows: scattered so neighbours rarely
- * match, and the same for a tile every time, so the level does not change
+ * match, and the same for a tile every time, so the world does not change
  * between visits or between two players looking at it. Looks only: the sim
  * knows nothing of it.
  */

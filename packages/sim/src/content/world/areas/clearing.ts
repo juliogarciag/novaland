@@ -1,14 +1,16 @@
-import { TerrainDefId } from '../../features/terrain/defs';
-import type { LevelData } from './types';
+import { TerrainDefId } from '../../../features/terrain/defs';
+import type { AreaData } from '../types';
 
 /**
- * The first level: a clearing in a forest. Trees ring the whole map with no
- * gap, and a few rocks and tree clumps break up the grass inside. Each
- * character is one tile (one metre); the spawn sits on the grass at the
- * western side of the clearing.
+ * The first area of the world: a clearing in a forest. Trees ring it, and a
+ * few rocks and tree clumps break up the grass. Each character is one tile
+ * (one metre). Its top-left tile is world tile (0, 0): the origin of the
+ * world is this area's top-left corner, and stays there whatever is built
+ * around it.
  */
-export const starterLevel: LevelData = {
-  name: 'starter',
+export const clearing: AreaData = {
+  name: 'clearing',
+  origin: { column: 0, row: 0 },
   legend: {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
@@ -46,5 +48,4 @@ export const starterLevel: LevelData = {
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
   ],
-  spawn: { column: 6, row: 14 },
 };

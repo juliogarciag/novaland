@@ -1,13 +1,17 @@
 import {
+  CHUNK_SIZE,
   getTileDef,
-  readTileGrid,
-  starterLevel,
+  NO_TILE,
+  readMapTiles,
   terrainDefs,
-  type LevelData,
+  worldMap,
+  type MapChunk,
+  type TileCoordinate,
   type TileDef,
 } from "@novaland/sim";
 import { describe, expect, it } from "vitest";
 import {
+  EMPTY_GROUND_TILE,
   GROUND_TILE_PIXELS,
   groundTileIndexRows,
   groundTilesetSlots,
@@ -63,102 +67,68 @@ describe("groundTilesetSlots", () => {
 });
 
 describe("groundTileIndexRows", () => {
-  it("shows every grass tile in the variant its column and row pick", () => {
-    const grid = readTileGrid(level(["....", "....", "...."]));
+  it("shows every grass tile in the variant its world column and row pick, wherever its chunk is", () => {
     const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
     const grass = slotOf(slots, "grass");
-    const rows = groundTileIndexRows({
-      grid,
-      slots,
-      isStandingImageDrawn: everythingLoaded,
-    });
-    rows.forEach((indices, row) =>
-      indices.forEach((tileIndex, column) => {
-        expect(tileIndex).toBe(
-          grass.firstTileIndex +
-            variantOfTile({ column, row, variantCount: grass.tileCount }),
-        );
-      }),
-    );
+    for (const origin of [{ column: 0, row: 0 }, { column: -70, row: 45 }]) {
+      const chunk = chunkOf(["....", "....", "...."], origin);
+      const rows = groundTileIndexRows({ chunk, slots, isStandingImageDrawn: everythingLoaded });
+      for (let row = origin.row; row < origin.row + 3; row += 1) {
+        for (let column = origin.column; column < origin.column + 4; column += 1) {
+          expect(rows[row - chunk.firstTile.row]![column - chunk.firstTile.column]).toBe(
+            grass.firstTileIndex + variantOfTile({ column, row, variantCount: grass.tileCount }),
+          );
+        }
+      }
+    }
+  });
+
+  it("is a full chunk of rows, empty where no area put a tile", () => {
+    const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
+    const rows = groundTileIndexRows({ chunk: chunkOf(["..", ".."]), slots, isStandingImageDrawn: everythingLoaded });
+    expect(rows).toHaveLength(CHUNK_SIZE);
+    for (const indices of rows) expect(indices).toHaveLength(CHUNK_SIZE);
+    expect(rows.flat().filter((tileIndex) => tileIndex !== EMPTY_GROUND_TILE)).toHaveLength(4);
+    expect(rows[0]![2]).toBe(EMPTY_GROUND_TILE);
+    expect(rows[2]![0]).toBe(EMPTY_GROUND_TILE);
   });
 
   it("puts the grass a tile would have had under a tree or a rock", () => {
     const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
-    const withThings = groundTileIndexRows({
-      grid: readTileGrid(level(["T.o", ".o.", ".TT"])),
-      slots,
-      isStandingImageDrawn: everythingLoaded,
-    });
-    const allGrass = groundTileIndexRows({
-      grid: readTileGrid(level(["...", "...", "..."])),
-      slots,
-      isStandingImageDrawn: everythingLoaded,
-    });
+    const withThings = groundTileIndexRows({ chunk: chunkOf(["T.o", ".o.", ".TT"]), slots, isStandingImageDrawn: everythingLoaded });
+    const allGrass = groundTileIndexRows({ chunk: chunkOf(["...", "...", "..."]), slots, isStandingImageDrawn: everythingLoaded });
     expect(withThings).toEqual(allGrass);
   });
 
   it("shows a flat tile without a sprite as its one tile", () => {
     const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
-    const rows = groundTileIndexRows({
-      grid: readTileGrid(level([".==="])),
-      slots,
-      isStandingImageDrawn: everythingLoaded,
-    });
-    expect(rows[0]!.slice(1)).toEqual(
-      [1, 2, 3].map(() => slotOf(slots, "dirt").firstTileIndex),
-    );
+    const rows = groundTileIndexRows({ chunk: chunkOf([".==="]), slots, isStandingImageDrawn: everythingLoaded });
+    expect(rows[0]!.slice(1, 4)).toEqual([1, 2, 3].map(() => slotOf(slots, "dirt").firstTileIndex));
   });
 
   it("draws a standing tile flat in its own tile when its image did not load, and still textures the grass", () => {
     const treeMissing = (key: string): boolean => key !== "tree";
     const slots = groundTilesetSlots(terrainDefs, treeMissing);
-    const rows = groundTileIndexRows({
-      grid: readTileGrid(level(["T.o"])),
-      slots,
-      isStandingImageDrawn: (sprite) => treeMissing(sprite.key),
-    });
+    const rows = groundTileIndexRows({ chunk: chunkOf(["T.o"]), slots, isStandingImageDrawn: (sprite) => treeMissing(sprite.key) });
     const grass = slotOf(slots, "grass");
     expect(rows[0]![0]).toBe(slotOf(slots, "tree").firstTileIndex);
-    expect(rows[0]![1]).toBe(
-      grass.firstTileIndex +
-        variantOfTile({ column: 1, row: 0, variantCount: grass.tileCount }),
-    );
-    expect(rows[0]![2]).toBe(
-      grass.firstTileIndex +
-        variantOfTile({ column: 2, row: 0, variantCount: grass.tileCount }),
-    );
+    expect(rows[0]![1]).toBe(grass.firstTileIndex + variantOfTile({ column: 1, row: 0, variantCount: grass.tileCount }));
+    expect(rows[0]![2]).toBe(grass.firstTileIndex + variantOfTile({ column: 2, row: 0, variantCount: grass.tileCount }));
   });
 
   it("with no sheet loaded at all, every tile is the flat tile of its own def, as before there was art", () => {
-    const grid = readTileGrid(starterLevel);
     const slots = groundTilesetSlots(terrainDefs, nothingLoaded);
-    const rows = groundTileIndexRows({
-      grid,
-      slots,
-      isStandingImageDrawn: nothingLoaded,
-    });
-    expect(rows).toEqual(
-      grid.defIds.map((defIds) =>
-        defIds.map((defId) => terrainDefs.findIndex((def) => def.id === defId)),
-      ),
-    );
+    for (const chunk of readMapTiles(worldMap).chunks) {
+      const rows = groundTileIndexRows({ chunk, slots, isStandingImageDrawn: nothingLoaded });
+      expect(rows.flat()).toEqual(Array.from(chunk.defIds, (defId) => (defId === NO_TILE ? EMPTY_GROUND_TILE : terrainDefs.findIndex((def) => def.id === defId))));
+    }
   });
 
-  it("uses every grass variant somewhere in the starter level", () => {
+  it("uses every grass variant somewhere in the world", () => {
     const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
     const grass = slotOf(slots, "grass");
-    const used = new Set(
-      groundTileIndexRows({
-        grid: readTileGrid(starterLevel),
-        slots,
-        isStandingImageDrawn: everythingLoaded,
-      }).flat(),
-    );
-    for (let variant = 0; variant < grass.tileCount; variant += 1)
-      expect(
-        used.has(grass.firstTileIndex + variant),
-        `variant ${variant}`,
-      ).toBe(true);
+    const used = new Set(readMapTiles(worldMap).chunks.flatMap((chunk) => groundTileIndexRows({ chunk, slots, isStandingImageDrawn: everythingLoaded }).flat()));
+    for (let variant = 0; variant < grass.tileCount; variant += 1) expect(used.has(grass.firstTileIndex + variant), `variant ${variant}`).toBe(true);
   });
 });
 
@@ -187,19 +157,12 @@ function slotOf(
   return slot;
 }
 
-/** A level of these rows; the spawn is its first walkable tile, as a level must have one. */
-function level(rows: string[]): LevelData {
+/** The one chunk of a map made of these rows, mounted at `origin`. */
+function chunkOf(rows: string[], origin: TileCoordinate = { column: 0, row: 0 }): MapChunk {
   const spawnRow = rows.findIndex((row) => /[.=]/.test(row));
-  const spawn = { column: rows[spawnRow]!.search(/[.=]/), row: spawnRow };
-  return {
-    name: "test",
-    legend: {
-      T: idOf("tree"),
-      ".": idOf("grass"),
-      "=": idOf("dirt"),
-      o: idOf("rock"),
-    },
-    rows,
-    spawn,
-  };
+  const spawn = { column: origin.column + rows[spawnRow]!.search(/[.=]/), row: origin.row + spawnRow };
+  const legend = { T: idOf("tree"), ".": idOf("grass"), "=": idOf("dirt"), o: idOf("rock") };
+  const { chunks } = readMapTiles({ areas: [{ name: "test", origin, legend, rows }], spawn });
+  if (chunks.length !== 1) throw new Error(`expected one chunk, got ${chunks.length}`);
+  return chunks[0]!;
 }

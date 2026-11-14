@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { createReplica } from './create';
 import { createPhysicsWorld, initPhysics } from './physics';
-import { starterLevel } from '../content/levels/starter';
+import { worldMap } from '../content/world';
 import { getRenderables } from './view';
 
 // Vitest runs each test file in its own module graph, so Rapier starts unloaded here.
 describe('physics loads on demand', () => {
   it('builds a replica and reads it with no physics loaded', () => {
-    const replica = createReplica({ level: starterLevel });
+    const replica = createReplica({ map: worldMap });
     expect(getRenderables(replica)).toEqual([]);
   });
 
