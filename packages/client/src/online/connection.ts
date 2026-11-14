@@ -34,8 +34,8 @@ export interface JoinedRoom {
   onMessage(type: string, callback: (payload: unknown) => void): void;
   onLeave(callback: (code: number) => void): void;
   send(type: string, payload?: unknown): void;
-  /** Asks the server to answer at once and calls back with the milliseconds the round trip took. Never calls back when the answer is lost. */
-  ping(callback: (milliseconds: number) => void): void;
+  /** Asks the server to answer at once and calls back with the milliseconds the round trip took. False (and no callback, ever) when the ping could not be sent; a ping that was sent and whose answer is lost never calls back either. */
+  ping(callback: (milliseconds: number) => void): boolean;
   leave(): Promise<number>;
 }
 
@@ -60,7 +60,9 @@ export interface WorldConnectionOptions {
  * or a room that never welcomes is abandoned, never waited on.
  *
  * While seated it also measures the round trip to the server with the
- * room's own ping, once every `LATENCY_INTERVAL_MS`, for the HUD. That is a
+ * room's own ping, once every `LATENCY_INTERVAL_MS`, for the HUD. The first
+ * ping waits one interval: right after the welcome the page is busy building
+ * the game, and an answer handled late would read as a slow network. That is a
  * fact about the view, not about the world: nothing of it reaches the sim.
  */
 export class WorldConnection {
@@ -80,7 +82,7 @@ export class WorldConnection {
   private latencyTimer: ReturnType<typeof setInterval> | undefined;
   /** The last round trip the server answered, in milliseconds, since the client was last seated. */
   private answeredLatencyMs: number | undefined;
-  /** When the ping still waiting for its answer was sent (`Date.now()` milliseconds). One ping waits at a time. */
+  /** When the ping still waiting for its answer was sent (`performance.now()` milliseconds, the clock the room times pings with). One ping waits at a time. */
   private pingSentAt: number | undefined;
   private closed = false;
 
@@ -104,8 +106,8 @@ export class WorldConnection {
    */
   get latencyMs(): number | undefined {
     if (this.answeredLatencyMs === undefined) return undefined;
-    const waited = this.pingSentAt === undefined ? 0 : Date.now() - this.pingSentAt;
-    return Math.max(this.answeredLatencyMs, waited);
+    const waitedMs = this.pingSentAt === undefined ? 0 : Math.round(performance.now() - this.pingSentAt);
+    return Math.max(this.answeredLatencyMs, waitedMs);
   }
 
   /** Starts joining. Call once. */
@@ -248,16 +250,15 @@ export class WorldConnection {
 
   private setStatus(status: ConnectionStatus): void {
     this.currentStatus = status;
-    if (status.kind === 'online') this.startMeasuringLatency();
-    else this.stopMeasuringLatency();
+    if (status.kind !== 'online') this.stopMeasuringLatency();
+    // A seat that is already being measured stays as it is: a second ping would be timed against the first one's answer.
+    else if (this.latencyTimer === undefined) this.startMeasuringLatency();
     this.handlers.onStatus(status);
   }
 
-  /** Pings now and then every `LATENCY_INTERVAL_MS` for as long as the client stays seated. */
+  /** Pings every `LATENCY_INTERVAL_MS` for as long as the client stays seated, the first time one interval from now. */
   private startMeasuringLatency(): void {
-    this.stopMeasuringLatency();
     this.latencyTimer = setInterval(() => this.sendPing(), LATENCY_INTERVAL_MS);
-    this.sendPing();
   }
 
   /** Forgets the measurement: the next seat is another connection and starts with no latency to show. */
@@ -272,14 +273,16 @@ export class WorldConnection {
   private sendPing(): void {
     if (!this.room || this.pingSentAt !== undefined) return;
     const generation = this.generation;
-    const timer = this.latencyTimer;
-    this.pingSentAt = Date.now();
-    this.room.ping((milliseconds) => {
+    const latencyTimerAtSend = this.latencyTimer;
+    this.pingSentAt = performance.now();
+    const sent = this.room.ping((milliseconds) => {
       // An answer to a ping of an earlier seat, or one that arrives after the measuring stopped, measures nothing that is shown.
-      if (generation !== this.generation || timer !== this.latencyTimer) return;
+      if (generation !== this.generation || latencyTimerAtSend !== this.latencyTimer) return;
       this.pingSentAt = undefined;
       if (Number.isFinite(milliseconds) && milliseconds >= 0) this.answeredLatencyMs = milliseconds;
     });
+    // Nothing went out (the socket is closing), so nothing is waiting: the next interval tries again.
+    if (!sent) this.pingSentAt = undefined;
   }
 }
 
@@ -299,7 +302,12 @@ export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
       room.onLeave(callback);
     },
     send: (type, payload) => room.send(type, payload),
-    ping: (callback) => room.ping(callback),
+    ping: (callback) => {
+      // The SDK drops a ping on a socket that is not open without saying so.
+      if (!room.connection?.isOpen) return false;
+      room.ping(callback);
+      return true;
+    },
     leave: () => room.leave(true),
   };
 }

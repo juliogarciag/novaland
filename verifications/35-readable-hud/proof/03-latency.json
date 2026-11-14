@@ -3,12 +3,12 @@
     "direct": {
       "hud": 1,
       "connection": 1,
-      "line": "fps --   latency 1 ms   1/5 online"
+      "line": "fps  --   latency   1 ms   1/5 online"
     },
     "delayed": {
-      "hud": 122,
-      "connection": 122,
-      "line": "fps 58   latency 122 ms   1/5 online"
+      "hud": 125,
+      "connection": 125,
+      "line": "fps  60   latency 125 ms   1/5 online"
     },
     "delayedSamples": [
       124,
@@ -19,65 +19,65 @@
       124,
       124,
       124,
-      124,
-      124,
-      124,
-      124,
-      124,
-      124,
-      124,
-      124,
-      124,
-      122,
-      122,
-      122,
-      122,
-      122,
-      122,
-      122,
-      122
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125,
+      125
     ],
     "slowerSamples": [
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
-      303,
       302,
       302,
       302,
       302,
       302,
       302,
-      302
+      302,
+      303,
+      307,
+      307,
+      307,
+      307,
+      307,
+      307,
+      307,
+      307,
+      307,
+      327,
+      343,
+      343,
+      343,
+      343,
+      343,
+      343,
+      343
     ],
     "stalledEarly": {
-      "hud": 1111,
-      "connection": 1117,
-      "line": "fps 60   latency 1111 ms   1/5 online"
+      "hud": 1018,
+      "connection": 1023,
+      "line": "fps  60   latency 1018 ms   1/5 online"
     },
     "stalledLate": {
-      "hud": 2611,
-      "connection": 2621,
-      "line": "fps 60   latency 2611 ms   1/5 online"
+      "hud": 2518,
+      "connection": 2526,
+      "line": "fps  60   latency 2518 ms   1/5 online"
     },
     "afterStall": {
       "hud": 1,
       "connection": 1,
-      "line": "fps 60   latency 1 ms   1/5 online"
+      "line": "fps  60   latency   1 ms   1/5 online"
     },
     "pings": {
       "sentInFiveSeconds": 5,
@@ -89,11 +89,11 @@
     "back": {
       "hud": 1,
       "connection": 1,
-      "line": "fps 60   latency 1 ms   1/5 online"
+      "line": "fps  60   latency   1 ms   1/5 online"
     }
   },
   "idle": {
-    "pingsAnswered": 6,
-    "kickedAfterSeconds": 5.992
+    "pingsAnswered": 5,
+    "kickedAfterSeconds": 5.99
   }
 }

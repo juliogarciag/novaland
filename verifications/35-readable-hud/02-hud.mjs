@@ -10,7 +10,7 @@
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
-import { MIN_CONTRAST, hudNumbers, hudOf, measureHudPixels, playerPosition, tilesUnderHud, waitForHud, walkTo } from './hud.mjs';
+import { MIN_CONTRAST, hudNumbers, hudOf, luminance, measureHudPixels, playerPosition, tilesUnderHud, waitForHud, walkTo } from './hud.mjs';
 import { PROOF, check, start, summarize, waitForPort, writeProof } from './lib.mjs';
 
 const CLIENT_PORT = 5350;
@@ -33,7 +33,7 @@ try {
   };
   /** The HUD and its pixels in a screenshot, once the frame rate has been counted (so the text has its final width). */
   const capture = async (page, name) => {
-    await waitForHud(page, /^fps \d+/);
+    await waitForHud(page, /^fps +\d+/);
     // The screenshot and the box must be of the same frame's text: read, shoot, read again and retry if the HUD changed in between.
     for (let attempt = 0; attempt < 5; attempt += 1) {
       const hud = await hudOf(page);
@@ -46,11 +46,11 @@ try {
 
   // 1. What the HUD says.
   const page = await open(1);
-  const first = await waitForHud(page, /^fps \d+/);
+  const first = await waitForHud(page, /^fps +\d+/);
   const text = first.lines.join(' | ');
   results.push(check('the tick counter is gone', !/tick/i.test(text), text));
   results.push(check('the movement help is gone', !/WASD|arrows|to move/i.test(text), text));
-  results.push(check('solo shows the frame rate alone on the first line: no latency, no seats', /^fps \d+$/.test(first.lines[0]), first.lines[0]));
+  results.push(check('solo shows the frame rate alone on the first line: no latency, no seats', /^fps +\d+$/.test(first.lines[0]), first.lines[0]));
   const ownName = await page.evaluate(() => {
     const api = window.__novaland;
     const own = api.snapshot().entities.find((entity) => entity.components.Player && entity.components.Player.slot === api.localSlot());
@@ -101,6 +101,16 @@ try {
 
   // 3. Legible over the lightest tile, the darkest tile and plain white.
   const grid = await page.evaluate(() => ({ width: window.__novaland.grid.width, height: window.__novaland.grid.height }));
+  // Which tiles are the lightest and the darkest comes from the level's own defs, not from this script.
+  const tileColors = await page.evaluate(() => {
+    const api = window.__novaland;
+    const defIds = new Set(api.grid.defIds.flat());
+    return api.defs.filter((def) => defIds.has(def.id)).map((def) => ({ name: def.name, color: def.color }));
+  });
+  const byLuminance = tileColors.map(({ name, color }) => ({ name, luminance: luminance([(color >> 16) & 255, (color >> 8) & 255, color & 255]) })).sort((one, other) => one.luminance - other.luminance);
+  const darkestTile = byLuminance[0].name;
+  const lightestTile = byLuminance[byLuminance.length - 1].name;
+  report.tiles = byLuminance;
   // East along the path the spawn is on, to the north-south path in the middle of the level.
   await walkTo(page, { axis: 'x', target: 21 - grid.width / 2 });
   // Then south until the HUD box is centred on the two rows of the east-west path (rows 14 and 15, whose shared edge is y = 0).
@@ -112,14 +122,14 @@ try {
   await page.waitForTimeout(300);
   const overLightTiles = await tilesUnderHud(page);
   const light = await capture(page, '02-hud-over-light-tiles.png');
-  results.push(check('the HUD is over dirt, the lightest tile, and nothing else', Object.keys(overLightTiles).join() === 'dirt', JSON.stringify(overLightTiles)));
+  results.push(check(`the HUD is over ${lightestTile}, the lightest tile of the level, and nothing else`, Object.keys(overLightTiles).join() === lightestTile, JSON.stringify(overLightTiles)));
   results.push(check(`over dirt the text contrast is >= ${MIN_CONTRAST} (without the backdrop it would be ${light.pixels.contrastWithoutBackdrop})`, light.pixels.contrast >= MIN_CONTRAST && light.pixels.contrastWithoutBackdrop < MIN_CONTRAST, `${light.pixels.contrast}:1`));
   // North to the top of the level: the camera stops at the level's edge and the HUD covers the tree line.
   await walkTo(page, { axis: 'y', target: -grid.height / 2 });
   await page.waitForTimeout(300);
   const overDarkTiles = await tilesUnderHud(page);
   const dark = await capture(page, '02-hud-over-dark-tiles.png');
-  results.push(check('the HUD is over trees, the darkest tile, and nothing else', Object.keys(overDarkTiles).join() === 'tree', `${JSON.stringify(overDarkTiles)}, player at ${JSON.stringify(await playerPosition(page))}`));
+  results.push(check(`the HUD is over ${darkestTile}, the darkest tile of the level, and nothing else`, Object.keys(overDarkTiles).join() === darkestTile, `${JSON.stringify(overDarkTiles)}, player at ${JSON.stringify(await playerPosition(page))}`));
   results.push(check(`over trees the text contrast is >= ${MIN_CONTRAST}`, dark.pixels.contrast >= MIN_CONTRAST, `${dark.pixels.contrast}:1`));
   results.push(check('the backdrop is see-through: it is lighter over dirt than over trees, and darker than the tiles around it both times', luminanceOf(light.pixels.ringMean) > luminanceOf(dark.pixels.ringMean) && luminanceOf(light.pixels.ringMean) < luminanceOf(light.pixels.surroundingsMean) && luminanceOf(dark.pixels.ringMean) < luminanceOf(dark.pixels.surroundingsMean), `over dirt rgb(${light.pixels.ringMean}) next to rgb(${light.pixels.surroundingsMean}); over trees rgb(${dark.pixels.ringMean}) next to rgb(${dark.pixels.surroundingsMean})`));
   // The worst any tile could be: a white sheet over the whole world, under the HUD.

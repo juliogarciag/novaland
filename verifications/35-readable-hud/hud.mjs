@@ -42,7 +42,7 @@ export function hudNumbers(hud) {
     const match = pattern.exec(hud.lines[0]);
     return match && match[1] !== '--' ? Number(match[1]) : undefined;
   };
-  return { fps: number(/fps (\d+|--)/), latency: number(/latency (\d+|--) ms/) };
+  return { fps: number(/fps +(\d+|--)/), latency: number(/latency +(\d+|--) ms/) };
 }
 
 /** Which tiles lie under the HUD box, by def name, sampled every few pixels through the world camera. */

@@ -10,6 +10,8 @@ export class FakeRoom implements JoinedRoom {
   left = false;
   /** False for a room whose server never closes the socket after `leave()`: `onLeave` then never fires. */
   closesOnLeave = true;
+  /** False for a room whose socket is closing: a ping is not sent. */
+  sendsPings = true;
   private readonly messageHandlers = new Map<string, (payload: unknown) => void>();
   private readonly leaveHandlers: Array<(code: number) => void> = [];
   private readonly waitingPings: Array<(milliseconds: number) => void> = [];
@@ -26,8 +28,10 @@ export class FakeRoom implements JoinedRoom {
     this.sent.push({ type, payload });
   }
 
-  ping(callback: (milliseconds: number) => void): void {
+  ping(callback: (milliseconds: number) => void): boolean {
+    if (!this.sendsPings) return false;
     this.waitingPings.push(callback);
+    return true;
   }
 
   /** Pings the client sent that the server has not answered yet. */

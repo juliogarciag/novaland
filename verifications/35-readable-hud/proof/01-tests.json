@@ -490,51 +490,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines says joining... until the local player has an avatar",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate follows a rate that changes, one second later",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
@@ -602,6 +557,61 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines says joining... until the local player has an avatar",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate follows a rate that changes, one second later",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
     "status": "passed"
   },
   {
@@ -771,7 +781,7 @@
   },
   {
     "file": "packages/client/src/online/connection.test.ts",
-    "name": "WorldConnection has no latency until seated, then pings at once and reports the round trip the server answered",
+    "name": "WorldConnection has no latency until seated, pings one interval after the welcome and reports the round trip the server answered",
     "status": "passed"
   },
   {
@@ -786,7 +796,27 @@
   },
   {
     "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection tries again at the next interval when a ping could not be sent, instead of waiting for an answer that cannot come",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection keeps measuring as it was when the room welcomes a second time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
     "name": "WorldConnection forgets the latency when the connection drops and measures the next seat afresh",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection ignores an answer from the room of an earlier seat once the new seat is being measured",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection has no latency and sends no more pings once the server freed the seat of an idle player",
     "status": "passed"
   },
   {
@@ -962,6 +992,21 @@
   {
     "file": "packages/client/src/worlds/LocalWorld.test.ts",
     "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
     "status": "passed"
   },
   {
@@ -1255,18 +1300,18 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name answers undefined for a name it does not know, including prototype names",
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions terrain colliders come from level data, so a new obstacle is only a character in a row",
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "levels by name lists every level once, under a unique name",
     "status": "passed"
   },
   {
@@ -1507,21 +1552,6 @@
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name resolves the name a snapshot or a welcome message carries to the level object",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name answers undefined for a name it does not know, including prototype names",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/levels/levels.test.ts",
-    "name": "levels by name lists every level once, under a unique name",
     "status": "passed"
   }
 ]

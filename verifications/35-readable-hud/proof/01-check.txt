@@ -1,11 +1,11 @@
 PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
-PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (305 of 305)
+PASS  every test file runs and vitest exits 0 (what pnpm test runs, with a JSON report)
+PASS  every test passed, none skipped  (311 of 311)
 PASS  the HUD lines: fps solo with no latency, seats, tick or movement help; fps, latency and seats online; -- for the unmeasured; you, players and the J hint kept
 PASS  the frame rate counts rendered frames per second of real time, at any display rate, with no rate before the first second
-PASS  the connection has no latency until seated, then pings at once and reports the answered round trip
+PASS  the connection has no latency until seated, pings one interval after the welcome and reports the answered round trip
 PASS  it measures again every interval, one ping at a time, and shows how long an unanswered ping has waited
 PASS  the latency is forgotten on a drop and measured afresh for the next seat; junk round trips are ignored; closing stops the pings
 PASS  the connection, online world, sim and server tests that were there still pass
