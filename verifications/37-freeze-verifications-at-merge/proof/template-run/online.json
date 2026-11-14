@@ -37,7 +37,7 @@
     {
       "name": "room server and dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5902,\"roomId\":\"world\",\"seed\":65393081,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5902,\"roomId\":\"world\",\"seed\":1722357279,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
     },
     {
       "name": "A is seated and its replica holds its own player",

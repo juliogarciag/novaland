@@ -10,6 +10,7 @@ $ rg -l waitForPort . | cut -d/ -f2-3 | sort | uniq -c
    2 verifications/19-one-process
    2 verifications/21-random-avatar-spread-spawns
    2 verifications/22-idle-seats
+   3 verifications/35-readable-hud
    1 verifications/37-freeze-verifications-at-merge
    2 verifications/8-pixel-perfect-camera
    2 verifications/9-tile-based-levels
@@ -22,10 +23,10 @@ $ rg -l "\"pass\": true" . | cut -d/ -f2-3 | sort | uniq -c
    2 verifications/37-freeze-verifications-at-merge
 
 $ rg --files verifications | wc -l
-     266
+     294
 
 $ git ls-files verifications | grep -v -e _template -e 37-freeze | wc -l   # tracked files in the frozen folders
-     249
+     277
 
 # After: the root .ignore is in place.
 
@@ -94,13 +95,13 @@ $ rg -n "export function check" verifications/1-bootstrap-monorepo/lib.mjs
 ## 5. What .ignore does not cover: searches told to ignore it, git, and file listing the way the agent Glob tool runs it
 
 $ rg --no-ignore-dot -l waitForPort . | cut -d/ -f2-3 | sort -u | wc -l   # folders with a hit
-      10
+      11
 
 $ git grep -l waitForPort -- verifications | cut -d/ -f1-2 | sort -u | wc -l   # folders with a hit, tracked files only
-      10
+      11
 
 $ rg --files --glob "verifications/*/lib.mjs" --no-ignore --hidden . | wc -l   # Glob passes --no-ignore unless CLAUDE_CODE_GLOB_NO_IGNORE=false
-      12
+      13
 
 $ rg --files --glob "verifications/*/lib.mjs" --hidden . | wc -l   # the same listing with ignore files honoured
        1
@@ -108,7 +109,7 @@ $ rg --files --glob "verifications/*/lib.mjs" --hidden . | wc -l   # the same li
 ## 6. Nothing was deleted
 
 $ git ls-files verifications | grep -v -e _template -e 37-freeze | wc -l   # tracked files in the frozen folders, as before
-     249
+     277
 
 $ git diff --diff-filter=D --name-only origin/main | wc -l   # files deleted since main, uncommitted work included
        0
