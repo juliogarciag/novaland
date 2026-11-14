@@ -20,4 +20,13 @@ export interface Feature {
   update?(sim: Sim): void;
   /** Runs after positions have been synced back from physics. */
   postStep?(sim: Sim): void;
+  /**
+   * Gives entity `eid` the physics body this feature attaches when it spawns
+   * one, read from the entity's components. Called on a prediction after the
+   * entity's components were copied from the authoritative state instead of
+   * being spawned here (`adoptEntity`, ADR 0011). The components came over
+   * the network: ignore an entity that is not yours or whose values cannot
+   * make a body, never throw.
+   */
+  attachBody?(sim: Sim, eid: number): void;
 }

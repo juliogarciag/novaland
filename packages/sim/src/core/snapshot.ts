@@ -48,23 +48,26 @@ export function takeSnapshot(sim: Sim): SimSnapshot {
  */
 export function snapshotEntities(entityWorld: EntityWorld): EntitySnapshot[] {
   const ids = [...getAllEntities(entityWorld.world)].sort((a, b) => a - b);
-  return ids.map((id) => {
-    const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
-    for (const store of getEntityComponents(entityWorld.world, id)) {
-      const name = entityWorld.componentName(store);
-      if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
+  return ids.map((id) => snapshotEntity(entityWorld, id));
+}
+
+/** One live entity with every component field, components and fields sorted by name. */
+export function snapshotEntity(entityWorld: EntityWorld, id: number): EntitySnapshot {
+  const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
+  for (const store of getEntityComponents(entityWorld.world, id)) {
+    const name = entityWorld.componentName(store);
+    if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
+  }
+  named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  const components: Record<string, Record<string, number>> = {};
+  for (const [name, store] of named) {
+    const fields: Record<string, number> = {};
+    for (const field of Object.keys(store).sort()) {
+      fields[field] = store[field]![id] as number;
     }
-    named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    const components: Record<string, Record<string, number>> = {};
-    for (const [name, store] of named) {
-      const fields: Record<string, number> = {};
-      for (const field of Object.keys(store).sort()) {
-        fields[field] = store[field]![id] as number;
-      }
-      components[name] = fields;
-    }
-    return { id, components };
-  });
+    components[name] = fields;
+  }
+  return { id, components };
 }
 
 /** Stable 32-bit FNV-1a hash of a snapshot, as 8 hex chars. Handy for desync checks and tests. */

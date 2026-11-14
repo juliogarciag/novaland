@@ -1,14 +1,14 @@
-import { addComponent, query } from 'bitecs';
+import { addComponent, hasComponent, query } from 'bitecs';
 import { getDef } from '../../content/defs';
 import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
-import { attachDynamicBall, Body } from '../../core/physics';
+import { attachDynamicBall, Body, type BallBodyOptions } from '../../core/physics';
 import type { Sim } from '../../core/sim';
-import { DefRef, Extents } from '../../core/transform';
+import { DefRef, Extents, Position } from '../../core/transform';
 import { pickAvatarDefId } from './avatars';
 import { Facing, MoveIntent, Player } from './components';
-import { MIN_MOVE_INTENT } from './defs';
+import { MAX_ADOPTED_RADIUS, MIN_MOVE_INTENT } from './defs';
 import { findPlayerEntity } from './queries';
 import { pickSpawnPoint } from './spawn';
 
@@ -84,7 +84,24 @@ export const playerFeature: Feature = {
       rigidBody.setLinvel({ x: (intent.x[eid] as number) * speed, y: (intent.y[eid] as number) * speed }, true);
     }
   },
+
+  attachBody(sim, eid) {
+    const position = sim.store(Position);
+    const extents = sim.store(Extents);
+    if (!hasComponent(sim.world, eid, sim.store(Player)) || !hasComponent(sim.world, eid, position) || !hasComponent(sim.world, eid, extents)) return;
+    const x = position.x[eid] as number;
+    const y = position.y[eid] as number;
+    const radius = extents.halfWidth[eid] as number;
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(radius) || radius <= 0 || radius > MAX_ADOPTED_RADIUS) return;
+    attachPlayerBody(sim, eid, { x, y, radius });
+  },
 };
+
+/** The ball a player walks around as: in the players' own layer, so players pass through each other and terrain stops them. */
+function attachPlayerBody(sim: Sim, eid: number, ball: BallBodyOptions): void {
+  const rigidBody = attachDynamicBall(sim, eid, ball);
+  for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
+}
 
 /** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. */
 function spawnPlayer(sim: Sim, slot: number): number {
@@ -110,8 +127,7 @@ function spawnPlayer(sim: Sim, slot: number): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  const rigidBody = attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
-  for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
+  attachPlayerBody(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
 }
 

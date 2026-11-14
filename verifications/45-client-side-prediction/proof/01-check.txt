@@ -1,0 +1,16 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (355 of 355)
+PASS  the sim: a prediction refuses a capacity out of range, holds terrain only, adopts a player from a replica under the same id, walks it exactly as the server does (walls included), is replaced by the next adoption, refuses what it cannot give a body to, and leaves the server's sim untouched
+PASS  the sim: same seed + same commands still give the same state
+PASS  the wire contract is pinned: protocol 2, player/move-applied, the protocol-mismatch refusal
+PASS  the room: acknowledges a move by sequence and tick just before the first update that includes it and tells nobody else; drops a malformed sequence; welcomes with its protocol and refuses another one without giving a seat
+PASS  the edge gate: exactly { x, y, sequence }, a positive safe-integer sequence, never throws, and 20000 fuzzed payloads only ever yield a well-formed move
+PASS  the client connection: hands over player/move-applied only while online, and stops as incompatible on a protocol refusal
+PASS  the online world refuses a welcome of another protocol or none
+PASS  prediction over a lagged link at 100 ms and 300 ms: moves on the frame of the key press; reconciling changes nothing when the server agrees; runs ahead by the round trip and no further; stops at a wall with the server; others stay on server states; jitter, a move never applied, a move altered by the server and a teleport are corrected; a new seat, a hidden tab, a missing or failing prediction and fuzzed acknowledgements are survived  (14 tests)
+PASS  pnpm build exits 0; Rapier is still a chunk of its own that index.html does not reference, and the script the page loads inlines no WASM (ADR 0007, now fetched after the seat)  ({"assets":["index-BaVN9pw9.js","rapier-C1NO8tr2.js"],"pageScripts":["index-BaVN9pw9.js"],"longestInlineBinary":0})
+
+ALL 14 CHECKS PASSED

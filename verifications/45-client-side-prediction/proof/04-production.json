@@ -1,0 +1,49 @@
+{
+  "assets": [
+    {
+      "url": "/assets/index-BaVN9pw9.js",
+      "status": 200
+    },
+    {
+      "url": "/assets/rapier-C1NO8tr2.js",
+      "status": 200
+    }
+  ],
+  "contentSecurityPolicy": "default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'",
+  "console": [
+    "log: %cPhaser v4.2.1 (WebGL | Web Audio)%c https://phaser.io/v4021 color: #ffffff; background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAARBJREFUeNpi/P//P0OHsPB/BiCoePuWkYFEwALSXJElzMBgLwE2CNkQxgWr/yMr/p8QimlBu5DQ//+8vBBco/ofzAe6imH+qv/53/6jYJAYSA4ZoxoANYTPKhiuCQZwGcJU+e4dqpMmvsDq14krV2MPAxDha2CMKvoXoiE/PBQUDgQD8j82UFae9B9bOIC8B9UD9gIjjIMN7Ns6lWHn4XMoYu62RgxO3tkMjIyMII2MYAOAtmFVhA+ADHf2ycGMRhANjUq8YO+WKWCvgAORIV8CkpDCrzIwsLIymC1qAtuAD4Bsh3sBmqAY3qcGwL2AC4DCpKtzHlgzOLWihwEuzTCN0GhDJHeYC4gByBphACDAAH2dDIxdjr+VAAAAAElFTkSuQmCC\"), linear-gradient(to bottom, #000814, #001d3d, #003566); background-repeat: no-repeat; background-position: 4px center, 0 0; padding: 2px 6px 2px 24px; background: transparent",
+    "warning: [.WebGL-0x13c00836000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x13c00836000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x13c00836000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x13c00836000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ],
+  "results": [
+    {
+      "name": "pnpm build exits 0",
+      "pass": true
+    },
+    {
+      "name": "the built server is up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the production page is seated and fetches the physics chunk by itself, after its own bundle, though index.html does not name it",
+      "pass": true,
+      "details": "[{\"url\":\"/assets/index-BaVN9pw9.js\",\"status\":200},{\"url\":\"/assets/rapier-C1NO8tr2.js\",\"status\":200}]"
+    },
+    {
+      "name": "the page's security policy still allows the WASM to run and nothing else new",
+      "pass": true,
+      "details": "default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self'"
+    },
+    {
+      "name": "holding D changes what the page draws",
+      "pass": true
+    },
+    {
+      "name": "prediction started and kept running: nothing warned that it could not start or that it stopped, no console errors, no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

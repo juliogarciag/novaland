@@ -2,6 +2,7 @@ import type { Command, EntityDef, LevelData, SimHandle, SimSnapshot, TileGrid } 
 import { avatarDefIds, entityDefs, hashSnapshot, readTileGrid, tileAt, tileCentre } from '@novaland/sim';
 import type Phaser from 'phaser';
 import type { ConnectionStatus } from './online/connection';
+import type { PredictionReport } from './online/prediction';
 import { cameraView, type CameraView } from './render/camera';
 import { PIXELS_PER_METRE } from './render/units';
 import { MIN_VISIBLE_METRES } from './render/zoom';
@@ -48,6 +49,10 @@ export interface OnlineDebugApi {
   malformedUpdates(): number;
   /** Ticks the drawn frame stays behind the newest server state, so checks can derive the expected lag. */
   readonly interpolationBufferTicks: number;
+  /** What the local player's prediction is doing (ADR 0011); undefined while there is none (still loading, switched off, failed). */
+  prediction(): PredictionReport | undefined;
+  /** Where the last frame drew the local player, in metres: predicted when predicting, else from server states. Undefined when it drew none. */
+  localPlayerDrawnAt(): { readonly x: number; readonly y: number } | undefined;
 }
 
 declare global {

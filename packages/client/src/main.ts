@@ -46,7 +46,8 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
     onRetry: () => joining.connection.retryNow(),
     onReload: () => window.location.reload(),
   });
-  const joining = OnlineWorld.join({ endpoint: serverUrl, onStatus: (status) => screens.show(status) });
+  // VITE_PREDICTION=off draws the local player from server states like everyone else, to compare the two (ADR 0011).
+  const joining = OnlineWorld.join({ endpoint: serverUrl, predictsLocalPlayer: import.meta.env.VITE_PREDICTION !== 'off', onStatus: (status) => screens.show(status) });
   const world = await joining.seated;
   // A hidden tab pauses the game loop, so the keyboard's own stop never goes out: send it here, or the server keeps an abandoned tab walking and seated.
   window.addEventListener('blur', () => world.stopWalking());
@@ -61,6 +62,8 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
       latencyMs: () => world.latencyMs,
       malformedUpdates: () => world.malformedUpdates,
       interpolationBufferTicks: INTERPOLATION_BUFFER_TICKS,
+      prediction: () => world.predictionReport,
+      localPlayerDrawnAt: () => world.localPlayerDrawnAt,
     },
   };
 }
