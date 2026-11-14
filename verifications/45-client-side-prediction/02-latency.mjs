@@ -6,8 +6,13 @@
  *
  * At each latency, with prediction on (the default) and off
  * (`VITE_PREDICTION=off`, the comparison):
- *   - the time from a key press to the first frame that draws the local
- *     player somewhere else, over several presses;
+ *   - the time from a key press to the first frame whose sprite of the
+ *     local player is at least one drawn pixel from where it stood, over
+ *     several presses. Both times are read in the page: the key press in a
+ *     capture-phase listener, the frame in a requestAnimationFrame callback
+ *     that runs after the scene's own. What it leaves out is the time the
+ *     browser takes to present a frame, the same with and without
+ *     prediction;
  *   - after the key is released, the drawn position ends on the server's;
  *   - the HUD's latency figure is the injected round trip either way.
  * With prediction on, also:
@@ -149,13 +154,15 @@ async function openTab(name, clientPort) {
     /** Where the scene drew the player in `slot`, in metres. */
     probe.drawnPositionOf = (slot) => {
       const entity = api.snapshot().entities.find((candidate) => candidate.components.Player?.slot === slot);
-      const pixels = entity && api.game.scene.getScene('world').entityRenderer.pixelPositionOf(entity.id);
+      // Nothing until the scene has built its renderer and drawn the entity once.
+      const pixels = entity && api.game.scene.getScene('world')?.entityRenderer?.pixelPositionOf(entity.id);
       return pixels && { x: pixels.x / api.pixelsPerMetre, y: pixels.y / api.pixelsPerMetre };
     };
     window.addEventListener('keydown', (event) => !event.repeat && probe.keyDowns.push(performance.now()), true);
     window.addEventListener('keyup', () => probe.keyUps.push(performance.now()), true);
     const sample = () => {
-      const drawn = api.online.localPlayerDrawnAt();
+      // The sprite's own position, read after the scene drew it: what is on screen, not what the world reported.
+      const drawn = probe.drawnPositionOf(api.localSlot());
       const server = probe.serverPositionOf(api.localSlot());
       if (drawn && server) probe.frames.push({ at: performance.now(), x: drawn.x, y: drawn.y, serverX: server.x, serverY: server.y, others: probe.watch ? probe.watch() : undefined });
       requestAnimationFrame(sample);
@@ -191,7 +198,9 @@ async function pressAndMeasure(page, roundTripMs, presses = PRESSES) {
       const { frames, keyDowns } = window.__probe;
       const pressedAt = keyDowns[0];
       const before = frames.filter((frame) => frame.at < pressedAt).at(-1);
-      const firstMoved = frames.find((frame) => frame.at >= pressedAt && Math.hypot(frame.x - before.x, frame.y - before.y) > 1e-6);
+      // Moving means at least one drawn pixel away from where it stood.
+      const onePixel = 1 / window.__novaland.pixelsPerMetre;
+      const firstMoved = frames.find((frame) => frame.at >= pressedAt && Math.hypot(frame.x - before.x, frame.y - before.y) >= onePixel);
       const last = frames.at(-1);
       const report = window.__novaland.online.prediction();
       return {

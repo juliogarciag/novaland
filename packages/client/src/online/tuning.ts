@@ -30,7 +30,7 @@ export const MAX_MAP_CHECKSUM_LENGTH = 64;
 /** Largest seat number a welcome may carry. The sim refuses slots past its own limit; this keeps a nonsense welcome from being seated at all. */
 export const MAX_SLOT = 1024;
 
-/** Most ticks the local player is predicted ahead of the newest server state, and how long a move the server has not acknowledged is replayed before it is given up (ADR 0011): one second. Past it the client shows what the server says. */
+/** Most ticks the local player is predicted ahead of the newest server state, and how long a move the server has not acknowledged is replayed before it is given up (ADR 0012): one second. Past it the client shows what the server says. */
 export const MAX_PREDICTION_TICKS = TICK_RATE;
 /** Most ticks one frame steps the prediction one by one; a longer gap (a tab that was hidden) is rebuilt from the server state instead. */
 export const MAX_LIVE_PREDICTION_TICKS = TICK_RATE / 4;

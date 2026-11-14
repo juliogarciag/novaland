@@ -222,6 +222,97 @@ describe('OnlineWorld predicting the local player', () => {
     expect(link.drawn()).toEqual(link.serverPosition());
   });
 
+  it('takes over smoothly when it finishes loading while the player is already walking, and is tied to the server by the held move sent again', async () => {
+    let finishLoading: () => void = () => undefined;
+    const loaded = new Promise<void>((resolve) => {
+      finishLoading = resolve;
+    });
+    const link = await linked(0, ROUND_TRIPS[1], { createPrediction: async (options) => (await loaded, createPrediction(options)) });
+    link.frame([move(1, 0)]);
+    link.frames(60);
+    expect(link.world.predictionReport).toBeUndefined();
+    const before = link.drawn();
+    const movesSent = link.room.sent.length;
+    finishLoading();
+    await waitUntil(() => link.world.predictionReport?.predicting === true);
+    expect(link.room.sent.length).toBe(movesSent + 1);
+    const steps: number[] = [];
+    let last = before.x;
+    for (let frame = 0; frame < 90; frame += 1) {
+      link.frame([]);
+      steps.push(link.drawn().x - last);
+      last = link.drawn().x;
+    }
+    // No hop on the frame it takes over: the lead it gains over the buffered frames is spread out.
+    const perTick = speedOf(link) * FRAME;
+    expect(Math.max(...steps)).toBeLessThan(4 * perTick);
+    expect(Math.min(...steps)).toBeGreaterThan(0);
+    // Tied to the server's timeline: it runs ahead by the round trip, and a turn is drawn on its own frame.
+    expect(link.world.predictionReport!.ticksAhead).toBeGreaterThanOrEqual(ROUND_TRIPS[1].up + ROUND_TRIPS[1].down - 1);
+    const x = link.drawn().x;
+    link.frame([move(0, 1)]);
+    link.frames(3);
+    expect(link.drawn().x - x).toBeLessThan(2 * perTick);
+    link.frame([move(0, 0)]);
+    link.frames(60);
+    expect(link.drawn()).toEqual(link.serverPosition());
+  });
+
+  it('dates a move made during a frame hitch at the end of the hitch, not before it', async () => {
+    const link = await linked(0, ROUND_TRIPS[0]);
+    const before = link.drawn();
+    // 200 ms pass with no frame, then the frame that reads the key press.
+    link.skipClientTime(200);
+    link.frame([move(1, 0)]);
+    expect(link.drawn().x - before.x).toBeLessThan(2 * speedOf(link) * FRAME);
+    link.frames(40);
+    expect(link.world.predictionReport!.ticksAhead).toBeLessThanOrEqual(ROUND_TRIPS[0].up + ROUND_TRIPS[0].down + 6);
+    link.frame([move(0, 0)]);
+    link.frames(40);
+    expect(link.drawn()).toEqual(link.serverPosition());
+  });
+
+  it('stops guessing a second past the last server state when states stop coming, and picks up without a yank when they come back', async () => {
+    const link = await linked(0, ROUND_TRIPS[0]);
+    link.frame([move(1, 0)]);
+    link.frames(30);
+    link.holdServerMessages = true;
+    link.frames(210);
+    const report = link.world.predictionReport!;
+    expect(report.ticksAhead).toBe(MAX_PREDICTION_TICKS);
+    const stalledAt = link.drawn().x;
+    link.frames(30);
+    expect(link.drawn().x).toBe(stalledAt);
+    link.holdServerMessages = false;
+    const steps: number[] = [];
+    let last = stalledAt;
+    for (let frame = 0; frame < 60; frame += 1) {
+      link.frame([]);
+      steps.push(link.drawn().x - last);
+      last = link.drawn().x;
+    }
+    // The server walked on meanwhile: the player is drawn forward to it, never backwards.
+    expect(Math.min(...steps)).toBeGreaterThanOrEqual(0);
+    link.frame([move(0, 0)]);
+    link.frames(60);
+    expect(link.drawn()).toEqual(link.serverPosition());
+  });
+
+  it('with a round trip longer than a guess may last, still ties the timelines from the late acknowledgement, so later moves are predicted', async () => {
+    const link = await linked(0, { up: 36, down: 36 });
+    link.frame([move(1, 0)]);
+    link.frames(120);
+    // The first move was given up before its acknowledgement came; the acknowledgement still measured the offset.
+    expect(link.world.predictionReport!.ticksAhead).toBe(MAX_PREDICTION_TICKS);
+    link.frame([move(0, 0)]);
+    const stoppedAt = link.drawn().x;
+    link.frames(4);
+    // The stop is drawn at once; all that still moves is the tail of a correction, not a walk of four more ticks.
+    expect(link.drawn().x - stoppedAt).toBeLessThan(4 * speedOf(link) * FRAME);
+    link.frames(140);
+    expect(link.drawn()).toEqual(link.serverPosition());
+  });
+
   it('draws the local player from server states while there is no prediction: before it has loaded, when it cannot load, when it is switched off', async () => {
     const neverLoads = await linked(0, ROUND_TRIPS[0], { createPrediction: () => new Promise(() => undefined) });
     const failsToLoad = await linked(0, ROUND_TRIPS[0], { createPrediction: () => Promise.reject(new Error('offline')) });
@@ -300,13 +391,17 @@ interface LinkOptions {
  * ticks, driven one frame (one tick of real time) at a time. The server side
  * does what the world room does: applies the moves that arrived, notes the
  * last one applied, and every third tick sends the acknowledgement (when
- * there is a new one) and then a delta.
+ * there is a new one) and then a delta (`WorldRoom.queueMoveAcknowledgements`
+ * and `sendWorldUpdates` are the real thing; the end-to-end run in
+ * verifications/45-client-side-prediction keeps this fake honest).
  */
 class LaggedLink {
   /** Commands the server adds on its own in its next tick. */
   readonly serverCommands: Command[] = [];
   /** The next move the client sends never reaches the server. */
   dropNextMove = false;
+  /** While true nothing the server sends is delivered; it all arrives, in order, once this is false again. */
+  holdServerMessages = false;
   eid: number;
   private frameCount = 0;
   private clientMs = 0;
@@ -366,7 +461,7 @@ class LaggedLink {
       this.downLink.push({ arrivesAt, type: WIRE.delta, payload: roundTrip(diffWorldState(this.lastSent, next)) });
       this.lastSent = next;
     }
-    while (this.downLink[0] && this.downLink[0].arrivesAt <= this.frameCount) {
+    while (!this.holdServerMessages && this.downLink[0] && this.downLink[0].arrivesAt <= this.frameCount) {
       const message = this.downLink.shift()!;
       this.room.receive(message.type, message.payload);
     }
@@ -461,6 +556,14 @@ async function nextRoom(join: { rooms: FakeRoom[] }, index: number): Promise<Fak
     await new Promise((resolve) => setTimeout(resolve, 5));
   }
   return join.rooms[index] as FakeRoom;
+}
+
+async function waitUntil(condition: () => boolean): Promise<void> {
+  const deadline = Date.now() + 5000;
+  while (!condition()) {
+    if (Date.now() > deadline) throw new Error('timed out waiting for a condition');
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
 }
 
 function move(x: number, y: number): Command {

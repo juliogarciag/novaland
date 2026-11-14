@@ -2,24 +2,24 @@ import type { MoveCommand } from '../features/player/commands';
 import type { WorldState } from './worldState';
 
 /**
- * The messages between a browser and the world server, as ADR 0004 fixes
- * them. The sim does no networking; the names, payload types and protocol
- * constants live here so the server room and the client online mode are
- * built against one definition. Payloads are plain JSON. A delta or full
- * state payload is a `WorldStateUpdate` (worldState.ts).
- */
-/**
  * The version of this contract. A client sends it when it joins (`JoinOptions`)
  * and a server answers with its own in the welcome; each refuses the other
  * when the two differ, so a page loaded before a deploy is told to reload
  * instead of talking past the server. Count it up with every change to the
  * messages below. 2: `player/move` carries a sequence and the server
- * acknowledges it with `player/move-applied` (ADR 0011). 3: the welcome
+ * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
  * names the map by its checksum instead of a level name, and world states no
  * longer hold terrain (ADR 0013).
  */
 export const WIRE_PROTOCOL = 3;
 
+/**
+ * The messages between a browser and the world server, as ADR 0004 and 0012
+ * fix them. The sim does no networking; the names, payload types and
+ * protocol constants live here so the server room and the client online mode
+ * are built against one definition. Payloads are plain JSON. A delta or full
+ * state payload is a `WorldStateUpdate` (worldState.ts).
+ */
 export const WIRE = {
   /** Server → client, once, when the join is accepted. Payload: WelcomeMessage. */
   welcome: 'world/welcome',

@@ -11,7 +11,7 @@
  * state arrived. So the player walks north into the trees and, sampled every
  * frame, must never be drawn past the tree's face, never be moved back, and
  * the largest correction a reconciliation made must stay at the tick or two
- * of walking that starting to move already costs (ADR 0011).
+ * of walking that starting to move already costs (ADR 0012).
  *
  * It also proves the id question: the server's first player has entity id 1,
  * the id a prediction used to give a tree, and the prediction adopts it.

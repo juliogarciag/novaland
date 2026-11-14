@@ -66,7 +66,7 @@ interface Session {
   walking: boolean;
   /** Sequence of the last accepted move still waiting in `pendingCommands` for the next tick; undefined once that tick ran. */
   queuedMoveSequence: number | undefined;
-  /** The last move of this session the sim applied and the tick that step made, not yet told to the client; it goes out just before the next world update (ADR 0011). */
+  /** The last move of this session the sim applied and the tick that step made, not yet told to the client; it goes out just before the next world update (ADR 0012). */
   moveToAcknowledge: MoveAppliedMessage | undefined;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
@@ -96,7 +96,7 @@ export interface DroppedMessages {
  * carries the client's sequence; once a tick has applied it the session is
  * told which one and in which tick, just before the world update that first
  * includes it, so a client that predicts its own movement knows what to
- * replay (ADR 0011).
+ * replay (ADR 0012).
  */
 export class WorldRoom extends Room {
   override maxClients = MAX_SEATS;
@@ -229,7 +229,7 @@ export class WorldRoom extends Room {
         const commands = this.pendingCommands;
         this.pendingCommands = [];
         sim.step(commands);
-        if (commands.length > 0) this.noteAppliedMoves(sim.tick);
+        if (commands.length > 0) this.queueMoveAcknowledgements(sim.tick);
         this.settleTickWaiters(true);
       }
       if (sim.tick - this.lastSendTick >= TICKS_PER_SEND) {
@@ -244,7 +244,7 @@ export class WorldRoom extends Room {
   }
 
   /** The tick that made the sim's tick `tick` applied every command that was waiting: each session's queued move becomes the one to acknowledge. */
-  private noteAppliedMoves(tick: number): void {
+  private queueMoveAcknowledgements(tick: number): void {
     for (const session of this.sessions.values()) {
       if (session.queuedMoveSequence === undefined) continue;
       session.moveToAcknowledge = { sequence: session.queuedMoveSequence, tick };

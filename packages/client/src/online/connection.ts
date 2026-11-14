@@ -33,7 +33,7 @@ export interface WorldConnectionHandlers {
   /** A `world/delta` or `world/state` arrived while seated. */
   onUpdate(payload: unknown): void;
   /** A `player/move-applied` arrived while seated: the update that follows includes that move. */
-  onMoveApplied?(payload: unknown): void;
+  onMoveApplied(payload: unknown): void;
   onStatus(status: ConnectionStatus): void;
 }
 
@@ -222,7 +222,7 @@ export class WorldConnection {
     room.onMessage(WIRE.delta, onUpdate);
     room.onMessage(WIRE.state, onUpdate);
     room.onMessage(WIRE.moveApplied, (payload) => {
-      if (generation === this.generation && this.status.kind === 'online') this.handlers.onMoveApplied?.(payload);
+      if (generation === this.generation && this.status.kind === 'online') this.handlers.onMoveApplied(payload);
     });
   }
 

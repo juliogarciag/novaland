@@ -4,31 +4,31 @@
       "keyPressToMotionMs": {
         "predicted": {
           "each": [
-            4.6,
-            1.8,
-            3.9,
-            5.5,
-            12.1,
-            1,
-            3.7,
-            5.8
+            17.6,
+            18,
+            28.3,
+            17.4,
+            18.5,
+            22.8,
+            28.4,
+            18
           ],
-          "median": 4.6,
-          "worst": 12.1
+          "median": 18.5,
+          "worst": 28.4
         },
         "unpredicted": {
           "each": [
-            206.3,
-            195.7,
-            219.8,
-            237.4,
-            203.8,
-            223,
-            211.2,
-            184.6
+            240.7,
+            244.3,
+            234.8,
+            238.4,
+            256.2,
+            244.6,
+            235,
+            255.6
           ],
-          "median": 211.2,
-          "worst": 237.4
+          "median": 244.3,
+          "worst": 256.2
         },
         "frameMs": 16.7
       },
@@ -78,13 +78,13 @@
         "report": {
           "predicting": true,
           "unacknowledgedMoves": 0,
-          "ticksAhead": 6,
-          "reconciliations": 220,
+          "ticksAhead": 9,
+          "reconciliations": 219,
           "correctionMetres": 0,
           "largestCorrectionMetres": 0.08333206176757812
         },
-        "furthestAheadMetres": 0.759,
-        "hudLatencyMs": 102
+        "furthestAheadMetres": 0.789,
+        "hudLatencyMs": 103
       },
       "unpredicted": {
         "settled": [
@@ -129,67 +129,67 @@
             "correctionMetres": 0
           }
         ],
-        "hudLatencyMs": 102
+        "hudLatencyMs": 103
       },
       "lostThenReleased": {
-        "furthestFromServer": 0.851,
+        "furthestFromServer": 0.968,
         "serverMoved": 0,
-        "distanceWhileStillHeld": 0.827,
+        "distanceWhileStillHeld": 0.946,
         "endDistance": 0,
         "backAtStart": 0,
-        "largestStepBackMetres": 0.106,
-        "framesMovingBack": 33,
+        "largestStepBackMetres": 0.112,
+        "framesMovingBack": 34,
         "dropped": 1
       },
       "lostAndHeld": {
-        "furthestFromServer": 0.854,
+        "furthestFromServer": 0.864,
         "serverMoved": 0,
         "distanceWhileStillHeld": 0,
         "endDistance": 0,
         "backAtStart": 0,
-        "largestStepBackMetres": 0.213,
+        "largestStepBackMetres": 0.199,
         "framesMovingBack": 39,
         "dropped": 1
       },
       "twoPlayers": {
-        "watcherSawMoverMove": 4.583,
-        "moverSawWatcherMove": 4.5,
+        "watcherSawMoverMove": 4.5,
+        "moverSawWatcherMove": 4.583,
         "disagreement": 0,
-        "otherDrawnBehindReplica": 0.646,
-        "selfDrawnAheadOfReplica": 0.753
+        "otherDrawnBehindReplica": 0.648,
+        "selfDrawnAheadOfReplica": 0.976
       }
     },
     "300": {
       "keyPressToMotionMs": {
         "predicted": {
           "each": [
-            6.6,
-            7.5,
-            10.9,
-            12.1,
-            0.7,
-            5.3,
-            10.6,
-            0.6
+            6.2,
+            3.6,
+            3.6,
+            4.7,
+            4.6,
+            2.6,
+            5,
+            7.3
           ],
-          "median": 7.5,
-          "worst": 12.1
+          "median": 4.7,
+          "worst": 7.3
         },
         "unpredicted": {
           "each": [
-            423.4,
-            395.7,
-            401.2,
-            419.5,
-            422.6,
-            395,
-            417.3,
-            385.9
+            456.2,
+            438.5,
+            441.1,
+            445.2,
+            434.6,
+            437.5,
+            440.1,
+            444.7
           ],
-          "median": 417.3,
-          "worst": 423.4
+          "median": 441.1,
+          "worst": 456.2
         },
-        "frameMs": 16.7
+        "frameMs": 16.6
       },
       "predicted": {
         "settled": [
@@ -237,12 +237,12 @@
         "report": {
           "predicting": true,
           "unacknowledgedMoves": 0,
-          "ticksAhead": 18,
-          "reconciliations": 257,
+          "ticksAhead": 21,
+          "reconciliations": 260,
           "correctionMetres": 0,
-          "largestCorrectionMetres": 0.08333206176757812
+          "largestCorrectionMetres": 0
         },
-        "furthestAheadMetres": 1.833,
+        "furthestAheadMetres": 1.733,
         "hudLatencyMs": 303
       },
       "unpredicted": {
@@ -288,16 +288,16 @@
             "correctionMetres": 0
           }
         ],
-        "hudLatencyMs": 306
+        "hudLatencyMs": 302
       },
       "lostThenReleased": {
-        "furthestFromServer": 1.899,
+        "furthestFromServer": 1.898,
         "serverMoved": 0,
-        "distanceWhileStillHeld": 1.899,
+        "distanceWhileStillHeld": 1.898,
         "endDistance": 0,
         "backAtStart": 0,
         "largestStepBackMetres": 0.117,
-        "framesMovingBack": 44,
+        "framesMovingBack": 45,
         "dropped": 1
       },
       "lostAndHeld": {
@@ -306,34 +306,34 @@
         "distanceWhileStillHeld": 0,
         "endDistance": 0,
         "backAtStart": 0,
-        "largestStepBackMetres": 0.488,
+        "largestStepBackMetres": 0.483,
         "framesMovingBack": 32,
         "dropped": 1
       },
       "twoPlayers": {
         "watcherSawMoverMove": 4.5,
-        "moverSawWatcherMove": 4.417,
+        "moverSawWatcherMove": 4.583,
         "disagreement": 0,
-        "otherDrawnBehindReplica": 0.647,
-        "selfDrawnAheadOfReplica": 1.725
+        "otherDrawnBehindReplica": 0.858,
+        "selfDrawnAheadOfReplica": 1.778
       }
     }
   },
   "proxy": {
-    "toServer": 175,
-    "toClient": 1949,
+    "toServer": 176,
+    "toClient": 1950,
     "dropped": 4
   },
   "results": [
     {
       "name": "room server, latency proxy and both dev servers (prediction on, prediction off) up, started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5945,\"roomId\":\"world\",\"seed\":1566972586,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":\"<repo>/packages/client/dist\",\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5945,\"roomId\":\"world\",\"seed\":553249877,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":\"<repo>/packages/client/dist\",\"allowedOrigins\":[],\"loopbackOrigins\":true}"
     },
     {
       "name": "100 ms round trip, prediction on: the local player is drawn moving within two frames of every key press",
       "pass": true,
-      "details": "delays 5, 2, 4, 6, 12, 1, 4, 6 ms, a frame is 16.7 ms"
+      "details": "delays 18, 18, 28, 17, 19, 23, 28, 18 ms, a frame is 16.7 ms"
     },
     {
       "name": "100 ms round trip, prediction on: after every release the drawn position ends on the server's, with nothing left to acknowledge or correct",
@@ -343,57 +343,57 @@
     {
       "name": "100 ms round trip, prediction on: while walking the drawn player runs ahead of the server's state, and reconciling only ever corrects by a few ticks of movement",
       "pass": true,
-      "details": "{\"furthestAheadMetres\":0.759,\"predicting\":true,\"unacknowledgedMoves\":0,\"ticksAhead\":6,\"reconciliations\":220,\"correctionMetres\":0,\"largestCorrectionMetres\":0.08333206176757812}"
+      "details": "{\"furthestAheadMetres\":0.789,\"predicting\":true,\"unacknowledgedMoves\":0,\"ticksAhead\":9,\"reconciliations\":219,\"correctionMetres\":0,\"largestCorrectionMetres\":0.08333206176757812}"
     },
     {
       "name": "100 ms round trip, prediction on: the HUD latency figure is the round trip the proxy adds, not hidden by prediction",
       "pass": true,
-      "details": "102 ms shown"
+      "details": "103 ms shown"
     },
     {
       "name": "100 ms round trip, forced disagreement: a move the server never received is drawn at once, about one round trip of walking ahead and no further, and taken back once the next move is acknowledged",
       "pass": true,
-      "details": "{\"roundTripOfWalking\":0.5,\"furthestFromServer\":0.851,\"serverMoved\":0,\"distanceWhileStillHeld\":0.827,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.106,\"framesMovingBack\":33,\"dropped\":1}"
+      "details": "{\"roundTripOfWalking\":0.5,\"furthestFromServer\":0.968,\"serverMoved\":0,\"distanceWhileStillHeld\":0.946,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.112,\"framesMovingBack\":34,\"dropped\":1}"
     },
     {
       "name": "100 ms round trip, forced disagreement: with the key still down the lost move is given up after about a second and the player is drawn back on the server's position",
       "pass": true,
-      "details": "{\"furthestFromServer\":0.854,\"serverMoved\":0,\"distanceWhileStillHeld\":0,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.213,\"framesMovingBack\":39,\"dropped\":1}"
+      "details": "{\"furthestFromServer\":0.864,\"serverMoved\":0,\"distanceWhileStillHeld\":0,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.199,\"framesMovingBack\":39,\"dropped\":1}"
     },
     {
       "name": "100 ms round trip, forced disagreement: the correction is spread over frames, never one jump",
       "pass": true,
-      "details": "{\"largestStepBackMetres\":0.213,\"framesMovingBack\":39}"
+      "details": "{\"largestStepBackMetres\":0.199,\"framesMovingBack\":39}"
     },
     {
       "name": "100 ms round trip, forced disagreement: the next moves are predicted and settle as before",
       "pass": true,
-      "details": "delays 11, 2 ms"
+      "details": "delays 22, 23 ms"
     },
     {
       "name": "100 ms round trip, two players: each sees the other walk and both end on the same positions",
       "pass": true,
-      "details": "{\"watcherSawMoverMove\":4.583,\"moverSawWatcherMove\":4.5,\"disagreement\":0,\"otherDrawnBehindReplica\":0.646,\"selfDrawnAheadOfReplica\":0.753}"
+      "details": "{\"watcherSawMoverMove\":4.5,\"moverSawWatcherMove\":4.583,\"disagreement\":0,\"otherDrawnBehindReplica\":0.648,\"selfDrawnAheadOfReplica\":0.976}"
     },
     {
       "name": "100 ms round trip, two players: the other player is drawn from server states (behind the replica) while the local one is drawn ahead of it",
       "pass": true,
-      "details": "{\"otherDrawnBehindReplica\":0.646,\"selfDrawnAheadOfReplica\":0.753}"
+      "details": "{\"otherDrawnBehindReplica\":0.648,\"selfDrawnAheadOfReplica\":0.976}"
     },
     {
       "name": "100 ms round trip, prediction off: the same presses wait for the round trip (the latency is real, and prediction is what hides it)",
       "pass": true,
-      "details": "delays 206, 196, 220, 237, 204, 223, 211, 185 ms"
+      "details": "delays 241, 244, 235, 238, 256, 245, 235, 256 ms"
     },
     {
       "name": "100 ms round trip, prediction off: the HUD latency figure is the same",
       "pass": true,
-      "details": "102 ms shown, 102 ms with prediction"
+      "details": "103 ms shown, 103 ms with prediction"
     },
     {
       "name": "300 ms round trip, prediction on: the local player is drawn moving within two frames of every key press",
       "pass": true,
-      "details": "delays 7, 8, 11, 12, 1, 5, 11, 1 ms, a frame is 16.7 ms"
+      "details": "delays 6, 4, 4, 5, 5, 3, 5, 7 ms, a frame is 16.6 ms"
     },
     {
       "name": "300 ms round trip, prediction on: after every release the drawn position ends on the server's, with nothing left to acknowledge or correct",
@@ -403,7 +403,7 @@
     {
       "name": "300 ms round trip, prediction on: while walking the drawn player runs ahead of the server's state, and reconciling only ever corrects by a few ticks of movement",
       "pass": true,
-      "details": "{\"furthestAheadMetres\":1.833,\"predicting\":true,\"unacknowledgedMoves\":0,\"ticksAhead\":18,\"reconciliations\":257,\"correctionMetres\":0,\"largestCorrectionMetres\":0.08333206176757812}"
+      "details": "{\"furthestAheadMetres\":1.733,\"predicting\":true,\"unacknowledgedMoves\":0,\"ticksAhead\":21,\"reconciliations\":260,\"correctionMetres\":0,\"largestCorrectionMetres\":0}"
     },
     {
       "name": "300 ms round trip, prediction on: the HUD latency figure is the round trip the proxy adds, not hidden by prediction",
@@ -413,42 +413,42 @@
     {
       "name": "300 ms round trip, forced disagreement: a move the server never received is drawn at once, about one round trip of walking ahead and no further, and taken back once the next move is acknowledged",
       "pass": true,
-      "details": "{\"roundTripOfWalking\":1.5,\"furthestFromServer\":1.899,\"serverMoved\":0,\"distanceWhileStillHeld\":1.899,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.117,\"framesMovingBack\":44,\"dropped\":1}"
+      "details": "{\"roundTripOfWalking\":1.5,\"furthestFromServer\":1.898,\"serverMoved\":0,\"distanceWhileStillHeld\":1.898,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.117,\"framesMovingBack\":45,\"dropped\":1}"
     },
     {
       "name": "300 ms round trip, forced disagreement: with the key still down the lost move is given up after about a second and the player is drawn back on the server's position",
       "pass": true,
-      "details": "{\"furthestFromServer\":1.913,\"serverMoved\":0,\"distanceWhileStillHeld\":0,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.488,\"framesMovingBack\":32,\"dropped\":1}"
+      "details": "{\"furthestFromServer\":1.913,\"serverMoved\":0,\"distanceWhileStillHeld\":0,\"endDistance\":0,\"backAtStart\":0,\"largestStepBackMetres\":0.483,\"framesMovingBack\":32,\"dropped\":1}"
     },
     {
       "name": "300 ms round trip, forced disagreement: the correction is spread over frames, never one jump",
       "pass": true,
-      "details": "{\"largestStepBackMetres\":0.488,\"framesMovingBack\":32}"
+      "details": "{\"largestStepBackMetres\":0.483,\"framesMovingBack\":32}"
     },
     {
       "name": "300 ms round trip, forced disagreement: the next moves are predicted and settle as before",
       "pass": true,
-      "details": "delays 5, 7 ms"
+      "details": "delays 2, 23 ms"
     },
     {
       "name": "300 ms round trip, two players: each sees the other walk and both end on the same positions",
       "pass": true,
-      "details": "{\"watcherSawMoverMove\":4.5,\"moverSawWatcherMove\":4.417,\"disagreement\":0,\"otherDrawnBehindReplica\":0.647,\"selfDrawnAheadOfReplica\":1.725}"
+      "details": "{\"watcherSawMoverMove\":4.5,\"moverSawWatcherMove\":4.583,\"disagreement\":0,\"otherDrawnBehindReplica\":0.858,\"selfDrawnAheadOfReplica\":1.778}"
     },
     {
       "name": "300 ms round trip, two players: the other player is drawn from server states (behind the replica) while the local one is drawn ahead of it",
       "pass": true,
-      "details": "{\"otherDrawnBehindReplica\":0.647,\"selfDrawnAheadOfReplica\":1.725}"
+      "details": "{\"otherDrawnBehindReplica\":0.858,\"selfDrawnAheadOfReplica\":1.778}"
     },
     {
       "name": "300 ms round trip, prediction off: the same presses wait for the round trip (the latency is real, and prediction is what hides it)",
       "pass": true,
-      "details": "delays 423, 396, 401, 420, 423, 395, 417, 386 ms"
+      "details": "delays 456, 439, 441, 445, 435, 438, 440, 445 ms"
     },
     {
       "name": "300 ms round trip, prediction off: the HUD latency figure is the same",
       "pass": true,
-      "details": "306 ms shown, 303 ms with prediction"
+      "details": "302 ms shown, 303 ms with prediction"
     },
     {
       "name": "no page errors and no console errors in any tab",

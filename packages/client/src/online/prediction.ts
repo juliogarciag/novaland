@@ -24,7 +24,12 @@ interface RecordedMove {
   /** The client tick the move was applied in: the step from this tick to the next. */
   readonly clientTick: number;
   readonly command: MoveCommand;
+  /** Not replayed any more: the server did not acknowledge it within `MAX_PREDICTION_TICKS`. Kept so a late acknowledgement can still tie the two timelines together. */
+  givenUp: boolean;
 }
+
+/** Most moves remembered while they wait for an acknowledgement; the oldest are forgotten past it. Far more than a second of key presses. */
+const MAX_RECORDED_MOVES = 64;
 
 /** What the debug hooks and the end-to-end checks read about the prediction. */
 export interface PredictionReport {
@@ -45,7 +50,7 @@ export interface PredictionReport {
 const ZERO: Point = { x: 0, y: 0 };
 
 /**
- * The local player, ahead of the server (ADR 0011). It owns a prediction sim
+ * The local player, ahead of the server (ADR 0012). It owns a prediction sim
  * that holds the map's terrain and one adopted entity: the local player as
  * the replica last had it. Moves are applied to it the tick they are made;
  * every server state throws the guess away, adopts the player again and
@@ -66,10 +71,10 @@ export class LocalPlayerPrediction {
   private tickFraction = 0;
   private lastClientTime = 0;
   private moves: RecordedMove[] = [];
-  /** Unacknowledged moves from before the tick the last server state stands for, to apply with the next step. */
-  private lateCommands: MoveCommand[] = [];
+  /** Unacknowledged moves made before the client tick the last server state stands for: the server is overdue applying them, so they go in with the next step. */
+  private overdueCommands: MoveCommand[] = [];
   /** Server tick minus client tick, measured at the last acknowledged move; undefined until one was acknowledged. */
-  private serverTicksAhead: number | undefined;
+  private serverTickOffset: number | undefined;
   private beforeLastStep: Point = ZERO;
   private predicted: Point = ZERO;
   private correction: Point = ZERO;
@@ -82,7 +87,7 @@ export class LocalPlayerPrediction {
   get report(): PredictionReport {
     return {
       predicting: this.eid !== undefined,
-      unacknowledgedMoves: this.moves.length,
+      unacknowledgedMoves: this.moves.filter((move) => !move.givenUp).length,
       ticksAhead: this.ticksAhead,
       reconciliations: this.reconciliations,
       correctionMetres: Math.hypot(this.correction.x, this.correction.y),
@@ -90,29 +95,46 @@ export class LocalPlayerPrediction {
     };
   }
 
-  /** A seat was taken: forget everything about the last one and start from the player `replica` holds in `slot`. */
-  follow(replica: SimHandle, slot: number): void {
+  /**
+   * A seat was taken: forget everything about the last one and start from
+   * the player `replica` holds in `slot`. `drawnAt` is where that player was
+   * being drawn until now, when it was: the step from there to the
+   * predicted position fades like any correction instead of showing as a hop.
+   */
+  follow(replica: SimHandle, slot: number, drawnAt?: Point): void {
     this.stop();
     this.slot = slot;
     this.moves = [];
-    this.serverTicksAhead = undefined;
+    this.serverTickOffset = undefined;
     this.reconciliations = 0;
     this.largestCorrectionMetres = 0;
     this.reconcile(replica);
+    if (this.eid === undefined || !drawnAt) return;
+    const predicted = this.drawnPosition();
+    const correction = { x: drawnAt.x - predicted.x, y: drawnAt.y - predicted.y };
+    if (Math.hypot(correction.x, correction.y) <= SNAP_DISTANCE_METRES) this.correction = correction;
   }
 
   /** Stops predicting until the next server state: the local player is drawn from server states meanwhile. */
   stop(): void {
     releaseAdoptedEntities(this.sim);
     this.eid = undefined;
-    this.lateCommands = [];
+    this.overdueCommands = [];
     this.correction = ZERO;
     this.ticksAhead = 0;
   }
 
-  /** The player made a move, sent to the server as `sequence`: it is applied in the next step. */
-  recordMove(move: Point, sequence: number): void {
-    this.moves.push({ sequence, clientTick: this.clientTick, command: { type: 'player/move', slot: this.slot, x: move.x, y: move.y } });
+  /**
+   * The player made a move at `clientTime` (client ticks, fraction included),
+   * sent to the server as `sequence`. It is applied in the last step real
+   * time has earned by then: the next step on an even frame, and after a
+   * hitch the newest of the steps the frame is about to run, not one dated
+   * before the key was touched.
+   */
+  recordMove(move: Point, sequence: number, clientTime: number): void {
+    const clientTick = Math.max(this.clientTick, Math.floor(clientTime) - 1);
+    this.moves.push({ sequence, clientTick, givenUp: false, command: { type: 'player/move', slot: this.slot, x: move.x, y: move.y } });
+    if (this.moves.length > MAX_RECORDED_MOVES) this.moves.splice(0, this.moves.length - MAX_RECORDED_MOVES);
   }
 
   /**
@@ -125,7 +147,7 @@ export class LocalPlayerPrediction {
     const applied = readMoveApplied(message);
     if (!applied) return;
     const move = this.moves.find((candidate) => candidate.sequence === applied.sequence);
-    if (move) this.serverTicksAhead = applied.tick - 1 - move.clientTick;
+    if (move) this.serverTickOffset = applied.tick - 1 - move.clientTick;
     this.moves = this.moves.filter((candidate) => candidate.sequence > applied.sequence);
   }
 
@@ -152,12 +174,18 @@ export class LocalPlayerPrediction {
       return;
     }
     while (this.clientTick < wholeTicks) {
-      const commands = [...this.lateCommands, ...this.movesMadeIn(this.clientTick)];
-      this.lateCommands = [];
-      this.beforeLastStep = this.predicted;
-      this.sim.step(commands);
+      // No further ahead of the last server state than a replay would go: when states stop coming the guess stops growing, and the next state replays what was skipped.
+      if (this.ticksAhead < MAX_PREDICTION_TICKS) {
+        const commands = [...this.overdueCommands, ...this.movesMadeIn(this.clientTick)];
+        this.overdueCommands = [];
+        this.beforeLastStep = this.predicted;
+        this.sim.step(commands);
+        this.predicted = this.positionOf(this.eid);
+        this.ticksAhead += 1;
+      } else {
+        this.beforeLastStep = this.predicted;
+      }
       this.clientTick += 1;
-      this.predicted = this.positionOf(this.eid);
     }
   }
 
@@ -204,29 +232,32 @@ export class LocalPlayerPrediction {
    * The adopted player stands at server tick `serverTick`. Steps it up to
    * the current client tick: from the client tick that server tick stands
    * for when an acknowledgement has tied the two timelines, else from the
-   * oldest move still unacknowledged (before any acknowledgement the player
-   * stood still, so nothing happened before that move). Never more than
+   * oldest move still unacknowledged (with no acknowledgement yet, nothing
+   * this prediction knows of happened before that move). Never more than
    * `MAX_PREDICTION_TICKS`, and a move older than that is given up.
    */
   private replayFrom(serverTick: number, eid: number): void {
     const oldestTick = this.clientTick - MAX_PREDICTION_TICKS;
-    this.moves = this.moves.filter((move) => move.clientTick > oldestTick);
-    const standsFor = this.serverTicksAhead === undefined ? (this.moves[0]?.clientTick ?? this.clientTick) : serverTick - this.serverTicksAhead;
-    const firstTick = Math.min(this.clientTick, Math.max(oldestTick, standsFor));
-    let late = this.moves.filter((move) => move.clientTick < firstTick).map((move) => move.command);
+    for (const move of this.moves) {
+      if (move.clientTick <= oldestTick) move.givenUp = true;
+    }
+    const replayed = this.moves.filter((move) => !move.givenUp);
+    const clientTickOfServerState = this.serverTickOffset === undefined ? (replayed[0]?.clientTick ?? this.clientTick) : serverTick - this.serverTickOffset;
+    const firstTick = Math.min(this.clientTick, Math.max(oldestTick, clientTickOfServerState));
+    let overdue = replayed.filter((move) => move.clientTick < firstTick).map((move) => move.command);
     this.beforeLastStep = this.positionOf(eid);
     for (let tick = firstTick; tick < this.clientTick; tick += 1) {
       if (tick === this.clientTick - 1) this.beforeLastStep = this.positionOf(eid);
-      this.sim.step([...late, ...this.movesMadeIn(tick)]);
-      late = [];
+      this.sim.step([...overdue, ...this.movesMadeIn(tick)]);
+      overdue = [];
     }
     this.predicted = this.positionOf(eid);
-    this.lateCommands = late;
+    this.overdueCommands = overdue;
     this.ticksAhead = this.clientTick - firstTick;
   }
 
   private movesMadeIn(clientTick: number): MoveCommand[] {
-    return this.moves.filter((move) => move.clientTick === clientTick).map((move) => move.command);
+    return this.moves.filter((move) => move.clientTick === clientTick && !move.givenUp).map((move) => move.command);
   }
 
   /** Where the player is drawn: between the last two predicted positions by how far the frame is into its tick, plus what is left of the correction. */
@@ -248,8 +279,8 @@ export class LocalPlayerPrediction {
 /** What is left of a correction after `seconds`: it halves every `CORRECTION_HALF_LIFE_SECONDS` and ends at zero. */
 function fade(correction: Point, seconds: number): Point {
   if (correction === ZERO) return ZERO;
-  const share = 0.5 ** (seconds / CORRECTION_HALF_LIFE_SECONDS);
-  const faded = { x: correction.x * share, y: correction.y * share };
+  const remainingShare = 0.5 ** (seconds / CORRECTION_HALF_LIFE_SECONDS);
+  const faded = { x: correction.x * remainingShare, y: correction.y * remainingShare };
   return Math.hypot(faded.x, faded.y) < NEGLIGIBLE_CORRECTION_METRES ? ZERO : faded;
 }
 

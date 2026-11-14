@@ -505,6 +505,26 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator paints the sheet under the key and in the tile layout the grass def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator paints the same sheet every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator covers every pixel: ground has no holes",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-grass-sheet.test.mjs",
+    "name": "grass sheet generator textures every tile and paints no two alike",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/tools/generate-player-sheet.test.mjs",
     "name": "avatar sheet generator has one palette per avatar def, under the sprite key the def declares",
     "status": "passed"
@@ -520,6 +540,31 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints the sheet under the key and in the frame layout the rock def declares",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints the same sheet every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator keeps every rock inside the width of its one-metre tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator paints a rock in every frame, and no two alike",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/tools/generate-rock-sheet.test.mjs",
+    "name": "rock sheet generator buries every rock: its lowest row is grass in the greens of the grass sheet, with nothing under it",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/tools/generate-tree-sheet.test.mjs",
     "name": "tree sheet generator paints the sheet under the key and in the frame layout the tree def declares",
     "status": "passed"
@@ -527,6 +572,61 @@
   {
     "file": "packages/client/tools/generate-tree-sheet.test.mjs",
     "name": "tree sheet generator paints the same sheet every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines says joining... until the local player has an avatar",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate follows a rate that changes, one second later",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
     "status": "passed"
   },
   {
@@ -600,6 +700,226 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/camera.test.ts",
+    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots gives a def with a loaded ground sprite one tile per variant and every other def one flat tile, end to end in def order",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots falls back to one flat tile for a ground sprite whose sheet did not load",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots every ground sprite of the terrain defs has tiles of the size the tileset is built from",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTilesetSlots refuses a ground sprite whose tiles are another size",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows shows every grass tile in the variant its column and row pick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows puts the grass a tile would have had under a tree or a rock",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows shows a flat tile without a sprite as its one tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows draws a standing tile flat in its own tile when its image did not load, and still textures the grass",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows with no sheet loaded at all, every tile is the flat tile of its own def, as before there was art",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/groundTiles.test.ts",
+    "name": "groundTileIndexRows uses every grass variant somewhere in the starter level",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/pose.test.ts",
+    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/standingTiles.test.ts",
+    "name": "standingTilePlacements places one image per tree or rock tile and none for flat tiles",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/standingTiles.test.ts",
+    "name": "standingTilePlacements stands the image on the bottom centre of its tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/standingTiles.test.ts",
+    "name": "standingTilePlacements sorts by the bottom edge of the tile, like an entity by the bottom edge of its body",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/standingTiles.test.ts",
+    "name": "standingTilePlacements draws trees further south over trees further north",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/standingTiles.test.ts",
+    "name": "standingTilePlacements covers every tree and rock of the starter level with a frame its sheet has",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile gives a tile the variant it has always had: a changed hash would redraw every tree, rock and grass tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile uses every variant about as often across a level, however many there are",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile does not paint whole rows or columns in one variant",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/tileVariant.test.ts",
+    "name": "variantOfTile picks the only variant there is when there is one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames clamps alpha to [0, 1]",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames takes the newer frame's headings",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/zoom.test.ts",
+    "name": "wholeZoomFor is 1 for a width that makes no sense",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
     "name": "OnlineWorld predicting the local player moves the local player on the frame of the key press, before the server has heard of it, and shows it walking",
     "status": "passed"
@@ -652,6 +972,26 @@
   {
     "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
     "name": "OnlineWorld predicting the local player rebuilds from the server state after a hidden tab instead of stepping the whole gap",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
+    "name": "OnlineWorld predicting the local player takes over smoothly when it finishes loading while the player is already walking, and is tied to the server by the held move sent again",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
+    "name": "OnlineWorld predicting the local player dates a move made during a frame hitch at the end of the hitch, not before it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
+    "name": "OnlineWorld predicting the local player stops guessing a second past the last server state when states stop coming, and picks up without a yank when they come back",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
+    "name": "OnlineWorld predicting the local player with a round trip longer than a guess may last, still ties the timelines from the late acknowledgement, so later moves are predicted",
     "status": "passed"
   },
   {
@@ -940,226 +1280,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines says joining... until the local player has an avatar",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate follows a rate that changes, one second later",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels puts the top-left corner of the view on a whole device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels moves the scroll by less than one device pixel",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels leaves a scroll alone that is already on the grid",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/camera.test.ts",
-    "name": "snapViewToDevicePixels keeps the clamped edges of a level on the grid, so the map edge never drifts",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "poseFromHeading stands facing the last direction when the move intent is zero",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/pose.test.ts",
-    "name": "directionFromVector picks the dominant axis, horizontal on ties, down for a zero vector",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements places one image per tree tile and none for flat tiles",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements stands the image on the bottom centre of its tile",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements sorts by the bottom edge of the tile, like an entity by the bottom edge of its body",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements draws trees further south over trees further north",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "standingTilePlacements covers every tree of the starter level with a frame the sheet has",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "variantOfTile gives a tile the same variant every time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "variantOfTile uses every variant about as often across a forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/standingTiles.test.ts",
-    "name": "variantOfTile does not paint whole rows or columns in one variant",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "readViewFrame reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames clamps alpha to [0, 1]",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames draws what the newer frame has: an entity that appeared sits where it is, one that vanished is gone",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames snaps an entity whose id now means something else (another def or size) instead of sliding it across the map",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/viewFrame.test.ts",
-    "name": "interpolateViewFrames takes the newer frame's headings",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is the largest whole zoom that still shows the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is always a whole number that shows at least the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor never goes below 1, even for a window too narrow for the minimum metres",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/render/zoom.test.ts",
-    "name": "wholeZoomFor is 1 for a width that makes no sense",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-    "status": "passed"
-  },
-  {
     "file": "packages/sim/src/content/defs.test.ts",
     "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
     "status": "passed"
@@ -1321,7 +1441,7 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004 and 0011 list",
+    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004 and 0012 list",
     "status": "passed"
   },
   {
@@ -1520,6 +1640,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level has no paths: every tile is grass, a tree or a rock",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level is ringed by trees with no gap, so nothing walks off the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/levels/levels.test.ts",
+    "name": "the starter level spawns on grass, with every other grass tile within reach",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile grids reads ASCII rows through the legend into tile def ids, centred on the origin",
     "status": "passed"
@@ -1546,12 +1681,22 @@
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs no standing sprite shares its key with another sprite: they are one folder and one texture namespace",
+    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
     "status": "passed"
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
     "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
     "status": "passed"
   },
   {
@@ -1586,12 +1731,12 @@
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the starter level spawns the player on a dirt path inside the forest",
+    "name": "terrain feature (headless) the starter level spawns the player on the grass inside the forest",
     "status": "passed"
   },
   {
     "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely along a path and over grass",
+    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
     "status": "passed"
   },
   {

@@ -48,7 +48,7 @@ async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorl
     onRetry: () => joining.connection.retryNow(),
     onReload: () => window.location.reload(),
   });
-  // VITE_PREDICTION=off draws the local player from server states like everyone else, to compare the two (ADR 0011).
+  // VITE_PREDICTION=off draws the local player from server states like everyone else, to compare the two (ADR 0012).
   const joining = OnlineWorld.join({ endpoint: serverUrl, predictsLocalPlayer: import.meta.env.VITE_PREDICTION !== 'off', onStatus: (status) => screens.show(status) });
   const world = await joining.seated;
   // A hidden tab pauses the game loop, so the keyboard's own stop never goes out: send it here, or the server keeps an abandoned tab walking and seated.

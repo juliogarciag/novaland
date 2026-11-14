@@ -54,7 +54,7 @@ export type PredictionOptions = ReplicaOptions;
 
 /**
  * Creates the sim a client steps ahead of the server to guess where its own
- * player will be (ADR 0011): the map's terrain, every feature and no
+ * player will be (ADR 0012): the map's terrain, every feature and no
  * entities until `adoptEntity` copies one in. Terrain takes no entity ids,
  * so any id the server uses is free here. Loads the physics engine on
  * first call. The capacity is checked like a replica's, for the same reason.
@@ -65,10 +65,11 @@ export async function createPrediction(options: PredictionOptions = {}): Promise
   return new Prediction({ seed: 0, map: options.map ?? worldMap, capacity }, features);
 }
 
-function checkedCapacity(what: string, given: number | undefined): number {
-  const capacity = given ?? DEFAULT_CAPACITY;
+/** The capacity asked for, or the default; a RangeError naming `handleKind` ("Replica", "Prediction") when it is not an integer in 1..MAX_CAPACITY. */
+function checkedCapacity(handleKind: string, requestedCapacity: number | undefined): number {
+  const capacity = requestedCapacity ?? DEFAULT_CAPACITY;
   if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > MAX_CAPACITY) {
-    throw new RangeError(`${what} capacity must be an integer from 1 to ${MAX_CAPACITY}, got ${String(capacity)}`);
+    throw new RangeError(`${handleKind} capacity must be an integer from 1 to ${MAX_CAPACITY}, got ${String(capacity)}`);
   }
   return capacity;
 }

@@ -90,7 +90,7 @@ export function scriptedJoin(outcomes: readonly JoinOutcome[]): { join: (endpoin
           return Promise.reject(matchMakeError('room "world" not found'));
         case 'another-protocol':
           // What the room's own refusal (`JOIN_REFUSAL.protocolMismatch`) looks like once the SDK rejects the join with it.
-          return Promise.reject(Object.assign(new Error('protocol-mismatch'), { code: 520 }));
+          return Promise.reject(Object.assign(new Error('protocol-mismatch'), { code: 523 }));
         case 'unreachable':
           return Promise.reject(new TypeError('Failed to fetch'));
         case 'hangs':

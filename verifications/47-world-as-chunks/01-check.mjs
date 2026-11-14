@@ -48,7 +48,7 @@ const promised = [
   ['prediction.test.ts', 'takes no entity id for terrain, however big the map: the first id a server hands a player is free to adopt'],
   ['prediction.test.ts', 'adopts a player from a replica under the same id and walks it exactly as the server does, walls included'],
   ['replica.test.ts', 'never sends terrain at all: a full state holds the players and nothing else, deltas only the players that moved'],
-  ['replica.test.ts', 'pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0011 and 0013 list'],
+  ['replica.test.ts', 'pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012 and 0013 list'],
   ['worldRoom.test.ts', 'seats 5 players by room id, each welcomed with its own seat and already in the world'],
   ['OnlineWorld.test.ts', 'reports a server it cannot play on: another wire protocol or none, another map, a capacity out of range, a welcome of the wrong shape'],
   ['OnlineWorld.test.ts', 'after a drop refuses a welcome for another map: a server redeployed with new terrain'],

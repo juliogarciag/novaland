@@ -28,6 +28,8 @@ const ENDPOINT = `ws://127.0.0.1:${SERVER_PORT}`;
 const results = [];
 const report = { seed: SEED };
 const random = seededRandom(SEED);
+/** Well-formed fuzzed moves count their sequences up from here: far from anything a random leaf can be. */
+let nextFuzzSequence = 1_000_000;
 
 const roomServer = start('pnpm', ['dev'], { cwd: path.join(ROOT, 'packages/server'), env: { PORT: String(SERVER_PORT) } });
 const rooms = [];
@@ -92,14 +94,18 @@ try {
 
   // ---- A seated client sending random moves, under the rate ceiling ----
   const fuzzer = fillers[0];
-  const fuzzLog = { sent: 0, wellFormedSequences: new Set(), acknowledged: [], closedWith: undefined };
+  const fuzzLog = { sent: 0, wellFormedSequences: new Set(), uniqueWellFormed: [], acknowledged: [], closedWith: undefined };
   fuzzer.room.onMessage('player/move-applied', (applied) => fuzzLog.acknowledged.push(applied));
   fuzzer.room.onMessage('*', () => undefined);
   fuzzer.room.onLeave((code) => (fuzzLog.closedWith = code));
   for (let round = 0; round < 500 && fuzzLog.closedWith === undefined; round += 1) {
     const type = random() < 0.9 ? 'player/move' : pick(['player/move-applied', 'world/resync', 'player/join', 'world/welcome', '']);
     const payload = randomMovePayload();
-    if (type === 'player/move' && isWellFormedMove(payload)) fuzzLog.wellFormedSequences.add(payload.sequence);
+    if (type === 'player/move' && isWellFormedMove(payload)) {
+      fuzzLog.wellFormedSequences.add(payload.sequence);
+      fuzzLog.lastWellFormed = payload.sequence;
+      if (payload.sequence >= 1_000_000) fuzzLog.uniqueWellFormed.push(payload.sequence);
+    }
     try {
       fuzzer.room.send(type, payload);
       fuzzLog.sent += 1;
@@ -111,8 +117,12 @@ try {
   }
   await new Promise((resolve) => setTimeout(resolve, 500));
   const badAcknowledgements = fuzzLog.acknowledged.filter((applied) => !fuzzLog.wellFormedSequences.has(applied.sequence) || !Number.isSafeInteger(applied.tick) || applied.tick < 1);
-  report.fuzzedMoves = { sent: fuzzLog.sent, wellFormed: fuzzLog.wellFormedSequences.size, acknowledged: fuzzLog.acknowledged.length, badAcknowledgements, closedWith: fuzzLog.closedWith };
-  results.push(check('500 random messages from a seated client: it stays seated, and is acknowledged only for payloads that were well-formed moves, each with a real tick', fuzzLog.sent >= 450 && fuzzLog.closedWith === undefined && fuzzLog.wellFormedSequences.size > 20 && fuzzLog.acknowledged.length > 5 && badAcknowledgements.length === 0, JSON.stringify(report.fuzzedMoves)));
+  // Sent 60 ms apart and acknowledged once per send interval (50 ms), so nearly every well-formed move gets its own acknowledgement; the last one always does.
+  const acknowledgedSequences = new Set(fuzzLog.acknowledged.map((applied) => applied.sequence));
+  const acknowledgedShare = fuzzLog.uniqueWellFormed.filter((sequence) => acknowledgedSequences.has(sequence)).length / Math.max(1, fuzzLog.uniqueWellFormed.length);
+  const lastWellFormedAcknowledged = fuzzLog.acknowledged.at(-1)?.sequence === fuzzLog.lastWellFormed;
+  report.fuzzedMoves = { sent: fuzzLog.sent, wellFormed: fuzzLog.wellFormedSequences.size, acknowledged: fuzzLog.acknowledged.length, acknowledgedShare, lastWellFormedAcknowledged, badAcknowledgements, closedWith: fuzzLog.closedWith };
+  results.push(check('500 random messages from a seated client: it stays seated, its well-formed moves are acknowledged (the last one always), and nothing else ever is', fuzzLog.sent >= 450 && fuzzLog.closedWith === undefined && fuzzLog.wellFormedSequences.size > 20 && acknowledgedShare > 0.7 && lastWellFormedAcknowledged && badAcknowledgements.length === 0, JSON.stringify(report.fuzzedMoves)));
   await fuzzer.room.leave(true).catch(() => undefined);
 
   // ---- A flood, and raw garbage ----
@@ -208,7 +218,8 @@ function randomMovePayload() {
   const payload = {};
   const keys = roll < 0.8 ? ['x', 'y', 'sequence'] : Array.from({ length: Math.floor(random() * 5) }, () => pick(['x', 'y', 'sequence', 'slot', 'type', 'tick']));
   for (const key of keys) {
-    if (key === 'sequence' && random() < 0.6) payload[key] = 1 + Math.floor(random() * 1e9);
+    // Counted up from a million and never repeated, so an acknowledgement of one of these names exactly one payload. (A leaf can still be a small valid sequence; those may repeat.)
+    if (key === 'sequence' && random() < 0.6) payload[key] = (nextFuzzSequence += 1 + Math.floor(random() * 1000));
     else if ((key === 'x' || key === 'y') && random() < 0.7) payload[key] = Math.round((random() * 2 - 1) * 100) / 100;
     else payload[key] = randomLeaf();
   }

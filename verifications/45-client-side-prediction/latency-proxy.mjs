@@ -6,6 +6,9 @@
  * also lose one of the client's room messages on request, which is how the
  * checks make the server and the client disagree.
  *
+ * A local development tool: it listens on the loopback address only and must
+ * not be put where anyone else can reach it.
+ *
  * It knows nothing of the game: frames are relayed as bytes. The only thing
  * it reads is the first byte of a client frame, to tell a room message
  * (Colyseus `Protocol.ROOM_DATA`, 13) from a ping.
@@ -37,7 +40,7 @@ export function startLatencyProxy({ listenPort, targetPort, roundTripMs }) {
     request.pipe(upstream);
   });
 
-  const webSockets = new WebSocketServer({ noServer: true });
+  const webSockets = new WebSocketServer({ noServer: true, maxPayload: 1024 * 1024 });
   server.on('upgrade', (request, socket, head) => {
     webSockets.handleUpgrade(request, socket, head, (client) => {
       const headers = request.headers.origin ? { origin: request.headers.origin } : {};
@@ -79,7 +82,7 @@ export function startLatencyProxy({ listenPort, targetPort, roundTripMs }) {
 
   return new Promise((resolve, reject) => {
     server.once('error', reject);
-    server.listen(listenPort, () => {
+    server.listen(listenPort, '127.0.0.1', () => {
       resolve({
         counts,
         /** Changes the delay for messages relayed from now on. Only while nothing is connected: a shorter delay would let a new message overtake one already waiting. */
