@@ -43,6 +43,17 @@ export function start(command, args, { cwd = ROOT, env = {} } = {}) {
   return server;
 }
 
+/** Runs a command to completion. Never throws; returns { code, output }. */
+export function run(command, args, { cwd = ROOT, env = {} } = {}) {
+  return new Promise((resolve) => {
+    const child = spawn(command, args, { cwd, env: { ...process.env, ...env, NO_COLOR: '1', FORCE_COLOR: undefined }, stdio: ['ignore', 'pipe', 'pipe'] });
+    let output = '';
+    child.stdout.on('data', (chunk) => (output += chunk));
+    child.stderr.on('data', (chunk) => (output += chunk));
+    child.on('close', (code) => resolve({ code, output }));
+  });
+}
+
 export async function waitForPort(port, timeoutMs = 20000) {
   return waitFor(`port ${port}`, { read: () => isPortOpen(port), until: Boolean, timeoutMs }).catch(() => false);
 }

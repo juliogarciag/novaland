@@ -1,50 +1,33 @@
-# Verification template
+# Verifications for #47 - World as chunks
 
-The starting point for a ticket's `verifications/<ticket>/` folder, and the only folder under `verifications/` that is kept working. Every other folder is the proof of one ticket, frozen when its PR merged: do not run, repair, read or copy from them.
+Ticket: https://github.com/juliogarciag/novaland/issues/47. Decision: [ADR 0013](../../docs/decisions/0013-world-as-chunks.md).
 
-## Start a ticket's folder
+The ticket has two users. A player, who must notice nothing: the same map, the same collisions, the same spawn, solo and online. And whoever grows the world next, who needs the ground to stop costing per send, coordinates that do not move, and areas that mount where they say. So the proof is a comparison with the code before the change, plus measurements on a generated map a hundred times the world's size.
 
-From the repo root, in the ticket's worktree:
-
-```bash
-cp -R verifications/_template verifications/<ticketNumber>-<ticketKebabTitle>
-```
-
-If the template was run in place before, the copy carries its `proof/` and `node_modules/`: delete both from the copy.
-
-Then, in the copy:
-
-1. Keep `solo.mjs` (the client alone, `pnpm dev`), `online.mjs` (the room server and a client joined to it), or both; delete the one the ticket does not need and rename what stays after what it proves (`01-check.mjs`, `02-browser.mjs`, ...). List them in `run.sh`.
-2. Change the ports at the top of each script to ones no other session uses. They must differ from the dev server you leave running for the human, because a pinned port refuses to start twice.
-3. Replace the example checks with what the ticket promises, from the point of view of its highest-level user. Derive expected numbers from `window.__novaland` (level, grid, defs, camera), never from constants typed into the script.
-4. Replace this README with the ticket's own: what is verified, how to run it, and a table of script, what it proves, and proof file.
-
-Run it from anywhere; the first run installs Playwright in the folder:
+Run everything (from anywhere; installs Playwright on first run):
 
 ```bash
-bash verifications/<ticketNumber>-<ticketKebabTitle>/run.sh
+bash verifications/47-world-as-chunks/run.sh
 ```
 
-Each script prints `PASS`/`FAIL` lines, exits non-zero on failure and writes into `proof/`: the JSON report, the screenshots, and the console output as `proof/<script>.txt`. Commit `proof/` with the ticket.
+Each script prints `PASS`/`FAIL` lines, exits non-zero on failure, and writes its proof into `proof/`.
 
-Content search skips every ticket folder, yours included (the root `.ignore`). To search yours, name it as the path: `rg <pattern> verifications/<ticket>/`.
+| # | Verification | What it proves | Proof |
+|---|---|---|---|
+| 01 | `01-check.mjs` | `pnpm install`, `typecheck`, `lint`, `build` and `test` pass, and the headless tests the ticket asks for exist and pass by name. **Growing**: areas added on all four sides leave every tile, the spawn and every collider where they were, and the same commands walk players to the same positions bit for bit. **Mounting**: a second area at reserved coordinates has its tiles and colliders there, in the same physics world, and stops a player; an overlap of even one tile is refused. **Terrain out of state**: no entity, nothing in world state, same boxes and physics bytes every time, a wall across a chunk edge is solid at the seam. **Prediction**: it builds the same colliders as the server, takes no entity id for terrain (so the server's id 1 is free to adopt), and walks into walls as the server does. **Wire**: protocol 3, the welcome names the map, a page with another map is refused | `proof/01-check.txt`, `proof/01-check-output.txt`, `proof/01-tests.json` |
+| 02 | `02-same-ground.mjs` (runs `same-ground.test.ts`) | Against `baseline/ground.json` and `baseline/walk.json`, recorded on the old code: all 1,200 tiles are the same tile at the same coordinate; the spawn is the same tile and point; the boxes really in the physics world cover exactly the solid tiles the old collider entities covered, each once; five players pushed around for 40 seconds, 194 samples of them pressed against trees and rocks, end within 3 mm of where they did before | `proof/02-same-ground.txt`, `proof/02-same-ground.json` |
+| 03 | `03-measure.mjs` (runs `measure.mts`) | The ticket's table, before and now, on generated 40x30 and 400x300 maps with five players walking: world-state entities 5 on both (before 38 and 3,314), build-and-diff per send about 0.02 ms on both (before 0.09 and 6 ms), full state about 1.4 KB on both (before 7.6 and 651 KB), and the 400x300 map boots at the default capacity | `proof/03-measure.txt`, `proof/03-measure.json` |
+| 04 | `04-same-look.mjs` | In Chromium, solo and online against the real room server: the whole map, terrain only, is **pixel for pixel** the picture the old code drew (`baseline/before-*-terrain.png`); the player appears on the spawn tile; walking north, the first tree stops it at its face; the terrain on screen is chunks | `proof/04-same-look.txt`, `proof/04-same-look.json`, `proof/04-after-*.png` |
+| 05 | `05-prediction.mjs` | Online with prediction on and 300 ms of round trip (`slow-link.mjs` between browser and server): the local player, entity id 1, walks 1.7 m ahead of the server's state into the forest, is never drawn past the tree's face, is never moved back, and hitting the tree adds no correction at all; at rest it is drawn exactly where the server has it. The replica holds one entity: no terrain came over the wire | `proof/05-prediction.txt`, `proof/05-prediction.json`, `proof/05-prediction-pushing-into-tree.png` |
+| 06 | `06-big-map.mjs` | In Chromium on a generated 400x300 map (`VITE_GENERATED_MAP`, 130 chunks, 6,273 trees and rocks) next to the world itself: 4 of 130 chunks are drawn, 126 standing images against the world's 358; ten seconds of walking changes which chunks are drawn and never raises the count past 6; zoomed out to three times the view more chunks are drawn; and at every sample every pixel of the screen is terrain, so nothing near the camera was left out | `proof/06-big-map.txt`, `proof/06-big-map.json`, `proof/06-big-map-*.png` |
 
-## What is here
+## The baseline
 
-| File | What it gives you |
-|---|---|
-| `solo.mjs` | Starts `PORT=<n> pnpm dev`, opens Chromium, reads the sim through `window.__novaland`, presses a key, writes a screenshot and a report |
-| `online.mjs` | Starts the room server and a client with `VITE_SERVER_URL`, seats two tabs, reads each replica and connection, writes screenshots and a report |
-| `lib.mjs` | `start` (a server that stops with the script, printing without colours), `waitForPort`, `waitFor`, `lastLinesOf`, `check`, `summarize`, `writeProof`, and the `ROOT` and `PROOF` paths |
-| `run.sh` | Installs on first run, runs the scripts in order, keeps their console output as proof |
+`baseline/` was recorded on commit `0436845` (this branch before any change to the game) by `baseline/capture-sim.ts` and `baseline/capture-browser.mjs`. Those two scripts cannot run on the new code, since they read levels, `readTileGrid` and `TerrainCollider` entities; they are kept as the record of how the numbers and pictures were made. `generated-rows.mjs` is shared by both sides, so the old and the new code are measured on the same generated ground and the same scripted walk.
 
-## What the template relies on
+## What is not exact, and why
 
-A ticket that changes any of these updates the template in the same PR, and runs it once to show it still passes (`bash verifications/_template/run.sh`; the `proof/` and `node_modules/` it leaves here are gitignored):
-
-- `PORT=<n> pnpm dev` pins the client's port and prints `localhost:<n>/` when ready.
-- `PORT=<n> pnpm dev` in `packages/server` starts the room server and prints a `world-room-listening` line; `VITE_SERVER_URL=ws://localhost:<n>` makes the client join it.
-- `window.__novaland`: `sim.tick`, `snapshot()` as `entities[].components` with `Player.slot` and `MoveIntent`, `localSlot()`, and online `online.status()` with `kind` and `slot`.
-- The connection screens are `#screen[data-screen]`, hidden while playing.
-- Holding D moves the local player east (`MoveIntent.x > 0`).
-- Online, a new browser context is a new player with a seat of its own.
+- **Positions agree to millimetres, not bits.** The same place is now 20 m east and 15 m south of the origin in metres (the origin moved from the map's centre to its top-left corner, once). Rapier keeps positions as 32-bit floats, so each step rounds differently in the last bits. Tiles, colliders and pixels are compared exactly. Between two maps of the *new* code (the world, and the world with areas added around it) the walk is bit for bit, which is the property that has to hold from now on.
+- **45 boxes cover what 43 entities did.** Rectangles are merged inside a chunk only, so the two that cross column 32 are cut there. The check is on the ground covered, tile by tile.
+- **Snapshots still grow with the map** (24 ms to snapshot and hash at 400x300, from 85 ms): the physics bytes hold the colliders. The ticket asks for send cost, join size and entity capacity; those no longer do.
+- **The room server itself was not run on the 400x300 map**: it always runs the world. Per-send cost is measured on the two calls its send does (`worldState`, `diffWorldState`), on a sim of that map.

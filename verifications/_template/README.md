@@ -16,7 +16,7 @@ Then, in the copy:
 
 1. Keep `solo.mjs` (the client alone, `pnpm dev`), `online.mjs` (the room server and a client joined to it), or both; delete the one the ticket does not need and rename what stays after what it proves (`01-check.mjs`, `02-browser.mjs`, ...). List them in `run.sh`.
 2. Change the ports at the top of each script to ones no other session uses. They must differ from the dev server you leave running for the human, because a pinned port refuses to start twice.
-3. Replace the example checks with what the ticket promises, from the point of view of its highest-level user. Derive expected numbers from `window.__novaland` (level, grid, defs, camera), never from constants typed into the script.
+3. Replace the example checks with what the ticket promises, from the point of view of its highest-level user. Derive expected numbers from `window.__novaland` (map, tiles, defs, camera), never from constants typed into the script.
 4. Replace this README with the ticket's own: what is verified, how to run it, and a table of script, what it proves, and proof file.
 
 Run it from anywhere; the first run installs Playwright in the folder:
