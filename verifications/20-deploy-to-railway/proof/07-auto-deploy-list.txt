@@ -1,0 +1,20 @@
+# First automatic deploy after merging PR #33 (main 0094581)
+# merged_at 2026-11-14T20:23:32Z; CI run 43637251416 on 0094581 concluded success at 2026-11-14T20:24:21Z
+# deployment created 2026-11-14T20:23:34Z (waiting for CI); first build line 2026-11-14T20:24:30Z
+$ railway deployment list --service novaland
+Recent Deployments
+  9db08338-8ff9-4f69-8e44-6345727a32b6 | SUCCESS | 2026-11-14 15:23:34 -05:00
+  abf20acc-3e7d-4287-a832-8f9d6a8f92bc | REMOVED | 2026-11-14 13:14:45 -05:00
+  423a5a16-da47-4458-8099-248a55931026 | REMOVED | 2026-11-14 13:13:43 -05:00
+
+$ railway deployment list --service novaland --json  (newest, meta)
+{
+ "id": "9db08338-8ff9-4f69-8e44-6345727a32b6",
+ "status": "SUCCESS",
+ "createdAt": "2026-11-14T20:23:34.767Z",
+ "branch": "main",
+ "commitHash": "00945812326c9bdab2d7159e14a0302cbb2eebed",
+ "commitMessage": "Merge pull request #33 from juliogarciag/20-deploy-to-railway\n\nDeploy to Railway on merge to main",
+ "reason": "deploy",
+ "repo": "juliogarciag/novaland"
+}

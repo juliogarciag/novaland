@@ -54,8 +54,9 @@ try {
 
   // The observer joins the room on the same URL (wss:// for https) and reports every player it sees.
   observer = startObserver(base);
-  await waitFor(() => observer.slot, (slot) => slot !== undefined, 'the observer to be welcomed', 30000);
-  const strangers = othersSeenBy(observer).length; // a live world may already hold players
+  // Count the players already there only once the observer has seen the world, not just its own seat: a live world may already hold players.
+  await waitFor(() => observer.slot !== undefined && observer.latest !== undefined, (ready) => ready, 'the observer to be welcomed and see the world', 30000);
+  const strangers = othersSeenBy(observer).length;
   report.playersBefore = strangers;
 
   browser = await chromium.launch();
