@@ -1,0 +1,6 @@
+PASS  room server and dev server up, both started by this run  ({"event":"world-room-listening","port":5902,"roomId":"world","seed":1722357279,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":null,"allowedOrigins":[],"loopbackOrigins":true})
+PASS  A is seated and its replica holds its own player  ({"status":{"kind":"online","slot":0},"screen":null,"slots":[0]})
+PASS  B gets another seat and both tabs see the same two players  (A [0,1], B [0,1])
+PASS  no page errors
+
+ALL 4 CHECKS PASSED

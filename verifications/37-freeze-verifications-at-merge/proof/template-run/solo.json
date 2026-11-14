@@ -1,0 +1,91 @@
+{
+  "before": {
+    "tick": 12,
+    "slot": 0,
+    "player": {
+      "id": 45,
+      "components": {
+        "Body": {
+          "handle": 2.17e-322
+        },
+        "DefRef": {
+          "id": 6
+        },
+        "Extents": {
+          "halfHeight": 0.4,
+          "halfWidth": 0.4
+        },
+        "Facing": {
+          "x": 0,
+          "y": 1
+        },
+        "MoveIntent": {
+          "x": 0,
+          "y": 0
+        },
+        "Player": {
+          "slot": 0
+        },
+        "Position": {
+          "x": -13.5,
+          "y": -0.5
+        }
+      }
+    }
+  },
+  "walking": {
+    "tick": 16,
+    "slot": 0,
+    "player": {
+      "id": 45,
+      "components": {
+        "Body": {
+          "handle": 2.17e-322
+        },
+        "DefRef": {
+          "id": 6
+        },
+        "Extents": {
+          "halfHeight": 0.4,
+          "halfWidth": 0.4
+        },
+        "Facing": {
+          "x": 1,
+          "y": 0
+        },
+        "MoveIntent": {
+          "x": 1,
+          "y": 0
+        },
+        "Player": {
+          "slot": 0
+        },
+        "Position": {
+          "x": -13.166671752929688,
+          "y": -0.5
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the sim is running and holds the local player",
+      "pass": true,
+      "details": "tick 12, slot 0"
+    },
+    {
+      "name": "holding D reaches the sim as a move east",
+      "pass": true,
+      "details": "{\"x\":1,\"y\":0}"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
