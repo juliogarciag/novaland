@@ -1,4 +1,4 @@
-# Before: no .ignore. A repo-wide search lands in every ticket's folder.
+# Before: no .ignore (moved aside for this section). A repo-wide search lands in every ticket's folder.
 
 $ rg --version | head -1
 ripgrep 14.1.1 (rev 6634fc3b5b)
