@@ -56,23 +56,43 @@ describe('tile grids', () => {
 describe('tile defs', () => {
   it('a standing sprite has at least one variant and stands on a flat tile def', () => {
     const standingDefs = terrainDefs.filter((def) => def.standingSprite);
-    expect(standingDefs.map((def) => def.id)).toContain(TerrainDefId.Tree);
+    expect(standingDefs.map((def) => def.id)).toEqual([TerrainDefId.Tree, TerrainDefId.Rock]);
     for (const def of standingDefs) {
       const sprite = def.standingSprite!;
       expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
       expect(sprite.frameWidth > 0 && sprite.frameHeight > 0 && sprite.pixelsPerMetre > 0, def.name).toBe(true);
       expect(getTileDef(sprite.groundDefId).standingSprite, def.name).toBeUndefined();
+      expect(getTileDef(sprite.groundDefId).solid, def.name).toBe(false);
     }
   });
 
-  it('no standing sprite shares its key with another sprite: they are one folder and one texture namespace', () => {
-    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...terrainDefs.flatMap((def) => (def.standingSprite ? [def.standingSprite.key] : []))];
+  it('a ground sprite has at least one variant and belongs to a tile that does not stand up', () => {
+    const texturedDefs = terrainDefs.filter((def) => def.groundSprite);
+    expect(texturedDefs.map((def) => def.id)).toEqual([TerrainDefId.Grass]);
+    for (const def of texturedDefs) {
+      const sprite = def.groundSprite!;
+      expect(Number.isInteger(sprite.variantCount) && sprite.variantCount >= 1, def.name).toBe(true);
+      expect(Number.isInteger(sprite.tilePixels) && sprite.tilePixels > 0, def.name).toBe(true);
+      expect(def.standingSprite, def.name).toBeUndefined();
+    }
+  });
+
+  it('no tile sprite shares its key with another sprite: they are one folder and one texture namespace', () => {
+    const tileSpriteKeys = terrainDefs.flatMap((def) => [def.standingSprite?.key, def.groundSprite?.key].filter((key) => key !== undefined));
+    const keys = [...new Set(entityDefs.flatMap((def) => (def.sprite ? [def.sprite.key] : []))), ...tileSpriteKeys];
     expect(new Set(keys).size).toBe(keys.length);
   });
 
   it('a tree is still one solid tile to the sim, whatever it looks like', () => {
     expect(getTileDef(TerrainDefId.Tree)).toMatchObject({ id: 202, solid: true });
     expect(solidRectangles(readTileGrid(level(['.T.'])))).toEqual([{ column: 1, row: 0, width: 1, height: 1 }]);
+  });
+
+  it('a rock is still one solid tile and grass still walkable ground, under the ids they always had', () => {
+    expect(getTileDef(TerrainDefId.Rock)).toMatchObject({ id: 203, solid: true });
+    expect(getTileDef(TerrainDefId.Grass)).toMatchObject({ id: 200, solid: false });
+    expect(getTileDef(TerrainDefId.Dirt)).toMatchObject({ id: 201, solid: false });
+    expect(solidRectangles(readTileGrid(level(['.o.'])))).toEqual([{ column: 1, row: 0, width: 1, height: 1 }]);
   });
 });
 
@@ -142,10 +162,10 @@ describe('terrain feature (headless)', () => {
     sim.destroy();
   });
 
-  it('the starter level spawns the player on a dirt path inside the forest', async () => {
+  it('the starter level spawns the player on the grass inside the forest', async () => {
     const grid = readTileGrid(starterLevel);
     const spawnTile = grid.defIds[starterLevel.spawn.row]?.[starterLevel.spawn.column];
-    expect(spawnTile).toBe(DefId.Dirt);
+    expect(spawnTile).toBe(DefId.Grass);
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
     expect(playerPosition(sim)).toEqual(spawnPoint(starterLevel));
@@ -153,7 +173,7 @@ describe('terrain feature (headless)', () => {
     sim.destroy();
   });
 
-  it('a player walks freely along a path and over grass', async () => {
+  it('a player walks freely over the grass, east and then south', async () => {
     const sim = await createSimInternal({ seed: 1 });
     const grid = readTileGrid(starterLevel);
     sim.step([join()]);
@@ -161,19 +181,19 @@ describe('terrain feature (headless)', () => {
     const ticks = 90;
     sim.step([move(1, 0)]);
     for (let i = 1; i < ticks; i += 1) sim.step();
-    const onPath = playerPosition(sim);
-    expect(onPath.x).toBeCloseTo(start.x + SPEED * ticks * sim.dt, 3);
-    expect(onPath.y).toBeCloseTo(start.y, 6);
-    expect(tileNameUnder(grid, onPath)).toBe('dirt');
+    const afterEast = playerPosition(sim);
+    expect(afterEast.x).toBeCloseTo(start.x + SPEED * ticks * sim.dt, 3);
+    expect(afterEast.y).toBeCloseTo(start.y, 6);
+    expect(tileNameUnder(grid, afterEast)).toBe('grass');
 
-    // Then south off the path, onto the grass below it, at the same speed (short enough to stop before the rock further down).
-    const grassTicks = 24;
+    // Then south at the same speed (short enough to stop before the rock further down).
+    const southTicks = 24;
     sim.step([move(0, 1)]);
-    for (let i = 1; i < grassTicks; i += 1) sim.step();
-    const onGrass = playerPosition(sim);
-    expect(onGrass.y).toBeCloseTo(onPath.y + SPEED * grassTicks * sim.dt, 3);
-    expect(onGrass.x).toBeCloseTo(onPath.x, 6);
-    expect(tileNameUnder(grid, onGrass)).toBe('grass');
+    for (let i = 1; i < southTicks; i += 1) sim.step();
+    const afterSouth = playerPosition(sim);
+    expect(afterSouth.y).toBeCloseTo(afterEast.y + SPEED * southTicks * sim.dt, 3);
+    expect(afterSouth.x).toBeCloseTo(afterEast.x, 6);
+    expect(tileNameUnder(grid, afterSouth)).toBe('grass');
     sim.destroy();
   });
 

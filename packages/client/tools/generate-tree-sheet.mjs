@@ -9,15 +9,13 @@
  * canopy is a handful of overlapping leaf clumps lit from the top-left and
  * shaded in four flat tones with a one-pixel dark edge, like the avatars.
  *
- * Plain Node, no dependencies; the PNG encoder is the avatar generator's.
+ * Plain Node, no dependencies; the pixel canvas and the file writing are shared with the other terrain sheets.
  *
  *   node tools/generate-tree-sheet.mjs                # writes public/sprites/tree.png
  *   node tools/generate-tree-sheet.mjs --out <dir>    # writes it somewhere else (used by verifications)
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { encodePng } from './generate-player-sheet.mjs';
+import { blit, blitOpaque, createCanvas, noise, outline, pixel } from './pixelCanvas.mjs';
+import { writeSheet, writeSheetWhenRunDirectly } from './sheetFile.mjs';
 
 export const TREE_SPRITE_KEY = 'tree';
 export const FRAME_WIDTH = 24;
@@ -174,72 +172,9 @@ function canopyTone(light) {
   return COLORS.canopyShade;
 }
 
-/** A repeatable value in [0, 1) for a pixel: an integer hash, so the sheet is the same on every run. */
-function noise(x, y, seed) {
-  let hash = (x * 374761393 + y * 668265263 + seed * 2147483647) | 0;
-  hash = Math.imul(hash ^ (hash >>> 13), 1274126177);
-  return ((hash ^ (hash >>> 16)) >>> 0) / 4294967296;
-}
-
-// ---- Pixel canvas ----
-
-function createCanvas(width, height) {
-  return { width, height, data: new Uint8Array(width * height * 4) };
-}
-
-function pixel(canvas, x, y, [r, g, b], alpha = 255) {
-  if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) throw new Error(`pixel (${x}, ${y}) is outside the ${canvas.width}x${canvas.height} frame`);
-  canvas.data.set([r, g, b, alpha], (y * canvas.width + x) * 4);
-}
-
-function isOpaque(canvas, x, y) {
-  if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return false;
-  return canvas.data[(y * canvas.width + x) * 4 + 3] === 255;
-}
-
-/** Paints every transparent pixel that touches the figure, giving it a one-pixel dark edge. */
-function outline(canvas, color) {
-  const edge = [];
-  for (let y = 0; y < canvas.height; y += 1) {
-    for (let x = 0; x < canvas.width; x += 1) {
-      if (isOpaque(canvas, x, y)) continue;
-      if (isOpaque(canvas, x - 1, y) || isOpaque(canvas, x + 1, y) || isOpaque(canvas, x, y - 1) || isOpaque(canvas, x, y + 1)) edge.push([x, y]);
-    }
-  }
-  for (const [x, y] of edge) pixel(canvas, x, y, color);
-}
-
-function blit(target, source, atX, atY) {
-  for (let y = 0; y < source.height; y += 1) {
-    const sourceRow = y * source.width * 4;
-    const targetRow = ((atY + y) * target.width + atX) * 4;
-    target.data.set(source.data.subarray(sourceRow, sourceRow + source.width * 4), targetRow);
-  }
-}
-
-/** Copies the opaque pixels of `source` over `target`, both the same size. */
-function blitOpaque(target, source) {
-  for (let offset = 0; offset < source.data.length; offset += 4) {
-    if (source.data[offset + 3] === 255) target.data.set(source.data.subarray(offset, offset + 4), offset);
-  }
-}
-
-// ---- Entry point ----
-
-const here = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
-
 /** Writes the tree sheet into `directory` as `tree.png` and returns the path. */
 export function writeTreeSheet(directory) {
-  mkdirSync(directory, { recursive: true });
-  const file = path.join(directory, `${TREE_SPRITE_KEY}.png`);
-  writeFileSync(file, encodePng(paintTreeSheet()));
-  return file;
+  return writeSheet({ directory, key: TREE_SPRITE_KEY, sheet: paintTreeSheet() });
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const outFlag = process.argv.indexOf('--out');
-  if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheet goes to public/sprites');
-  const directory = outFlag >= 0 ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
-  console.log(`wrote ${writeTreeSheet(directory)}`);
-}
+writeSheetWhenRunDirectly(import.meta.url, writeTreeSheet);
