@@ -3,7 +3,7 @@
 # Usage: bash verifications/<this folder>/run.sh   (from anywhere)
 set -u
 cd "$(dirname "$0")"
-repo="$(cd ../.. && pwd)"
+repo="$(cd ../.. && pwd -P)"
 if [ ! -d node_modules ]; then
   pnpm install --ignore-workspace --frozen-lockfile
   npx playwright install chromium

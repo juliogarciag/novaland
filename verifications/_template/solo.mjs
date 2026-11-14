@@ -10,7 +10,7 @@
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
-import { PROOF, check, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { PROOF, check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 /** A port no other session uses, and not the one of the dev server you leave running for the human. */
 const PORT = 5901;
@@ -24,8 +24,9 @@ const devServer = start('pnpm', ['dev'], { env: { PORT: String(PORT) } });
 let browser;
 try {
   // The ready line proves the port is this run's server, not something that was already listening there.
-  const ready = (await waitForPort(PORT)) && (await waitFor(() => devServer.output.includes(`localhost:${PORT}/`), Boolean, "the dev server's ready line").catch(() => false));
-  results.push(check('dev server up, started by this run', ready));
+  const ready = (await waitForPort(PORT)) && (await waitFor("the dev server's ready line", { read: () => devServer.output.includes(`localhost:${PORT}/`), until: Boolean }).catch(() => false));
+  results.push(check('dev server up, started by this run', ready, ready ? undefined : lastLinesOf(devServer.output)));
+  if (!ready) throw new Error('nothing to open');
 
   browser = await chromium.launch();
   const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
@@ -40,16 +41,16 @@ try {
 
   // Send input the way a person does, then read again.
   await page.keyboard.down('KeyD');
-  const walking = await waitFor(() => localPlayerOf(page), (state) => state.player?.components.MoveIntent.x > 0, 'the sim sees D held');
+  const walking = await waitFor('the sim sees D held', { read: () => localPlayerOf(page), until: (state) => state.player?.components.MoveIntent.x > 0 }).catch(() => undefined);
   await page.keyboard.up('KeyD');
-  results.push(check('holding D reaches the sim as a move east', walking.tick > before.tick, JSON.stringify(walking.player.components.MoveIntent)));
+  results.push(check('holding D reaches the sim as a move east', walking !== undefined, walking && JSON.stringify(walking.player.components.MoveIntent)));
 
   await page.screenshot({ path: path.join(PROOF, 'solo.png') });
   results.push(check('no page errors', pageErrors.length === 0, pageErrors.join(' | ')));
   report.before = before;
   report.walking = walking;
 } catch (error) {
-  results.push(check(`browser run completed (${error.message})`, false));
+  results.push(check(`run completed (${error.message})`, false));
 } finally {
   await browser?.close();
   devServer.stop();

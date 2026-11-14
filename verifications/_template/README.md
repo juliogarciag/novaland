@@ -10,6 +10,8 @@ From the repo root, in the ticket's worktree:
 cp -R verifications/_template verifications/<ticketNumber>-<ticketKebabTitle>
 ```
 
+If the template was run in place before, the copy carries its `proof/` and `node_modules/`: delete both from the copy.
+
 Then, in the copy:
 
 1. Keep `solo.mjs` (the client alone, `pnpm dev`), `online.mjs` (the room server and a client joined to it), or both; delete the one the ticket does not need and rename what stays after what it proves (`01-check.mjs`, `02-browser.mjs`, ...). List them in `run.sh`.
@@ -25,7 +27,7 @@ bash verifications/<ticketNumber>-<ticketKebabTitle>/run.sh
 
 Each script prints `PASS`/`FAIL` lines, exits non-zero on failure and writes into `proof/`: the JSON report, the screenshots, and the console output as `proof/<script>.txt`. Commit `proof/` with the ticket.
 
-Search skips every ticket folder, yours included (the root `.ignore`). To search yours, name it: `rg <pattern> verifications/<ticket>/`.
+Content search skips every ticket folder, yours included (the root `.ignore`). To search yours, name it as the path: `rg <pattern> verifications/<ticket>/`.
 
 ## What is here
 
@@ -33,15 +35,16 @@ Search skips every ticket folder, yours included (the root `.ignore`). To search
 |---|---|
 | `solo.mjs` | Starts `PORT=<n> pnpm dev`, opens Chromium, reads the sim through `window.__novaland`, presses a key, writes a screenshot and a report |
 | `online.mjs` | Starts the room server and a client with `VITE_SERVER_URL`, seats two tabs, reads each replica and connection, writes screenshots and a report |
-| `lib.mjs` | `start` (a server that stops with the script), `waitForPort`, `waitFor`, `check`, `summarize`, `writeProof`, and the `ROOT` and `PROOF` paths |
+| `lib.mjs` | `start` (a server that stops with the script, printing without colours), `waitForPort`, `waitFor`, `lastLinesOf`, `check`, `summarize`, `writeProof`, and the `ROOT` and `PROOF` paths |
 | `run.sh` | Installs on first run, runs the scripts in order, keeps their console output as proof |
 
 ## What the template relies on
 
-A ticket that changes any of these updates the template in the same PR, and runs it once to show it still passes (`bash verifications/_template/run.sh`; its `proof/` is gitignored):
+A ticket that changes any of these updates the template in the same PR, and runs it once to show it still passes (`bash verifications/_template/run.sh`; the `proof/` and `node_modules/` it leaves here are gitignored):
 
 - `PORT=<n> pnpm dev` pins the client's port and prints `localhost:<n>/` when ready.
 - `PORT=<n> pnpm dev` in `packages/server` starts the room server and prints a `world-room-listening` line; `VITE_SERVER_URL=ws://localhost:<n>` makes the client join it.
-- `window.__novaland`: `sim.tick`, `snapshot()` (entities with `Player.slot` and `MoveIntent`), `localSlot()`, and online `online.status()` with `kind` and `slot`.
+- `window.__novaland`: `sim.tick`, `snapshot()` as `entities[].components` with `Player.slot` and `MoveIntent`, `localSlot()`, and online `online.status()` with `kind` and `slot`.
 - The connection screens are `#screen[data-screen]`, hidden while playing.
-- WASD moves the local player.
+- Holding D moves the local player east (`MoveIntent.x > 0`).
+- Online, a new browser context is a new player with a seat of its own.
