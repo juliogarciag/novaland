@@ -46,7 +46,8 @@ export default defineRailway(() => {
     env: {
       // The address players open. Railway fills in the generated domain; production refuses to boot without it.
       ALLOWED_ORIGINS: 'https://${{RAILWAY_PUBLIC_DOMAIN}}',
-      // Railway mounts volumes as root and the image runs as `node`, which could not write the file. This is Railway's own switch for that.
+      // Railway mounts volumes as root and the image runs as `node`, which could not write the file. This is Railway's own switch for that:
+      // the container starts as root, and the image's entrypoint hands the volume to `node` and runs the server as `node` (scripts/docker-entrypoint.sh).
       RAILWAY_RUN_UID: '0',
     },
   });

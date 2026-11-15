@@ -11,7 +11,7 @@ fi
 mkdir -p proof
 status=0
 # List your scripts here, in the order they should run.
-for script in 01-rejoin; do
+for script in 01-rejoin 02-container; do
   echo
   echo "=== $script ==="
   # Console output is proof too: keep machine paths out of it, like writeProof does.
