@@ -2,7 +2,7 @@ PASS  pnpm install passes
 PASS  pnpm typecheck passes
 PASS  pnpm lint passes
 PASS  pnpm build passes
-PASS  pnpm test passes  (448 of 448 tests in 151 suites)
+PASS  pnpm test passes  (493 of 493 tests in 163 suites)
 PASS  landmarks.test.ts: lists the starting point of a map as a landmark on its spawn tile, kept on the edge when out of range
 PASS  minimap.test.ts: marks every avatar as a dot in its own colour, kept on the edge when far, and no tile: tiles are painted, not marked
 PASS  landmarks.test.ts: tells the starting point apart from every avatar by shape and by colour
