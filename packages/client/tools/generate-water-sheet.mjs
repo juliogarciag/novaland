@@ -1,7 +1,7 @@
 /**
  * Generates the two sheets a lake is drawn from, into public/sprites:
- * water.png, the deep middle, and shallows.png, the ring players wade
- * through. The layout of each must match the `groundSprite` of its def in
+ * water.png, the deep middle, and shallows.png, the ring round it at the
+ * coast. The layout of each must match the `groundSprite` of its def in
  * packages/sim/src/features/terrain/defs.ts: WATER_VARIANT_COUNT plain
  * tiles side by side, then one edge tile for every shape in EDGE_SHAPES,
  * each TILE_PIXELS square.

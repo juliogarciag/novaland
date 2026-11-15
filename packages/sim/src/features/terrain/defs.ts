@@ -124,10 +124,11 @@ export const TerrainDefId = {
  * `generate-tree-sheet.mjs` for the tree, `generate-rock-sheet.mjs` for the rock,
  * `generate-water-sheet.mjs` for water and the shallows.
  *
- * A lake is two tiles. Water is the deep middle: flat like grass and solid
- * like a tree, it is drawn in the ground and nobody walks on it. The
- * shallows are the ring between it and the land: players wade through them
- * and the coast is drawn on them, a bank where they meet the land. Both
+ * A lake is two tiles, both flat like grass and solid like a tree: they
+ * are drawn in the ground and nobody walks on them. Water is the deep
+ * middle. The shallows are the ring between it and the land, and the coast
+ * is drawn on them, a bank where they meet the land: a player stops at the
+ * top of that bank. Both
  * blues are far from every other tile's colour, so a view that draws tiles
  * by colour alone (a minimap) shows where the lakes are.
  */
@@ -163,7 +164,7 @@ export const terrainDefs: readonly TileDef[] = [
     name: 'shallows',
     shape: 'box',
     color: 0x74b8ea,
-    solid: false,
+    solid: true,
     groundSprite: { key: 'shallows', tilePixels: 16, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Shallows, TerrainDefId.Water] } },
   },
 ];

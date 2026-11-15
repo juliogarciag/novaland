@@ -7,12 +7,12 @@
  *    and shallows tiles that touch side to side): deep water in the middle,
  *    a ring of shallows between it and the land.
  * 2. Walks from the spawn to a lake with the keyboard, as a person does
- *    (the shortest walk of two keys that ends in water), wades into the
- *    shallows and keeps walking: the player must stop at the edge of the
- *    deep water. Screenshot.
+ *    (the shortest walk of two keys that ends at a lake), and keeps walking
+ *    into it: the player must stop on the grass, at the top of the bank,
+ *    without setting foot in the shallows. Screenshot.
  * 3. Walks on to every other lake over walkable tiles alone (which also shows
- *    each one can be reached), wades in, pushes into its deep water, checks
- *    the player is held in the shallows and that the lake is drawn as one:
+ *    each one can be reached), pushes into its shallows, checks the player
+ *    is held on the grass and that the lake is drawn as one:
  *    dark water, paler shallows, a bank of earth where the shallows meet the
  *    grass and nothing there brighter than the water.
  *    Screenshot of each.
@@ -62,7 +62,7 @@ try {
   report.shallows = world.shallows;
   report.lakes = world.lakes.map(({ tiles, deep, shallows, ...lake }) => ({ ...lake, tileCount: tiles.length, deepTiles: deep.length, shallowsTiles: shallows.length }));
   results.push(check('water is a tile def of its own: solid, flat, with a colour', world.water !== undefined && world.water.solid === true && world.water.standingSprite === undefined && Number.isInteger(world.water.color), JSON.stringify(world.water)));
-  results.push(check('the shallows are a tile def of their own: walked on, flat, with a colour', world.shallows !== undefined && world.shallows.solid === false && world.shallows.standingSprite === undefined && Number.isInteger(world.shallows.color), JSON.stringify(world.shallows)));
+  results.push(check('the shallows are a tile def of their own: solid like the deep water, flat, with a colour', world.shallows !== undefined && world.shallows.solid === true && world.shallows.standingSprite === undefined && Number.isInteger(world.shallows.color), JSON.stringify(world.shallows)));
   results.push(check(`the world has several lakes: at least ${LAKES_THE_TICKET_ASKS_FOR}`, world.lakes.length >= LAKES_THE_TICKET_ASKS_FOR, world.lakes.map((lake) => `${lake.area} (${lake.tiles.length} tiles)`).join(', ')));
   results.push(check('no lake is a plain rectangle', world.lakes.every((lake) => lake.tiles.length < lake.box.width * lake.box.height), world.lakes.map((lake) => `${lake.tiles.length}/${lake.box.width}x${lake.box.height}`).join(' ')));
   const lakesNearSpawn = world.lakes.filter((lake) => lake.tilesFromSpawn <= 10);
@@ -79,7 +79,7 @@ try {
   const startedAt = await page.evaluate(() => window.__lakes.player());
   const route = await page.evaluate(() => window.__lakes.keyboardRouteToWater());
   report.keyboardRoute = route;
-  results.push(check('from where the player stands, a walk along one row and then one column, over grass and then shallows, runs into deep water', route !== undefined, route && `${route.first.key} to column ${route.turnAt.column}, then ${route.second.key} to the water at (${route.water.column}, ${route.water.row})`));
+  results.push(check('from where the player stands, a walk along one row and then one column over grass alone runs into a lake', route !== undefined, route && `${route.first.key} to column ${route.turnAt.column}, then ${route.second.key} to the shallows at (${route.water.column}, ${route.water.row})`));
   if (!route) throw new Error('no keyboard route to water');
   await page.keyboard.down(route.first.code);
   await waitFor('the player to reach the column of the water', { read: () => page.evaluate(() => window.__lakes.player()), until: (player) => (route.first.sign > 0 ? player.x >= route.turnAtMetres.x : player.x <= route.turnAtMetres.x), timeoutMs: 60000 });
@@ -91,8 +91,8 @@ try {
   const pushed = await page.evaluate(() => window.__lakes.settled());
   const faceMetres = route.waterFaceMetres;
   const gapToWater = route.second.sign > 0 ? faceMetres - (pushed.y + pushed.radius) : pushed.y - pushed.radius - faceMetres;
-  results.push(check('walking into the lake on the keyboard, the player wades in and stops at the edge of the deep water', pushed.still && pushed.intent[route.second.axis] === route.second.sign && Math.abs(gapToWater) < 0.05, `moved ${Math.hypot(pushed.x - startedAt.x, pushed.y - startedAt.y).toFixed(1)} m from the start, stopped ${gapToWater.toFixed(3)} m from the water's edge with ${route.second.key} still held`));
-  results.push(check('the player stands in the shallows with deep water on the next tile', pushed.standsOn === 'shallows' && pushed.tileAhead === 'water', `on ${pushed.standsOn}, facing ${pushed.tileAhead}`));
+  results.push(check('walking into the lake on the keyboard, the player stops at the top of the bank', pushed.still && pushed.intent[route.second.axis] === route.second.sign && Math.abs(gapToWater) < 0.05, `moved ${Math.hypot(pushed.x - startedAt.x, pushed.y - startedAt.y).toFixed(1)} m from the start, stopped ${gapToWater.toFixed(3)} m from the edge of the shallows with ${route.second.key} still held`));
+  results.push(check('the player stands on grass with the shallows on the next tile: not even shallow water is entered', pushed.standsOn === 'grass' && pushed.tileAhead === 'shallows', `on ${pushed.standsOn}, facing ${pushed.tileAhead}`));
   results.push(check('a second of pushing moves the player nowhere', Math.hypot(pushed.x - atShore.x, pushed.y - atShore.y) < 0.001, `${Math.hypot(pushed.x - atShore.x, pushed.y - atShore.y).toFixed(4)} m`));
   const shoreLake = world.lakes.find((lake) => lake.tiles.some((tile) => tile.column === route.water.column && tile.row === route.water.row));
   const shoreShot = await shoot(page, `shore-${shoreLake.area}.png`);
@@ -113,14 +113,14 @@ try {
       continue;
     }
     const held = await page.evaluate((target) => window.__lakes.pushInto(target), walk.water);
-    results.push(check(`the lake in ${lake.area} is reached on foot and its deep water holds the player in the shallows`, held.standsOn === 'shallows' && held.movedWhilePushing < 0.6 && held.endedOn === 'shallows', `${walk.steps} tiles walked; pushed for ${held.ticks} ticks, moved ${held.movedWhilePushing.toFixed(2)} m, still on ${held.endedOn}`));
+    results.push(check(`the lake in ${lake.area} is reached on foot and its shallows hold the player on the grass`, held.standsOn === 'grass' && held.movedWhilePushing < 0.6 && held.endedOn === 'grass', `${walk.steps} tiles walked; pushed for ${held.ticks} ticks, moved ${held.movedWhilePushing.toFixed(2)} m, still on ${held.endedOn}`));
     const shot = await shoot(page, `lake-${lake.area}.png`);
     results.push(checkDrawnAsWater(shot, await page.evaluate((target) => window.__lakes.onScreen(target), lake), lake));
     visited.push(lake.area);
   }
   report.visited = visited;
   results.push(check('every lake was visited and photographed', visited.length === world.lakes.length && visited.length >= LAKES_THE_TICKET_ASKS_FOR, visited.join(', ')));
-  results.push(check('walking between the lakes, the player was on a water, tree or rock tile in no frame', !everOnSolidTile));
+  results.push(check('walking between the lakes, the player was on a water, shallows, tree or rock tile in no frame', !everOnSolidTile));
 
   // ---- 4. The world by colour alone ----
   const overview = paintWorldByColour(world);
@@ -328,7 +328,7 @@ function installWalker() {
     return { water: waterDef, shallows: shallowsDef, lakes, bounds, defIdRows, tileColours, spawn: api.map.spawn };
   }
 
-  /** A walk a person can do with two keys: along the player's row over ground that is walked on, then straight up or down over grass and then shallows into the middle of a stretch of deep water. The shortest one. */
+  /** A walk a person can do with two keys: along the player's row over grass, then straight up or down over grass into the middle of a stretch of a lake's shallows. The shortest one. */
   function keyboardRouteToWater() {
     const from = player().tile;
     let best;
@@ -343,10 +343,9 @@ function installWalker() {
         ]) {
           let row = from.row;
           while (nameAt({ column, row }) === 'grass') row += second.sign;
-          while (nameAt({ column, row }) === 'shallows') row += second.sign;
-          if (nameAt({ column, row }) !== 'water') continue;
-          // Water on both sides of where the player arrives: stopping a little past the column still meets the same shore.
-          if (nameAt({ column: column - 1, row }) !== 'water' || nameAt({ column: column + 1, row }) !== 'water') continue;
+          if (nameAt({ column, row }) !== 'shallows') continue;
+          // Shallows on both sides of where the player arrives: stopping a little past the column still meets the same shore.
+          if (nameAt({ column: column - 1, row }) !== 'shallows' || nameAt({ column: column + 1, row }) !== 'shallows') continue;
           const length = Math.abs(column - from.column) + Math.abs(row - from.row);
           if (best && best.length <= length) continue;
           const water = { column, row };
@@ -368,9 +367,9 @@ function installWalker() {
     return { ...now, still, standsOn: nameAt(now.tile), tileAhead: nameAt(ahead) };
   }
 
-  /** Walks over walkable tiles to the nearest tile beside the lake's deep water, tile centre to tile centre: a tile of its shallows. */
+  /** Walks over walkable tiles to the nearest tile beside the lake, tile centre to tile centre. */
   async function walkToShoreOf(lake) {
-    const water = new Set(lake.deep.map(keyOf));
+    const water = new Set(lake.tiles.map(keyOf));
     const from = player().tile;
     const cameFrom = new Map([[keyOf(from), undefined]]);
     const queue = [from];
@@ -384,7 +383,7 @@ function installWalker() {
         queue.push(side);
       }
     }
-    if (!shore) return { arrived: false, why: 'no walkable way to the edge of its deep water', framesOnSolidTile: 0 };
+    if (!shore) return { arrived: false, why: 'no walkable way to its shore', framesOnSolidTile: 0 };
     const path = [];
     for (let tile = shore; tile; tile = cameFrom.get(keyOf(tile))) path.unshift(tile);
     let framesOnSolidTile = 0;
@@ -418,7 +417,7 @@ function installWalker() {
     return { arrived: true, steps: path.length - 1, shore, water: sides(shore).find((side) => water.has(keyOf(side))), framesOnSolidTile };
   }
 
-  /** From a tile of the shallows, walks at the deep water tile for a second and a half and says how far that got. */
+  /** From a shore tile, walks at the lake tile beside it for a second and a half and says how far that got. */
   async function pushInto(waterTile) {
     const before = player();
     move(Math.sign(waterTile.column - before.tile.column), Math.sign(waterTile.row - before.tile.row));

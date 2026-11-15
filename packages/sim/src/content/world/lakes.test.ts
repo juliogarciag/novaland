@@ -16,9 +16,9 @@ describe('water', () => {
     expect(water.groundSprite).toBeDefined();
   });
 
-  it('has shallows beside it: a flat tile players wade through, under an id of its own', () => {
+  it('has shallows beside it: a flat tile nobody walks on either, under an id of its own', () => {
     const shallows = getTileDef(TerrainDefId.Shallows);
-    expect(shallows).toMatchObject({ id: 205, name: 'shallows', solid: false });
+    expect(shallows).toMatchObject({ id: 205, name: 'shallows', solid: true });
     expect(shallows.standingSprite).toBeUndefined();
     expect(shallows.groundSprite).toBeDefined();
   });
@@ -45,26 +45,27 @@ describe('water', () => {
     expect(channels(shallows.color).every((channel, index) => channel > channels(water.color)[index]!)).toBe(true);
   });
 
-  it('lets a player wade in and stops them at the deep: walking from the spawn into the lake in the clearing ends in the shallows, at the edge of the water', async () => {
+  it('keeps a player out of the lake, shallows and all: walking from the spawn into the lake in the clearing stops on the grass, at the top of the bank', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join]);
-    // The first to arrive stands on the spawn tile. East along its row there is a tile with only ground to walk on between it and water to the south.
-    const waterTile = firstWaterSouthOfTheSpawnRow();
-    expect(areaOf(waterTile)?.name).toBe('clearing');
-    const waterFaceY = tileCentre(waterTile).y - TILE_SIZE / 2;
+    // The first to arrive stands on the spawn tile. East along its row there is a tile with only grass between it and the lake to the south.
+    const lakeTile = firstLakeTileSouthOfTheSpawnRow();
+    expect(areaOf(lakeTile)?.name).toBe('clearing');
+    // The first tile of a lake a walker meets is its shallows: the deep water is further in.
+    expect(tileDefIdAt(readMapTiles(worldMap), lakeTile)).toBe(TerrainDefId.Shallows);
+    const lakeFaceY = tileCentre(lakeTile).y - TILE_SIZE / 2;
     const playerRadius = radiusOfThePlayer(sim);
 
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
-    for (let tick = 0; tick < 3000 && playerPosition(sim).x < tileCentre(waterTile).x; tick += 1) sim.step();
-    expect(playerPosition(sim).x).toBeGreaterThanOrEqual(tileCentre(waterTile).x);
+    for (let tick = 0; tick < 3000 && playerPosition(sim).x < tileCentre(lakeTile).x; tick += 1) sim.step();
+    expect(playerPosition(sim).x).toBeGreaterThanOrEqual(tileCentre(lakeTile).x);
     sim.step([{ type: 'player/move', slot: 0, x: 0, y: 1 }]);
     for (let tick = 0; tick < 600; tick += 1) sim.step();
     const stopped = playerPosition(sim);
-    expect(stopped.y).toBeLessThanOrEqual(waterFaceY - playerRadius + 0.01);
-    expect(stopped.y).toBeGreaterThan(waterFaceY - playerRadius - 0.2);
-    // They are standing in the shallows: the tile under them is not land any more.
-    expect(tileDefIdAt(readMapTiles(worldMap), tileAt(stopped.x, stopped.y)!)).toBe(TerrainDefId.Shallows);
-    // Still walking into it a while later, and still at the edge of the deep.
+    expect(stopped.y).toBeLessThanOrEqual(lakeFaceY - playerRadius + 0.01);
+    expect(stopped.y).toBeGreaterThan(lakeFaceY - playerRadius - 0.2);
+    expect(tileDefIdAt(readMapTiles(worldMap), tileAt(stopped.x, stopped.y)!)).toBe(TerrainDefId.Grass);
+    // Still walking into it a while later, and still on the shore.
     for (let tick = 0; tick < 300; tick += 1) sim.step();
     expect(playerPosition(sim).y).toBeCloseTo(stopped.y, 3);
     sim.destroy();
@@ -93,8 +94,8 @@ describe('the lakes of the world', () => {
       expect(lake.length, describeLake(lake)).toBeLessThanOrEqual(120);
       expect(Math.min(width, height), describeLake(lake)).toBeGreaterThanOrEqual(6);
       expect(Math.max(width, height), describeLake(lake)).toBeLessThanOrEqual(14);
-      // A rectangle fills its box. A lake leaves a good part of it to the land.
-      expect(lake.length / (width * height), describeLake(lake)).toBeLessThan(0.85);
+      // A rectangle fills its box. A lake leaves at least a tenth of it to the land.
+      expect(lake.length / (width * height), describeLake(lake)).toBeLessThan(0.9);
     }
     expect(new Set(lakes.map((lake) => lake.length)).size).toBeGreaterThanOrEqual(4);
     expect(new Set(lakes.map(shapeOf)).size).toBe(lakes.length);
@@ -110,6 +111,16 @@ describe('the lakes of the world', () => {
       expect(shallows.length, describeLake(lake)).toBeGreaterThanOrEqual(15);
       expect(new Set(deep.flatMap(neighboursWithDiagonals).map(defIdAt)), describeLake(lake)).toEqual(new Set([TerrainDefId.Water, TerrainDefId.Shallows]));
       for (const tile of shallows) expect(neighboursWithDiagonals(tile).some((neighbour) => defIdAt(neighbour) === TerrainDefId.Water), `${keyOf(tile)} of ${describeLake(lake)}`).toBe(true);
+    }
+  });
+
+  it('have grass to walk on round most of their shore, now that nobody wades: at least two thirds of what touches a lake is grass', () => {
+    const tiles = readMapTiles(worldMap);
+    for (const lake of lakes) {
+      const inLake = new Set(lake.map(keyOf));
+      const besideIt = new Map(lake.flatMap(neighboursWithDiagonals).filter((tile) => !inLake.has(keyOf(tile))).map((tile) => [keyOf(tile), tile]));
+      const grass = [...besideIt.values()].filter((tile) => tileDefIdAt(tiles, tile) === TerrainDefId.Grass);
+      expect(grass.length / besideIt.size, describeLake(lake)).toBeGreaterThan(0.66);
     }
   });
 
@@ -176,17 +187,15 @@ function neighboursWithDiagonals({ column, row }: TileCoordinate): TileCoordinat
   return neighbours;
 }
 
-/** The nearest water tile that a walk east along the spawn's row and then straight south, over grass and shallows alone, runs into. */
-function firstWaterSouthOfTheSpawnRow(): TileCoordinate {
+/** The nearest tile of a lake that a walk east along the spawn's row and then straight south, over grass alone, runs into. */
+function firstLakeTileSouthOfTheSpawnRow(): TileCoordinate {
   const tiles = readMapTiles(worldMap);
-  const isWalkedOn = (tile: TileCoordinate) => [TerrainDefId.Grass, TerrainDefId.Shallows].some((defId) => defId === tileDefIdAt(tiles, tile));
-  for (let column = worldMap.spawn.column; isWalkedOn({ column, row: worldMap.spawn.row }); column += 1) {
+  for (let column = worldMap.spawn.column; tileDefIdAt(tiles, { column, row: worldMap.spawn.row }) === TerrainDefId.Grass; column += 1) {
     let row = worldMap.spawn.row;
     while (tileDefIdAt(tiles, { column, row }) === TerrainDefId.Grass) row += 1;
-    while (tileDefIdAt(tiles, { column, row }) === TerrainDefId.Shallows) row += 1;
-    if (tileDefIdAt(tiles, { column, row }) === TerrainDefId.Water) return { column, row };
+    if ([TerrainDefId.Water, TerrainDefId.Shallows].some((defId) => defId === tileDefIdAt(tiles, { column, row }))) return { column, row };
   }
-  throw new Error('no water south of the spawn row');
+  throw new Error('no lake south of the spawn row');
 }
 
 function keyOf({ column, row }: TileCoordinate): string {
