@@ -1,6 +1,7 @@
 import { hasComponent, query } from 'bitecs';
 import { asEntityWorld } from '../../core/entityWorld';
 import type { SimHandle } from '../../core/sim';
+import { Position } from '../../core/transform';
 import { holdsOnlyNameCharacters, isPaletteIndex, showsSomething, type Character } from './character';
 import { Facing, MoveIntent, nameCodePointField, PlayerLook, PlayerName, Player } from './components';
 import { MAX_NAME_CODE_POINTS } from './defs';
@@ -13,6 +14,14 @@ export function findPlayerEntity(handle: SimHandle, slot: number): number | unde
     if (player.slot[eid] === slot) return eid;
   }
   return undefined;
+}
+
+/** Where the player in `slot` stands, in metres; undefined if nobody is in it. What a server saves so the player can return there. */
+export function getPlayerPosition(handle: SimHandle, slot: number): { x: number; y: number } | undefined {
+  const eid = findPlayerEntity(handle, slot);
+  if (eid === undefined) return undefined;
+  const position = asEntityWorld(handle).store(Position);
+  return { x: position.x[eid] as number, y: position.y[eid] as number };
 }
 
 /** Which way an entity is going and looking. Both are vectors in sim space (y points down). */

@@ -1,17 +1,17 @@
-PASS  room server and dev server up, both started by this run  ({"event":"world-room-listening","port":5355,"roomId":"world","seed":433684083,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"<repo>/packages/client/dist","allowedOrigins":[],"loopbackOrigins":true})
+PASS  room server and dev server up, both started by this run  ({"event":"world-room-listening","port":5355,"roomId":"world","seed":1353036441,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"<repo>/packages/client/dist","savedPositions":"memory","dataDirectory":null,"savedPlayers":0,"allowedOrigins":[],"loopbackOrigins":true})
 PASS  the wire protocol counts this change: 4 or later  (4)
 PASS  online, a first visit shows the creator before joining: no game, no join request yet  (join requests: 0)
 PASS  both pages are online replicas in different seats  ({"a":0,"b":1})
-PASS  A sees both characters: each in its own colours with its own name above it  ([{"slot":0,"name":"Ada Lovelace","look":{"skin":4,"hair":6,"clothes":1},"label":{"name":"Ada Lovelace","x":104,"y":213,"textureKey":"player/look/4-6-1"}},{"slot":1,"name":"José 🚀","look":{"skin":0,"hair":3,"clothes":6},"label":{"name":"José 🚀","x":120,"y":197,"textureKey":"player/look/0-3-6"}}])
-PASS  B sees both characters: each in its own colours with its own name above it  ([{"slot":0,"name":"Ada Lovelace","look":{"skin":4,"hair":6,"clothes":1},"label":{"name":"Ada Lovelace","x":104,"y":213,"textureKey":"player/look/4-6-1"}},{"slot":1,"name":"José 🚀","look":{"skin":0,"hair":3,"clothes":6},"label":{"name":"José 🚀","x":120,"y":197,"textureKey":"player/look/0-3-6"}}])
+PASS  A sees both characters: each in its own colours with its own name above it  ([{"slot":0,"name":"Ada Lovelace","look":{"skin":4,"hair":6,"clothes":1},"label":{"name":"Ada Lovelace","x":104,"y":213,"textureKey":"player/look/4-6-1"}},{"slot":1,"name":"José 🚀","look":{"skin":0,"hair":3,"clothes":6},"label":{"name":"José 🚀","x":104,"y":229,"textureKey":"player/look/0-3-6"}}])
+PASS  B sees both characters: each in its own colours with its own name above it  ([{"slot":0,"name":"Ada Lovelace","look":{"skin":4,"hair":6,"clothes":1},"label":{"name":"Ada Lovelace","x":104,"y":213,"textureKey":"player/look/4-6-1"}},{"slot":1,"name":"José 🚀","look":{"skin":0,"hair":3,"clothes":6},"label":{"name":"José 🚀","x":104,"y":229,"textureKey":"player/look/0-3-6"}}])
 PASS  the two characters differ in name, in every colour and in the texture they are drawn from
-PASS  each HUD names its own player and counts two online  (fps  36   latency   1 ms   2/5 online
+PASS  each HUD names its own player and counts two online  (fps  --   latency   1 ms   2/5 online
 you: Ada Lovelace   players: 2 | fps  --   latency  -- ms   2/5 online
 you: José 🚀   players: 2)
-PASS  after A walks, B sees A's name still right above A's character, further right  (label x 104 -> 159.99969482421875)
+PASS  after A walks, B sees A's name still right above A's character, further right  (label x 104 -> 157.72607215001125)
 PASS  a join with a 5000-character name is cut off by the HTTP front before it reaches the room (413)  ({"seated":false,"code":413,"message":"request body too large"})
 PASS  313 malformed joins (bad palette index, 21 characters, non-text name, no character, random ones) are each refused as invalid-character  ([])
-PASS  none of them took a seat or showed up: both browsers still see exactly the two legal characters, and the server still runs  (fps  45   latency  16 ms   2/5 online
+PASS  none of them took a seat or showed up: both browsers still see exactly the two legal characters, and the server still runs  (fps  60   latency   0 ms   2/5 online
 you: Ada Lovelace   players: 2)
 PASS  a name sent with stray spaces is shown as the server normalised it  ("Grace Hopper")
 PASS  when a player leaves, its name goes with it: exactly one name label per character left  (labels alive: 2)
@@ -20,8 +20,8 @@ PASS  a page whose character the server refuses shows the character-refused scre
 PASS  after a reload B is not asked again: straight back in as the same character, and A sees it
 PASS  room server restarted
 PASS  after the server restarts both pages rejoin by themselves as the same two characters, without the creator
-PASS  changing character in the world changes it for both players, on the same entity, where it stood, without loading the page  ({"before":{"eid":2,"position":{"x":104,"y":216}},"after":{"eid":2,"position":{"x":104,"y":216},"name":"Grace Hopper"},"bSees":["José 🚀","Grace Hopper"],"aLoads":{"count":0}})
-PASS  the browser remembers the new character and the HUD names it  ({"remembered":"{\"name\":\"Grace Hopper\",\"look\":{\"skin\":5,\"hair\":7,\"clothes\":4}}","hud":"fps  52   latency  -- ms   2/5 online\nyou: Grace Hopper   players: 2"})
-PASS  no page errors  (B: Failed to load resource: net::ERR_CONNECTION_REFUSED | A: Failed to load resource: net::ERR_CONNECTION_REFUSED)
+PASS  changing character in the world changes it for both players, on the same entity, where it stood, without loading the page  ({"before":{"eid":1,"position":{"x":104,"y":232}},"after":{"eid":1,"position":{"x":104,"y":232},"name":"Grace Hopper"},"bSees":["Grace Hopper","José 🚀"],"aLoads":{"count":0}})
+PASS  the browser remembers the new character and the HUD names it  ({"remembered":"{\"name\":\"Grace Hopper\",\"look\":{\"skin\":5,\"hair\":7,\"clothes\":4}}","hud":"fps  59   latency  -- ms   2/5 online\nyou: Grace Hopper   players: 2"})
+PASS  no page errors
 
 ALL 22 CHECKS PASSED

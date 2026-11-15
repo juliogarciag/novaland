@@ -10,7 +10,7 @@ import { codePointsOf, readCharacter, type Character } from './character';
 import { Facing, MoveIntent, nameCodePointField, Player, PlayerLook, PlayerName } from './components';
 import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MAX_NAME_CODE_POINTS, MIN_MOVE_INTENT, PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
-import { pickSpawnPoint } from './spawn';
+import { pickReturnPoint, pickSpawnPoint } from './spawn';
 
 /** Players spawn looking down the screen (y points down). */
 const SPAWN_FACING = { x: 0, y: 1 } as const;
@@ -29,7 +29,8 @@ const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 /**
  * Player-controlled bodies. A `player/join` spawns the character the player
  * made (its look and name, once `readCharacter` accepts them) on a free tile
- * near the map's spawn, `player/change-character` gives the same entity another
+ * near the map's spawn, or where the command says a returning player left
+ * (`returnTo`, set only by whoever steps the sim), `player/change-character` gives the same entity another
  * look and name where it stands, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
@@ -49,7 +50,7 @@ export const playerFeature: Feature = {
         if (!isValidSlot(command.slot) || sim.isFull || findPlayerEntity(sim, command.slot) !== undefined) return;
         // The command's own character is never stored: only what `readCharacter` made of it.
         const character = readCharacter(command.character);
-        if (character) spawnPlayer(sim, command.slot, character);
+        if (character) spawnPlayer(sim, { slot: command.slot, character, returnTo: readPoint(command.returnTo) });
         return;
       }
       case 'player/leave': {
@@ -115,10 +116,10 @@ function attachPlayerBody(sim: Sim, eid: number, ball: BallBodyOptions): void {
   for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
 }
 
-/** The spawn point is picked before the entity exists, so the new player never counts as present for its own choice. */
-function spawnPlayer(sim: Sim, slot: number, character: Character): number {
+/** The spawn point is picked before the entity exists, so the new player never counts as present for its own choice. A returning player appears where it left (`returnTo`) when a free tile is there or near it. */
+function spawnPlayer(sim: Sim, { slot, character, returnTo }: { slot: number; character: Character; returnTo: { readonly x: number; readonly y: number } | undefined }): number {
   const def = getDef(PlayerDefId.Player);
-  const spawn = pickSpawnPoint(sim);
+  const spawn = (returnTo && pickReturnPoint(sim, returnTo)) ?? pickSpawnPoint(sim);
   const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
   const player = sim.store(Player);
@@ -167,6 +168,14 @@ function writePlayerName(sim: Sim, eid: number, name: string): void {
 
 function isValidSlot(slot: unknown): slot is number {
   return typeof slot === 'number' && Number.isInteger(slot) && slot >= 0 && slot < MAX_PLAYER_SLOTS;
+}
+
+/** The `{ x, y }` of a point given as two finite numbers; undefined for anything else. */
+function readPoint(value: unknown): { readonly x: number; readonly y: number } | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const { x, y } = value as { x?: unknown; y?: unknown };
+  if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return undefined;
+  return { x, y };
 }
 
 /**

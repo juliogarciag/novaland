@@ -12,7 +12,9 @@ import type { WorldState } from './worldState';
  * names the map by its checksum instead of a level name, and world states no
  * longer hold terrain (ADR 0013). 4: a join carries the player's character
  * and is refused without a legal one, and `player/change-character` changes
- * it afterwards (ADR 0015).
+ * it afterwards (ADR 0015). Not counted up for `JoinOptions.playerToken`
+ * (ADR 0014): a join without it and a server that ignores it both still work,
+ * so no page has to reload for it.
  */
 export const WIRE_PROTOCOL = 4;
 
@@ -56,6 +58,24 @@ export interface JoinOptions {
   readonly protocol: number;
   /** The character the player made: the server refuses the join with `JOIN_REFUSAL.invalidCharacter` unless `readCharacter` accepts it. */
   readonly character: Character;
+  /**
+   * The secret that says which player this is, so the server can put them
+   * back where they left (ADR 0014). The browser makes it up once and keeps
+   * it; there are no accounts. It is a credential: it travels only in the
+   * join, client to server, and is never sent to anyone else. A join without
+   * one, or with one that is not `isPlayerToken`, is a new player.
+   */
+  readonly playerToken?: string;
+}
+
+/** Characters of a player token: 32 random bytes as base64url, without padding. */
+const PLAYER_TOKEN_LENGTH = 43;
+
+const PLAYER_TOKEN_PATTERN = /^[A-Za-z0-9_-]+$/;
+
+/** True when `value` has the shape of a player token: a string of exactly `PLAYER_TOKEN_LENGTH` base64url characters. The shape says nothing about whether any server has seen it. */
+export function isPlayerToken(value: unknown): value is string {
+  return typeof value === 'string' && value.length === PLAYER_TOKEN_LENGTH && PLAYER_TOKEN_PATTERN.test(value);
 }
 
 /** World-state deltas per second a server sends its players. The server may be configured with another rate. */

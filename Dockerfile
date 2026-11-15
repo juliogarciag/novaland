@@ -7,7 +7,10 @@
 # Host-agnostic: PORT comes from the environment (the host sets it),
 # ALLOWED_ORIGINS names the address players open (the image is production and
 # refuses to start without it), the process answers GET /health, and the
-# world lives in this process's memory.
+# world lives in this process's memory. Where players last stood is kept in
+# DATA_DIRECTORY when it is set (mount a volume there), in memory otherwise.
+# The server runs as `node`, also on a host that starts the container as root
+# to reach a root-owned volume: scripts/docker-entrypoint.sh drops to `node`.
 # Node 24 as .node-version says; pnpm through corepack at the version pinned
 # in package.json's packageManager field.
 
@@ -37,12 +40,17 @@ RUN pnpm install --frozen-lockfile --prod --filter @novaland/server \
 # Run: the two bundles, the server's runtime dependencies, nothing else.
 FROM node:24-alpine AS runtime
 ENV NODE_ENV=production
+# su-exec: how the entrypoint becomes `node` when a host starts the container as root. It replaces itself with the command, so node stays PID 1 and gets SIGTERM.
+RUN apk add --no-cache su-exec
 WORKDIR /app
+# Under its own name: the base image keeps a docker-entrypoint.sh of its own there, which this one replaces on purpose.
+COPY --chmod=0755 scripts/docker-entrypoint.sh /usr/local/bin/novaland-entrypoint.sh
 COPY --from=production-deps /app/node_modules ./node_modules
 COPY --from=production-deps /app/packages/server/node_modules ./packages/server/node_modules
 COPY --from=production-deps /app/packages/server/package.json ./packages/server/package.json
 COPY --from=build /app/packages/server/dist ./packages/server/dist
 COPY --from=build /app/packages/client/dist ./packages/client/dist
 USER node
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD wget -qO- "http://127.0.0.1:${PORT:-2567}/health" || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD novaland-entrypoint.sh wget -qO- "http://127.0.0.1:${PORT:-2567}/health" || exit 1
+ENTRYPOINT ["novaland-entrypoint.sh"]
 CMD ["node", "packages/server/dist/index.mjs"]

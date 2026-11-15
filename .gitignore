@@ -12,3 +12,6 @@ dist/
 
 # proof written when the template is run in place; a ticket commits the proof of its own copy
 /verifications/_template/proof/
+
+# saved positions of a local world server started with DATA_DIRECTORY="$PWD/.data" (ADR 0014)
+/.data/

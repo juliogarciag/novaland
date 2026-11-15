@@ -395,6 +395,81 @@
     "status": "passed"
   },
   {
+    "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readPlayerKey turns a well-formed token into a key that is not the token, the same key every time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readPlayerKey reads no key from options without a token of exactly the right shape",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readPlayerKey fuzzed with 20000 random options, never throws and gives a key exactly when the token is well formed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again is put back where they left, while a player with another token and one with none spawn as new",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again is put back where they left after the server process is replaced, when the positions are kept on disk",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again saves where a seated player stands every 5 seconds, so a crash loses little",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again keeps the time a player first sat down across a takeover, so a player who switches tabs is still remembered",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again does not remember a new player who leaves within 10 seconds, so a flood of fresh tokens adds nothing to the store",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again gives the player to the newest join of a token: the older session is closed with 4101 \"joined-elsewhere\", and the world holds one player, where they stood",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again is put back where they stood when the server freed their seat for being idle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a player who joins again never sends the token or the key made from it to any client, and never logs either",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a forged or malformed join fuzzed with 200 random join options, never throws anything but a protocol or a character refusal and never places a player away from the spawn",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a forged or malformed join ends the older of two joins of one token that wait for the same tick: one seat, one player",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a forged or malformed join never saves, under a player's key, where the previous holder of their seat stood",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/returningPlayers.test.ts",
+    "name": "a forged or malformed join saves where everyone still seated stands when the room is disposed",
+    "status": "passed"
+  },
+  {
     "file": "packages/server/src/world/roomSeats.test.ts",
     "name": "RoomSeats hands out the lowest free slot and refuses when every seat is taken",
     "status": "passed"
@@ -407,6 +482,56 @@
   {
     "file": "packages/server/src/world/roomSeats.test.ts",
     "name": "RoomSeats never seats the same session twice and releasing a stranger frees nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions gives back the last position saved for a player and nothing for a player it has never saved",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions keeps positions in memory without a directory, and on disk across a close and a reopen with one",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions creates the directory when it is missing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions never remembers more players than its limit: one more forgets whoever was seen longest ago",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions stays at its limit under a flood of 5000 players it has never seen",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions cuts a file that holds more players than its limit down to the limit when it opens",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions does not save a position that is not two finite numbers",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions refuses a limit that is not a positive whole number, a directory that is a file, and a file that is not a store",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions once closed, finds nothing and saves nothing, without throwing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/savedPositions.test.ts",
+    "name": "saved positions logs a save that fails at most once a minute, without the key, and never throws",
     "status": "passed"
   },
   {
@@ -665,6 +790,86 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/creator/creatorScreen.test.ts",
+    "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character comes back as it was remembered",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character is nothing on a first visit",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character is nothing when what the browser holds is not a legal character any more",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character never throws when the browser denies storage",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines says joining... until the local player is in the world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate follows a rate that changes, one second later",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
@@ -757,86 +962,6 @@
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks ignores negative deltas",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/creatorScreen.test.ts",
-    "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character comes back as it was remembered",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character is nothing on a first visit",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character is nothing when what the browser holds is not a legal character any more",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character never throws when the browser denies storage",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines says joining... until the local player is in the world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate follows a rate that changes, one second later",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
     "status": "passed"
   },
   {
@@ -1026,6 +1151,11 @@
   },
   {
     "file": "packages/client/src/online/connection.test.ts",
+    "name": "withPlayerToken adds a player token to what the connection joins with, the same token on every join of this page",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
     "name": "WorldConnection joins, is online once the welcome is accepted, and forwards updates only from then on",
     "status": "passed"
   },
@@ -1062,6 +1192,16 @@
   {
     "file": "packages/client/src/online/connection.test.ts",
     "name": "WorldConnection stays away after the server frees an idle seat (close 4100), and rejoins only when asked",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection waits for the player after another tab took their seat (close 4101), and takes it back only when asked",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection waits for the player when another tab took the seat while this join was still in flight",
     "status": "passed"
   },
   {
@@ -1227,6 +1367,31 @@
   {
     "file": "packages/client/src/online/frameBuffer.test.ts",
     "name": "ViewFrameBuffer keeps at most 16 frames as they arrive, so a hidden tab that asks for no frames cannot pile them up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/playerToken.test.ts",
+    "name": "readOrCreatePlayerToken makes up a token the first time, stores it, and gives the same one from then on",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/playerToken.test.ts",
+    "name": "readOrCreatePlayerToken makes a different token for every browser",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/playerToken.test.ts",
+    "name": "readOrCreatePlayerToken uses the token another tab stored a moment earlier, so two tabs opened at once are one player",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/playerToken.test.ts",
+    "name": "readOrCreatePlayerToken replaces a stored value that is not a token",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/playerToken.test.ts",
+    "name": "readOrCreatePlayerToken keeps one token for the life of the page when the storage refuses to be read or written, or there is none",
     "status": "passed"
   },
   {
@@ -2327,6 +2492,66 @@
   {
     "file": "packages/sim/src/features/player/passThrough.test.ts",
     "name": "players pass through each other (headless) gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) puts the player on the point they left, not on the centre of its tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) keeps the player there on the following ticks: the point was a place a body can stand",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) lands on the nearest free tile when the tile they left is solid now",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) picks the nearest free tile by distance to the point, also when it is not in the first ring",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) lands on the nearest free tile when another player stands on the tile they left",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) never counts a player that left in the same step: their tile is free for whoever returns to it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) spawns the player as a new one when no tile within 8 tiles of the point is free",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) spawns the player as a new one when the point is far outside the map",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) treats a malformed returnTo as none at all: the world ends up exactly as after a plain join",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) is deterministic: the same seed and the same joins give the same world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "a join that returns a player to where they left (headless) fuzzed with 2000 random points, never throws and always leaves the player on a walkable tile",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/returnTo.test.ts",
+    "name": "getPlayerPosition says where the player in a slot stands and nothing for an empty slot",
     "status": "passed"
   },
   {

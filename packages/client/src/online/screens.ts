@@ -11,7 +11,7 @@ export interface ConnectionScreens {
 const COUNTDOWN_INTERVAL_MS = 250;
 
 export interface ConnectionScreenActions {
-  /** The "Retry now" button of the full and disconnected screens, and the "Rejoin" button of the away screen. */
+  /** The "Retry now" button of the full and disconnected screens, the "Rejoin" button of the away screen and the "Play here" button of the elsewhere screen. */
   readonly onRetry: () => void;
   /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
   readonly onReload: () => void;
@@ -48,15 +48,15 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   let shown: ConnectionStatus | undefined;
   const rejoinOnEnter = (event: KeyboardEvent): void => {
     // The focused button already turns Enter into a click.
-    if (shown?.kind === 'away' && event.key === 'Enter' && document.activeElement !== retryButton) actions.onRetry();
+    if (shown && waitsForThePlayer(shown) && event.key === 'Enter' && document.activeElement !== retryButton) actions.onRetry();
   };
   document.addEventListener('keydown', rejoinOnEnter);
 
   const render = (): void => {
     if (!shown) return;
     message.textContent = describeStatus(shown);
-    retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && shown.kind !== 'away';
-    retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : 'Retry now';
+    retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && !waitsForThePlayer(shown);
+    retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : shown.kind === 'elsewhere' ? 'Play here' : 'Retry now';
     reloadButton.hidden = shown.kind !== 'incompatible';
     newCharacterButton.hidden = shown.kind !== 'character-refused';
   };
@@ -75,7 +75,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
       render();
       if (status.kind === 'full' || status.kind === 'disconnected') countdown = setInterval(render, COUNTDOWN_INTERVAL_MS);
       // Enter or Space on the focused button rejoins as well as a click; `rejoinOnEnter` keeps Enter working if focus moved elsewhere.
-      if (status.kind === 'away') retryButton.focus({ preventScroll: true });
+      if (waitsForThePlayer(status)) retryButton.focus({ preventScroll: true });
     },
     destroy() {
       if (countdown !== undefined) clearInterval(countdown);
@@ -100,9 +100,16 @@ function describeStatus(status: ConnectionStatus): string {
       return 'You were away too long, so the server freed your seat. Rejoin to play again.';
     case 'character-refused':
       return 'The server did not accept your character. Make a new one to play.';
+    case 'elsewhere':
+      return 'You are playing in another tab or window. Play here to carry on in this one.';
     case 'incompatible':
       return `Cannot play on this server: ${status.reason}.`;
   }
+}
+
+/** True for the screens where nothing is retried until the player asks: the server freed the seat for being idle, or gave the player to another tab. */
+function waitsForThePlayer(status: ConnectionStatus): boolean {
+  return status.kind === 'away' || status.kind === 'elsewhere';
 }
 
 function secondsUntil(timestamp: number): number {
