@@ -10,12 +10,14 @@
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
-import { PROOF, check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { PROOF, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 /** A port no other session uses, and not the one of the dev server you leave running for the human. */
 const PORT = 5901;
 /** CSS pixels; the page opens at a pixel ratio of 1 so screen, device and CSS pixels agree. */
 const VIEWPORT = { width: 960, height: 720 };
+/** Who the page plays as: the browser remembers this character, so the creator screen does not show. Palette indexes, as the sim's `characterPalettes` lists them. */
+const CHARACTER = { name: 'Template', look: { skin: 0, hair: 0, clothes: 0 } };
 const results = [];
 const report = {};
 const pageErrors = [];
@@ -29,7 +31,9 @@ try {
   if (!ready) throw new Error('nothing to open');
 
   browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  await rememberCharacter(context, CHARACTER);
+  const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(String(error)));
   page.on('console', (message) => message.type() === 'error' && pageErrors.push(message.text()));
   await page.goto(`http://localhost:${PORT}/`);

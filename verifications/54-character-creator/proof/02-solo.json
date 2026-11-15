@@ -4,9 +4,9 @@
     "hasGame": false,
     "name": "",
     "look": {
-      "skin": 4,
-      "hair": 6,
-      "clothes": 6
+      "skin": 1,
+      "hair": 4,
+      "clothes": 1
     },
     "swatches": {
       "skin": 6,
@@ -15,7 +15,7 @@
     },
     "problem": null,
     "problemText": "",
-    "previewLook": "4-6-6"
+    "previewLook": "1-4-1"
   },
   "nameProblems": {
     "empty": {
@@ -23,9 +23,9 @@
       "hasGame": false,
       "name": "",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 6
+        "skin": 1,
+        "hair": 4,
+        "clothes": 1
       },
       "swatches": {
         "skin": 6,
@@ -34,16 +34,16 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "4-6-6"
+      "previewLook": "1-4-1"
     },
     "blank": {
       "shown": true,
       "hasGame": false,
       "name": "   ",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 6
+        "skin": 1,
+        "hair": 4,
+        "clothes": 1
       },
       "swatches": {
         "skin": 6,
@@ -52,16 +52,16 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "4-6-6"
+      "previewLook": "1-4-1"
     },
     "tooLong": {
       "shown": true,
       "hasGame": false,
       "name": "aaaaaaaaaaaaaaaaaaaaa",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 6
+        "skin": 1,
+        "hair": 4,
+        "clothes": 1
       },
       "swatches": {
         "skin": 6,
@@ -70,16 +70,16 @@
       },
       "problem": "too-long",
       "problemText": "That name is too long: use 20 characters or fewer.",
-      "previewLook": "4-6-6"
+      "previewLook": "1-4-1"
     },
     "control": {
       "shown": true,
       "hasGame": false,
       "name": "Ada\tLovelace",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 6
+        "skin": 1,
+        "hair": 4,
+        "clothes": 1
       },
       "swatches": {
         "skin": 6,
@@ -88,7 +88,7 @@
       },
       "problem": "forbidden-character",
       "problemText": "That name has characters that cannot be shown. Use letters, numbers, spaces and emoji.",
-      "previewLook": "4-6-6"
+      "previewLook": "1-4-1"
     }
   },
   "entered": {
@@ -98,7 +98,7 @@
     "seats": [
       {
         "slot": 0,
-        "eid": 45,
+        "eid": 1,
         "name": "Ada Lovelace",
         "look": {
           "skin": 4,
@@ -111,13 +111,13 @@
           "clothes": "e11d48"
         },
         "position": {
-          "x": -216,
-          "y": -8
+          "x": 104,
+          "y": 232
         },
         "label": {
           "name": "Ada Lovelace",
-          "x": -216,
-          "y": -28,
+          "x": 104,
+          "y": 212,
           "textureKey": "player/look/4-6-1"
         },
         "textureColors": [
@@ -133,7 +133,7 @@
         ]
       }
     ],
-    "hud": "WASD / arrows to move   tick 1\nyou: Ada Lovelace   players: 1\nJ: seat another player (dev)",
+    "hud": "fps  --\nyou: Ada Lovelace   players: 1\nJ: seat another player (dev)",
     "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
     "hash": "",
     "creatorShown": false,
@@ -146,7 +146,7 @@
     "seats": [
       {
         "slot": 0,
-        "eid": 45,
+        "eid": 1,
         "name": "José 🚀",
         "look": {
           "skin": 1,
@@ -159,13 +159,13 @@
           "clothes": "0d9488"
         },
         "position": {
-          "x": -216,
-          "y": -8
+          "x": 104,
+          "y": 232
         },
         "label": {
           "name": "José 🚀",
-          "x": -216,
-          "y": -28,
+          "x": 104,
+          "y": 212,
           "textureKey": "player/look/1-0-6"
         },
         "textureColors": [
@@ -181,7 +181,7 @@
         ]
       }
     ],
-    "hud": "WASD / arrows to move   tick 1\nyou: José 🚀   players: 1\nJ: seat another player (dev)",
+    "hud": "fps  --\nyou: José 🚀   players: 1\nJ: seat another player (dev)",
     "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":1,\"hair\":0,\"clothes\":6}}",
     "hash": "",
     "creatorShown": false,
@@ -194,7 +194,7 @@
     "seats": [
       {
         "slot": 0,
-        "eid": 45,
+        "eid": 1,
         "name": "José 🚀",
         "look": {
           "skin": 1,
@@ -207,13 +207,13 @@
           "clothes": "0d9488"
         },
         "position": {
-          "x": -216,
-          "y": -8
+          "x": 104,
+          "y": 232
         },
         "label": {
           "name": "José 🚀",
-          "x": -216,
-          "y": -28,
+          "x": 104,
+          "y": 212,
           "textureKey": "player/look/1-0-6"
         },
         "textureColors": [
@@ -230,7 +230,7 @@
       },
       {
         "slot": 1,
-        "eid": 46,
+        "eid": 2,
         "name": "Guest 2",
         "look": {
           "skin": 1,
@@ -243,13 +243,13 @@
           "clothes": "e11d48"
         },
         "position": {
-          "x": -232,
-          "y": -24
+          "x": 88,
+          "y": 216
         },
         "label": {
           "name": "Guest 2",
-          "x": -232,
-          "y": -44,
+          "x": 88,
+          "y": 196,
           "textureKey": "player/look/1-4-1"
         },
         "textureColors": [
@@ -265,7 +265,7 @@
         ]
       }
     ],
-    "hud": "WASD / arrows to move   tick 10\nyou: José 🚀   players: 2\nJ: seat another player (dev)",
+    "hud": "fps  --\nyou: José 🚀   players: 2\nJ: seat another player (dev)",
     "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":1,\"hair\":0,\"clothes\":6}}",
     "hash": "",
     "creatorShown": false,

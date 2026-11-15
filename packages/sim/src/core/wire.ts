@@ -11,7 +11,7 @@ import type { WorldState } from './worldState';
  * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
  * names the map by its checksum instead of a level name, and world states no
  * longer hold terrain (ADR 0013). 4: a join carries the player's character
- * and is refused without a legal one (ADR 0014).
+ * and is refused without a legal one (ADR 0015).
  */
 export const WIRE_PROTOCOL = 4;
 

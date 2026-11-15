@@ -11,10 +11,12 @@
  * pages come back by themselves as the same characters.
  */
 import { chromium } from 'playwright';
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { ROOT, check, isPortOpen, start, summarize, waitForPort, writeProof } from './lib.mjs';
+import { ROOT, check, lastLinesOf, start, summarize, waitFor as waitForReady, waitForPort, writeProof } from './lib.mjs';
+import { isPortOpen } from './processes.mjs';
 import { creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitFor, waitInWorld, worldState } from './pages.mjs';
 
 const SERVER_PORT = 5355;
@@ -31,12 +33,22 @@ const startServer = () => start('pnpm', ['dev'], { cwd: serverDir, env: { PORT: 
 // The client's own Colyseus SDK, used here as a hostile client would: straight at the room, no creator in between.
 const requireFromClient = createRequire(path.join(ROOT, 'packages/client/package.json'));
 const { Client } = await import(pathToFileURL(requireFromClient.resolve('@colyseus/sdk')).href);
+// The wire protocol the server speaks, read from the sim's own source so this script never pins a stale number.
+const WIRE_PROTOCOL = Number(/export const WIRE_PROTOCOL = (\d+);/.exec(readFileSync(path.join(ROOT, 'packages/sim/src/core/wire.ts'), 'utf8'))?.[1]);
+/** Joins the room directly, speaking its protocol, with whatever else `options` holds. */
+const joinDirectly = (options) => new Client(`ws://localhost:${SERVER_PORT}`).joinById('world', { protocol: WIRE_PROTOCOL, ...options });
 
 const client = start('pnpm', ['dev'], { env: { PORT: String(CLIENT_PORT), VITE_SERVER_URL: `ws://localhost:${SERVER_PORT}` } });
 let server = startServer();
 let browser;
 try {
-  results.push(check('client dev server and room server up', (await waitForPort(CLIENT_PORT)) && (await waitForPort(SERVER_PORT))));
+  // The boot line and the ready line prove both ports are this run's servers, not something that was already listening there.
+  const portsUp = (await waitForPort(SERVER_PORT)) && (await waitForPort(CLIENT_PORT));
+  const bootLine = portsUp && (await waitForReady("the room server's boot line", { read: () => server.output.split('\n').find((line) => line.includes('world-room-listening')), until: Boolean }).catch(() => undefined));
+  const clientReady = portsUp && (await waitForReady("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
+  results.push(check('room server and dev server up, both started by this run', Boolean(bootLine) && clientReady, bootLine || `${lastLinesOf(server.output)} | ${lastLinesOf(client.output)}`));
+  if (!bootLine || !clientReady) throw new Error('nothing to open');
+  results.push(check('the wire protocol counts this change: 4 or later', WIRE_PROTOCOL >= 4, String(WIRE_PROTOCOL)));
   browser = await chromium.launch();
   const seatOf = (state, character) => state.seats.find((seat) => seat.name === character.name);
   const seesBoth = (state) => state.seats.length === 2 && drawnAsItsCharacter(seatOf(state, ADA), ADA) && drawnAsItsCharacter(seatOf(state, JOSE), JOSE);
@@ -97,7 +109,6 @@ try {
     ['a name with a text-direction override', { character: { ...ADA, name: '\u202eadA' } }],
     ['a character with a slot smuggled in', { character: { ...ADA, slot: 0 } }],
     ['no character', {}],
-    ['no options at all', undefined],
   ];
   let random = 54;
   const next = (bound) => {
@@ -118,7 +129,7 @@ try {
   console.warn = () => undefined;
   const outcomes = [];
   for (const [what, options] of hostile) {
-    const outcome = await new Client(`ws://localhost:${SERVER_PORT}`).joinById('world', options).then(
+    const outcome = await joinDirectly(options).then(
       async (room) => {
         await room.leave();
         return { what, seated: true };
@@ -128,7 +139,7 @@ try {
     outcomes.push(outcome);
   }
   // A join too big for the HTTP front never reaches the room: the front closes it first.
-  const oversized = await new Client(`ws://localhost:${SERVER_PORT}`).joinById('world', { character: { ...ADA, name: 'a'.repeat(5000) } }).then(
+  const oversized = await joinDirectly({ character: { ...ADA, name: 'a'.repeat(5000) } }).then(
     () => ({ seated: true }),
     (error) => ({ seated: false, code: error?.code, message: error?.message }),
   );
@@ -142,7 +153,7 @@ try {
   report.hostileJoins = { sent: hostile.length, refused: outcomes.filter((outcome) => !outcome.seated).length, sample: outcomes.slice(0, 13) };
 
   // 5. A legal join whose name needs normalising arrives normalised.
-  const untidy = await new Client(`ws://localhost:${SERVER_PORT}`).joinById('world', { character: { name: '  Grace    Hopper ', look: { skin: 2, hair: 1, clothes: 3 } } });
+  const untidy = await joinDirectly({ character: { name: '  Grace    Hopper ', look: { skin: 2, hair: 1, clothes: 3 } } });
   untidy.onMessage('*', () => undefined);
   const withGrace = await waitFor(() => worldState(a.page), (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label), 'A to see the third player');
   await screenshot(a.page, '03-online-6-A-sees-normalised-third.png');

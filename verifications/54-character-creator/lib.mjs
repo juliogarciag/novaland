@@ -1,10 +1,11 @@
+/* global window */
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const HERE = path.dirname(fileURLToPath(import.meta.url));
+const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '../..');
 export const PROOF = path.join(HERE, 'proof');
 mkdirSync(PROOF, { recursive: true });
@@ -17,36 +18,91 @@ export function writeProof(name, data) {
   return file;
 }
 
-/** Child env: `undefined` values remove the variable instead of passing the string "undefined". */
-function childEnv(env) {
-  const merged = { ...process.env };
-  for (const [key, value] of Object.entries(env)) {
-    if (value === undefined) delete merged[key];
-    else merged[key] = value;
+/** Where the client keeps the character a player made (`CHARACTER_STORAGE_KEY` in packages/client/src/creator/rememberedCharacter.ts). */
+const CHARACTER_STORAGE_KEY = 'novaland.character';
+
+/**
+ * Makes every page of a browser context a returning player: the browser
+ * already remembers `character`, so the page goes straight into the world
+ * instead of stopping at the creator screen. Call it before the first
+ * `goto`. A check about the creator itself leaves this out and fills the
+ * form instead.
+ */
+export async function rememberCharacter(context, character) {
+  await context.addInitScript(([key, value]) => window.localStorage.setItem(key, value), [CHARACTER_STORAGE_KEY, JSON.stringify(character)]);
+}
+
+/** Starts a long-running command in its own process group, so `stop()` takes its children too, also when this script dies. */
+export function start(command, args, { cwd = ROOT, env = {} } = {}) {
+  stopEverythingOnExit();
+  // No colours: the scripts look for plain text, such as a ready line, in what the command prints.
+  const child = spawn(command, args, { cwd, env: { ...process.env, ...env, NO_COLOR: '1', FORCE_COLOR: undefined }, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+  let output = '';
+  child.stdout.on('data', (chunk) => (output += chunk));
+  child.stderr.on('data', (chunk) => (output += chunk));
+  const server = {
+    get output() {
+      return output;
+    },
+    stop() {
+      runningServers.delete(server);
+      if (!child.pid) return;
+      try {
+        process.kill(-child.pid, 'SIGTERM');
+      } catch {
+        /* already gone */
+      }
+    },
+  };
+  runningServers.add(server);
+  return server;
+}
+
+export async function waitForPort(port, timeoutMs = 20000) {
+  return waitFor(`port ${port}`, { read: () => isPortOpen(port), until: Boolean, timeoutMs }).catch(() => false);
+}
+
+/** Polls `read` until `until` holds for what it returned, and returns that. Throws on timeout, naming `what`. */
+export async function waitFor(what, { read, until, timeoutMs = 8000 }) {
+  const deadline = Date.now() + timeoutMs;
+  let last;
+  while (Date.now() < deadline) {
+    last = await read();
+    if (until(last)) return last;
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  return merged;
+  throw new Error(`timed out waiting for: ${what} (last: ${String(JSON.stringify(last)).slice(0, 200)})`);
 }
 
-/** Runs a command to completion. Never throws; returns { code, stdout, stderr, output }. */
-export function run(cmd, args, { cwd = ROOT, env = {} } = {}) {
-  return new Promise((resolve) => {
-    const child = spawn(cmd, args, { cwd, env: childEnv(env), stdio: ['ignore', 'pipe', 'pipe'] });
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (d) => (stdout += d));
-    child.stderr.on('data', (d) => (stderr += d));
-    child.on('close', (code) => resolve({ code, stdout, stderr, output: stdout + stderr }));
-  });
+/** The end of what a command printed, on one line and without stack frames: why a server did not start. */
+export function lastLinesOf(output) {
+  const lines = output.split('\n').filter((line) => line.trim() !== '' && !line.startsWith('    at '));
+  return lines.slice(-5).join(' | ');
 }
 
-const running = new Set();
-let cleanupInstalled = false;
+/** Prints one PASS/FAIL line and returns the result for the report. */
+export function check(name, pass, details) {
+  console.log(`${pass ? 'PASS' : 'FAIL'}  ${name}${details ? `  (${details})` : ''}`);
+  return { name, pass, details };
+}
 
-function installCleanup() {
-  if (cleanupInstalled) return;
-  cleanupInstalled = true;
+/** Prints the closing line and says whether every check passed. */
+export function summarize(results) {
+  const failed = results.filter((result) => !result.pass);
+  console.log(failed.length === 0 ? `\nALL ${results.length} CHECKS PASSED` : `\n${failed.length} OF ${results.length} CHECKS FAILED`);
+  return failed.length === 0;
+}
+
+// ---- Helpers ----
+
+const runningServers = new Set();
+let stopOnExitInstalled = false;
+
+function stopEverythingOnExit() {
+  if (stopOnExitInstalled) return;
+  stopOnExitInstalled = true;
   const stopAll = () => {
-    for (const server of running) server.stop();
+    for (const server of runningServers) server.stop();
   };
   process.on('exit', stopAll);
   for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
@@ -57,69 +113,13 @@ function installCleanup() {
   }
 }
 
-/** Starts a long-running command in its own process group so it can be killed with its children, also on abnormal exit. */
-export function start(cmd, args, { cwd = ROOT, env = {} } = {}) {
-  installCleanup();
-  const child = spawn(cmd, args, { cwd, env: childEnv(env), stdio: ['ignore', 'pipe', 'pipe'], detached: true });
-  let output = '';
-  child.stdout.on('data', (d) => (output += d));
-  child.stderr.on('data', (d) => (output += d));
-  const handle = {
-    child,
-    get output() {
-      return output;
-    },
-    stop() {
-      running.delete(handle);
-      if (!child.pid) return;
-      try {
-        process.kill(-child.pid, 'SIGTERM');
-      } catch {
-        /* already gone */
-      }
-    },
-  };
-  running.add(handle);
-  return handle;
-}
-
-export function isPortOpen(port) {
+function isPortOpen(port) {
   // Vite binds "localhost", which may be ::1 or 127.0.0.1 depending on the machine.
-  const probe = (host) =>
+  const answers = (host) =>
     new Promise((resolve) => {
       const socket = net.connect({ port, host });
       socket.once('connect', () => (socket.destroy(), resolve(true)));
       socket.once('error', () => resolve(false));
     });
-  return Promise.all([probe('127.0.0.1'), probe('::1')]).then((r) => r.some(Boolean));
-}
-
-export async function waitForPort(port, timeoutMs = 20000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (await isPortOpen(port)) return true;
-    await new Promise((r) => setTimeout(r, 200));
-  }
-  return false;
-}
-
-/** Holds a TCP port open (to prove something else avoids it). Returns a function that releases it. */
-export function occupyPort(port) {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer();
-    server.once('error', reject);
-    server.listen(port, 'localhost', () => resolve(() => new Promise((r) => server.close(r))));
-  });
-}
-
-export function check(name, pass, details) {
-  const line = `${pass ? 'PASS' : 'FAIL'}  ${name}${details ? `  (${details})` : ''}`;
-  console.log(line);
-  return { name, pass, details };
-}
-
-export function summarize(results) {
-  const failed = results.filter((r) => !r.pass);
-  console.log(failed.length === 0 ? `\nALL ${results.length} CHECKS PASSED` : `\n${failed.length} OF ${results.length} CHECKS FAILED`);
-  return failed.length === 0;
+  return Promise.all([answers('127.0.0.1'), answers('::1')]).then((answered) => answered.some(Boolean));
 }

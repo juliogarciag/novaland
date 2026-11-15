@@ -37,7 +37,7 @@ export function nameCodePointField(index: number): string {
  * The player's name as numbers: how many code points it has, then one field
  * per code point, zero past the end. Components hold numbers only, and this
  * keeps a free-text name inside them, so it is in every snapshot and travels
- * in world states like any other field (ADR 0010). Written once, on join, by
+ * in world states like any other field (ADR 0015). Written once, on join, by
  * `writePlayerName`; read back as a string by `getCharacter` (queries.ts).
  */
 export const PlayerName = defineComponent('PlayerName', (capacity) => {

@@ -1,7 +1,8 @@
 /** V1: the repository checks pass, the headless tests this ticket adds exist and pass (malformed joins and the fuzz among them), and `pnpm sim:headless` still works. */
 import { existsSync, readFileSync, unlinkSync } from 'node:fs';
 import path from 'node:path';
-import { PROOF, ROOT, check, run, summarize, writeProof } from './lib.mjs';
+import { PROOF, ROOT, check, summarize, writeProof } from './lib.mjs';
+import { run } from './processes.mjs';
 
 const results = [];
 const transcript = [];

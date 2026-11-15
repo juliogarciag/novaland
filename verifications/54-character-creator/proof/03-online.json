@@ -10,7 +10,7 @@
       "seats": [
         {
           "slot": 0,
-          "eid": 45,
+          "eid": 1,
           "name": "Ada Lovelace",
           "look": {
             "skin": 4,
@@ -23,13 +23,13 @@
             "clothes": "e11d48"
           },
           "position": {
-            "x": -216,
-            "y": -8
+            "x": 104,
+            "y": 232
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": -216,
-            "y": -28,
+            "x": 104,
+            "y": 212,
             "textureKey": "player/look/4-6-1"
           },
           "textureColors": [
@@ -46,7 +46,7 @@
         },
         {
           "slot": 1,
-          "eid": 46,
+          "eid": 2,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -59,13 +59,13 @@
             "clothes": "0d9488"
           },
           "position": {
-            "x": -232,
-            "y": -24
+            "x": 120,
+            "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": -232,
-            "y": -44,
+            "x": 120,
+            "y": 196,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -81,7 +81,7 @@
           ]
         }
       ],
-      "hud": "WASD / arrows to move   tick 207   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  13   latency  30 ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
@@ -97,7 +97,7 @@
       "seats": [
         {
           "slot": 0,
-          "eid": 45,
+          "eid": 1,
           "name": "Ada Lovelace",
           "look": {
             "skin": 4,
@@ -110,13 +110,13 @@
             "clothes": "e11d48"
           },
           "position": {
-            "x": -216,
-            "y": -8
+            "x": 104,
+            "y": 232
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": -216,
-            "y": -28,
+            "x": 104,
+            "y": 212,
             "textureKey": "player/look/4-6-1"
           },
           "textureColors": [
@@ -133,7 +133,7 @@
         },
         {
           "slot": 1,
-          "eid": 46,
+          "eid": 2,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -146,13 +146,13 @@
             "clothes": "0d9488"
           },
           "position": {
-            "x": -232,
-            "y": -24
+            "x": 120,
+            "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": -232,
-            "y": -44,
+            "x": 120,
+            "y": 196,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -168,7 +168,7 @@
           ]
         }
       ],
-      "hud": "WASD / arrows to move   tick 210   2/5 online\nyou: José 🚀   players: 2",
+      "hud": "fps  --   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
       "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":0,\"hair\":3,\"clothes\":6}}",
       "hash": "",
       "creatorShown": false,
@@ -176,8 +176,8 @@
     }
   },
   "hostileJoins": {
-    "sent": 314,
-    "refused": 314,
+    "sent": 313,
+    "refused": 313,
     "sample": [
       {
         "what": "a palette index out of range",
@@ -270,7 +270,7 @@
       "seats": [
         {
           "slot": 0,
-          "eid": 45,
+          "eid": 1,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -283,13 +283,13 @@
             "clothes": "0d9488"
           },
           "position": {
-            "x": -216,
-            "y": -8
+            "x": 104,
+            "y": 232
           },
           "label": {
             "name": "José 🚀",
-            "x": -216,
-            "y": -28,
+            "x": 104,
+            "y": 212,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -306,7 +306,7 @@
         },
         {
           "slot": 1,
-          "eid": 46,
+          "eid": 2,
           "name": "Ada Lovelace",
           "look": {
             "skin": 4,
@@ -319,13 +319,13 @@
             "clothes": "e11d48"
           },
           "position": {
-            "x": -200,
-            "y": -8
+            "x": 88,
+            "y": 248
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": -200,
-            "y": -28,
+            "x": 88,
+            "y": 228,
             "textureKey": "player/look/4-6-1"
           },
           "textureColors": [
@@ -341,7 +341,7 @@
           ]
         }
       ],
-      "hud": "WASD / arrows to move   tick 123   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  22   latency  -- ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
@@ -357,7 +357,7 @@
       "seats": [
         {
           "slot": 0,
-          "eid": 45,
+          "eid": 1,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -370,13 +370,13 @@
             "clothes": "0d9488"
           },
           "position": {
-            "x": -216,
-            "y": -8
+            "x": 104,
+            "y": 232
           },
           "label": {
             "name": "José 🚀",
-            "x": -216,
-            "y": -28,
+            "x": 104,
+            "y": 212,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -393,7 +393,7 @@
         },
         {
           "slot": 1,
-          "eid": 46,
+          "eid": 2,
           "name": "Ada Lovelace",
           "look": {
             "skin": 4,
@@ -406,13 +406,13 @@
             "clothes": "e11d48"
           },
           "position": {
-            "x": -200,
-            "y": -8
+            "x": 88,
+            "y": 248
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": -200,
-            "y": -28,
+            "x": 88,
+            "y": 228,
             "textureKey": "player/look/4-6-1"
           },
           "textureColors": [
@@ -428,7 +428,7 @@
           ]
         }
       ],
-      "hud": "WASD / arrows to move   tick 123   2/5 online\nyou: José 🚀   players: 2",
+      "hud": "fps  22   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
       "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":0,\"hair\":3,\"clothes\":6}}",
       "hash": "",
       "creatorShown": false,

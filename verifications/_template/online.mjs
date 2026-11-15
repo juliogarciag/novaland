@@ -9,7 +9,7 @@
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
-import { PROOF, ROOT, check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { PROOF, ROOT, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 /** Ports no other session uses, and not the ones of the servers you leave running for the human. */
 const SERVER_PORT = 5902;
@@ -66,9 +66,11 @@ process.exit(summarize(results) ? 0 : 1);
 
 // ---- Helpers ----
 
-/** A tab of its own browser context (its own player), open on the client and seated in the world. */
+/** A tab of its own browser context (its own player, a character named after the tab), open on the client and seated in the world. */
 async function openTab(name) {
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  // The browser remembers a character, so the creator screen does not show. Palette indexes, as the sim's `characterPalettes` lists them.
+  await rememberCharacter(context, { name: `Tab ${name}`, look: { skin: 0, hair: 0, clothes: 0 } });
   const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(`${name}: ${error}`));
   page.on('console', (message) => message.type() === 'error' && pageErrors.push(`${name}: ${message.text()}`));

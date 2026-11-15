@@ -11,7 +11,7 @@
  * key) shows a second, differently named character.
  */
 import { chromium } from 'playwright';
-import { check, start, summarize, waitForPort, writeProof } from './lib.mjs';
+import { check, lastLinesOf, start, summarize, waitFor as waitForReady, waitForPort, writeProof } from './lib.mjs';
 import { STORAGE_KEY, creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitFor, waitInWorld, worldState } from './pages.mjs';
 
 const CLIENT_PORT = 5354;
@@ -26,7 +26,10 @@ const errors = [];
 const client = start('pnpm', ['dev'], { env: { PORT: String(CLIENT_PORT), VITE_SERVER_URL: undefined } });
 let browser;
 try {
-  results.push(check('client dev server up (solo: no VITE_SERVER_URL)', await waitForPort(CLIENT_PORT)));
+  // The ready line proves the port is this run's server, not something that was already listening there.
+  const ready = (await waitForPort(CLIENT_PORT)) && (await waitForReady("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
+  results.push(check('client dev server up, started by this run (solo: no VITE_SERVER_URL)', ready, ready ? undefined : lastLinesOf(client.output)));
+  if (!ready) throw new Error('nothing to open');
   browser = await chromium.launch();
   const { page } = await openPlayer(browser, URL, { name: 'solo', errors });
 
