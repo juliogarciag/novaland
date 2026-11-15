@@ -22,6 +22,8 @@ export interface PlayableWorld {
   readonly localSlot: number;
   /** Seats taken out of seats available; undefined solo, where there is no count to show. */
   readonly occupancy: Occupancy | undefined;
+  /** Milliseconds a message takes to reach the server and come back; undefined solo, where there is no server, and online until it has been measured. */
+  readonly latencyMs: number | undefined;
   /**
    * The frame to draw after this frame's commands and `deltaSeconds` of real
    * time. Solo: the commands wait for the next whole tick, the sim steps and

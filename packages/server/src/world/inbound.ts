@@ -8,22 +8,34 @@ import { readCharacter, type Character, type MoveMessage } from '@novaland/sim';
  */
 
 /**
- * The `{ x, y }` of a `player/move` payload, or undefined when the payload is
- * anything else: not an object, missing a field, carrying an extra one (a
- * `slot`, say) or holding a value that is not a finite number.
+ * The `{ x, y, sequence }` of a `player/move` payload, or undefined when the
+ * payload is anything else: not an object, missing a field, carrying an extra
+ * one (a `slot`, say), holding an `x` or `y` that is not a finite number or a
+ * `sequence` that is not a positive safe integer.
  */
 export function readMoveMessage(payload: unknown): MoveMessage | undefined {
   if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) return undefined;
   const fields = payload as Record<string, unknown>;
   try {
     const keys = Object.keys(fields);
-    if (keys.length !== 2 || !Object.hasOwn(fields, 'x') || !Object.hasOwn(fields, 'y')) return undefined;
-    const { x, y } = fields;
+    if (keys.length !== 3 || !Object.hasOwn(fields, 'x') || !Object.hasOwn(fields, 'y') || !Object.hasOwn(fields, 'sequence')) return undefined;
+    const { x, y, sequence } = fields;
     if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return undefined;
-    return { x, y };
+    if (!Number.isSafeInteger(sequence) || (sequence as number) < 1) return undefined;
+    return { x, y, sequence: sequence as number };
   } catch {
     // A decoded message is plain data, but a throwing accessor must still not reach the room.
     return undefined;
+  }
+}
+
+/** True when the options of a join name the wire protocol `protocol`: an object whose `protocol` is that number. Anything else, a join with no options included, was built against another contract. */
+export function speaksProtocol(options: unknown, protocol: number): boolean {
+  if (typeof options !== 'object' || options === null) return false;
+  try {
+    return (options as { protocol?: unknown }).protocol === protocol;
+  } catch {
+    return false;
   }
 }
 

@@ -1,0 +1,168 @@
+{
+  "stops": [
+    {
+      "name": "2-in-front",
+      "description": "south of the clump, against its south face",
+      "player": {
+        "x": -5.250062942504883,
+        "y": -2.600023031234741,
+        "bottomEdge": -2.2000230312347413
+      },
+      "spriteDepth": -35.20036849975586,
+      "overlappingTrees": [
+        {
+          "treeDepth": -48,
+          "relation": "in front of",
+          "expected": "in front of"
+        },
+        {
+          "treeDepth": -48,
+          "relation": "in front of",
+          "expected": "in front of"
+        }
+      ],
+      "pixels": {
+        "visible": 186,
+        "hiddenByATree": 0,
+        "skipped": 0,
+        "wrong": 0
+      }
+    },
+    {
+      "name": "3-beside",
+      "description": "west of the clump, level with its south-west tree",
+      "player": {
+        "x": -6.399977684020996,
+        "y": -3.84999680519104,
+        "bottomEdge": -3.44999680519104
+      },
+      "spriteDepth": -55.19994888305664,
+      "overlappingTrees": [
+        {
+          "treeDepth": -64,
+          "relation": "in front of",
+          "expected": "in front of"
+        },
+        {
+          "treeDepth": -48,
+          "relation": "behind",
+          "expected": "behind"
+        }
+      ],
+      "pixels": {
+        "visible": 148,
+        "hiddenByATree": 3,
+        "skipped": 11,
+        "wrong": 0
+      }
+    },
+    {
+      "name": "4-behind",
+      "description": "north of the clump, against its north face",
+      "player": {
+        "x": -5.233321189880371,
+        "y": -5.3999834060668945,
+        "bottomEdge": -4.999983406066894
+      },
+      "spriteDepth": -79.9997344970703,
+      "overlappingTrees": [
+        {
+          "treeDepth": -64,
+          "relation": "behind",
+          "expected": "behind"
+        },
+        {
+          "treeDepth": -64,
+          "relation": "behind",
+          "expected": "behind"
+        }
+      ],
+      "pixels": {
+        "visible": 75,
+        "hiddenByATree": 98,
+        "skipped": 13,
+        "wrong": 0
+      }
+    }
+  ],
+  "content": {
+    "tree": {
+      "id": 202,
+      "name": "tree",
+      "shape": "box",
+      "color": 3107642,
+      "solid": true,
+      "standingSprite": {
+        "key": "tree",
+        "frameWidth": 24,
+        "frameHeight": 32,
+        "pixelsPerMetre": 16,
+        "variantCount": 3,
+        "groundDefId": 200
+      }
+    },
+    "avatar": "player-ember",
+    "treeTiles": 345,
+    "clump": {
+      "column": 14,
+      "row": 10,
+      "x": -5,
+      "y": -4
+    },
+    "freeStandingSingleTrees": 0
+  },
+  "juttingTree": {
+    "column": 11,
+    "row": 4
+  },
+  "zooms": [
+    {
+      "viewport": {
+        "width": 960,
+        "height": 720
+      },
+      "zoom": 3,
+      "treesChecked": 28,
+      "treesOffTheScreenGrid": 0,
+      "blocksChecked": 21504,
+      "blocksNotFlat": 0,
+      "sheetPixelsCompared": 9255,
+      "sheetPixelsWrong": 0,
+      "sheetColoursSeen": 9
+    },
+    {
+      "viewport": {
+        "width": 640,
+        "height": 480
+      },
+      "zoom": 2,
+      "treesChecked": 15,
+      "treesOffTheScreenGrid": 0,
+      "blocksChecked": 11520,
+      "blocksNotFlat": 0,
+      "sheetPixelsCompared": 5125,
+      "sheetPixelsWrong": 0,
+      "sheetColoursSeen": 9
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "zoom": 6,
+      "treesChecked": 21,
+      "treesOffTheScreenGrid": 0,
+      "blocksChecked": 16128,
+      "blocksNotFlat": 0,
+      "sheetPixelsCompared": 7444,
+      "sheetPixelsWrong": 0,
+      "sheetColoursSeen": 9
+    }
+  ],
+  "errors": [],
+  "withoutTheSheet": {
+    "textureLoaded": false,
+    "images": 0,
+    "crashes": []
+  }
+}

@@ -1,8 +1,8 @@
-import { guestCharacter, WIRE } from '@novaland/sim';
+import { guestCharacter, WIRE, WIRE_PROTOCOL } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { __testing__, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
+import { __testing__, PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
-import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS } from './tuning';
 
 const { isCharacterRefusal, isWorldFullRefusal } = __testing__;
 
@@ -29,16 +29,40 @@ describe('WorldConnection', () => {
     expect(handlers.onUpdate.mock.calls).toEqual([[{ kind: 'delta', fromTick: 1 }], [{ kind: 'full', tick: 9 }]]);
   });
 
-  it('sends a move as exactly { x, y } while online, and nothing before', async () => {
-    const { connection, rooms } = connect(['room']);
-    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+  it('hands over a player/move-applied only while online', async () => {
+    const { handlers, rooms } = connect(['room']);
     await settle();
-    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+    rooms[0]!.receive(WIRE.moveApplied, { sequence: 1, tick: 4 });
+    expect(handlers.onMoveApplied).not.toHaveBeenCalled();
     rooms[0]!.receive(WIRE.welcome, WELCOME);
-    expect(connection.sendMove({ x: 1, y: -1 })).toBe(true);
+    rooms[0]!.receive(WIRE.moveApplied, { sequence: 2, tick: 9 });
+    expect(handlers.onMoveApplied.mock.calls).toEqual([[{ sequence: 2, tick: 9 }]]);
+    rooms[0]!.drop(1006);
+    rooms[0]!.receive(WIRE.moveApplied, { sequence: 3, tick: 12 });
+    expect(handlers.onMoveApplied).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops for good, as incompatible, when the server refuses the join for speaking another wire protocol', async () => {
+    const { connection, statuses, endpoints } = connect(['another-protocol', 'room']);
+    await settle();
+    expect(statuses.at(-1)).toEqual({ kind: 'incompatible', reason: PROTOCOL_MISMATCH_REASON });
+    await vi.advanceTimersByTimeAsync(60000);
+    connection.retryNow();
+    await settle();
+    expect(endpoints).toHaveLength(1);
+    expect(statuses.at(-1)?.kind).toBe('incompatible');
+  });
+
+  it('sends a move as exactly { x, y, sequence } while online, and nothing before', async () => {
+    const { connection, rooms } = connect(['room']);
+    expect(connection.sendMove({ x: 1, y: 0, sequence: 5 })).toBe(false);
+    await settle();
+    expect(connection.sendMove({ x: 1, y: 0, sequence: 5 })).toBe(false);
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    expect(connection.sendMove({ x: 1, y: -1, sequence: 5 })).toBe(true);
     expect(connection.sendResync()).toBe(true);
     expect(rooms[0]!.sent).toEqual([
-      { type: WIRE.move, payload: { x: 1, y: -1 } },
+      { type: WIRE.move, payload: { x: 1, y: -1, sequence: 5 } },
       { type: WIRE.resync, payload: undefined },
     ]);
   });
@@ -82,7 +106,7 @@ describe('WorldConnection', () => {
     first.receive(WIRE.welcome, WELCOME);
     first.drop(1006);
     expect(connection.status).toEqual({ kind: 'disconnected', retryAt: Date.now() + RECONNECT_DELAYS_MS[0]!, attempt: 1 });
-    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+    expect(connection.sendMove({ x: 1, y: 0, sequence: 5 })).toBe(false);
     first.receive(WIRE.delta, { stale: true });
     expect(handlers.onUpdate).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
@@ -104,7 +128,7 @@ describe('WorldConnection', () => {
     kicked.receive(WIRE.welcome, WELCOME);
     kicked.drop(IDLE_KICK_CODE);
     expect(connection.status).toEqual({ kind: 'away' });
-    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+    expect(connection.sendMove({ x: 1, y: 0, sequence: 5 })).toBe(false);
     kicked.receive(WIRE.delta, { stale: true });
     expect(handlers.onUpdate).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(60_000);
@@ -220,10 +244,10 @@ describe('WorldConnection', () => {
   });
 
   it('stops for good on a welcome the world cannot use', async () => {
-    const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'no such level' }));
+    const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'another world' }));
     await settle();
     rooms[0]!.receive(WIRE.welcome, WELCOME);
-    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'no such level' });
+    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'another world' });
     expect(rooms[0]!.left).toBe(true);
     connection.retryNow();
     await vi.advanceTimersByTimeAsync(60_000);
@@ -239,7 +263,127 @@ describe('WorldConnection', () => {
     expect(rooms[0]!.left).toBe(true);
     await vi.advanceTimersByTimeAsync(60_000);
     expect(endpoints).toHaveLength(1);
-    expect(connection.sendMove({ x: 1, y: 0 })).toBe(false);
+    expect(connection.sendMove({ x: 1, y: 0, sequence: 5 })).toBe(false);
+  });
+
+  it('has no latency until seated, pings one interval after the welcome and reports the round trip the server answered', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    expect(room.unansweredPings).toBe(0);
+    room.receive(WIRE.welcome, WELCOME);
+    // Not at once: the page is building the game right after the welcome.
+    expect(room.unansweredPings).toBe(0);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    expect(room.unansweredPings).toBe(1);
+    expect(connection.latencyMs).toBeUndefined();
+    room.answerPing(37);
+    expect(connection.latencyMs).toBe(37);
+  });
+
+  it('measures again every interval, one ping at a time', async () => {
+    const { connection, room } = await seatedAndMeasured(37);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    expect(room.unansweredPings).toBe(1);
+    room.answerPing(52);
+    expect(connection.latencyMs).toBe(52);
+    // An unanswered ping is not joined by a second one, however long it waits.
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(1);
+  });
+
+  it('shows how long an unanswered ping has waited once that is longer than the last round trip', async () => {
+    const { connection, room } = await seatedAndMeasured(40);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    await vi.advanceTimersByTimeAsync(25);
+    expect(connection.latencyMs).toBe(40);
+    await vi.advanceTimersByTimeAsync(2475);
+    expect(connection.latencyMs).toBe(2500);
+    room.answerPing(2500);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(45);
+    expect(connection.latencyMs).toBe(45);
+  });
+
+  it('tries again at the next interval when a ping could not be sent, instead of waiting for an answer that cannot come', async () => {
+    const { connection, room } = await seatedAndMeasured(40);
+    room.sendsPings = false;
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(0);
+    expect(connection.latencyMs).toBe(40);
+    room.sendsPings = true;
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(44);
+    expect(connection.latencyMs).toBe(44);
+  });
+
+  it('keeps measuring as it was when the room welcomes a second time', async () => {
+    const { connection, room } = await seatedAndMeasured(40);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.receive(WIRE.welcome, WELCOME);
+    expect(room.unansweredPings).toBe(1);
+    expect(connection.latencyMs).toBe(40);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    expect(room.unansweredPings).toBe(1);
+  });
+
+  it('forgets the latency when the connection drops and measures the next seat afresh', async () => {
+    const { connection, room, rooms } = await seatedAndMeasured(37);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.drop();
+    expect(connection.latencyMs).toBeUndefined();
+    // The dropped room answers late: that round trip belongs to a seat that is gone.
+    room.answerPing(999);
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    await settle();
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    rooms[1]!.answerPing(21);
+    expect(connection.latencyMs).toBe(21);
+  });
+
+  it('ignores an answer from the room of an earlier seat once the new seat is being measured', async () => {
+    const { connection, room, rooms } = await seatedAndMeasured(37);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    await settle();
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    rooms[1]!.answerPing(21);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(999);
+    expect(connection.latencyMs).toBe(21);
+    expect(rooms[1]!.unansweredPings).toBe(1);
+  });
+
+  it('has no latency and sends no more pings once the server freed the seat of an idle player', async () => {
+    const { connection, room } = await seatedAndMeasured(37);
+    room.drop(IDLE_KICK_CODE);
+    expect(connection.status).toEqual({ kind: 'away' });
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(0);
+  });
+
+  it('ignores a round trip that is not a non-negative finite number, and stops pinging once closed', async () => {
+    const { connection, rooms } = connect(['room']);
+    await settle();
+    const room = rooms[0]!;
+    room.receive(WIRE.welcome, WELCOME);
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(Number.NaN);
+    expect(connection.latencyMs).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+    room.answerPing(-5);
+    expect(connection.latencyMs).toBeUndefined();
+    connection.close();
+    await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS * 3);
+    expect(room.unansweredPings).toBe(0);
+    expect(connection.latencyMs).toBeUndefined();
   });
 
   it('is given the endpoint it was created for', async () => {
@@ -266,9 +410,9 @@ describe('isWorldFullRefusal', () => {
 
 // ---- Helpers ----
 
-const JOIN_OPTIONS = { character: guestCharacter(2) };
+const JOIN_OPTIONS = { protocol: WIRE_PROTOCOL, character: guestCharacter(2) };
 
-const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
+const WELCOME = { slot: 2, map: 'a1b2c3d4', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
   const script = scriptedJoin(outcomes);
@@ -276,6 +420,7 @@ function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHan
   const handlers = {
     onWelcome: vi.fn(onWelcome),
     onUpdate: vi.fn(),
+    onMoveApplied: vi.fn(),
     onStatus: vi.fn((status: ConnectionStatus) => {
       statuses.push(status);
     }),
@@ -283,6 +428,17 @@ function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHan
   const connection = new WorldConnection({ endpoint: 'ws://world.test:5118', joinOptions: JOIN_OPTIONS, handlers, join: script.join });
   connection.connect();
   return { connection, handlers, statuses, rooms: script.rooms, endpoints: script.endpoints, joinOptions: script.joinOptions };
+}
+
+/** A connection that is seated and whose first ping the server answered in `milliseconds`. */
+async function seatedAndMeasured(milliseconds: number) {
+  const connected = connect(['room']);
+  await settle();
+  const room = connected.rooms[0]!;
+  room.receive(WIRE.welcome, WELCOME);
+  await vi.advanceTimersByTimeAsync(LATENCY_INTERVAL_MS);
+  room.answerPing(milliseconds);
+  return { ...connected, room };
 }
 
 /** Lets a join promise resolve and its handlers attach (no timers involved). */

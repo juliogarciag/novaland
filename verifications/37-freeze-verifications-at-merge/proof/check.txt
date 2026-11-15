@@ -1,0 +1,34 @@
+
+> novaland@0.0.0 check <repo>
+> pnpm test && pnpm typecheck && pnpm lint
+
+
+> novaland@0.0.0 test <repo>
+> vitest run
+
+
+ RUN  v5.1.0 <repo>
+
+
+ Test Files  43 passed (43)
+      Tests  311 passed (311)
+   Start at  16:09:08
+   Duration  10.55s (tests 78%, import 16%, transform 5%, worker 1%)
+
+
+> novaland@0.0.0 typecheck <repo>
+> tsc -p tsconfig.json && pnpm -r typecheck
+
+(node:33456) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Scope: 3 of 4 workspace projects
+packages/sim typecheck$ tsc -p tsconfig.json
+packages/sim typecheck: Done
+packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck: Done
+packages/client typecheck: Done
+
+> novaland@0.0.0 lint <repo>
+> eslint .
+

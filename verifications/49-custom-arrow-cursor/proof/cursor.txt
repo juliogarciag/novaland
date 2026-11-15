@@ -1,0 +1,8 @@
+PASS  dev server up, started by this run
+PASS  1x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/arrow.png") 1dppx, url("http://localhost:5950/cursors/arrow@2x.png") 2dppx) 0 0, auto)
+PASS  1x screen: arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block  (32x32)
+PASS  2x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback  (image-set(url("http://localhost:5950/cursors/arrow.png") 1dppx, url("http://localhost:5950/cursors/arrow@2x.png") 2dppx) 0 0, auto)
+PASS  2x screen: arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block  (64x64)
+PASS  no page errors
+
+ALL 6 CHECKS PASSED

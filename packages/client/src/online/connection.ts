@@ -1,6 +1,6 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
 import { JOIN_REFUSAL, WIRE, type JoinOptions, type MoveMessage } from '@novaland/sim';
-import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
  * Where the client stands with the world server. The screens draw it, the
@@ -20,12 +20,20 @@ export type ConnectionStatus =
   /** The server runs a world this client cannot show, or refused the character this client asked to be (`characterRefused`). Nothing is retried. */
   | { readonly kind: 'incompatible'; readonly reason: string; readonly characterRefused?: true };
 
+/** What the incompatible screen says when the page and the server were built against different wire protocols; the screen offers the reload that fetches the server's build. */
+export const PROTOCOL_MISMATCH_REASON = 'this page and the server are different versions of the game';
+
+/** What the incompatible screen says when the server's map is not the one this page was built with: its terrain would be drawn and predicted wrong. The reload fetches the server's build. */
+export const MAP_MISMATCH_REASON = 'this page and the server have different versions of the world';
+
 /** What the online world does with what arrives. Payloads are untrusted: they come off the network as the server sent them. */
 export interface WorldConnectionHandlers {
   /** A welcome arrived. `'seated'` when the client can play on this server; otherwise why it cannot, and the connection stops. */
   onWelcome(payload: unknown): 'seated' | { readonly incompatible: string };
   /** A `world/delta` or `world/state` arrived while seated. */
   onUpdate(payload: unknown): void;
+  /** A `player/move-applied` arrived while seated: the update that follows includes that move. */
+  onMoveApplied(payload: unknown): void;
   onStatus(status: ConnectionStatus): void;
 }
 
@@ -34,6 +42,8 @@ export interface JoinedRoom {
   onMessage(type: string, callback: (payload: unknown) => void): void;
   onLeave(callback: (code: number) => void): void;
   send(type: string, payload?: unknown): void;
+  /** Asks the server to answer at once and calls back with the milliseconds the round trip took. False (and no callback, ever) when the ping could not be sent; a ping that was sent and whose answer is lost never calls back either. */
+  ping(callback: (milliseconds: number) => void): boolean;
   leave(): Promise<number>;
 }
 
@@ -58,6 +68,12 @@ export interface WorldConnectionOptions {
  * a new seat.
  * Waiting is bounded by the client's own clock: a join that does not settle
  * or a room that never welcomes is abandoned, never waited on.
+ *
+ * While seated it also measures the round trip to the server with the
+ * room's own ping, once every `LATENCY_INTERVAL_MS`, for the HUD. The first
+ * ping waits one interval: right after the welcome the page is busy building
+ * the game, and an answer handled late would read as a slow network. That is a
+ * fact about the view, not about the world: nothing of it reaches the sim.
  */
 export class WorldConnection {
   private currentStatus: ConnectionStatus = { kind: 'connecting', attempt: 0 };
@@ -74,6 +90,11 @@ export class WorldConnection {
   private room: JoinedRoom | undefined;
   private retryTimer: ReturnType<typeof setTimeout> | undefined;
   private joinTimer: ReturnType<typeof setTimeout> | undefined;
+  private latencyTimer: ReturnType<typeof setInterval> | undefined;
+  /** The last round trip the server answered, in milliseconds, since the client was last seated. */
+  private answeredLatencyMs: number | undefined;
+  /** When the ping still waiting for its answer was sent (`performance.now()` milliseconds, the clock the room times pings with). One ping waits at a time. */
+  private pingSentAt: number | undefined;
   private closed = false;
 
   constructor(options: WorldConnectionOptions) {
@@ -86,6 +107,19 @@ export class WorldConnection {
   /** Where the client stands. Only the connection moves it. */
   get status(): ConnectionStatus {
     return this.currentStatus;
+  }
+
+  /**
+   * Milliseconds a message takes to reach the server and come back, measured
+   * while seated. Undefined until the first answer and whenever the client is
+   * not seated. A ping that has waited longer than the last answer took
+   * counts for as long as it has waited, so a stalled connection shows a
+   * growing number instead of the last good one.
+   */
+  get latencyMs(): number | undefined {
+    if (this.answeredLatencyMs === undefined) return undefined;
+    const waitedMs = this.pingSentAt === undefined ? 0 : Math.round(performance.now() - this.pingSentAt);
+    return Math.max(this.answeredLatencyMs, waitedMs);
   }
 
   /** Starts joining. Call once. */
@@ -101,10 +135,10 @@ export class WorldConnection {
     void this.tryToJoin();
   }
 
-  /** Sends the player's move intent. False (and nothing sent) unless seated. */
+  /** Sends the player's move intent with the sequence the server will acknowledge it by. False (and nothing sent) unless seated. */
   sendMove(move: MoveMessage): boolean {
     if (this.status.kind !== 'online' || !this.room) return false;
-    this.room.send(WIRE.move, { x: move.x, y: move.y });
+    this.room.send(WIRE.move, { x: move.x, y: move.y, sequence: move.sequence });
     return true;
   }
 
@@ -121,6 +155,7 @@ export class WorldConnection {
     this.generation += 1;
     this.clearRetry();
     this.clearJoinTimer();
+    this.stopMeasuringLatency();
     const room = this.room;
     this.room = undefined;
     void room?.leave().catch(() => undefined);
@@ -146,6 +181,10 @@ export class WorldConnection {
       } else if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);
+      } else if (isProtocolRefusal(error)) {
+        // Asking again would be refused again: only another build of this page can join.
+        this.close();
+        this.setStatus({ kind: 'incompatible', reason: PROTOCOL_MISMATCH_REASON });
       } else {
         this.failedConnections += 1;
         this.scheduleReconnect();
@@ -190,6 +229,9 @@ export class WorldConnection {
     };
     room.onMessage(WIRE.delta, onUpdate);
     room.onMessage(WIRE.state, onUpdate);
+    room.onMessage(WIRE.moveApplied, (payload) => {
+      if (generation === this.generation && this.status.kind === 'online') this.handlers.onMoveApplied(payload);
+    });
   }
 
   /** Gives up on the attempt `generation` (a join that never settled, a room that never welcomed): whatever it yields later is ignored, and the next attempt is scheduled. */
@@ -231,7 +273,39 @@ export class WorldConnection {
 
   private setStatus(status: ConnectionStatus): void {
     this.currentStatus = status;
+    if (status.kind !== 'online') this.stopMeasuringLatency();
+    // A seat that is already being measured stays as it is: a second ping would be timed against the first one's answer.
+    else if (this.latencyTimer === undefined) this.startMeasuringLatency();
     this.handlers.onStatus(status);
+  }
+
+  /** Pings every `LATENCY_INTERVAL_MS` for as long as the client stays seated, the first time one interval from now. */
+  private startMeasuringLatency(): void {
+    this.latencyTimer = setInterval(() => this.sendPing(), LATENCY_INTERVAL_MS);
+  }
+
+  /** Forgets the measurement: the next seat is another connection and starts with no latency to show. */
+  private stopMeasuringLatency(): void {
+    if (this.latencyTimer !== undefined) clearInterval(this.latencyTimer);
+    this.latencyTimer = undefined;
+    this.answeredLatencyMs = undefined;
+    this.pingSentAt = undefined;
+  }
+
+  /** Sends one ping unless one is still waiting: the room times a single ping at a time, so a second one would be timed against the wrong start. */
+  private sendPing(): void {
+    if (!this.room || this.pingSentAt !== undefined) return;
+    const generation = this.generation;
+    const latencyTimerAtSend = this.latencyTimer;
+    this.pingSentAt = performance.now();
+    const sent = this.room.ping((milliseconds) => {
+      // An answer to a ping of an earlier seat, or one that arrives after the measuring stopped, measures nothing that is shown.
+      if (generation !== this.generation || latencyTimerAtSend !== this.latencyTimer) return;
+      this.pingSentAt = undefined;
+      if (Number.isFinite(milliseconds) && milliseconds >= 0) this.answeredLatencyMs = milliseconds;
+    });
+    // Nothing went out (the socket is closing), so nothing is waiting: the next interval tries again.
+    if (!sent) this.pingSentAt = undefined;
   }
 }
 
@@ -252,6 +326,12 @@ export async function joinWorldRoom(endpoint: string, joinOptions: JoinOptions):
       room.onLeave(callback);
     },
     send: (type, payload) => room.send(type, payload),
+    ping: (callback) => {
+      // The SDK drops a ping on a socket that is not open without saying so.
+      if (!room.connection?.isOpen) return false;
+      room.ping(callback);
+      return true;
+    },
     leave: () => room.leave(true),
   };
 }
@@ -278,9 +358,16 @@ function isCharacterRefusal(error: unknown): boolean {
   return code === ErrorCode.APPLICATION_ERROR && message === JOIN_REFUSAL.invalidCharacter;
 }
 
+/** True when the server refused the join because this page was built against another wire protocol (`JOIN_REFUSAL.protocolMismatch`). */
+function isProtocolRefusal(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const { message } = error as { message?: unknown };
+  return typeof message === 'string' && message.includes(JOIN_REFUSAL.protocolMismatch);
+}
+
 /** The slot of a welcome the handlers accepted; they checked it is a non-negative integer. */
 function readSlot(payload: unknown): number {
   return (payload as { slot: number }).slot;
 }
 
-export const __testing__ = { isCharacterRefusal, isWorldFullRefusal };
+export const __testing__ = { isCharacterRefusal, isProtocolRefusal, isWorldFullRefusal };

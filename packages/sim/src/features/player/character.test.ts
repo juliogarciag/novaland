@@ -138,7 +138,8 @@ describe('player/join with a character', () => {
   it('ignores a join whose character is not legal: nobody is seated and nothing throws', async () => {
     const sim = await createSimInternal({ seed: 1 });
     const malformed: unknown[] = [
-      { type: 'player/join', slot: 0 },
+      // No character at all: the join every client sent before characters existed.
+      { slot: 0, type: 'player/join' },
       { type: 'player/join', slot: 0, character: null },
       { type: 'player/join', slot: 0, character: 'Ada' },
       join(0, { name: 'a'.repeat(MAX_NAME_CHARACTERS + 1), look: guestCharacter(0).look }),
@@ -197,7 +198,7 @@ describe('player/join with a character', () => {
 describe('a character on a replica', () => {
   it('arrives with the join, in a full state and in a delta, as plain numbers', async () => {
     const sim = await createSimInternal({ seed: 2 });
-    const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+    const replica = createReplica({ map: sim.map, capacity: sim.capacity });
     const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2 } };
     sim.step([join(0, ada)]);
     const first = worldState(sim);
@@ -229,11 +230,11 @@ describe('a character on a replica', () => {
       { length: 3, codePoint00: 0x20, codePoint01: 0x20, codePoint02: 0x20 },
     ];
     for (const fields of hostileNames) {
-      const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+      const replica = createReplica({ map: sim.map, capacity: sim.capacity });
       expect(applyWorldState(replica, tampered(honest, eid, 'PlayerName', fields))).toBe('applied');
       expect(getCharacter(replica, eid)?.name).toBe('?');
     }
-    const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+    const replica = createReplica({ map: sim.map, capacity: sim.capacity });
     expect(applyWorldState(replica, tampered(honest, eid, 'PlayerLook', { skin: 99, hair: 4_000_000_000, clothes: characterPalettes.clothes.length }))).toBe('applied');
     expect(getCharacter(replica, eid)).toEqual({ name: 'Ada', look: { skin: 0, hair: 0, clothes: 0 } });
     sim.destroy();

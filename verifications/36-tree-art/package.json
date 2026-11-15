@@ -1,0 +1,13 @@
+{
+  "name": "verification-36-tree-art",
+  "private": true,
+  "type": "module",
+  "description": "Verification scripts for ticket #36. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0",
+    "pngjs": "^7.0.0"
+  }
+}

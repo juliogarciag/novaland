@@ -90,14 +90,18 @@ export interface BoxBodyOptions {
   readonly halfHeight: number;
 }
 
-/** An immovable body: terrain and other obstacles. */
-export function attachStaticBox(sim: Sim, eid: number, { x, y, halfWidth, halfHeight }: BoxBodyOptions): RigidBody {
+/**
+ * One immovable body made of these boxes, belonging to no entity: scenery
+ * that never changes, such as a chunk of terrain. It lives in the physics
+ * world only, so it costs no entity id and is in no world state; whoever
+ * calls this must be able to build the same boxes again from content.
+ */
+export function createStaticBoxes(sim: Sim, boxes: readonly BoxBodyOptions[]): void {
   const rapier = loadedRapier();
-  const bodyDesc = rapier.RigidBodyDesc.fixed().setTranslation(x, y);
-  const rigidBody = sim.physics.createRigidBody(bodyDesc);
-  sim.physics.createCollider(rapier.ColliderDesc.cuboid(halfWidth, halfHeight).setFriction(0), rigidBody);
-  register(sim, eid, rigidBody);
-  return rigidBody;
+  const rigidBody = sim.physics.createRigidBody(rapier.RigidBodyDesc.fixed());
+  for (const { x, y, halfWidth, halfHeight } of boxes) {
+    sim.physics.createCollider(rapier.ColliderDesc.cuboid(halfWidth, halfHeight).setTranslation(x, y).setFriction(0), rigidBody);
+  }
 }
 
 /** Removes the entity's rigid body (and its colliders) from the physics world, if it has one. */
@@ -129,3 +133,18 @@ export function syncBodiesToPositions(sim: Sim): void {
     position.y[eid] = translation.y;
   }
 }
+
+/** Every box of every immovable body in the physics world, in creation order: what the sim really collides with. */
+function staticBoxes(sim: Sim): BoxBodyOptions[] {
+  const boxes: BoxBodyOptions[] = [];
+  sim.physics.colliders.forEach((collider) => {
+    if (!collider.parent()?.isFixed()) return;
+    const { x, y } = collider.translation();
+    const halfExtents = collider.halfExtents();
+    if (!halfExtents) return;
+    boxes.push({ x, y, halfWidth: halfExtents.x, halfHeight: halfExtents.y });
+  });
+  return boxes;
+}
+
+export const __testing__ = { staticBoxes };

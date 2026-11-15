@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { readTileGrid, tileCentre } from '../../content/levels/grid';
+import { readMapTiles } from '../../content/world/tiles';
 import { getDef } from '../../content/defs';
-import type { LevelData } from '../../content/levels/types';
+import type { WorldMap } from '../../content/world/types';
 import type { Command } from '../../core/commands';
 import { __testing__ as createTesting } from '../../core/create';
 import { getBody } from '../../core/physics';
@@ -15,7 +15,7 @@ import { guestCharacter } from './character';
 
 describe('players pass through each other (headless)', () => {
   it('two players walking at each other cross and each keeps walking at full speed', async () => {
-    const sim = await createSimInternal({ seed: 1, level: hall });
+    const sim = await createSimInternal({ seed: 1, map: hall });
     sim.step([join(0), join(1)]);
     const { west, east } = westAndEast(sim);
     const ticks = 24; // two metres each: well past the other, well short of the hall's ends
@@ -33,12 +33,11 @@ describe('players pass through each other (headless)', () => {
   });
 
   it('a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond', async () => {
-    const sim = await createSimInternal({ seed: 1, level: hall });
-    const grid = readTileGrid(hall);
+    const sim = await createSimInternal({ seed: 1, map: hall });
     sim.step([join(0), join(1)]);
     const { west, east } = westAndEast(sim);
     // The west player walks east, through the east player, to the hall's east wall.
-    const wall = tileCentre(grid, { column: HALL_LAST_FREE_COLUMN + 1, row: HALL_ROW }).x - grid.tileSize / 2;
+    const wall = (HALL_LAST_FREE_COLUMN + 1) * readMapTiles(hall).tileSize;
     sim.step([move(1, 0, west.slot)]);
     for (let tick = 0; tick < 240; tick += 1) sim.step();
     const stopped = playerPosition(sim, west.slot);
@@ -81,10 +80,8 @@ const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefI
 /** A one-tile-high hall, nine tiles long, with the spawn in the middle: the second join lands on either side of it. */
 const HALL_ROW = 2;
 const HALL_LAST_FREE_COLUMN = 10;
-const hall: LevelData = {
-  name: 'hall',
-  legend,
-  rows: ['TTTTTTTTTTTTT', 'TTTTTTTTTTTTT', 'TT.........TT', 'TTTTTTTTTTTTT', 'TTTTTTTTTTTTT'],
+const hall: WorldMap = {
+  areas: [{ name: 'hall', origin: { column: 0, row: 0 }, legend, rows: ['TTTTTTTTTTTTT', 'TTTTTTTTTTTTT', 'TT.........TT', 'TTTTTTTTTTTTT', 'TTTTTTTTTTTTT'] }],
   spawn: { column: 6, row: HALL_ROW },
 };
 
@@ -102,7 +99,7 @@ function playerPosition(sim: Sim, slot: number): { x: number; y: number } {
 function westAndEast(sim: Sim) {
   const players = [0, 1].map((slot) => ({ slot, ...playerPosition(sim, slot) })).sort((a, b) => a.x - b.x);
   const [west, east] = players as [(typeof players)[number], (typeof players)[number]];
-  expect(east.x - west.x).toBeCloseTo(readTileGrid(hall).tileSize, 6);
+  expect(east.x - west.x).toBeCloseTo(readMapTiles(hall).tileSize, 6);
   expect(west.y).toBe(east.y);
   return { west, east };
 }

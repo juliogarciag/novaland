@@ -18,14 +18,18 @@ import type { PlayableWorld } from './worlds/PlayableWorld';
  * first visit. With a world server to reach
  * (`VITE_SERVER_URL`, or the page's own origin in a production build, which
  * the world server serves itself) the world is the shared one on that server,
- * joined before the game exists (the level comes with the welcome); otherwise
+ * joined before the game exists (the seat comes with the welcome); otherwise
  * this client runs its own sim, as it always did. The Phaser side is the same
  * in both modes.
  */
 async function boot(): Promise<void> {
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
+  // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
+  if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
   const character = await characterForThisVisit();
-  const { world, online } = serverUrl ? await joinSharedWorld(serverUrl, character) : { world: await createLocalWorld(character), online: undefined };
+  const { world, online } = serverUrl
+    ? await joinSharedWorld(serverUrl, character)
+    : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
@@ -53,7 +57,8 @@ async function joinSharedWorld(serverUrl: string, character: Character): Promise
     onReload: () => window.location.reload(),
     onNewCharacter: openCreator,
   });
-  const joining = OnlineWorld.join({ endpoint: serverUrl, character, onStatus: (status) => screens.show(status) });
+  // VITE_PREDICTION=off draws the local player from server states like everyone else, to compare the two (ADR 0012).
+  const joining = OnlineWorld.join({ endpoint: serverUrl, character, predictsLocalPlayer: import.meta.env.VITE_PREDICTION !== 'off', onStatus: (status) => screens.show(status) });
   const world = await joining.seated;
   // A hidden tab pauses the game loop, so the keyboard's own stop never goes out: send it here, or the server keeps an abandoned tab walking and seated.
   window.addEventListener('blur', () => world.stopWalking());
@@ -65,8 +70,11 @@ async function joinSharedWorld(serverUrl: string, character: Character): Promise
     online: {
       status: () => world.connection.status,
       retryNow: () => world.connection.retryNow(),
+      latencyMs: () => world.latencyMs,
       malformedUpdates: () => world.malformedUpdates,
       interpolationBufferTicks: INTERPOLATION_BUFFER_TICKS,
+      prediction: () => world.predictionReport,
+      localPlayerDrawnAt: () => world.localPlayerDrawnAt,
     },
   };
 }

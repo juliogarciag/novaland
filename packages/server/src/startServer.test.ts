@@ -1,5 +1,5 @@
 import { Client } from '@colyseus/sdk';
-import { guestCharacter, WIRE, type WelcomeMessage } from '@novaland/sim';
+import { guestCharacter, WIRE, WIRE_PROTOCOL, type WelcomeMessage } from '@novaland/sim';
 import { readdirSync } from 'node:fs';
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import http from 'node:http';
@@ -243,7 +243,7 @@ describe('one process: the client files, /health and the request guard in front 
   });
 
   it('seats a real client through all of it: the reservation, the upgrade and the welcome', async () => {
-    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID, { character: guestCharacter(0) });
+    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID, { protocol: WIRE_PROTOCOL, character: guestCharacter(0) });
     try {
       const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
       expect(welcome.slot).toBe(0);
@@ -302,7 +302,7 @@ describe('one process with a short idle timeout', () => {
   });
 
   it('never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room', async () => {
-    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID, { character: guestCharacter(0) });
+    const room = await new Client(baseUrl.replace('http', 'ws')).joinById(WORLD_ROOM_ID, { protocol: WIRE_PROTOCOL, character: guestCharacter(0) });
     let left = false;
     room.onLeave(() => (left = true));
     try {

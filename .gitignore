@@ -9,3 +9,6 @@ dist/
 
 # scratch files written by verifications/*/02-boundaries.mjs
 **/__violation__.ts
+
+# proof written when the template is run in place; a ticket commits the proof of its own copy
+/verifications/_template/proof/

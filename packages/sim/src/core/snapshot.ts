@@ -1,4 +1,5 @@
 import { getAllEntities, getEntityComponents } from 'bitecs';
+import { readMapTiles } from '../content/world/tiles';
 import type { EntityWorld } from './entityWorld';
 import type { Sim } from './sim';
 
@@ -6,6 +7,10 @@ import type { Sim } from './sim';
  * A snapshot is the complete, JSON-safe state of a sim: every entity with
  * every component field, plus the physics world and the rng. Two sims with
  * equal snapshots will evolve identically given the same commands.
+ *
+ * Terrain is in it twice over, and never as entities: `map` names the
+ * terrain the sim was built from, and `physics` holds the colliders that
+ * were built from it.
  *
  * Entities, components and fields are sorted so that the hash does not depend
  * on the order things were attached in.
@@ -16,10 +21,10 @@ export interface EntitySnapshot {
 }
 
 export interface SimSnapshot {
-  readonly version: 1;
+  readonly version: 2;
   readonly seed: number;
-  /** Name of the level the sim was built from. */
-  readonly level: string;
+  /** Checksum of the map the sim was built from (`MapTiles.checksum`): which terrain this state stands on. */
+  readonly map: string;
   readonly capacity: number;
   readonly tick: number;
   readonly rng: number;
@@ -30,9 +35,9 @@ export interface SimSnapshot {
 
 export function takeSnapshot(sim: Sim): SimSnapshot {
   return {
-    version: 1,
+    version: 2,
     seed: sim.seed,
-    level: sim.level.name,
+    map: readMapTiles(sim.map).checksum,
     capacity: sim.capacity,
     tick: sim.tick,
     rng: sim.rng.state(),
@@ -48,23 +53,26 @@ export function takeSnapshot(sim: Sim): SimSnapshot {
  */
 export function snapshotEntities(entityWorld: EntityWorld): EntitySnapshot[] {
   const ids = [...getAllEntities(entityWorld.world)].sort((a, b) => a - b);
-  return ids.map((id) => {
-    const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
-    for (const store of getEntityComponents(entityWorld.world, id)) {
-      const name = entityWorld.componentName(store);
-      if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
+  return ids.map((id) => snapshotEntity(entityWorld, id));
+}
+
+/** One live entity with every component field, components and fields sorted by name. */
+export function snapshotEntity(entityWorld: EntityWorld, id: number): EntitySnapshot {
+  const named: Array<[string, Record<string, ArrayLike<number>>]> = [];
+  for (const store of getEntityComponents(entityWorld.world, id)) {
+    const name = entityWorld.componentName(store);
+    if (name) named.push([name, store as Record<string, ArrayLike<number>>]);
+  }
+  named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  const components: Record<string, Record<string, number>> = {};
+  for (const [name, store] of named) {
+    const fields: Record<string, number> = {};
+    for (const field of Object.keys(store).sort()) {
+      fields[field] = store[field]![id] as number;
     }
-    named.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    const components: Record<string, Record<string, number>> = {};
-    for (const [name, store] of named) {
-      const fields: Record<string, number> = {};
-      for (const field of Object.keys(store).sort()) {
-        fields[field] = store[field]![id] as number;
-      }
-      components[name] = fields;
-    }
-    return { id, components };
-  });
+    components[name] = fields;
+  }
+  return { id, components };
 }
 
 /** Stable 32-bit FNV-1a hash of a snapshot, as 8 hex chars. Handy for desync checks and tests. */

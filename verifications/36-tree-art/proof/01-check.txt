@@ -1,0 +1,15 @@
+PASS  pnpm install exits 0  (exit 0)
+PASS  pnpm test exits 0  (exit 0)
+PASS  pnpm typecheck exits 0  (exit 0)
+PASS  pnpm lint exits 0  (exit 0)
+PASS  all tests passed, none skipped  (324/324)
+PASS  client: standing tile placement tests passed  (5 tests)
+PASS  client: variant picking tests passed  (3 tests)
+PASS  sim: a standing sprite stands on a flat tile def
+PASS  sim: sprite keys are unique
+PASS  client: the generator paints what the tree def declares
+PASS  sim: a tree is still one solid tile
+PASS  determinism test still passes
+PASS  the headless run ends on the same state hash as before the ticket (50b21d74)  (hash 50b21d74)
+
+ALL 13 CHECKS PASSED

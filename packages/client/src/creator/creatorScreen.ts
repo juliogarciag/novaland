@@ -60,7 +60,7 @@ export function chooseCharacter(parent: HTMLElement, { initial, previewSheet }: 
   nameInput.name = 'name';
   nameInput.type = 'text';
   nameInput.value = initial.name;
-  nameInput.autocomplete = 'nickname';
+  nameInput.setAttribute('autocomplete', 'nickname');
   nameInput.spellcheck = false;
   nameInput.placeholder = `Up to ${MAX_NAME_CHARACTERS} characters`;
   const nameField = document.createElement('label');

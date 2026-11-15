@@ -12,7 +12,7 @@ import { snapshotEntities } from './snapshot';
  * rng, because a replica never steps (ADR 0004). It is plain JSON.
  *
  * Deltas carry only what changed between two world states, component by
- * component, so static things (terrain) travel once and five walking players
+ * component, so an entity that stands still travels once and five walking players
  * cost a few hundred bytes per update.
  */
 const tickSchema = z.int().nonnegative();

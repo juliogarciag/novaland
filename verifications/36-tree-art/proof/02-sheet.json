@@ -1,0 +1,55 @@
+{
+  "def": {
+    "key": "tree",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "pixelsPerMetre": 16,
+    "variantCount": 3
+  },
+  "committed": {
+    "width": 72,
+    "height": 32,
+    "bytes": 709
+  },
+  "variants": [
+    {
+      "leafPixels": 375,
+      "leafPixelsNorthOfTheTile": 275,
+      "leafPixelsWestOfTheTile": 32,
+      "leafPixelsEastOfTheTile": 28,
+      "woodPixels": 50,
+      "woodPixelsOutsideTheTile": 0,
+      "woodPixelsInTheLowestRows": 32,
+      "leafTones": 5,
+      "partlyTransparentPixels": 38,
+      "partlyTransparentPixelsAboveTheFoot": 0,
+      "pixelsOnTheFrameEdgeThatAreNotOutline": 0
+    },
+    {
+      "leafPixels": 378,
+      "leafPixelsNorthOfTheTile": 270,
+      "leafPixelsWestOfTheTile": 25,
+      "leafPixelsEastOfTheTile": 27,
+      "woodPixels": 50,
+      "woodPixelsOutsideTheTile": 0,
+      "woodPixelsInTheLowestRows": 32,
+      "leafTones": 5,
+      "partlyTransparentPixels": 38,
+      "partlyTransparentPixelsAboveTheFoot": 0,
+      "pixelsOnTheFrameEdgeThatAreNotOutline": 0
+    },
+    {
+      "leafPixels": 393,
+      "leafPixelsNorthOfTheTile": 282,
+      "leafPixelsWestOfTheTile": 37,
+      "leafPixelsEastOfTheTile": 40,
+      "woodPixels": 50,
+      "woodPixelsOutsideTheTile": 0,
+      "woodPixelsInTheLowestRows": 32,
+      "leafTones": 5,
+      "partlyTransparentPixels": 38,
+      "partlyTransparentPixelsAboveTheFoot": 0,
+      "pixelsOnTheFrameEdgeThatAreNotOutline": 0
+    }
+  ]
+}

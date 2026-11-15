@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { starterLevel } from '../content/levels/starter';
+import { worldMap } from '../content/world';
+import { readMapTiles } from '../content/world/tiles';
 import { DEFAULT_CAPACITY, FIXED_DT, MAX_CAPACITY } from '../content/tuning';
 import { isPlayerDefId } from '../features/player/defs';
 import { getCharacter } from '../features/player/queries';
@@ -11,14 +12,14 @@ import { applyWorldState, type ReplicaHandle } from './replica';
 import type { SimHandle } from './sim';
 import { DefRef } from './transform';
 import { getRenderables } from './view';
-import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE } from './wire';
+import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL } from './wire';
 import { diffWorldState, worldState, type WorldState, type WorldStateUpdate } from './worldState';
 import { guestCharacter } from '../features/player/character';
 
 describe('a replica fed full world states every tick', () => {
   it('draws exactly what the sim draws, tick after tick, through JSON', async () => {
     const sim = await createSim({ seed: 11 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     for (let tick = 0; tick < TICKS; tick += 1) {
       sim.step(script(tick));
       expect(applyWorldState(replica, overTheWire(worldState(sim)))).toBe('applied');
@@ -33,7 +34,7 @@ describe('a replica fed full world states every tick', () => {
 describe('a replica fed deltas at a send rate', () => {
   it.each([1, 3])('matches the sim at every send with a delta every %i tick(s), through joins, leaves and a recycled entity id', async (sendEvery) => {
     const sim = await createSim({ seed: 11 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     const server = new FakeServer(sim);
     expect(applyWorldState(replica, overTheWire(server.fullState()))).toBe('applied');
     const seen = { joins: 0, leaves: 0 };
@@ -61,28 +62,27 @@ describe('a replica fed deltas at a send rate', () => {
     sim.destroy();
   });
 
-  it('never sends the terrain again: deltas carry only the players that moved', async () => {
+  it('never sends terrain at all: a full state holds the players and nothing else, deltas only the players that moved', async () => {
     const sim = await createSim({ seed: 11 });
     const server = new FakeServer(sim);
-    const full = server.fullState();
+    expect(server.fullState().entities).toEqual([]);
     for (let tick = 0; tick < 30; tick += 1) sim.step(script(tick));
-    const delta = server.delta();
-    const terrainIds = new Set(full.entities.filter((entity) => entity.components['TerrainCollider']).map((entity) => entity.id));
-    expect(terrainIds.size).toBeGreaterThan(10);
-    expect(delta.changed.some((change) => terrainIds.has(change.id))).toBe(false);
+    server.delta();
+    const full = worldState(sim);
+    expect(full.entities.length).toBe(3);
+    expect(full.entities.every((entity) => entity.components['Player'] !== undefined)).toBe(true);
     for (let tick = 30; tick < 40; tick += 1) sim.step(script(tick));
     const walking = server.delta();
     // Three players are walking and nothing else changes between ticks 30 and 40: one Position each.
     expect(walking.changed.length).toBe(3);
     for (const change of walking.changed) expect(Object.keys(change.components)).toEqual(['Position']);
     expect(walking.removed).toEqual([]);
-    expect(JSON.stringify(walking).length).toBeLessThan(JSON.stringify(full).length / 20);
     sim.destroy();
   });
 
   it('removes an entity that left and reports a delta it cannot continue from', async () => {
     const sim = await createSim({ seed: 11 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     const server = new FakeServer(sim);
     applyWorldState(replica, server.fullState());
     sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }, { type: 'player/join', slot: 1, character: guestCharacter(1) }]);
@@ -110,7 +110,7 @@ describe('a replica fed deltas at a send rate', () => {
 
   it('shows each player as the character it joined with and at the spread spawn the sim gave it, for a full room of five', async () => {
     const sim = await createSim({ seed: 21 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     const server = new FakeServer(sim);
     applyWorldState(replica, overTheWire(server.fullState()));
     const seats = [0, 1, 2, 3, 4];
@@ -142,7 +142,7 @@ describe('a replica fed deltas at a send rate', () => {
     for (let tick = 0; tick < 200; tick += 1) sim.step(script(tick));
     const newcomer = findPlayerEntity(sim, 3) as number;
     expect(newcomer).toBeLessThan(findPlayerEntity(sim, 2) as number);
-    const lateJoiner = createReplica({ level: sim.level });
+    const lateJoiner = createReplica({ map: sim.map });
     expect(applyWorldState(lateJoiner, overTheWire(worldState(sim)))).toBe('applied');
     expectSameView(lateJoiner, sim);
     const eids = getRenderables(lateJoiner).map((renderable) => renderable.eid);
@@ -153,7 +153,7 @@ describe('a replica fed deltas at a send rate', () => {
 
   it('is replaced whole by a full state, even one from an earlier tick (the server restarted)', async () => {
     const sim = await createSim({ seed: 11 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     for (let tick = 0; tick < 50; tick += 1) sim.step(script(tick));
     applyWorldState(replica, worldState(sim));
     expect(replica.tick).toBe(50);
@@ -169,9 +169,10 @@ describe('a replica fed deltas at a send rate', () => {
 });
 
 describe('createReplica', () => {
-  it('is a SimHandle with the level, capacity and dt of a sim but no physics or rng', () => {
-    const replica = createReplica({ level: starterLevel });
-    expect(replica.level).toBe(starterLevel);
+  it('is a SimHandle with the map, capacity and dt of a sim but no physics or rng', () => {
+    const replica = createReplica({ map: worldMap });
+    expect(replica.map).toBe(worldMap);
+    expect(createReplica().map).toBe(worldMap);
     expect(replica.capacity).toBe(DEFAULT_CAPACITY);
     expect(replica.dt).toBe(FIXED_DT);
     expect(replica.seed).toBe(0);
@@ -180,21 +181,21 @@ describe('createReplica', () => {
     expect(replica.tick).toBe(0);
     expect(replica.entityCount).toBe(0);
     expect(getRenderables(replica)).toEqual([]);
-    expect(replica.snapshot()).toMatchObject({ version: 1, level: starterLevel.name, tick: 0, rng: 0, physics: '', entities: [] });
-    expect(createReplica({ level: starterLevel, capacity: 8 }).capacity).toBe(8);
+    expect(replica.snapshot()).toMatchObject({ version: 2, map: readMapTiles(worldMap).checksum, tick: 0, rng: 0, physics: '', entities: [] });
+    expect(createReplica({ map: worldMap, capacity: 8 }).capacity).toBe(8);
     replica.destroy();
   });
 
   it('refuses a capacity that is not an integer in 1..MAX_CAPACITY, before allocating anything', () => {
     for (const capacity of [0, -5, 1.5, MAX_CAPACITY + 1, 1e9, 2 ** 53, Number.NaN, Number.POSITIVE_INFINITY, '100' as unknown as number]) {
-      expect(() => createReplica({ level: starterLevel, capacity })).toThrow(RangeError);
+      expect(() => createReplica({ map: worldMap, capacity })).toThrow(RangeError);
     }
-    expect(createReplica({ level: starterLevel, capacity: 1 }).capacity).toBe(1);
-    expect(createReplica({ level: starterLevel, capacity: MAX_CAPACITY }).capacity).toBe(MAX_CAPACITY);
+    expect(createReplica({ map: worldMap, capacity: 1 }).capacity).toBe(1);
+    expect(createReplica({ map: worldMap, capacity: MAX_CAPACITY }).capacity).toBe(MAX_CAPACITY);
   });
 
   it('refuses to step: a replica only shows what the server sent', () => {
-    const replica = createReplica({ level: starterLevel });
+    const replica = createReplica({ map: worldMap });
     expect(() => replica.step()).toThrow(/cannot step/);
     expect(() => replica.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }])).toThrow(/cannot step/);
   });
@@ -210,7 +211,7 @@ describe('createReplica', () => {
 
   it('needs a full state before it takes deltas', async () => {
     const sim = await createSim({ seed: 1 });
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const before = worldState(sim);
     sim.step();
@@ -229,7 +230,7 @@ describe('createReplica', () => {
   it('a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
-    const replica = createReplica({ level: sim.level });
+    const replica = createReplica({ map: sim.map });
     applyWorldState(replica, worldState(sim));
     const player = findPlayerEntity(sim, 0) as number;
     sim.store(DefRef).id[player] = 0;
@@ -241,9 +242,11 @@ describe('createReplica', () => {
 });
 
 describe('the wire contract the server and the client are built against', () => {
-  it('pins the message names, the refusal reasons and the default send rate ADR 0004 lists', () => {
-    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move' });
-    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full', invalidCharacter: 'invalid-character' });
+  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013 and 0014 list', () => {
+    // A change to any of these is a change to the contract: count WIRE_PROTOCOL up with it.
+    expect(WIRE_PROTOCOL).toBe(4);
+    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move', moveApplied: 'player/move-applied' });
+    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full', protocolMismatch: 'protocol-mismatch', invalidCharacter: 'invalid-character' });
     expect(DEFAULT_SEND_RATE).toBe(20);
   });
 });
@@ -485,7 +488,7 @@ function expectSameView(replica: SimHandle, sim: SimHandle): void {
 async function replicaInSync() {
   const sim = await createSimInternal({ seed: 5 });
   for (let tick = 0; tick < 40; tick += 1) sim.step(script(tick));
-  const replica = createReplica({ level: sim.level });
+  const replica = createReplica({ map: sim.map });
   applyWorldState(replica, worldState(sim));
   expectSameView(replica, sim);
   return { replica, sim };

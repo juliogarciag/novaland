@@ -77,9 +77,8 @@ describe('player facing (headless)', () => {
   it('has no heading for entities that do not move and face, or do not exist', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join()]);
-    const terrainCollider = sim.snapshot().entities.find((entity) => entity.components['TerrainCollider'] !== undefined);
-    expect(terrainCollider).toBeDefined();
-    expect(getHeading(sim, terrainCollider!.id)).toBeUndefined();
+    const entityWithNoComponents = sim.createEntity();
+    expect(getHeading(sim, entityWithNoComponents)).toBeUndefined();
     expect(getHeading(sim, 0)).toBeUndefined();
     expect(getHeading(sim, -1)).toBeUndefined();
     expect(getHeading(sim, 1.5)).toBeUndefined();

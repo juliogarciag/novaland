@@ -1,6 +1,7 @@
 import { getDef, type Character, type SimHandle, type SpriteDef } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { lookKey } from './characterSheet';
+import { depthOfBottomEdge } from './depth';
 import { createNameLabel, fitNameLabel, NAME_GAP_PIXELS, type LabelScale } from './nameLabel';
 import { IDLE_DOWN, poseFromHeading } from './pose';
 import { lookTextureKey, walkAnimationKey } from './sprites';
@@ -65,7 +66,7 @@ export class EntityRenderer {
       const x = toPixels(renderable.x);
       const y = toPixels(renderable.y);
       view.gameObject.setPosition(x, y);
-      const depth = toPixels(renderable.y + renderable.halfHeight);
+      const depth = depthOfBottomEdge(renderable.y + renderable.halfHeight);
       if (view.gameObject.depth !== depth) view.gameObject.setDepth(depth); // setDepth queues a display-list sort even when unchanged
       if (view.sheetSprite) this.animate(view.sheetSprite, frame, renderable.eid);
       if (view.nameLabel && character) {

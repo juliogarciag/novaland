@@ -1,4 +1,4 @@
-import { createSim, guestCharacter, starterLevel, type Character, type Command, type SimHandle } from '@novaland/sim';
+import { createSim, generatedWorldMap, guestCharacter, type Character, type Command, type SimHandle, type WorldMap } from '@novaland/sim';
 import { takeWholeTicks } from '../loop/takeWholeTicks';
 import { readViewFrame, type ViewFrame } from '../render/viewFrame';
 import { firstEmptySeat, LOCAL_SLOT } from '../seats';
@@ -17,6 +17,7 @@ const MAX_FRAME_SECONDS = 0.25;
 export class LocalWorld implements PlayableWorld {
   readonly localSlot = LOCAL_SLOT;
   readonly occupancy = undefined;
+  readonly latencyMs = undefined;
   private leftover = 0;
   private pendingCommands: Command[];
 
@@ -53,7 +54,20 @@ export class LocalWorld implements PlayableWorld {
   }
 }
 
-/** The solo world: a fresh sim of the starter level with a fixed seed, played as `character`. */
-export async function createLocalWorld(character: Character): Promise<LocalWorld> {
-  return new LocalWorld(await createSim({ seed: 1, level: starterLevel }), character);
+/**
+ * The solo world: a fresh sim of the world with a fixed seed, played as
+ * `character`. `generatedMap`
+ * (`VITE_GENERATED_MAP`, dev builds only) swaps the world for a generated one
+ * of that size, such as "400x300", to measure how the client copes with a big map.
+ */
+export async function createLocalWorld({ character, generatedMap }: { character: Character; generatedMap?: string | undefined }): Promise<LocalWorld> {
+  const map = generatedMap === undefined ? undefined : generatedMapOfSize(generatedMap);
+  return new LocalWorld(await createSim(map ? { seed: 1, map } : { seed: 1 }), character);
+}
+
+/** The generated map a size such as "400x300" asks for. Throws for anything else: a measurement on the wrong map is worse than none. */
+function generatedMapOfSize(size: string): WorldMap {
+  const match = /^(\d{1,5})x(\d{1,5})$/.exec(size);
+  if (!match) throw new Error(`VITE_GENERATED_MAP must look like 400x300, got "${size}"`);
+  return generatedWorldMap({ columns: Number(match[1]), rows: Number(match[2]) });
 }

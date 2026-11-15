@@ -1,0 +1,8 @@
+PASS  pnpm build exits 0
+PASS  the built server is up, started by this run
+PASS  the production page is seated and fetches the physics chunk by itself, after its own bundle, though index.html does not name it  ([{"url":"/assets/index-J1UPr0r8.js","status":200},{"url":"/assets/rapier-C1NO8tr2.js","status":200}])
+PASS  the page's security policy still allows the WASM to run and nothing else new  (default-src 'self';script-src 'self' 'wasm-unsafe-eval';style-src 'self' 'unsafe-inline';img-src 'self' data: blob:;connect-src 'self';worker-src 'self' blob:;object-src 'none';base-uri 'self';frame-ancestors 'none';form-action 'self')
+PASS  holding D changes what the page draws
+PASS  prediction started and kept running: nothing warned that it could not start or that it stopped, no console errors, no page errors
+
+ALL 6 CHECKS PASSED

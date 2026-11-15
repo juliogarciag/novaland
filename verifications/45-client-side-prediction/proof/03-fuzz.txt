@@ -1,0 +1,160 @@
+PASS  room server up, started by this run
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+@colyseus/sdk: onMessage() not registered for type 'world/welcome'.
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+Room connection was closed unexpectedly (4002): 
+PASS  150 joins with random options: none is seated unless its protocol is exactly this one, every other one is refused as a protocol mismatch  ({"refusedForProtocol":135,"refusedOtherwise":0,"seated":15,"seatedWithWrongOptions":0})
+Room connection was closed unexpectedly (4002): 
+PASS  after the refused joins the four other seats are all still free  (4 of 4 seated)
+PASS  500 random messages from a seated client: it stays seated, its well-formed moves are acknowledged (the last one always), and nothing else ever is  ({"sent":500,"wellFormed":120,"acknowledged":132,"acknowledgedShare":1,"lastWellFormedAcknowledged":true,"badAcknowledgements":[]})
+PASS  400 moves at once: the room closes the flooding client  (close code 4002)
+PASS  the witness kept playing through all of it: its deltas chain without a gap  (821 updates, 0 gaps)
+PASS  every acknowledgement the witness got names a move it sent, in order, with a tick that never goes back and that the next update has reached  ({"updates":821,"gaps":0,"acknowledged":162,"unknownSequences":0,"outOfOrder":0,"ticksBack":0,"updateBeforeTick":0,"sent":162})
+PASS  after 35 garbage frames from 12 joined sockets the room is alive, has not crashed and still seats a player  (Error: Data read, but end of buffer not reached 116 | Error: Data read, but end of buffer not reached "" | decode.utf8Read(): Invalid byte 158 at offset 6. Skip to end of string: 27 | Error: Unexpecte)
+
+ALL 8 CHECKS PASSED

@@ -1,14 +1,14 @@
-import { addComponent, query } from 'bitecs';
+import { addComponent, hasComponent, query } from 'bitecs';
 import { getDef } from '../../content/defs';
 import { DEFAULT_RADIUS, MAX_PLAYER_SLOTS } from '../../content/tuning';
 import type { Command } from '../../core/commands';
 import type { Feature } from '../../core/feature';
-import { attachDynamicBall, Body } from '../../core/physics';
+import { attachDynamicBall, Body, type BallBodyOptions } from '../../core/physics';
 import type { Sim } from '../../core/sim';
-import { DefRef, Extents } from '../../core/transform';
+import { DefRef, Extents, Position } from '../../core/transform';
 import { codePointsOf, readCharacter, type Character } from './character';
 import { Facing, MoveIntent, nameCodePointField, Player, PlayerLook, PlayerName } from './components';
-import { MAX_NAME_CODE_POINTS, MIN_MOVE_INTENT, PlayerDefId } from './defs';
+import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MAX_NAME_CODE_POINTS, MIN_MOVE_INTENT, PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
 import { pickSpawnPoint } from './spawn';
 
@@ -19,8 +19,8 @@ const SPAWN_FACING = { x: 0, y: 1 } as const;
  * Rapier interaction groups: the upper 16 bits are the layers a collider
  * belongs to, the lower 16 the layers it touches. Players sit in their own
  * layer and touch every layer but that one, so two players pass through
- * each other (the paths are two tiles wide and a standing player would
- * otherwise block them) while terrain, which keeps Rapier's default of
+ * each other (a standing player would otherwise block the narrow gaps
+ * between trees and rocks) while terrain, which keeps Rapier's default of
  * every layer, still stops them.
  */
 const PLAYER_LAYER = 1 << 0;
@@ -29,7 +29,7 @@ const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 /**
  * Player-controlled bodies. A `player/join` spawns the character the player
  * made (its look and name, once `readCharacter` accepts them) on a free tile
- * near the level spawn, `player/move` sets its intended direction and every tick
+ * near the map's spawn, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped
@@ -86,7 +86,25 @@ export const playerFeature: Feature = {
       rigidBody.setLinvel({ x: (intent.x[eid] as number) * speed, y: (intent.y[eid] as number) * speed }, true);
     }
   },
+
+  attachBody(sim, eid) {
+    const position = sim.store(Position);
+    const extents = sim.store(Extents);
+    if (!hasComponent(sim.world, eid, sim.store(Player)) || !hasComponent(sim.world, eid, position) || !hasComponent(sim.world, eid, extents)) return;
+    const x = position.x[eid] as number;
+    const y = position.y[eid] as number;
+    const radius = extents.halfWidth[eid] as number;
+    // NaN fails every comparison, so these also refuse values that are not numbers at all.
+    if (!(Math.abs(x) <= MAX_ADOPTED_COORDINATE) || !(Math.abs(y) <= MAX_ADOPTED_COORDINATE) || !(radius > 0) || !(radius <= MAX_ADOPTED_RADIUS)) return;
+    attachPlayerBody(sim, eid, { x, y, radius });
+  },
 };
+
+/** The ball a player walks around as: in the players' own layer, so players pass through each other and terrain stops them. */
+function attachPlayerBody(sim: Sim, eid: number, ball: BallBodyOptions): void {
+  const rigidBody = attachDynamicBall(sim, eid, ball);
+  for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
+}
 
 /** The spawn point is picked before the entity exists, so the new player never counts as present for its own choice. */
 function spawnPlayer(sim: Sim, slot: number, character: Character): number {
@@ -118,8 +136,7 @@ function spawnPlayer(sim: Sim, slot: number, character: Character): number {
   defRef.id[eid] = def.id;
   extents.halfWidth[eid] = radius;
   extents.halfHeight[eid] = radius;
-  const rigidBody = attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
-  for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
+  attachPlayerBody(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
 }
 

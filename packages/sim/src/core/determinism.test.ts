@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { spawnPoint } from '../content/levels/grid';
+import { spawnPoint } from '../content/world/tiles';
 import type { Command } from './commands';
 import { __testing__ } from './create';
 import { hashSnapshot } from './snapshot';
@@ -10,7 +10,8 @@ describe('determinism', () => {
     const a = await run(42, 400);
     const b = await run(42, 400);
     expect(a.tick).toBe(400);
-    expect(a.entities.length).toBeGreaterThan(4);
+    expect(a.entities.filter((entity) => entity.components['Player'])).toHaveLength(2);
+    expect(a.physics.length).toBeGreaterThan(1000); // terrain is in the physics bytes, not among the entities
     expect(hashSnapshot(a)).toBe(hashSnapshot(b));
     expect(a).toEqual(b);
     expect(a.physics).toBe(b.physics);
@@ -28,7 +29,7 @@ describe('determinism', () => {
     }
     const px = (s: typeof a) => s.snapshot().entities.find((e) => e.components['Player'])?.components['Position']?.['x'];
     expect(px(a)).toBeGreaterThan((px(b) as number) + 1);
-    expect(px(b)).toBe(spawnPoint(a.level).x);
+    expect(px(b)).toBe(spawnPoint(a.map).x);
     a.destroy();
     b.destroy();
   });

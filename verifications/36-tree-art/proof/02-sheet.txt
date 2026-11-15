@@ -1,0 +1,22 @@
+PASS  exactly one terrain def has a standing sprite, and it parses  ({"key":"tree","frameWidth":24,"frameHeight":32,"pixelsPerMetre":16,"variantCount":3})
+PASS  the sheet is drawn at the tile scale, 16 pixels per metre, so it needs no resampling
+PASS  the sheet is 3 frames of 24x32 side by side  (72x32)
+PASS  the committed sheet is byte for byte what the generator writes  (exit 0, 709 bytes)
+PASS  variant 0: a canopy of several green tones  (375 leaf pixels, 5 tones)
+PASS  variant 0: the canopy overhangs the tile to the north and to both sides  (275 north, 32 west, 28 east)
+PASS  variant 0: a brown trunk under the canopy, inside the tile, reaching the foot of the frame  (50 wood pixels)
+PASS  variant 0: the only see-through pixels are the shadow at the foot  (38 shadow pixels)
+PASS  variant 0: the dark outline closes inside the frame, so nothing is cut off at its left, right or top edge
+PASS  variant 1: a canopy of several green tones  (378 leaf pixels, 5 tones)
+PASS  variant 1: the canopy overhangs the tile to the north and to both sides  (270 north, 25 west, 27 east)
+PASS  variant 1: a brown trunk under the canopy, inside the tile, reaching the foot of the frame  (50 wood pixels)
+PASS  variant 1: the only see-through pixels are the shadow at the foot  (38 shadow pixels)
+PASS  variant 1: the dark outline closes inside the frame, so nothing is cut off at its left, right or top edge
+PASS  variant 2: a canopy of several green tones  (393 leaf pixels, 5 tones)
+PASS  variant 2: the canopy overhangs the tile to the north and to both sides  (282 north, 37 west, 40 east)
+PASS  variant 2: a brown trunk under the canopy, inside the tile, reaching the foot of the frame  (50 wood pixels)
+PASS  variant 2: the only see-through pixels are the shadow at the foot  (38 shadow pixels)
+PASS  variant 2: the dark outline closes inside the frame, so nothing is cut off at its left, right or top edge
+PASS  no two variants are the same picture
+
+ALL 20 CHECKS PASSED

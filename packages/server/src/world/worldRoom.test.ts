@@ -3,7 +3,6 @@ import { Client, CloseCode, type Room } from '@colyseus/sdk';
 import {
   applyWorldState,
   createReplica,
-  findLevel,
   findPlayerEntity,
   getCharacter,
   getHeading,
@@ -12,10 +11,13 @@ import {
   isPlayerDefId,
   JOIN_REFUSAL,
   WIRE,
-  readTileGrid,
+  WIRE_PROTOCOL,
+  readMapTiles,
   tileAt,
+  worldMap,
   type Character,
   type Heading,
+  type MoveAppliedMessage,
   type Renderable,
   type ReplicaHandle,
   type WelcomeMessage,
@@ -59,7 +61,9 @@ describe('WorldRoom over a real connection', () => {
     for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port, guestCharacter(seat)));
     expect(players.map((player) => player.welcome.slot)).toEqual([0, 1, 2, 3, 4]);
     for (const player of players) {
-      expect(findLevel(player.welcome.level)).toBeDefined();
+      expect(player.welcome.map).toBe(readMapTiles(worldMap).checksum);
+      // Terrain does not travel: the state holds the players who were seated by then and nothing else.
+      expect(player.welcome.state.entities).toHaveLength(player.welcome.slot + 1);
       expect(player.welcome.capacity).toBe(player.replica.capacity);
       expect(player.welcome.state.kind).toBe('full');
       expect(findPlayerEntity(player.replica, player.welcome.slot)).toBeDefined();
@@ -72,7 +76,7 @@ describe('WorldRoom over a real connection', () => {
     expect(characters).toHaveLength(MAX_SEATS);
     expect(characters.every((character) => isPlayerDefId(character.defId))).toBe(true);
     for (let seat = 0; seat < MAX_SEATS; seat += 1) expect(characterInSeat(last.replica, seat)).toEqual(guestCharacter(seat));
-    expect(new Set(characters.map((character) => tileKeyOf(last.replica, character))).size).toBe(MAX_SEATS);
+    expect(new Set(characters.map((character) => tileKeyOf(character))).size).toBe(MAX_SEATS);
     expect(server.room.seatsTaken).toBe(MAX_SEATS);
   });
 
@@ -82,7 +86,7 @@ describe('WorldRoom over a real connection', () => {
     await waitForUpdates(players, 2);
     const mover = players[0] as Player;
     const before = players.map((player) => positionOf(player.replica, mover.welcome.slot));
-    mover.room.send(WIRE.move, { x: 1, y: 0 });
+    mover.room.send(WIRE.move, { x: 1, y: 0, sequence: 1 });
     await waitUntil(() => players.every((player, index) => positionOf(player.replica, mover.welcome.slot).x > before[index]!.x + 0.1));
     for (const player of players) {
       expect(player.applyResults.every((result) => result === 'applied'), player.applyResults.join(',')).toBe(true);
@@ -93,7 +97,7 @@ describe('WorldRoom over a real connection', () => {
     // Every replica draws every avatar where the server put it. Replicas are compared at one tick: each applies its deltas as its socket drains.
     await waitUntil(() => players.every((player) => player.replica.tick === mover.replica.tick));
     for (const player of players) expect(getRenderables(player.replica)).toEqual(getRenderables(mover.replica));
-    mover.room.send(WIRE.move, { x: 0, y: 0 });
+    mover.room.send(WIRE.move, { x: 0, y: 0, sequence: 2 });
     await waitUntil(() => players.every((player) => headingOf(player.replica, mover.welcome.slot).moveIntent.x === 0));
     for (const player of players) expect(headingOf(player.replica, mover.welcome.slot)).toEqual({ moveIntent: { x: 0, y: 0 }, facing: { x: 1, y: 0 } });
   });
@@ -125,22 +129,22 @@ describe('WorldRoom over a real connection', () => {
     players.push(await join(server.port));
     const watcher = players[0] as Player;
     const legal = guestCharacter(1);
-    const malformedOptions: unknown[] = [
+    const malformedCharacters: unknown[] = [
       undefined,
-      {},
-      { character: null },
-      { character: 'Ada' },
-      { character: { name: 'Ada' } },
-      { character: { ...legal, name: 21 } },
-      { character: { ...legal, name: 'a'.repeat(21) } },
-      { character: { ...legal, name: '   ' } },
-      { character: { ...legal, name: 'Ada\nLovelace' } },
-      { character: { ...legal, look: { skin: 99, hair: 0, clothes: 0 } } },
-      { character: { ...legal, look: { skin: 0, hair: -1, clothes: 0 } } },
-      { character: { ...legal, look: { skin: 0, hair: 0 } } },
-      { character: { ...legal, slot: 0 } },
-      { character: legal, padding: 'x'.repeat(MAX_JOIN_OPTIONS_BYTES) },
+      null,
+      'Ada',
+      { name: 'Ada' },
+      { ...legal, name: 21 },
+      { ...legal, name: 'a'.repeat(21) },
+      { ...legal, name: '   ' },
+      { ...legal, name: 'Ada\nLovelace' },
+      { ...legal, look: { skin: 99, hair: 0, clothes: 0 } },
+      { ...legal, look: { skin: 0, hair: -1, clothes: 0 } },
+      { ...legal, look: { skin: 0, hair: 0 } },
+      { ...legal, slot: 0 },
     ];
+    // Each speaks the room's protocol, so it is the character that refuses it; the last one is legal but too big to be read.
+    const malformedOptions: unknown[] = [...malformedCharacters.map((character) => ({ protocol: WIRE_PROTOCOL, character })), { protocol: WIRE_PROTOCOL, character: legal, padding: 'x'.repeat(MAX_JOIN_OPTIONS_BYTES) }];
     for (const options of malformedOptions) {
       const refusal = await new Client(`ws://127.0.0.1:${server.port}`).joinById(WORLD_ROOM_ID, options).then(
         (room) => room.leave().then(() => undefined),
@@ -157,11 +161,66 @@ describe('WorldRoom over a real connection', () => {
     expect(characterInSeat((players[1] as Player).replica, 1)).toEqual(legal);
   });
 
+  it('tells a player which of its moves the sim applied and in which tick, just before the first update that includes it, and tells nobody else', async () => {
+    server = await startWorldServer({ port: 0, seed: 7 });
+    const mover = await join(server.port);
+    const watcher = await join(server.port);
+    await waitForUpdates([mover, watcher], 2);
+    mover.room.send(WIRE.move, { x: 1, y: 0, sequence: 41 });
+    await waitUntil(() => mover.movesApplied.length === 1);
+    const first = mover.movesApplied[0]!;
+    await waitUntil(() => mover.updates.length > first.updatesBefore);
+    expect(first.message.sequence).toBe(41);
+    // The update right after the acknowledgement is the first state with the move in it, taken at or after the tick that applied it.
+    const before = mover.updates[first.updatesBefore - 1]!;
+    const after = mover.updates[first.updatesBefore]!;
+    expect(before.tick).toBeLessThan(first.message.tick);
+    expect(after.tick).toBeGreaterThanOrEqual(first.message.tick);
+    expect(JSON.stringify(before)).not.toContain('"MoveIntent":{"x":1');
+    expect(JSON.stringify(after)).toContain('"MoveIntent":{"x":1');
+    // Two moves in a row are acknowledged by their last sequence, once; a held direction sends nothing more.
+    mover.room.send(WIRE.move, { x: 0, y: 1, sequence: 42 });
+    mover.room.send(WIRE.move, { x: 0, y: 0, sequence: 43 });
+    await waitUntil(() => mover.movesApplied.some((applied) => applied.message.sequence === 43));
+    await waitForUpdates([mover, watcher], 4);
+    const sequences = mover.movesApplied.map((applied) => applied.message.sequence);
+    expect(sequences.at(-1)).toBe(43);
+    expect(sequences.filter((sequence) => sequence === 43)).toHaveLength(1);
+    expect(mover.movesApplied.map((applied) => applied.message.tick)).toEqual([...mover.movesApplied.map((applied) => applied.message.tick)].sort((a, b) => a - b));
+    expect(watcher.movesApplied).toEqual([]);
+    for (const player of [mover, watcher]) expect(player.applyResults.every((result) => result === 'applied')).toBe(true);
+  });
+
+  it('drops a move whose sequence is missing or is not a positive safe integer, and acknowledges none of them', async () => {
+    server = await startWorldServer({ port: 0, seed: 7 });
+    const sender = await join(server.port);
+    await waitForUpdates([sender], 1);
+    const malformed: unknown[] = [{ x: 1, y: 0 }, { x: 1, y: 0, sequence: 0 }, { x: 1, y: 0, sequence: -3 }, { x: 1, y: 0, sequence: 1.5 }, { x: 1, y: 0, sequence: '7' }, { x: 1, y: 0, sequence: 2 ** 53 }, { x: 1, y: 0, sequence: null }, { x: 1, y: 0, sequence: [1] }];
+    for (const payload of malformed) sender.room.send(WIRE.move, payload);
+    await waitUntil(() => server!.room.dropped.malformed === malformed.length);
+    await waitForUpdates([sender], 3);
+    expect(headingOf(sender.replica, sender.welcome.slot).moveIntent).toEqual({ x: 0, y: 0 });
+    expect(sender.movesApplied).toEqual([]);
+  });
+
+  it(`welcomes with protocol ${WIRE_PROTOCOL} and refuses a join that names another protocol or none, without giving it a seat`, async () => {
+    server = await startWorldServer({ port: 0, seed: 7 });
+    const seatedPlayer = await join(server.port);
+    expect(seatedPlayer.welcome.protocol).toBe(WIRE_PROTOCOL);
+    const stranger = new Client(`ws://127.0.0.1:${server.port}`);
+    for (const options of [undefined, {}, { protocol: WIRE_PROTOCOL - 1 }, { protocol: String(WIRE_PROTOCOL) }, { protocol: null }]) {
+      const refusal = await stranger.joinById(WORLD_ROOM_ID, options).then(() => undefined, (error: unknown) => error as { code: number; message: string });
+      expect(refusal?.message, JSON.stringify(options)).toContain(JOIN_REFUSAL.protocolMismatch);
+    }
+    expect(server.room.seatsTaken).toBe(1);
+    await waitForUpdates([seatedPlayer], 2);
+  });
+
   it('refuses the sixth player, and refuses to create or join rooms any other way', async () => {
     server = await startWorldServer({ port: 0, seed: 3 });
     for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port));
     const sixth = new Client(`ws://127.0.0.1:${server.port}`);
-    const refusal = await sixth.joinById(WORLD_ROOM_ID, { character: guestCharacter(5) }).then(() => undefined, (error: unknown) => error as { code: number; message: string });
+    const refusal = await sixth.joinById(WORLD_ROOM_ID, LEGAL_JOIN).then(() => undefined, (error: unknown) => error as { code: number; message: string });
     expect(refusal).toBeDefined();
     expect(refusal?.code).toBe(522);
     expect(refusal?.message).toMatch(/locked/);
@@ -200,16 +259,16 @@ describe('WorldRoom over a real connection', () => {
     expect(headingOf(watcher.replica, sender.welcome.slot)).toEqual(still);
     expect(headingOf(watcher.replica, target.welcome.slot)).toEqual(still);
     const tickBefore = server.room.tick;
-    sender.room.send(WIRE.move, { x: 1, y: 0, slot: target.welcome.slot });
-    sender.room.send(WIRE.move, { x: 1, y: 0, padding: 'p'.repeat(MAX_INBOUND_BYTES) });
+    sender.room.send(WIRE.move, { x: 1, y: 0, sequence: 3, slot: target.welcome.slot });
+    sender.room.send(WIRE.move, { x: 1, y: 0, sequence: 4, padding: 'p'.repeat(MAX_INBOUND_BYTES) });
     sender.room.send('player/teleport', { x: 0, y: 0 });
     sender.room.send('world/welcome', { slot: 1 });
     sender.room.send(WIRE.move, 'right');
     sender.room.send(WIRE.move, null);
     sender.room.send(WIRE.move, [1, 0]);
-    sender.room.send(WIRE.move, { x: '1', y: 0 });
-    sender.room.send(WIRE.move, { x: NaN, y: 0 });
-    sender.room.send(WIRE.move, { x: 1, y: Infinity });
+    sender.room.send(WIRE.move, { x: '1', y: 0, sequence: 5 });
+    sender.room.send(WIRE.move, { x: NaN, y: 0, sequence: 6 });
+    sender.room.send(WIRE.move, { x: 1, y: Infinity, sequence: 7 });
     sender.room.send(WIRE.move, { x: 1 });
     sender.room.send(WIRE.move);
     await waitForUpdates(players, 4);
@@ -221,7 +280,7 @@ describe('WorldRoom over a real connection', () => {
     expect(headingOf(watcher.replica, target.welcome.slot)).toEqual(still);
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
     // The gate is not the end of the sender's game: a well-formed move still goes through.
-    sender.room.send(WIRE.move, { x: 1, y: 0 });
+    sender.room.send(WIRE.move, { x: 1, y: 0, sequence: 8 });
     await waitUntil(() => headingOf(watcher.replica, sender.welcome.slot).moveIntent.x === 1);
     expect(headingOf(watcher.replica, target.welcome.slot)).toEqual(still);
   });
@@ -235,7 +294,7 @@ describe('WorldRoom over a real connection', () => {
     const flood = DISCONNECT_MESSAGES_PER_SECOND - 5;
     const tickBefore = server.room.tick;
     const floodStartedAt = performance.now();
-    for (let i = 0; i < flood; i += 1) flooder.room.send(WIRE.move, { x: i % 2 === 0 ? 1 : -1, y: 0 });
+    for (let i = 0; i < flood; i += 1) flooder.room.send(WIRE.move, { x: i % 2 === 0 ? 1 : -1, y: 0, sequence: 9 });
     await waitForUpdates(players, 3);
     // The budget refills while the flood is in flight; allow what that much time could have refilled, plus one for rounding.
     const refilled = Math.ceil(((performance.now() - floodStartedAt) / 1000) * INBOUND_MESSAGES_PER_SECOND) + 1;
@@ -244,7 +303,7 @@ describe('WorldRoom over a real connection', () => {
     expect(watcher.applyResults.every((result) => result === 'applied')).toBe(true);
 
     const left = new Promise<number>((resolve) => flooder.room.onLeave((code) => resolve(code)));
-    flooder.room.send(WIRE.move, { x: 1, y: 0, padding: 'p'.repeat(MAX_FRAME_BYTES * 2) });
+    flooder.room.send(WIRE.move, { x: 1, y: 0, sequence: 10, padding: 'p'.repeat(MAX_FRAME_BYTES * 2) });
     expect(await left).toBe(1009);
     await waitUntil(() => findPlayerEntity(watcher.replica, flooder.welcome.slot) === undefined);
     expect(server.room.seatsTaken).toBe(1);
@@ -332,7 +391,7 @@ describe('WorldRoom over a real connection', () => {
     expect(server.room.clients.length).toBe(2);
     expect(server.room.idleSeatsFreed).toBe(0);
     // The walker starts walking south just before the deadline and holds the key: one move, then nothing, as a browser sends it. The idler only sends a move that fails the gate, which is not input: only the idler crosses the deadline.
-    walker.room.send(WIRE.move, { x: 0, y: 1 });
+    walker.room.send(WIRE.move, { x: 0, y: 1, sequence: 11 });
     idler.room.send(WIRE.move, { x: 1 });
     await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 1 && server!.room.dropped.malformed === 1);
     clock.skip(61_000);
@@ -356,7 +415,7 @@ describe('WorldRoom over a real connection', () => {
     expect(server.room.idleSeatsFreed).toBe(2);
     expect(headingOf(walker.replica, walker.welcome.slot).moveIntent.y).toBe(1);
     // The walker stops: its idle clock starts at that move, so most of the timeout is still ahead of it.
-    walker.room.send(WIRE.move, { x: 0, y: 0 });
+    walker.room.send(WIRE.move, { x: 0, y: 0, sequence: 12 });
     await waitUntil(() => headingOf(walker.replica, walker.welcome.slot).moveIntent.y === 0);
     clock.skip(IDLE_TIMEOUT_MS - 60_000);
     await waitForUpdates([walker], 3);
@@ -376,7 +435,7 @@ describe('WorldRoom driven directly', () => {
     await room.onCreate({ seed: 11 });
     try {
       const leaverClient = fakeClient('leaver');
-      const joining = room.onJoin(leaverClient, { character: guestCharacter(0) });
+      const joining = room.onJoin(leaverClient, LEGAL_JOIN);
       room.onLeave(leaverClient);
       await joining;
       expect(room.seatsTaken).toBe(0);
@@ -384,9 +443,9 @@ describe('WorldRoom driven directly', () => {
       expect(leaverClient.sent.map(([type]) => type)).toEqual([WIRE.welcome]);
       const welcome = leaverClient.sent[0]?.[1] as WelcomeMessage;
       expect(welcome.state.entities.some((entity) => entity.components['Player'] !== undefined)).toBe(false);
-      for (let seat = 0; seat < MAX_SEATS; seat += 1) await room.onJoin(fakeClient(`sitter-${seat}`), { character: guestCharacter(0) });
+      for (let seat = 0; seat < MAX_SEATS; seat += 1) await room.onJoin(fakeClient(`sitter-${seat}`), LEGAL_JOIN);
       expect(room.seatsTaken).toBe(MAX_SEATS);
-      await expect(room.onJoin(fakeClient('sixth'), { character: guestCharacter(0) })).rejects.toThrow(JOIN_REFUSAL.worldFull);
+      await expect(room.onJoin(fakeClient('sixth'), LEGAL_JOIN)).rejects.toThrow(JOIN_REFUSAL.worldFull);
     } finally {
       room.onDispose();
     }
@@ -399,7 +458,7 @@ describe('WorldRoom driven directly', () => {
     try {
       // A peer that never answers the close handshake: its `leave` closes nothing, so `onLeave` never runs for it.
       const idler = fakeClient('idler');
-      await room.onJoin(idler, { character: guestCharacter(0) });
+      await room.onJoin(idler, LEGAL_JOIN);
       room.clients.push(idler);
       expect(room.seatsTaken).toBe(1);
       clock.skip(2000);
@@ -408,7 +467,7 @@ describe('WorldRoom driven directly', () => {
       expect(room.seatsTaken).toBe(0);
       // The seat is already the next joiner's, and the kicked session is not kicked again while its socket lingers.
       const next = fakeClient('next');
-      await room.onJoin(next, { character: guestCharacter(0) });
+      await room.onJoin(next, LEGAL_JOIN);
       expect((idler.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
       expect((next.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
       expect(room.idleSeatsFreed).toBe(1);
@@ -424,7 +483,7 @@ describe('WorldRoom driven directly', () => {
   it('fails a join that is waiting for a tick when the room is disposed instead of hanging it', async () => {
     const room = new WorldRoom();
     await room.onCreate({ seed: 12 });
-    const joining = room.onJoin(fakeClient('late'), { character: guestCharacter(0) });
+    const joining = room.onJoin(fakeClient('late'), LEGAL_JOIN);
     room.onDispose();
     await expect(joining).rejects.toThrow(/shutting down/);
   });
@@ -434,6 +493,9 @@ describe('WorldRoom driven directly', () => {
 
 /** The room on a bare port: these tests are about the room, not about what stands in front of it. */
 const { startBareWorldServer: startWorldServer } = __testing__;
+/** The join options of a client built against this contract. */
+/** Join options the room accepts: the protocol it speaks and a legal character. */
+const LEGAL_JOIN = { protocol: WIRE_PROTOCOL, character: guestCharacter(0) };
 
 interface Player {
   readonly room: Room;
@@ -441,6 +503,8 @@ interface Player {
   readonly replica: ReplicaHandle;
   readonly updates: WorldStateUpdate[];
   readonly applyResults: WorldStateApplyResult[];
+  /** Every `player/move-applied` received, with how many updates had arrived before it. */
+  readonly movesApplied: Array<{ readonly message: MoveAppliedMessage; readonly updatesBefore: number }>;
 }
 
 let server: WorldServer | undefined;
@@ -454,7 +518,7 @@ const players: Player[] = [];
  */
 async function join(port: number, character: Character = guestCharacter(0)): Promise<Player> {
   const client = new Client(`ws://127.0.0.1:${port}`);
-  const room = await client.joinById(WORLD_ROOM_ID, { character });
+  const room = await client.joinById(WORLD_ROOM_ID, { protocol: WIRE_PROTOCOL, character });
   const updates: WorldStateUpdate[] = [];
   const applyResults: WorldStateApplyResult[] = [];
   const bound: { replica?: ReplicaHandle } = {};
@@ -466,21 +530,22 @@ async function join(port: number, character: Character = guestCharacter(0)): Pro
   };
   room.onMessage(WIRE.delta, onUpdate);
   room.onMessage(WIRE.state, onUpdate);
+  const movesApplied: Player['movesApplied'] = [];
+  room.onMessage(WIRE.moveApplied, (message: MoveAppliedMessage) => movesApplied.push({ message, updatesBefore: updates.length }));
   const welcome = await new Promise<WelcomeMessage>((resolve) => room.onMessage(WIRE.welcome, (message: WelcomeMessage) => resolve(message)));
-  const level = findLevel(welcome.level);
-  if (!level) throw new Error(`unknown level ${welcome.level}`);
-  const replica = createReplica({ level, capacity: welcome.capacity });
+  if (welcome.map !== readMapTiles(worldMap).checksum) throw new Error(`the server runs another map: ${welcome.map}`);
+  const replica = createReplica({ capacity: welcome.capacity });
   applyResults.push(applyWorldState(replica, welcome.state));
   for (const update of pending.splice(0)) applyResults.push(applyWorldState(replica, update));
   bound.replica = replica;
-  return { room, welcome, replica, updates, applyResults };
+  return { room, welcome, replica, updates, applyResults, movesApplied };
 }
 
 /** A seat reservation straight from the matchmaker, for a client that will misbehave at the WebSocket stage. */
 async function reserveSeat(port: number): Promise<{ sessionId: string; roomId: string; processId: string }> {
   const response = await fetch(`http://127.0.0.1:${port}/matchmake/joinById/${WORLD_ROOM_ID}`, {
     method: 'POST',
-    body: JSON.stringify({ character: guestCharacter(0) }),
+    body: JSON.stringify(LEGAL_JOIN),
     headers: { 'content-type': 'application/json' },
   });
   return (await response.json()) as { sessionId: string; roomId: string; processId: string };
@@ -553,9 +618,9 @@ function playerRenderables(replica: ReplicaHandle): Renderable[] {
 }
 
 /** The tile a renderable's centre stands on, as one comparable string. */
-function tileKeyOf(replica: ReplicaHandle, renderable: Renderable): string {
-  const tile = tileAt(readTileGrid(replica.level), renderable.x, renderable.y);
-  return tile ? `${tile.column},${tile.row}` : 'off-grid';
+function tileKeyOf(renderable: Renderable): string {
+  const tile = tileAt(renderable.x, renderable.y);
+  return tile ? `${tile.column},${tile.row}` : 'nowhere';
 }
 
 /** What the player in `slot` was told to do: the sim's own record of the commands that reached it. */
