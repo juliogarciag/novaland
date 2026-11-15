@@ -695,6 +695,16 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/creator/creatorScreen.test.ts",
+    "name": "telling whether the creator changed anything calls two characters the same when the name and every colour match",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/creator/creatorScreen.test.ts",
+    "name": "telling whether the creator changed anything calls them different when the name or any one colour differs",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/creator/rememberedCharacter.test.ts",
     "name": "the remembered character comes back as it was remembered",
     "status": "passed"
@@ -737,6 +747,76 @@
   {
     "file": "packages/client/src/loop/takeWholeTicks.test.ts",
     "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys is zero with nothing pressed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys cancels opposite keys",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys compares directions by value",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits nothing while no key is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput collapses a press and release between drains into nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
     "status": "passed"
   },
   {
@@ -1125,76 +1205,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys is zero with nothing pressed",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys cancels opposite keys",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys compares directions by value",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits nothing while no key is held",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput collapses a press and release between drains into nothing",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "MapCamera.view is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)",
     "status": "passed"
@@ -1545,6 +1555,21 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from the map, so a new obstacle is only a character in a row",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/core/determinism.test.ts",
     "name": "determinism same seed + same commands = identical state, including physics bytes",
     "status": "passed"
@@ -1885,21 +1910,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions terrain colliders come from the map, so a new obstacle is only a character in a row",
-    "status": "passed"
-  },
-  {
     "file": "packages/sim/src/content/world/world.test.ts",
     "name": "reading a map into chunks resolves an area's ASCII rows through its legend into tile def ids at the world tiles it reserves",
     "status": "passed"
@@ -1982,106 +1992,6 @@
   {
     "file": "packages/sim/src/content/world/world.test.ts",
     "name": "a generated map is the same every time, ringed by trees, with a walkable spawn, and readable at 400x300",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass, dirt and tiles no area drew out",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging gives rectangles in world tiles, wherever the chunk is",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging never merges across a chunk edge: a wall through two chunks is one rectangle in each",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging covers every solid tile of the world exactly once, and nothing else",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) builds one static box per merged rectangle, chunk by chunk, and no entity at all",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) places each box over its tiles in metres, measured from the fixed origin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) builds the same boxes in the same order every time, and the same physics bytes",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) names the map in the snapshot by its checksum, so a snapshot says which terrain its physics bytes hold",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the world spawns the player on the grass inside the forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the room",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a wall that crosses a chunk edge is as solid at the seam as anywhere else",
     "status": "passed"
   },
   {
@@ -2357,6 +2267,106 @@
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass, dirt and tiles no area drew out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging gives rectangles in world tiles, wherever the chunk is",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging never merges across a chunk edge: a wall through two chunks is one rectangle in each",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile of the world exactly once, and nothing else",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) builds one static box per merged rectangle, chunk by chunk, and no entity at all",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each box over its tiles in metres, measured from the fixed origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) builds the same boxes in the same order every time, and the same physics bytes",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) names the map in the snapshot by its checksum, so a snapshot says which terrain its physics bytes hold",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the world spawns the player on the grass inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the room",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a wall that crosses a chunk edge is as solid at the seam as anywhere else",
     "status": "passed"
   }
 ]

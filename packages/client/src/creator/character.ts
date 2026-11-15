@@ -1,6 +1,6 @@
 import { characterPalettes, DefId, getDef, type Character, type CharacterLook } from '@novaland/sim';
 import { spriteSheetUrl } from '../render/spriteUrl';
-import { chooseCharacter } from './creatorScreen';
+import { changeCharacter, chooseCharacter, sameCharacter, type PreviewSheet } from './creatorScreen';
 import { browserCharacterStorage, readRememberedCharacter, rememberCharacter } from './rememberedCharacter';
 
 /** The address that opens the creator even when the browser remembers a character: `…/#creator`. */
@@ -17,46 +17,85 @@ export async function characterForThisVisit(): Promise<Character> {
   const remembered = readRememberedCharacter(storage);
   const creatorAsked = window.location.hash === CREATOR_HASH;
   if (remembered && !creatorAsked) return remembered;
-  const sprite = getDef(DefId.Player).sprite;
-  const character = await chooseCharacter(document.body, {
-    initial: remembered ?? { name: '', look: randomLook() },
-    previewSheet: { url: spriteSheetUrl(sprite?.key ?? 'player'), frameWidth: sprite?.frameWidth ?? 16, frameHeight: sprite?.frameHeight ?? 24 },
-  });
+  const character = await chooseCharacter(document.body, { initial: remembered ?? { name: '', look: randomLook() }, previewSheet: playerPreviewSheet() });
   rememberCharacter(storage, character);
   if (creatorAsked) forgetCreatorWasAsked();
   return character;
 }
 
 /**
- * Opens the creator when `#creator` is added to the address of a page that is
- * already playing: the page loads again, as it does for the Change character
- * button. Call once, when this visit's character is known (the creator has cleaned its own address up by then).
+ * What `#creator` in the address does once the player is in the world; until
+ * then the page loads again and the creator shows before the join.
+ */
+let openCreatorOverGame: (() => void) | undefined;
+
+/**
+ * Opens the creator when `#creator` is added to the address of a page that
+ * already has its character: over the game when the player is in the world,
+ * else (a connection screen is up) by loading the page again. Call once, when
+ * this visit's character is known (the creator has cleaned its own address up by then).
  */
 export function openCreatorWhenAddressAsks(): void {
   window.addEventListener('hashchange', () => {
-    if (window.location.hash === CREATOR_HASH) window.location.reload();
+    if (window.location.hash !== CREATOR_HASH) return;
+    if (!openCreatorOverGame) {
+      window.location.reload();
+      return;
+    }
+    forgetCreatorWasAsked();
+    openCreatorOverGame();
   });
 }
 
-/** Leaves the world for the creator: the page loads again at `#creator`, and the next join is the new character. */
+/** Leaves for the creator from a screen that is not the world: the page loads again at `#creator`, and the next join is the new character. */
 export function openCreator(): void {
   window.location.hash = CREATOR_HASH;
   window.location.reload();
 }
 
+export interface ChangeCharacterOptions {
+  /** The character the player is in the world as. */
+  readonly playing: Character;
+  /** Takes the keyboard away from the game while the creator is open (true) and gives it back (false): the name is typed with the keys that walk. */
+  holdGameKeys(held: boolean): void;
+}
+
 /**
- * The button that takes a player who is in the world back to the creator.
- * Plain DOM in a corner, like the screens. It never keeps the keyboard:
- * the game's keys must go to the game.
+ * The button that opens the creator for a player who is in the world, over
+ * the running game. Leaving it (close, Escape) or saving the same character
+ * changes nothing: the player stays where they are. A different character is
+ * remembered and the page loads again, because a character is chosen at the
+ * join: the player leaves and joins as the new one.
+ * Plain DOM in a corner, like the screens. The button never keeps the
+ * keyboard: the game's keys must go to the game.
  */
-export function addChangeCharacterButton(parent: HTMLElement): void {
+export function addChangeCharacterButton(parent: HTMLElement, { playing, holdGameKeys }: ChangeCharacterOptions): void {
+  let creatorIsOpen = false;
+  const open = async (): Promise<void> => {
+    if (creatorIsOpen) return;
+    creatorIsOpen = true;
+    holdGameKeys(true);
+    const chosen = await changeCharacter(parent, { initial: playing, previewSheet: playerPreviewSheet() });
+    holdGameKeys(false);
+    creatorIsOpen = false;
+    if (!chosen || sameCharacter(chosen, playing)) return;
+    rememberCharacter(browserCharacterStorage(), chosen);
+    window.location.reload();
+  };
+  openCreatorOverGame = () => void open();
   const button = document.createElement('button');
   button.id = 'change-character';
   button.type = 'button';
   button.textContent = 'Change character';
   button.tabIndex = -1;
-  button.addEventListener('click', openCreator);
+  button.addEventListener('click', () => void open());
   parent.append(button);
+}
+
+/** Where the creator's preview finds the character's sheet. */
+function playerPreviewSheet(): PreviewSheet {
+  const sprite = getDef(DefId.Player).sprite;
+  return { url: spriteSheetUrl(sprite?.key ?? 'player'), frameWidth: sprite?.frameWidth ?? 16, frameHeight: sprite?.frameHeight ?? 24 };
 }
 
 /** A suggestion for a first visit, so two new players rarely start out looking the same. Only a starting point: the player picks. */

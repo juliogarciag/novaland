@@ -80,19 +80,71 @@ try {
   const returned = await worldState(page);
   results.push(check('after a reload there is no creator: the player goes straight in as the remembered character', !returned.creatorShown && returned.seats.length === 1 && drawnAsItsCharacter(returned.seats[0], ADA), JSON.stringify(returned.seats[0])));
 
-  // 5. The creator stays reachable: the Change character button leads to it, prefilled, and what it makes replaces the old character.
+  // 5. The creator stays reachable from inside the world: it opens over the running game, and leaving it changes nothing.
+  await page.keyboard.down('d');
+  await waitFor('the player to have walked', { read: () => worldState(page), until: (state) => state.seats[0].position.x > returned.seats[0].position.x + 16, timeoutMs: 10000 });
+  await page.keyboard.up('d');
+  const walked = await waitFor('the player to stand still', { read: async () => [await worldState(page), await page.waitForTimeout(300), await worldState(page)], until: ([before, , after]) => before.seats[0].position.x === after.seats[0].position.x, timeoutMs: 10000 }).then(([, , after]) => after);
+  const pageLoads = { count: 0 };
+  page.on('load', () => (pageLoads.count += 1));
+  const stillThere = (state) => state.seats.length === 1 && state.seats[0].eid === walked.seats[0].eid && state.seats[0].position.x === walked.seats[0].position.x && state.seats[0].position.y === walked.seats[0].position.y && drawnAsItsCharacter(state.seats[0], ADA);
+
   await page.locator('#change-character').click();
   await page.waitForSelector('#creator[data-screen="creator"]');
   await page.waitForFunction(() => document.querySelector('.creator-preview')?.dataset.look);
   const changing = await creatorState(page);
-  results.push(check('the Change character button opens the creator at #creator, before joining again, starting from the remembered character', changing.shown && !changing.hasGame && changing.name === ADA.name && JSON.stringify(changing.look) === JSON.stringify(ADA.look) && (await page.evaluate(() => window.location.hash)) === '#creator', JSON.stringify(changing)));
+  await screenshot(page, '02-solo-5a-creator-over-the-game.png');
+  results.push(check('the Change character button opens the creator over the running game, without loading the page, starting from the current character', changing.shown && changing.hasGame && pageLoads.count === 0 && changing.name === ADA.name && JSON.stringify(changing.look) === JSON.stringify(ADA.look) && (await page.evaluate(() => window.location.hash)) === '', JSON.stringify({ changing, pageLoads })));
+
+  // The keys that walk type the name while the creator is open, and the player does not move.
+  await page.locator('#creator input[name="name"]').fill('');
+  await page.keyboard.type('wasd');
+  const typed = await creatorState(page);
+  await page.waitForTimeout(400);
+  const whileTyping = await worldState(page);
+  results.push(check('while the creator is open the walking keys type the name and the player stays put', typed.name === 'wasd' && whileTyping.seats[0].position.x === walked.seats[0].position.x && whileTyping.seats[0].position.y === walked.seats[0].position.y, JSON.stringify({ typed: typed.name, position: whileTyping.seats[0].position })));
+
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('#creator', { state: 'detached' });
+  const afterEscape = await worldState(page);
+  results.push(check('Escape closes the creator and nothing changed: same player, same place, same character, same remembered one, no page load', stillThere(afterEscape) && afterEscape.remembered === JSON.stringify(ADA) && pageLoads.count === 0, JSON.stringify({ seat: afterEscape.seats[0], remembered: afterEscape.remembered, pageLoads })));
+
+  await page.locator('#change-character').click();
+  await page.waitForSelector('#creator[data-screen="creator"]');
+  await fillCreator(page, JOSE);
+  await page.locator('#creator .creator-close').click();
+  await page.waitForSelector('#creator', { state: 'detached' });
+  const afterClose = await worldState(page);
+  results.push(check('the close button throws away what was picked: same player, same place, same character', stillThere(afterClose) && afterClose.remembered === JSON.stringify(ADA) && pageLoads.count === 0, JSON.stringify({ seat: afterClose.seats[0], remembered: afterClose.remembered, pageLoads })));
+
+  await page.locator('#change-character').click();
+  await page.waitForSelector('#creator[data-screen="creator"]');
+  await submitCreator(page);
+  await page.waitForSelector('#creator', { state: 'detached' });
+  await page.waitForTimeout(500);
+  const afterSameSave = await worldState(page);
+  results.push(check('saving without changing anything keeps the player where they are: no page load, no new join', stillThere(afterSameSave) && pageLoads.count === 0, JSON.stringify({ seat: afterSameSave.seats[0], pageLoads })));
+
+  // The game has its keys back.
+  await page.keyboard.down('a');
+  await waitFor('the player to walk again', { read: () => worldState(page), until: (state) => state.seats[0].position.x < walked.seats[0].position.x - 8, timeoutMs: 10000 });
+  await page.keyboard.up('a');
+  results.push(check('after the creator closes the walking keys walk again', true));
+
+  // #creator in the address of a playing page opens the same creator in place.
+  await page.evaluate(() => (window.location.hash = '#creator'));
+  await page.waitForSelector('#creator[data-screen="creator"]');
+  const fromAddress = await creatorState(page);
+  results.push(check('#creator in the address of a playing page opens the creator over the game and the address is the plain one again', fromAddress.shown && fromAddress.hasGame && pageLoads.count === 0 && (await page.evaluate(() => window.location.hash)) === '', JSON.stringify({ fromAddress, pageLoads })));
+
+  // A different character replaces the old one.
   await fillCreator(page, JOSE);
   await screenshot(page, '02-solo-5-creator-changing.png');
   await submitCreator(page);
-  await waitInWorld(page);
+  await waitFor('the new character in the world', { read: () => worldState(page).catch(() => undefined), until: (state) => Boolean(state) && state.seats.length === 1 && state.seats[0].name === JOSE.name && Boolean(state.seats[0].label), timeoutMs: 20000 });
   const changed = await worldState(page);
   await screenshot(page, '02-solo-6-changed-character.png');
-  results.push(check('the new character replaces the old one in the world and in the browser, and the address is the plain one again', changed.seats.length === 1 && drawnAsItsCharacter(changed.seats[0], JOSE) && changed.remembered === JSON.stringify(JOSE) && changed.hash === '', JSON.stringify({ seat: changed.seats[0], remembered: changed.remembered, hash: changed.hash })));
+  results.push(check('a different character replaces the old one in the world and in the browser, and the address is the plain one', changed.seats.length === 1 && drawnAsItsCharacter(changed.seats[0], JOSE) && changed.remembered === JSON.stringify(JOSE) && changed.hash === '', JSON.stringify({ seat: changed.seats[0], remembered: changed.remembered, hash: changed.hash })));
   report.changed = changed;
 
   // 6. A second seat is a second character with its own name.

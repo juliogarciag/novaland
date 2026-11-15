@@ -174,10 +174,11 @@ try {
   const firstSeat = withFirst.seats.find((seat) => seat.name === 'First Guest');
   await first.leave();
   await waitFor('the first guest to leave', { read: () => worldState(a.page), until: (state) => state.seats.length === 2, timeoutMs: 15000 });
+  // The drawn frame trails the replica (see above): the wait is for the drawing to show the newcomer, and the check fails if it never does.
   const secondGuest = { name: 'Second Guest', look: { skin: 5, hair: 7, clothes: 4 } };
   const second = await joinDirectly({ character: secondGuest });
   second.onMessage('*', () => undefined);
-  const withSecond = await waitFor('A to see the second guest', { read: () => worldState(a.page), until: (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label) && state.nameLabelsAlive === 3, timeoutMs: 15000 }).catch(() => worldState(a.page));
+  const withSecond = await waitFor('A to see the second guest', { read: () => worldState(a.page), until: (state) => state.seats.length === 3 && state.nameLabelsAlive === 3 && state.seats.find((seat) => seat.name === secondGuest.name)?.label?.name === secondGuest.name, timeoutMs: 15000 }).catch(() => worldState(a.page));
   const secondSeat = withSecond.seats.find((seat) => seat.name === secondGuest.name);
   results.push(check('a seat and entity id taken over by another player shows the new name and the new colours, with one label per character', secondSeat?.eid === firstSeat?.eid && drawnAsItsCharacter(secondSeat, secondGuest) && withSecond.nameLabelsAlive === 3, JSON.stringify({ firstEid: firstSeat?.eid, secondEid: secondSeat?.eid, label: secondSeat?.label, labelsAlive: withSecond.nameLabelsAlive })));
   await second.leave();

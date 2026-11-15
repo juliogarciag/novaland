@@ -39,7 +39,38 @@ const PART_LABELS: Readonly<Record<CharacterPart, string>> = { skin: 'Skin', hai
  * and the screen is gone. `data-screen="creator"` names it for end-to-end
  * checks.
  */
-export function chooseCharacter(parent: HTMLElement, { initial, previewSheet }: CreatorScreenOptions): Promise<Character> {
+export function chooseCharacter(parent: HTMLElement, options: CreatorScreenOptions): Promise<Character> {
+  return new Promise((resolve) => {
+    showCreator(parent, options, { title: 'Create your character', submitLabel: 'Enter the world', onSubmit: resolve });
+  });
+}
+
+/**
+ * The creator for a player who is already in the world: the same screen,
+ * drawn over the running game, that can also be left without choosing (its
+ * close button, or Escape). Resolves with what the player submitted, or
+ * undefined when they left it.
+ */
+export function changeCharacter(parent: HTMLElement, options: CreatorScreenOptions): Promise<Character | undefined> {
+  return new Promise((resolve) => {
+    showCreator(parent, options, { title: 'Change your character', submitLabel: 'Save', onSubmit: resolve, onDismiss: () => resolve(undefined) });
+  });
+}
+
+/** True when two characters are the same name in the same look: nothing a player or the world could tell apart. */
+export function sameCharacter(one: Character, other: Character): boolean {
+  return one.name === other.name && CHARACTER_PARTS.every((part) => one.look[part] === other.look[part]);
+}
+
+interface CreatorScreenUse {
+  readonly title: string;
+  readonly submitLabel: string;
+  onSubmit(character: Character): void;
+  /** Given when the screen may be left without choosing: it then has a close button, closes on Escape and lets the game show behind it. */
+  onDismiss?(): void;
+}
+
+function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScreenOptions, { title: titleText, submitLabel, onSubmit, onDismiss }: CreatorScreenUse): void {
   const look: Record<CharacterPart, number> = { ...initial.look };
 
   const form = document.createElement('form');
@@ -48,7 +79,7 @@ export function chooseCharacter(parent: HTMLElement, { initial, previewSheet }: 
   form.noValidate = true;
 
   const title = document.createElement('h1');
-  title.textContent = 'Create your character';
+  title.textContent = titleText;
 
   const preview = document.createElement('canvas');
   preview.className = 'creator-preview';
@@ -90,27 +121,54 @@ export function chooseCharacter(parent: HTMLElement, { initial, previewSheet }: 
 
   const submit = document.createElement('button');
   submit.type = 'submit';
-  submit.textContent = 'Enter the world';
+  submit.textContent = submitLabel;
 
   form.append(title, preview, nameField, problem, ...palettes, submit);
+
+  let stopListeningForEscape = (): void => {};
+  const close = (): void => {
+    stopListeningForEscape();
+    form.remove();
+  };
+  if (onDismiss) {
+    const dismiss = (): void => {
+      close();
+      onDismiss();
+    };
+    form.classList.add('creator-over-game');
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'creator-close';
+    closeButton.textContent = '\u00d7';
+    closeButton.title = 'Close (Esc)';
+    closeButton.setAttribute('aria-label', 'Close without changing');
+    closeButton.addEventListener('click', dismiss);
+    form.prepend(closeButton);
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      dismiss();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    stopListeningForEscape = () => document.removeEventListener('keydown', onKeyDown);
+  }
+
   parent.append(form);
   paintPreview(look);
   nameInput.focus({ preventScroll: true });
 
-  return new Promise((resolve) => {
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const name = readCharacterName(nameInput.value);
-      if ('problem' in name) {
-        showProblem(name.problem);
-        nameInput.focus({ preventScroll: true });
-        return;
-      }
-      const character = readCharacter({ name: name.name, look: { ...look } });
-      if (!character) return;
-      form.remove();
-      resolve(character);
-    });
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = readCharacterName(nameInput.value);
+    if ('problem' in name) {
+      showProblem(name.problem);
+      nameInput.focus({ preventScroll: true });
+      return;
+    }
+    const character = readCharacter({ name: name.name, look: { ...look } });
+    if (!character) return;
+    close();
+    onSubmit(character);
   });
 }
 

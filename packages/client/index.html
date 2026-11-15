@@ -37,6 +37,11 @@
       #creator .creator-swatch input:focus-visible + span { outline: 3px solid #38bdf8; }
       #creator button { font: inherit; margin-top: 8px; padding: 8px 16px; color: #0b0f14; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; }
       #creator button:hover { background: #f8fafc; }
+      /* The creator opened from inside the world: the game shows behind it and it can be closed. */
+      #creator.creator-over-game { background: rgba(11, 15, 20, 0.82); }
+      #creator .creator-close { position: absolute; top: 12px; right: 12px; margin: 0; padding: 0; width: 32px; height: 32px; font-size: 22px; line-height: 1;
+        color: #e2e8f0; background: #1e293b; border: 1px solid #475569; }
+      #creator .creator-close:hover { background: #334155; }
       /* The way back to the creator from inside the world. */
       #change-character { position: fixed; top: 12px; right: 12px; z-index: 5; font: 14px/1.4 monospace; padding: 4px 10px; color: #94a3b8;
         background: rgba(11, 15, 20, 0.6); border: 1px solid #475569; border-radius: 4px; cursor: pointer; }
