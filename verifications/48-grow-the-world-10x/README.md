@@ -20,7 +20,7 @@ Each script prints `PASS`/`FAIL` lines, exits non-zero on failure, and writes it
 
 ## What is not met: tick cost
 
-The ticket asks for tick cost "the same within noise" as the 40x30 world. It is about four times higher: around 0.02 ms a tick before, around 0.08 to 0.09 ms now (`proof/02-measure.json` has the rounds). `02-measure.mjs` keeps that check as the ticket words it, so it fails.
+The ticket asks for tick cost "the same within noise" as the 40x30 world. It is about four times higher: around 0.02 ms a tick before, around 0.08 to 0.10 ms now (`proof/02-measure.json` has the rounds). `02-measure.mjs` keeps that check as the ticket words it, so it fails.
 
 Why: the physics step costs time for the terrain in the world, whether or not anything moves near it. The script measures a sim with no player at all on both maps and finds the same difference there (about 0.01 ms against about 0.08 ms; the physics world in a snapshot is eleven times the bytes). #47's own measurement shows the same slope on its 400x300 map. That is how the sim's core steps physics; this ticket is content only and may not change it, and no layout of trees ten times the size brings the terrain back to what 40x30 tiles held.
 
