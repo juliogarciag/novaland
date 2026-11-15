@@ -12,6 +12,8 @@ import type { AreaData } from '../types';
  * it, two tiles wide like the trail: west in rows 10 and 11, east in rows
  * 21 and 22, north in columns 34 and 35, south in columns 20 and 21. None
  * is in line with the spawn.
+ *
+ * A lake lies in its east half, well away from the spawn. Like every lake it is deep water ringed by shallows.
  */
 export const clearing: AreaData = {
   name: 'clearing',
@@ -20,6 +22,8 @@ export const clearing: AreaData = {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
     o: TerrainDefId.Rock,
+    '~': TerrainDefId.Water,
+    '-': TerrainDefId.Shallows,
   },
   rows: [
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTT',
@@ -37,12 +41,12 @@ export const clearing: AreaData = {
     'TT..o.................................TT',
     'TTT............................o......TT',
     'TT....................................TT',
-    'TT....................................TT',
-    'TT....................................TT',
-    'TTT...........o.......................TT',
-    'TT........................TT..........TT',
-    'TT........................TT.........TTT',
-    'TT....................................TT',
+    'TT.........................---------..TT',
+    'TT.........................-~~~~~~~--.TT',
+    'TTT...........o............--~~~~~~~-.TT',
+    'TT........................TT-~~~~~~--.TT',
+    'TT........................TT--~~~~--.TTT',
+    'TT...........................------...TT',
     'TT......................o...............',
     'TTT.....................................',
     'TT....................................TT',

@@ -3,7 +3,10 @@ import type { EntityDef } from '../../content/defs';
 /** Side of one tile in metres. The client turns it into pixels with PIXELS_PER_METRE. */
 export const TILE_SIZE = 1;
 
-/** A kind of tile. Solid tiles become static colliders; the rest is ground players walk on. */
+/**
+ * A kind of tile. Solid tiles become static colliders; the rest is ground players walk on.
+ * Solid says only that a player cannot be there: a tree stands up from the ground, water lies flat in it.
+ */
 export interface TileDef extends EntityDef {
   readonly solid: boolean;
   /**
@@ -31,9 +34,53 @@ export interface GroundTileSprite {
   readonly key: string;
   /** Side of one tile of the sheet in texture pixels. */
   readonly tilePixels: number;
-  /** How many tiles the sheet holds side by side. */
+  /** How many variants the sheet holds side by side. */
   readonly variantCount: number;
+  /**
+   * Set for a surface that shows an edge where it ends, such as water at its
+   * coast. The sheet then holds, after its variants, one more tile for every
+   * shape in `EDGE_SHAPES`: the same ground with the edge drawn inside the
+   * tile on the sides where the surface ends. A tile whose eight neighbours
+   * are all the same surface shows a variant.
+   */
+  readonly edgeTiles?: {
+    /** The defs that count as the same surface, this tile's own among them: no edge is drawn towards these. */
+    readonly sameSurfaceDefIds: readonly number[];
+  };
 }
+
+/**
+ * The eight neighbours of a tile, each a bit of an edge shape: the bit is
+ * set when that neighbour is the same surface as the tile.
+ */
+export const EdgeNeighbour = { North: 1, East: 2, South: 4, West: 8, NorthEast: 16, SouthEast: 32, SouthWest: 64, NorthWest: 128 } as const;
+
+const ALL_EDGE_NEIGHBOURS = 255;
+
+/**
+ * The shape of a tile's edge for the neighbours in `sameSurfaceNeighbours`
+ * (`EdgeNeighbour` bits). A diagonal neighbour only changes the look when
+ * both tiles beside it are the same surface: otherwise the edge already runs
+ * across that corner, so its bit is dropped and many neighbourhoods share one shape.
+ */
+export function edgeShapeOf(sameSurfaceNeighbours: number): number {
+  const has = (bits: number) => (sameSurfaceNeighbours & bits) === bits;
+  let shape = sameSurfaceNeighbours & (EdgeNeighbour.North | EdgeNeighbour.East | EdgeNeighbour.South | EdgeNeighbour.West);
+  if (has(EdgeNeighbour.North | EdgeNeighbour.East | EdgeNeighbour.NorthEast)) shape |= EdgeNeighbour.NorthEast;
+  if (has(EdgeNeighbour.South | EdgeNeighbour.East | EdgeNeighbour.SouthEast)) shape |= EdgeNeighbour.SouthEast;
+  if (has(EdgeNeighbour.South | EdgeNeighbour.West | EdgeNeighbour.SouthWest)) shape |= EdgeNeighbour.SouthWest;
+  if (has(EdgeNeighbour.North | EdgeNeighbour.West | EdgeNeighbour.NorthWest)) shape |= EdgeNeighbour.NorthWest;
+  return shape;
+}
+
+/**
+ * Every edge shape a tile can have, in the order a sheet with `edgeTiles`
+ * holds them after its variants: 46 of them. The shape with all eight
+ * neighbours the same surface is not here: that tile has no edge.
+ */
+export const EDGE_SHAPES: readonly number[] = [...new Set(Array.from({ length: ALL_EDGE_NEIGHBOURS + 1 }, (_, neighbours) => edgeShapeOf(neighbours)))]
+  .filter((shape) => shape !== ALL_EDGE_NEIGHBOURS)
+  .sort((first, second) => first - second);
 
 /**
  * How views draw a tile that stands up from the ground and is taller or wider
@@ -64,6 +111,8 @@ export const TerrainDefId = {
   Dirt: 201,
   Tree: 202,
   Rock: 203,
+  Water: 204,
+  Shallows: 205,
 } as const;
 
 /**
@@ -72,7 +121,16 @@ export const TerrainDefId = {
  * written by a generator in packages/client/tools whose frame size and
  * variant count must match the sprite declared here (a test next to each
  * generator checks it): `generate-grass-sheet.mjs` for grass,
- * `generate-tree-sheet.mjs` for the tree, `generate-rock-sheet.mjs` for the rock.
+ * `generate-tree-sheet.mjs` for the tree, `generate-rock-sheet.mjs` for the rock,
+ * `generate-water-sheet.mjs` for water and the shallows.
+ *
+ * A lake is two tiles, both flat like grass and solid like a tree: they
+ * are drawn in the ground and nobody walks on them. Water is the deep
+ * middle. The shallows are the ring between it and the land, and the coast
+ * is drawn on them, a bank where they meet the land: a player stops at the
+ * top of that bank. Both
+ * blues are far from every other tile's colour, so a view that draws tiles
+ * by colour alone (a minimap) shows where the lakes are.
  */
 export const terrainDefs: readonly TileDef[] = [
   { id: TerrainDefId.Grass, name: 'grass', shape: 'box', color: 0x5c9e4a, solid: false, groundSprite: { key: 'grass', tilePixels: 16, variantCount: 24 } },
@@ -92,6 +150,22 @@ export const terrainDefs: readonly TileDef[] = [
     color: 0x8a8f99,
     solid: true,
     standingSprite: { key: 'rock', frameWidth: 16, frameHeight: 20, pixelsPerMetre: 16, variantCount: 4, groundDefId: TerrainDefId.Grass },
+  },
+  {
+    id: TerrainDefId.Water,
+    name: 'water',
+    shape: 'box',
+    color: 0x3e82d2,
+    solid: true,
+    groundSprite: { key: 'water', tilePixels: 16, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Water] } },
+  },
+  {
+    id: TerrainDefId.Shallows,
+    name: 'shallows',
+    shape: 'box',
+    color: 0x74b8ea,
+    solid: true,
+    groundSprite: { key: 'shallows', tilePixels: 16, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Shallows, TerrainDefId.Water] } },
   },
 ];
 

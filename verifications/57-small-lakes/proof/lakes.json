@@ -1,0 +1,384 @@
+{
+  "water": {
+    "id": 204,
+    "name": "water",
+    "shape": "box",
+    "color": 4096722,
+    "solid": true,
+    "groundSprite": {
+      "key": "water",
+      "tilePixels": 16,
+      "variantCount": 8,
+      "edgeTiles": {
+        "sameSurfaceDefIds": [
+          204
+        ]
+      }
+    }
+  },
+  "shallows": {
+    "id": 205,
+    "name": "shallows",
+    "shape": "box",
+    "color": 7649514,
+    "solid": true,
+    "groundSprite": {
+      "key": "shallows",
+      "tilePixels": 16,
+      "variantCount": 8,
+      "edgeTiles": {
+        "sameSurfaceDefIds": [
+          205,
+          204
+        ]
+      }
+    }
+  },
+  "lakes": [
+    {
+      "area": "north-meadow",
+      "box": {
+        "column": 9,
+        "row": -23,
+        "width": 13,
+        "height": 10
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 28,
+      "tileCount": 98,
+      "deepTiles": 56,
+      "shallowsTiles": 42
+    },
+    {
+      "area": "rock-field",
+      "box": {
+        "column": 69,
+        "row": -18,
+        "width": 7,
+        "height": 8
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 63,
+      "tileCount": 47,
+      "deepTiles": 21,
+      "shallowsTiles": 26
+    },
+    {
+      "area": "east-glade",
+      "box": {
+        "column": 49,
+        "row": 10,
+        "width": 12,
+        "height": 9
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 43,
+      "tileCount": 82,
+      "deepTiles": 44,
+      "shallowsTiles": 38
+    },
+    {
+      "area": "west-woods",
+      "box": {
+        "column": -35,
+        "row": 12,
+        "width": 7,
+        "height": 6
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 35,
+      "tileCount": 35,
+      "deepTiles": 13,
+      "shallowsTiles": 22
+    },
+    {
+      "area": "clearing",
+      "box": {
+        "column": 27,
+        "row": 15,
+        "width": 10,
+        "height": 6
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 21,
+      "tileCount": 52,
+      "deepTiles": 24,
+      "shallowsTiles": 28
+    },
+    {
+      "area": "south-glade",
+      "box": {
+        "column": 12,
+        "row": 39,
+        "width": 13,
+        "height": 9
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 25,
+      "tileCount": 88,
+      "deepTiles": 48,
+      "shallowsTiles": 40
+    },
+    {
+      "area": "stone-hollow",
+      "box": {
+        "column": -30,
+        "row": 41,
+        "width": 9,
+        "height": 8
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 29,
+      "tileCount": 59,
+      "deepTiles": 29,
+      "shallowsTiles": 30
+    },
+    {
+      "area": "far-clearing",
+      "box": {
+        "column": 56,
+        "row": 41,
+        "width": 12,
+        "height": 8
+      },
+      "deepTilesTouchingLand": 0,
+      "tilesFromSpawn": 50,
+      "tileCount": 73,
+      "deepTiles": 37,
+      "shallowsTiles": 36
+    }
+  ],
+  "keyboardRoute": {
+    "length": 23,
+    "first": {
+      "key": "D",
+      "code": "KeyD",
+      "sign": 1
+    },
+    "second": {
+      "key": "S",
+      "code": "KeyS",
+      "sign": 1,
+      "axis": "y"
+    },
+    "turnAt": {
+      "column": 28,
+      "row": 14
+    },
+    "turnAtMetres": {
+      "x": 28.5,
+      "y": 14.5
+    },
+    "water": {
+      "column": 28,
+      "row": 15
+    },
+    "waterFaceMetres": 15
+  },
+  "shore": {
+    "lake": "clearing",
+    "player": {
+      "x": 28.666942596435547,
+      "y": 14.601884841918945,
+      "radius": 0.4,
+      "intent": {
+        "x": 0,
+        "y": 1
+      },
+      "tile": {
+        "column": 28,
+        "row": 14
+      },
+      "tick": 376,
+      "still": true,
+      "standsOn": "grass",
+      "tileAhead": "shallows"
+    },
+    "gapToWater": -0.0018848419189456678
+  },
+  "visited": [
+    "clearing",
+    "south-glade",
+    "north-meadow",
+    "stone-hollow",
+    "west-woods",
+    "east-glade",
+    "far-clearing",
+    "rock-field"
+  ],
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "water is a tile def of its own: solid, flat, with a colour",
+      "pass": true,
+      "details": "{\"id\":204,\"name\":\"water\",\"shape\":\"box\",\"color\":4096722,\"solid\":true,\"groundSprite\":{\"key\":\"water\",\"tilePixels\":16,\"variantCount\":8,\"edgeTiles\":{\"sameSurfaceDefIds\":[204]}}}"
+    },
+    {
+      "name": "the shallows are a tile def of their own: solid like the deep water, flat, with a colour",
+      "pass": true,
+      "details": "{\"id\":205,\"name\":\"shallows\",\"shape\":\"box\",\"color\":7649514,\"solid\":true,\"groundSprite\":{\"key\":\"shallows\",\"tilePixels\":16,\"variantCount\":8,\"edgeTiles\":{\"sameSurfaceDefIds\":[205,204]}}}"
+    },
+    {
+      "name": "the world has several lakes: at least 3",
+      "pass": true,
+      "details": "north-meadow (98 tiles), rock-field (47 tiles), east-glade (82 tiles), west-woods (35 tiles), clearing (52 tiles), south-glade (88 tiles), stone-hollow (59 tiles), far-clearing (73 tiles)"
+    },
+    {
+      "name": "no lake is a plain rectangle",
+      "pass": true,
+      "details": "98/13x10 47/7x8 82/12x9 35/7x6 52/10x6 88/13x9 59/9x8 73/12x8"
+    },
+    {
+      "name": "no lake is on the spawn or near it: none within ten tiles",
+      "pass": true,
+      "details": "nearest water is 21 tiles from the spawn tile"
+    },
+    {
+      "name": "every lake has a coast all the way round: deep water in the middle, never touching the land, not even at a corner",
+      "pass": true,
+      "details": "north-meadow 56 deep + 42 shallows, rock-field 21 deep + 26 shallows, east-glade 44 deep + 38 shallows, west-woods 13 deep + 22 shallows, clearing 24 deep + 28 shallows, south-glade 48 deep + 40 shallows, stone-hollow 29 deep + 30 shallows, far-clearing 37 deep + 36 shallows"
+    },
+    {
+      "name": "the lakes are bigger than a pond: every one at least six tiles across both ways",
+      "pass": true,
+      "details": "north-meadow 13x10, rock-field 7x8, east-glade 12x9, west-woods 7x6, clearing 10x6, south-glade 13x9, stone-hollow 9x8, far-clearing 12x8"
+    },
+    {
+      "name": "the water sheet loaded: lakes are drawn from it, not from the flat fallback",
+      "pass": true,
+      "details": "water"
+    },
+    {
+      "name": "the shallows sheet loaded: lakes are drawn from it, not from the flat fallback",
+      "pass": true,
+      "details": "shallows"
+    },
+    {
+      "name": "from where the player stands, a walk along one row and then one column over grass alone runs into a lake",
+      "pass": true,
+      "details": "D to column 28, then S to the shallows at (28, 15)"
+    },
+    {
+      "name": "walking into the lake on the keyboard, the player stops at the top of the bank",
+      "pass": true,
+      "details": "moved 22.2 m from the start, stopped -0.002 m from the edge of the shallows with S still held"
+    },
+    {
+      "name": "the player stands on grass with the shallows on the next tile: not even shallow water is entered",
+      "pass": true,
+      "details": "on grass, facing shallows"
+    },
+    {
+      "name": "a second of pushing moves the player nowhere",
+      "pass": true,
+      "details": "0.0000 m"
+    },
+    {
+      "name": "the lake in clearing is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "24 of 24 deep tiles looked at are blue and 23 of 23 shallows tiles (52 in the lake, 0 behind the player); the shallows are paler by 54 of red; 21 of 21 sides facing grass show the bank, 0 a rim brighter than the water; 19 of 19 tiles beside it are green"
+    },
+    {
+      "name": "the lake in south-glade is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "34 tiles walked; pushed for 92 ticks, moved 0.01 m, still on grass"
+    },
+    {
+      "name": "the lake in south-glade is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "45 of 45 deep tiles looked at are blue and 22 of 22 shallows tiles (88 in the lake, 0 behind the player); the shallows are paler by 54 of red; 20 of 20 sides facing grass show the bank, 0 a rim brighter than the water; 17 of 17 tiles beside it are green"
+    },
+    {
+      "name": "the lake in north-meadow is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "86 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in north-meadow is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "49 of 49 deep tiles looked at are blue and 27 of 27 shallows tiles (98 in the lake, 1 behind the player); the shallows are paler by 54 of red; 24 of 24 sides facing grass show the bank, 0 a rim brighter than the water; 14 of 14 tiles beside it are green"
+    },
+    {
+      "name": "the lake in stone-hollow is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "133 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in stone-hollow is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "29 of 29 deep tiles looked at are blue and 22 of 22 shallows tiles (59 in the lake, 0 behind the player); the shallows are paler by 54 of red; 14 of 14 sides facing grass show the bank, 0 a rim brighter than the water; 5 of 5 tiles beside it are green"
+    },
+    {
+      "name": "the lake in west-woods is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "26 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in west-woods is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "13 of 13 deep tiles looked at are blue and 10 of 10 shallows tiles (35 in the lake, 1 behind the player); the shallows are paler by 54 of red; 5 of 5 sides facing grass show the bank, 0 a rim brighter than the water; 5 of 5 tiles beside it are green"
+    },
+    {
+      "name": "the lake in east-glade is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "110 tiles walked; pushed for 90 ticks, moved 0.13 m, still on grass"
+    },
+    {
+      "name": "the lake in east-glade is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "44 of 44 deep tiles looked at are blue and 32 of 32 shallows tiles (82 in the lake, 1 behind the player); the shallows are paler by 52 of red; 23 of 23 sides facing grass show the bank, 0 a rim brighter than the water; 9 of 9 tiles beside it are green"
+    },
+    {
+      "name": "the lake in far-clearing is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "35 tiles walked; pushed for 90 ticks, moved 0.17 m, still on grass"
+    },
+    {
+      "name": "the lake in far-clearing is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "37 of 37 deep tiles looked at are blue and 17 of 17 shallows tiles (73 in the lake, 0 behind the player); the shallows are paler by 54 of red; 13 of 13 sides facing grass show the bank, 0 a rim brighter than the water; 7 of 7 tiles beside it are green"
+    },
+    {
+      "name": "the lake in rock-field is reached on foot and its shallows hold the player on the grass",
+      "pass": true,
+      "details": "81 tiles walked; pushed for 90 ticks, moved 0.18 m, still on grass"
+    },
+    {
+      "name": "the lake in rock-field is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
+      "pass": true,
+      "details": "21 of 21 deep tiles looked at are blue and 17 of 17 shallows tiles (47 in the lake, 1 behind the player); the shallows are paler by 54 of red; 8 of 8 sides facing grass show the bank, 0 a rim brighter than the water; 1 of 1 tiles beside it are green"
+    },
+    {
+      "name": "every lake was visited and photographed",
+      "pass": true,
+      "details": "clearing, south-glade, north-meadow, stone-hollow, west-woods, east-glade, far-clearing, rock-field"
+    },
+    {
+      "name": "walking between the lakes, the player was on a water, shallows, tree or rock tile in no frame",
+      "pass": true
+    },
+    {
+      "name": "the colour of water is far from every tile of the land, so a view that draws tiles by colour shows the lakes",
+      "pass": true,
+      "details": "nearest is 96 away of 441: grass 142, dirt 165, tree 154, rock 96"
+    },
+    {
+      "name": "the colour of shallows is far from every tile of the land, so a view that draws tiles by colour shows the lakes",
+      "pass": true,
+      "details": "nearest is 93 away of 441: grass 164, dirt 161, tree 204, rock 93"
+    },
+    {
+      "name": "and the two blues are apart, so the same view shows the coast",
+      "pass": true,
+      "details": "80 apart"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

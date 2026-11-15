@@ -1,0 +1,137 @@
+
+ RUN  v5.1.0 <repo>/packages/sim
+
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > puts the player on the point they left, not on the centre of its tile 125ms
+ ✓ |sim| src/content/world/lakes.test.ts > water > is a flat tile nobody walks on: solid, drawn in the ground, under an id of its own 11ms
+ ✓ |sim| src/content/world/lakes.test.ts > water > has shallows beside it: a flat tile nobody walks on either, under an id of its own 0ms
+ ✓ |sim| src/content/world/lakes.test.ts > water > shows where it ends: the shallows draw an edge against the land, deep water against the shallows 0ms
+ ✓ |sim| src/content/world/lakes.test.ts > water > has colours far from every tile of the land and apart from each other, so a view that draws tiles by colour shows the lakes and their coast 1ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > puts the first player on the spawn tile itself 143ms
+ ✓ |sim| src/features/player/passThrough.test.ts > players pass through each other (headless) > two players walking at each other cross and each keeps walking at full speed 169ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > spawns facing down with no move intent 172ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > accepts a plain name and gives it back unchanged 2ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > normalises instead of trusting: outer spaces go, runs of spaces become one, letters are composed 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > counts user-visible characters, not UTF-16 units: 20 emoji fit, 21 letters do not 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > refuses a name that would not fit the stored code points, however few characters it shows 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > refuses what is not text, what is empty and what holds control or formatting characters 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > refuses a name that shows nothing: the required name cannot be made of invisible characters 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > refuses invisible characters that would make one name look exactly like another 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > keeps the joiners and selectors real spellings need: emoji sequences, a keycap, a Persian word 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > accepts everyday words of scripts that put several marks on one letter, and still refuses a pile 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > refuses the inputs the second review drew pixel-identical to another name, or blank 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > drops an emoji selector that selects nothing instead of storing a second spelling of the same name 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacterName > keeps the flags spelled with tag characters, Bengali ya-phala and a Persian word that ends in a digit 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacter > gives back a fresh, normalised character for a legal one 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacter > accepts every palette index and nothing outside the palettes 1ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacter > refuses anything that is not exactly a name and a look 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacter > never throws, whatever it is handed 0ms
+ ✓ |sim| src/features/player/character.test.ts > readCharacter > seats guests as legal characters that differ from seat to seat 0ms
+ ✓ |sim| src/features/player/character.test.ts > sameCharacter > calls two characters the same when the name and every colour match 0ms
+ ✓ |sim| src/features/player/character.test.ts > sameCharacter > calls them different when the name or any one colour differs 0ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > spawns the player with the look and the name it joined with 179ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > spawns a player at the spawn point of the map on join 193ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > tile defs > a standing sprite has at least one variant and stands on a flat tile def 2ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > tile defs > a ground sprite has at least one variant and belongs to a tile that does not stand up 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > tile defs > no tile sprite shares its key with another sprite: they are one folder and one texture namespace 0ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > tile defs > a tree is still one solid tile to the sim, whatever it looks like 2ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > tile defs > a rock is still one solid tile and grass still walkable ground, under the ids they always had 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > merges horizontal runs so a whole row of trees is one rectangle 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > stacks identical runs vertically and keeps different ones apart 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > treats rocks and trees alike (solid) and leaves grass, dirt and tiles no area drew out 0ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > gives rectangles in world tiles, wherever the chunk is 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > never merges across a chunk edge: a wall through two chunks is one rectangle in each 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > solid tile merging > covers every solid tile of the world exactly once, and nothing else 209ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > resolves an area's ASCII rows through its legend into tile def ids at the world tiles it reserves 8ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > stores tiles in chunks of CHUNK_SIZE, top row first then left to right, and only the chunks that hold a tile 2ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > converts between tiles and metres with no map at all: tile (0, 0) has its corner on the origin 0ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > rejects ragged rows, unknown characters, non-tile defs, bad origins and spawns off every area or on a solid tile 2ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > a bad map fails when the sim is created, never inside a command handler 177ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > keeps the player there on the following ticks: the point was a place a body can stand 13ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > lands on the nearest free tile when the tile they left is solid now 3ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > picks the nearest free tile by distance to the point, also when it is not in the first ring 1ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > lands on the nearest free tile when another player stands on the tile they left 1ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > never counts a player that left in the same step: their tile is free for whoever returns to it 2ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > spawns the player as a new one when no tile within 8 tiles of the point is free 13ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > spawns the player as a new one when the point is far outside the map 1ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > treats a malformed returnTo as none at all: the world ends up exactly as after a plain join 125ms
+ ✓ |sim| src/features/player/passThrough.test.ts > players pass through each other (headless) > a standing player does not block a corridor: the other walks straight through and is stopped by the trees beyond 42ms
+ ✓ |sim| src/features/player/passThrough.test.ts > players pass through each other (headless) > gives every player collider the player layer and a filter that leaves that layer out, so terrain (every layer) still hits 82ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > lands five joins on five distinct, walkable tiles, all next to the spawn tile 9ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > picks the ring tiles at random, so other seeds seat the same five arrivals on other tiles around the spawn 145ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > moves at the def speed for N ticks in open space 103ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > turns to face a non-zero move intent and keeps facing it after a stop 82ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > stores the facing as a unit vector even when the intent is shorter or longer than one 77ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > stores the normalised name, never the one the command carried 179ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > chooses the same tiles for the same seed and joins 22ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > skips solid tiles and tiles a player stands on, reaching further out when the first ring is full 1ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > treats a tile a player walked onto as taken and a tile a player left as free again 28ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > looks for a free tile no further than 32 tiles from the spawn: one 32 tiles out is used, one 33 tiles out is not 91ms
+ ✓ |sim| src/features/player/spawn.test.ts > spread spawns (headless) > falls back to the spawn tile, without throwing, when no tile is free 2ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > treats a malformed or negligible move as a stop and leaves the facing alone 67ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > is part of the snapshot, so it survives serialization and feeds the state hash 37ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > keeps moving with the last intent and stops on a zero move 49ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > normalises diagonal and oversized move vectors to the def speed 94ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > resets to facing down when a recycled entity id is reused by a new join 7ms
+ ✓ |sim| src/features/player/facing.test.ts > player facing (headless) > has no heading for entities that do not move and face, or do not exist 4ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > builds one static box per merged rectangle, chunk by chunk, and no entity at all 263ms
+ ✓ |sim| src/features/terrain/edgeShapes.test.ts > edge shapes > keeps the four sides as they are 1ms
+ ✓ |sim| src/features/terrain/edgeShapes.test.ts > edge shapes > drops a diagonal neighbour unless both tiles beside it are the same surface too 0ms
+ ✓ |sim| src/features/terrain/edgeShapes.test.ts > edge shapes > gives a tile with the same surface all round the one shape that has no edge 0ms
+ ✓ |sim| src/features/terrain/edgeShapes.test.ts > edge shapes > lists the 46 shapes with an edge once each, in rising order: a sheet holds its edge tiles in this order 1ms
+ ✓ |sim| src/features/terrain/edgeShapes.test.ts > edge shapes > has a place in the list for the shape of every neighbourhood but the one with no edge 5ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > ignores a join whose character is not legal: nobody is seated and nothing throws 26ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > leaves nothing of a name behind when an entity id is used again by a shorter name 42ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > keeps the same seed and joins deterministic, and a different name a different state 179ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > treats absurdly large components as full input, not as a stop 8ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > is stopped by the forest border (Rapier collision), then slides along it 172ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > places each box over its tiles in metres, measured from the fixed origin 2ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > builds the same boxes in the same order every time, and the same physics bytes 12ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > names the map in the snapshot by its checksum, so a snapshot says which terrain its physics bytes hold 9ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > the world spawns the player on the grass inside the forest 68ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > a player walks freely over the grass, east and then south 71ms
+ ✓ |sim| src/content/world/lakes.test.ts > water > keeps a player out of the lake, shallows and all: walking from the spawn into the lake in the clearing stops on the grass, at the top of the bank 685ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > ignores commands for empty or invalid slots and duplicate joins 37ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > drops malformed command values instead of throwing (the network will send garbage) 3ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > removes the player and its body on leave, and a re-join starts fresh at spawn 50ms
+ ✓ |sim| src/features/player/movement.test.ts > player movement (headless) > ignores a join when the sim is full instead of throwing 8ms
+ ✓ |sim| src/features/player/character.test.ts > player/join with a character > reads no character for something that has none, or for an id that is no entity 7ms
+ ✓ |sim| src/features/player/character.test.ts > a character on a replica > arrives with the join, in a full state and in a delta, as plain numbers 9ms
+ ✓ |sim| src/features/player/character.test.ts > a character on a replica > shows a legal character whatever a server sends: an unreadable name is "?", a palette index out of range the first swatch 7ms
+ ✓ |sim| src/features/player/character.test.ts > player/change-character > gives the same entity another look and name where it stands, and touches nobody else 32ms
+ ✓ |sim| src/features/player/character.test.ts > player/change-character > stores the normalised name and leaves nothing of a longer one behind 9ms
+ ✓ |sim| src/features/player/character.test.ts > player/change-character > ignores a change that is not legal, or for a seat nobody sits in: the world is exactly as it was 13ms
+ ✓ |sim| src/features/player/character.test.ts > player/change-character > reaches a replica as a delta of the same entity 5ms
+ ✓ |sim| src/features/player/character.test.ts > player/change-character > keeps the same seed and commands deterministic 53ms
+ ✓ |sim| src/content/world/lakes.test.ts > the lakes of the world > are several, spread over the world: at least six, in at least six areas, on every side of the clearing 1ms
+ ✓ |sim| src/content/world/lakes.test.ts > the lakes of the world > are lakes, not puddles and not seas, of different sizes, and none is a plain rectangle 1ms
+ ✓ |sim| src/content/world/lakes.test.ts > the lakes of the world > have a coast all the way round: deep water in the middle never touches the land, not even at a corner, and every tile of the shallows touches the deep 3ms
+ ✓ |sim| src/content/world/lakes.test.ts > the lakes of the world > have grass to walk on round most of their shore, now that nobody wades: at least two thirds of what touches a lake is grass 30ms
+ ✓ |sim| src/content/world/lakes.test.ts > the lakes of the world > leave the spawn alone: no water within ten tiles of it 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > trees block the player: walking into the forest border stops at the first tree face 184ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > is deterministic: the same seed and the same joins give the same world 2ms
+ ✓ |sim| src/features/player/returnTo.test.ts > a join that returns a player to where they left (headless) > fuzzed with 2000 random points, never throws and always leaves the player on a walkable tile 564ms
+ ✓ |sim| src/features/player/returnTo.test.ts > getPlayerPosition > says where the player in a slot stands and nothing for an empty slot 1ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > a rock blocks the player too, and nothing escapes the room 40ms
+ ✓ |sim| src/features/terrain/terrain.test.ts > terrain feature (headless) > a wall that crosses a chunk edge is as solid at the seam as anywhere else 21ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > reads a map object once and hands back the same tiles 35ms
+ ✓ |sim| src/content/world/world.test.ts > reading a map into chunks > gives the same checksum to the same terrain however it is cut into areas, and another to any other terrain or spawn 2ms
+ ✓ |sim| src/content/world/world.test.ts > the map checksum > changes when a tile def becomes solid or stops being solid, though no tile moved: the colliders would differ 31ms
+ ✓ |sim| src/content/world/world.test.ts > a world that grows > keeps every existing tile, tile coordinate and position in metres when an area is added on any side 612ms
+ ✓ |sim| src/content/world/world.test.ts > a world that grows > mounts a second area at the coordinates it reserves: its tiles and its colliders are there, in the same world 17ms
+ ✓ |sim| src/content/world/world.test.ts > a world that grows > a player inside a mounted area is stopped by its walls 38ms
+ ✓ |sim| src/content/world/world.test.ts > a world that grows > refuses an area that overlaps another by even one tile, naming both, and two areas with one name 1ms
+ ✓ |sim| src/content/world/world.test.ts > the world > is the clearing, with its top-left tile on the origin, and areas on every side of it: ten times the clearing in all 0ms
+ ✓ |sim| src/content/world/world.test.ts > the world > is one continuous outdoors: the areas cover the rectangle that holds them, with no tile missing 1ms
+ ✓ |sim| src/content/world/world.test.ts > the world > keeps areas small enough to edit by hand: none is much larger than the clearing 0ms
+ ✓ |sim| src/content/world/world.test.ts > the world > has no dirt paths: every tile is grass, a tree, a rock, water or shallows 2ms
+ ✓ |sim| src/content/world/world.test.ts > the world > is ringed by trees with no gap, so nothing walks off the map 1ms
+ ✓ |sim| src/content/world/world.test.ts > the world > spawns on grass, with every other walkable tile of every area within reach on foot 15ms
+ ✓ |sim| src/content/world/world.test.ts > the world > counts reach in whole tiles a player fits through: every avatar is narrower than one tile 0ms
+ ✓ |sim| src/content/world/world.test.ts > a generated map > is the same every time, ringed by trees, with a walkable spawn, and readable at 400x300 19ms
+ ✓ |sim| src/features/player/character.test.ts > fuzzing player/change-character > never throws and never leaves an illegal character in the world, for thousands of hostile changes 804ms
+ ✓ |sim| src/features/player/character.test.ts > fuzzing player/join > never throws and never seats an illegal character, for thousands of hostile joins 480ms
+ ✓ |sim| src/features/player/character.test.ts > fuzzing player/join > reads back any name it accepted as the same name 134ms
+
+ Test Files  10 passed (10)
+      Tests  130 passed (130)
+

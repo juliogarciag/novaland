@@ -21,7 +21,7 @@ export { worldMap } from './content/world';
 export { generatedWorldMap, type GeneratedMapOptions } from './content/world/generated';
 export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './content/world/types';
 export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
-export { getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
+export { EDGE_SHAPES, EdgeNeighbour, edgeShapeOf, getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { ChangeCharacterCommand, JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getCharacter, getHeading, getPlayerPosition, type Heading } from './features/player/queries';
 export { guestCharacter, readCharacter, readCharacterName, sameCharacter, type Character, type CharacterLook, type CharacterNameProblem } from './features/player/character';

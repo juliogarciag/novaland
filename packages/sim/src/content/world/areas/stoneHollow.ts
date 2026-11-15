@@ -6,6 +6,8 @@ import type { AreaData } from '../types';
  * stones in it. Trails leave north to the west woods and east to the south
  * glade.
  *
+ * A lake lies inside the ring of stones. Like every lake it is deep water ringed by shallows.
+ *
  * 45x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
@@ -17,6 +19,8 @@ export const stoneHollow: AreaData = {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
     o: TerrainDefId.Rock,
+    '~': TerrainDefId.Water,
+    '-': TerrainDefId.Shallows,
   },
   rows: [
     'TTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
@@ -30,14 +34,14 @@ export const stoneHollow: AreaData = {
     'TTTTTTTTTTTTTT..........TTTTTTTTTTTTTTTTTTTTT',
     'TTTTTTTTTTTTT.............TTTTTTTTTTTTTTTTTTT',
     'TTTTTTTTTT.......o...o.....TTTTTTTTTTTTTTTTTT',
-    'TTTTTTTTT......o.......o....TTTTTTTTTTTTTTTTT',
-    'TTTTTTTTTT...................TTTTTTTTTTTTTTTT',
-    'TTTTTTTTTT....o.........o.....TTTTTTTTTTTTTTT',
-    'TTTTTTTTTT....................TTTTTTTTTTTTTT.',
-    'TTTTTTTTTT....................TTTTTTTTTTTTT..',
-    'TTTTTTTTT......................TTTTTTTTTTT...',
-    'TTTTTTTTT.....o.........o.......TTTTTTTTTT...',
-    'TTTTTTTTT....................T....TTTTTT....T',
+    'TTTTTTTTT......o.-----.o....TTTTTTTTTTTTTTTTT',
+    'TTTTTTTTTT......--~~~--......TTTTTTTTTTTTTTTT',
+    'TTTTTTTTTT....o--~~~~~--o.....TTTTTTTTTTTTTTT',
+    'TTTTTTTTTT.....-~~~~~~~-......TTTTTTTTTTTTTT.',
+    'TTTTTTTTTT.....-~~~~~~~-......TTTTTTTTTTTTT..',
+    'TTTTTTTTT......--~~~~~--.......TTTTTTTTTTT...',
+    'TTTTTTTTT.....o.--~~---.o.......TTTTTTTTTT...',
+    'TTTTTTTTT........----........T....TTTTTT....T',
     'TTTTTTTTT......o.......o....TT......T......TT',
     'TTTTTTTTTT.......o...o......TTTT..........TTT',
     'TTTTTTTTTTTTT..............TTTTTTT....TTTTTTT',

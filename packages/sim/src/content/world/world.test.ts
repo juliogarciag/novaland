@@ -248,9 +248,9 @@ describe('the world', () => {
     for (const mounted of worldMap.areas) expect(mounted.rows.length * (mounted.rows[0]?.length ?? 0), mounted.name).toBeLessThanOrEqual(1500);
   });
 
-  it('has no paths: every tile is grass, a tree or a rock', () => {
+  it('has no dirt paths: every tile is grass, a tree, a rock, water or shallows', () => {
     const tiles = readMapTiles(worldMap);
-    expect(new Set(tilesIn(tiles.bounds).map((tile) => tileDefIdAt(tiles, tile)))).toEqual(new Set([TerrainDefId.Grass, TerrainDefId.Tree, TerrainDefId.Rock]));
+    expect(new Set(tilesIn(tiles.bounds).map((tile) => tileDefIdAt(tiles, tile)))).toEqual(new Set([TerrainDefId.Grass, TerrainDefId.Tree, TerrainDefId.Rock, TerrainDefId.Water, TerrainDefId.Shallows]));
     for (const mounted of worldMap.areas) expect(Object.values(mounted.legend)).not.toContain(TerrainDefId.Dirt);
   });
 
