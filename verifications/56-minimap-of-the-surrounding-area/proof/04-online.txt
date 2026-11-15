@@ -1,0 +1,12 @@
+PASS  A is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":13.999919891357422,"y":14.5}, drawn at {"x":13.999919891357422,"y":14.5})
+PASS  A sees the other player as a dot in the other's avatar colour, where the other is  (dot at (855.0, 106.2), the other stands at (855.0, 106.2) on this minimap; pixel #0d9488, avatar #0d9488)
+PASS  A sees the starting point marked on the spawn tile
+PASS  B is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":7.5,"y":21.58349609375}, drawn at {"x":7.5,"y":21.58349609375})
+PASS  B sees the other player as a dot in the other's avatar colour, where the other is  (dot at (881.0, 78.0), the other stands at (881.0, 78.0) on this minimap; pixel #e11d48, avatar #e11d48)
+PASS  B sees the starting point marked on the spawn tile
+PASS  while B walks east its dot moves east on A's minimap, sample after sample  (855.0 -> 857.5 -> 861.6 -> 865.5 -> 869.7)
+PASS  and it ends as many pixels east as the tiles B walked, while A's minimap stayed put  (B walked 8.25 m; its dot moved 16.5 px at 2 px a tile)
+PASS  on B's own minimap the terrain moved instead, and A's dot is still where A stands  (A's dot at (865.0, 78.0), expected (865.0, 78.0))
+PASS  no page errors
+
+ALL 10 CHECKS PASSED

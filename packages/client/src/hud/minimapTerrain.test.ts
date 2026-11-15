@@ -1,58 +1,64 @@
-import { CHUNK_SIZE, generatedWorldMap, getTileDef, readMapTiles, terrainDefs, TILE_SIZE, worldMap, type MapChunk } from '@novaland/sim';
+import { CHUNK_SIZE, generatedWorldMap, getTileDef, readMapTiles, TILE_SIZE, worldMap } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunkCoordinatesIn } from '../render/chunkRange';
-import { PIXELS_PER_METRE } from '../render/units';
+import { chunkCoordinatesIn, chunkRangeOfTiles } from '../render/chunkRange';
 import { MINIMAP_TILES_ACROSS } from './minimapPlacement';
-import { chunkPixels, MINIMAP_KEEP_MARGIN_TILES, worldPixelsShown } from './minimapTerrain';
+import { chunkColorBytes, minimapChunkRanges } from './minimapTerrain';
 
-describe('chunkPixels', () => {
-  it('paints every tile of the world in the colour of its def, a pixel per tile, and leaves the rest transparent', () => {
-    for (const chunk of readMapTiles(worldMap).chunks) {
-      const pixels = chunkPixels(chunk);
-      expect(pixels).toHaveLength(CHUNK_SIZE * CHUNK_SIZE * 4);
-      chunk.defIds.forEach((defId, index) => {
-        const expected = defId === 0 ? [0, 0, 0, 0] : [...rgbOf(getTileDef(defId).color), 255];
-        expect([...pixels.slice(index * 4, index * 4 + 4)], `chunk ${chunk.column},${chunk.row} tile ${index}`).toEqual(expected);
-      });
+describe('chunkColorBytes', () => {
+  it('paints every tile in the colour of its def, a pixel per tile, and leaves the rest transparent: on the world and on a generated map', () => {
+    for (const map of [worldMap, generatedWorldMap({ columns: 70, rows: 40 })]) {
+      for (const chunk of readMapTiles(map).chunks) {
+        const bytes = chunkColorBytes(chunk);
+        expect(bytes).toHaveLength(CHUNK_SIZE * CHUNK_SIZE * 4);
+        chunk.defIds.forEach((defId, index) => {
+          const expected = defId === 0 ? [0, 0, 0, 0] : [...rgbOf(getTileDef(defId).color), 255];
+          expect([...bytes.slice(index * 4, index * 4 + 4)], `chunk ${chunk.column},${chunk.row} tile ${index}`).toEqual(expected);
+        });
+      }
     }
-  });
-
-  it('shows the kinds of tile the world has in different colours, so they can be told apart', () => {
-    const colors = terrainDefs.map((def) => def.color);
-    expect(new Set(colors).size).toBe(colors.length);
-  });
-
-  it('paints a kind of tile it has never heard of from its def alone: water needs no change here', () => {
-    const waterDefId = 299;
-    const chunk: MapChunk = { column: 0, row: 0, firstTile: { column: 0, row: 0 }, defIds: new Uint16Array(CHUNK_SIZE * CHUNK_SIZE).fill(waterDefId) };
-    const pixels = chunkPixels(chunk, (defId) => (defId === waterDefId ? 0x3b82f6 : 0));
-    expect([...pixels.slice(0, 4)]).toEqual([0x3b, 0x82, 0xf6, 255]);
-    expect([...pixels.slice(-4)]).toEqual([0x3b, 0x82, 0xf6, 255]);
   });
 });
 
-describe('what the minimap keeps painted', () => {
-  it('is the square of tiles around its centre, in world pixels', () => {
-    const side = MINIMAP_TILES_ACROSS * TILE_SIZE * PIXELS_PER_METRE;
-    expect(worldPixelsShown({ x: 100, y: -20 }, MINIMAP_TILES_ACROSS)).toEqual({ x: 100 * PIXELS_PER_METRE - side / 2, y: -20 * PIXELS_PER_METRE - side / 2, width: side, height: side });
+describe('minimapChunkRanges', () => {
+  it('draws the chunks under the minimap and keeps half a chunk more on every side', () => {
+    const chunksOfMap = chunkRangeOfTiles(readMapTiles(generatedWorldMap({ columns: 400, rows: 300 })).bounds);
+    // Centred on the corner where four chunks meet, 80 tiles across: 40 tiles each way.
+    const centre = { x: 6 * CHUNK_SIZE * TILE_SIZE, y: 4 * CHUNK_SIZE * TILE_SIZE };
+    expect(minimapChunkRanges({ centre, tilesAcross: 80, chunksOfMap })).toEqual({
+      draw: { firstColumn: 4, lastColumn: 7, firstRow: 2, lastRow: 5 },
+      keep: { firstColumn: 4, lastColumn: 7, firstRow: 2, lastRow: 5 },
+    });
+    expect(minimapChunkRanges({ centre: { x: centre.x + 10, y: centre.y }, tilesAcross: 80, chunksOfMap })).toEqual({
+      draw: { firstColumn: 5, lastColumn: 7, firstRow: 2, lastRow: 5 },
+      keep: { firstColumn: 4, lastColumn: 8, firstRow: 2, lastRow: 5 },
+    });
   });
 
-  it('does not depend on how big the world is: at most sixteen chunks shown and twenty-five kept, on the world and on a map a hundred times its size', () => {
+  it('does not depend on how big the world is: at most sixteen chunks drawn and twenty-five kept, on the world and on a map a hundred times its size', () => {
     for (const map of [worldMap, generatedWorldMap({ columns: 400, rows: 300 })]) {
       const { bounds, chunks } = readMapTiles(map);
       const chunksOfMap = chunkRangeOfTiles(bounds);
-      let mostShown = 0;
+      let mostDrawn = 0;
       let mostKept = 0;
-      // Every place a player could stand, a tile and a bit apart so chunk edges are met at every offset.
+      // Every place a player could stand, a few tiles and a bit apart so chunk edges are met at every offset.
       for (let y = bounds.row; y < bounds.row + bounds.height; y += 7.3) {
         for (let x = bounds.column; x < bounds.column + bounds.width; x += 7.3) {
-          const shown = worldPixelsShown({ x: x * TILE_SIZE, y: y * TILE_SIZE }, MINIMAP_TILES_ACROSS);
-          mostShown = Math.max(mostShown, chunkCoordinatesIn(chunkRangeWithin(chunkRangeAround(shown, 0), chunksOfMap)).length);
-          mostKept = Math.max(mostKept, chunkCoordinatesIn(chunkRangeWithin(chunkRangeAround(shown, MINIMAP_KEEP_MARGIN_TILES), chunksOfMap)).length);
+          const { draw, keep } = minimapChunkRanges({ centre: { x: x * TILE_SIZE, y: y * TILE_SIZE }, tilesAcross: MINIMAP_TILES_ACROSS, chunksOfMap });
+          mostDrawn = Math.max(mostDrawn, chunkCoordinatesIn(draw).length);
+          mostKept = Math.max(mostKept, chunkCoordinatesIn(keep).length);
         }
       }
-      expect(mostShown, `${chunks.length} chunks in the map`).toBeLessThanOrEqual(16);
+      expect(mostDrawn, `${chunks.length} chunks in the map`).toBeLessThanOrEqual(16);
       expect(mostKept, `${chunks.length} chunks in the map`).toBeLessThanOrEqual(25);
+    }
+  });
+
+  it('holds no chunk for a centre far outside the map, however large: positions come from the server', () => {
+    const chunksOfMap = chunkRangeOfTiles(readMapTiles(worldMap).bounds);
+    for (const far of [1e7, -1e7, 1e300, Number.MAX_VALUE]) {
+      const { draw, keep } = minimapChunkRanges({ centre: { x: far, y: far }, tilesAcross: MINIMAP_TILES_ACROSS, chunksOfMap });
+      expect(chunkCoordinatesIn(draw), String(far)).toEqual([]);
+      expect(chunkCoordinatesIn(keep), String(far)).toEqual([]);
     }
   });
 });

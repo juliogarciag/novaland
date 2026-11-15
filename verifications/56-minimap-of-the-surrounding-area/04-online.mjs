@@ -17,7 +17,6 @@ import { check, summarize, waitFor, writeProof } from './lib.mjs';
 const SERVER_PORT = 5964;
 const CLIENT_PORT = 5965;
 const VIEWPORT = { width: 960, height: 720 };
-const LOCAL_PLAYER_COLOR = 0xffffff;
 const results = [];
 const report = {};
 const errors = [];
@@ -47,7 +46,7 @@ try {
     const centre = { x: own.minimap.rect.x + own.minimap.rect.width / 2, y: own.minimap.rect.y + own.minimap.rect.height / 2 };
     const theirColor = await page.evaluate((defId) => window.__novaland.defs.find((def) => def.id === defId).color, theirs.player.defId);
     const expected = onScreen(own, theirs.drawnAt);
-    results.push(check(`${name} is in the middle of its own minimap, in white, centred on where its last frame drew it`, localPlayer.isLocalPlayer && localPlayer.eid === own.player.eid && own.minimap.centre.x === own.drawnAt.x && own.minimap.centre.y === own.drawnAt.y && Math.hypot(localPlayer.x - centre.x, localPlayer.y - centre.y) <= 1 && picture.colorAt(localPlayer.x, localPlayer.y) === LOCAL_PLAYER_COLOR, `centre ${JSON.stringify(own.minimap.centre)}, drawn at ${JSON.stringify(own.drawnAt)}`));
+    results.push(check(`${name} is in the middle of its own minimap, in white, centred on where its last frame drew it`, localPlayer.isLocalPlayer && localPlayer.eid === own.player.eid && own.minimap.centre.x === own.drawnAt.x && own.minimap.centre.y === own.drawnAt.y && Math.hypot(localPlayer.x - centre.x, localPlayer.y - centre.y) <= 1 && picture.colorAt(localPlayer.x, localPlayer.y) === own.minimap.localPlayerColor, `centre ${JSON.stringify(own.minimap.centre)}, drawn at ${JSON.stringify(own.drawnAt)}`));
     results.push(check(`${name} sees the other player as a dot in the other's avatar colour, where the other is`, otherPlayer.source === 'entity' && !otherPlayer.isLocalPlayer && otherPlayer.eid === theirs.player.eid && otherPlayer.color === theirColor && Math.hypot(otherPlayer.x - expected.x, otherPlayer.y - expected.y) <= 1 && picture.colorAt(otherPlayer.x, otherPlayer.y) === theirColor, `dot at (${otherPlayer.x.toFixed(1)}, ${otherPlayer.y.toFixed(1)}), the other stands at (${expected.x.toFixed(1)}, ${expected.y.toFixed(1)}) on this minimap; pixel ${hex(picture.colorAt(otherPlayer.x, otherPlayer.y))}, avatar ${hex(theirColor)}`));
     results.push(check(`${name} sees the starting point marked on the spawn tile`, startingPoint.source === 'landmark' && !startingPoint.onEdge && Math.hypot(startingPoint.x - onScreen(own, own.spawn).x, startingPoint.y - onScreen(own, own.spawn).y) <= 1));
   }

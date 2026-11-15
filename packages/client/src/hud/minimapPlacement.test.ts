@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { wholeZoomFor } from '../render/zoom';
-import { HUD_MARGIN, MINIMAP_TILE_CSS_PIXELS, MINIMAP_TILES_ACROSS, minimapPlacement, sameMinimapPlacement } from './minimapPlacement';
+import { HUD_MARGIN } from './layout';
+import { MINIMAP_TILE_CSS_PIXELS, MINIMAP_TILES_ACROSS, minimapPlacement, sameMinimapPlacement } from './minimapPlacement';
 
 describe('minimapPlacement', () => {
   it('sits in the top-right corner, a margin from both edges, beside the HUD lines', () => {
     expect(minimapPlacement({ canvasWidth: 1280, pixelRatio: 1, hudLines: HUD_LINES })).toEqual({ x: 1280 - HUD_MARGIN - CSS_SIZE, y: HUD_MARGIN, size: CSS_SIZE, pixelsPerTile: MINIMAP_TILE_CSS_PIXELS, pixelRatio: 1 });
   });
 
-  it('is the same CSS size at every pixel ratio and every camera zoom, with a tile a whole number of device pixels', () => {
+  it('makes a tile a whole number of device pixels at every pixel ratio and window width, and is exactly 160 CSS pixels at whole ratios', () => {
     for (const pixelRatio of [1, 1.25, 1.5, 2, 3]) {
       for (const cssWidth of [640, 960, 1280, 1920, 3840]) {
         const canvasWidth = Math.round(cssWidth * pixelRatio);
@@ -17,6 +18,7 @@ describe('minimapPlacement', () => {
         expect(placement.size, label).toBe(MINIMAP_TILES_ACROSS * placement.pixelsPerTile);
         // Within a device pixel per tile of the CSS size it is meant to have.
         expect(Math.abs(placement.size / pixelRatio - CSS_SIZE), label).toBeLessThanOrEqual(MINIMAP_TILES_ACROSS / (2 * pixelRatio));
+        if (Number.isInteger(pixelRatio)) expect(placement.size / pixelRatio, label).toBe(CSS_SIZE);
         expect(placement.x + placement.size, label).toBe(canvasWidth - Math.round(HUD_MARGIN * pixelRatio));
       }
     }

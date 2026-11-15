@@ -1,0 +1,17 @@
+round 1 world  frame 10.600 ms median, 10.842 mean, 15.300 p95 over 741 frames; minimap 19.0 µs a frame; 2 chunks kept of 2, 0 painted during the walk
+round 1 big    frame 12.000 ms median, 13.107 mean, 28.200 p95 over 614 frames; minimap 21.0 µs a frame; 12 chunks kept of 130, 3 painted during the walk
+round 2 world  frame 11.200 ms median, 11.555 mean, 16.500 p95 over 696 frames; minimap 19.9 µs a frame; 2 chunks kept of 2, 0 painted during the walk
+round 2 big    frame 10.100 ms median, 10.490 mean, 14.800 p95 over 766 frames; minimap 20.3 µs a frame; 12 chunks kept of 130, 3 painted during the walk
+round 3 world  frame 14.100 ms median, 18.355 mean, 46.000 p95 over 440 frames; minimap 20.6 µs a frame; 2 chunks kept of 2, 0 painted during the walk
+round 3 big    frame 14.200 ms median, 17.600 mean, 36.200 p95 over 460 frames; minimap 27.8 µs a frame; 12 chunks kept of 130, 6 painted during the walk
+round 4 world  frame 9.400 ms median, 9.994 mean, 15.800 p95 over 806 frames; minimap 15.5 µs a frame; 2 chunks kept of 2, 0 painted during the walk
+round 4 big    frame 10.700 ms median, 11.292 mean, 16.500 p95 over 712 frames; minimap 18.7 µs a frame; 12 chunks kept of 130, 3 painted during the walk
+round 5 world  frame 10.700 ms median, 11.234 mean, 15.500 p95 over 715 frames; minimap 17.0 µs a frame; 2 chunks kept of 2, 0 painted during the walk
+round 5 big    frame 9.800 ms median, 10.172 mean, 13.900 p95 over 790 frames; minimap 21.4 µs a frame; 12 chunks kept of 130, 3 painted during the walk
+PASS  the big map has over a hundred chunks and the minimap keeps a handful of them  (130 chunks against the world's 2; kept 12, 12, 12, 12, 12)
+PASS  the measured walk on the big map includes painting new chunks, which the world never needs  (painted during the walk: big 3, 3, 6, 3, 3; world 0, 0, 0, 0, 0)
+PASS  frame time on the 400x300 map is within noise of the world's  (world 10.700 ms (rounds 10.600, 11.200, 14.100, 9.400, 10.700); big 10.700 ms (rounds 12.000, 10.100, 14.200, 10.700, 9.800); difference -0.000 ms, allowed 4.700 ms)
+PASS  and so are its slow frames (the 95th percentile)  (world 15.800 ms (rounds 15.300, 16.500, 46.000, 15.800, 15.500); big 16.500 ms (rounds 28.200, 14.800, 36.200, 16.500, 13.900); allowed 30.700 ms more)
+PASS  the minimap's own share of a frame is under a twentieth of a millisecond on both maps  (world 19.0 µs a frame, big 21.0 µs a frame)
+PASS  no page errors
+ALL 6 CHECKS PASSED

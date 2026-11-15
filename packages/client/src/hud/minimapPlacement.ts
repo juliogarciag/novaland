@@ -1,9 +1,9 @@
+import { HUD_MARGIN } from './layout';
+
 /** Tiles the minimap shows across and down, centred on the player. The camera shows 20 to 40 tiles across (render/zoom.ts), so this is two to four screens. */
 export const MINIMAP_TILES_ACROSS = 80;
 /** CSS pixels a tile takes on the minimap. A whole number, and the size on screen follows from it: 160 CSS pixels a side. */
 export const MINIMAP_TILE_CSS_PIXELS = 2;
-/** CSS pixels between the minimap and the edge of the window, and between it and the HUD lines. The same margin the HUD lines keep. */
-export const HUD_MARGIN = 12;
 
 /** Where the minimap is on the canvas, in device pixels: its top-left corner, the side of its square, and how many pixels a tile takes. */
 export interface MinimapPlacement {
@@ -31,13 +31,13 @@ export interface MinimapPlacementOptions {
  * to the HUD lines it moves below them instead of covering them.
  */
 export function minimapPlacement({ canvasWidth, pixelRatio, hudLines }: MinimapPlacementOptions): MinimapPlacement {
-  const ratio = Number.isFinite(pixelRatio) && pixelRatio > 0 ? pixelRatio : 1;
-  const pixelsPerTile = Math.max(1, Math.round(MINIMAP_TILE_CSS_PIXELS * ratio));
+  const safePixelRatio = Number.isFinite(pixelRatio) && pixelRatio > 0 ? pixelRatio : 1;
+  const pixelsPerTile = Math.max(1, Math.round(MINIMAP_TILE_CSS_PIXELS * safePixelRatio));
   const size = MINIMAP_TILES_ACROSS * pixelsPerTile;
-  const margin = Math.round(HUD_MARGIN * ratio);
+  const margin = Math.round(HUD_MARGIN * safePixelRatio);
   const x = Math.max(margin, Math.round(canvasWidth) - margin - size);
   const besideHudLines = x >= hudLines.right + margin;
-  return { x, y: besideHudLines ? margin : Math.round(hudLines.bottom) + margin, size, pixelsPerTile, pixelRatio: ratio };
+  return { x, y: besideHudLines ? margin : Math.round(hudLines.bottom) + margin, size, pixelsPerTile, pixelRatio: safePixelRatio };
 }
 
 export function sameMinimapPlacement(first: MinimapPlacement, second: MinimapPlacement): boolean {

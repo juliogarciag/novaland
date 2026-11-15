@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { findPlayerEntity } from '@novaland/sim';
 import { hudLines } from '../hud/hudLines';
+import { HUD_MARGIN } from '../hud/layout';
 import { Minimap, type MinimapReport } from '../hud/minimap';
-import { HUD_MARGIN, minimapPlacement } from '../hud/minimapPlacement';
+import { minimapPlacement } from '../hud/minimapPlacement';
 import { RenderedFrameRate } from '../hud/renderedFrameRate';
 import type { ViewFrame } from '../render/viewFrame';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
@@ -32,6 +33,8 @@ const HUD_BACKDROP_COLOR = 'rgba(11, 15, 20, 0.75)';
 export class HudScene extends Phaser.Scene {
   private text!: Phaser.GameObjects.Text;
   private minimap!: Minimap;
+  /** The furthest right the HUD lines have reached since the canvas last changed size, in device pixels: the minimap is placed against this, so a line gaining a character never moves it. */
+  private widestLinesRight = 0;
   private readonly frameRate = new RenderedFrameRate();
 
   /** `readDrawnFrame` gives the frame the world scene drew last, or undefined before its first. */
@@ -44,7 +47,7 @@ export class HudScene extends Phaser.Scene {
 
   create(): void {
     this.text = this.add.text(0, 0, '', { fontFamily: 'monospace', color: HUD_TEXT_COLOR, backgroundColor: HUD_BACKDROP_COLOR });
-    this.minimap = new Minimap(this, this.world.sim.map, [this.text]);
+    this.minimap = new Minimap(this, this.world.sim.map);
     this.fitToPixelRatio();
     this.scale.on(Phaser.Scale.Events.RESIZE, this.fitToPixelRatio, this);
     // Counted where the scene is drawn, not where it updates: a frame that was not rendered is not a frame the player saw.
@@ -58,9 +61,8 @@ export class HudScene extends Phaser.Scene {
   override update(): void {
     this.text.setText(hudLines(this.world, { framesPerSecond: this.frameRate.framesPerSecond }));
     // After the text: in a narrow window the minimap sits below the lines, whatever they say now.
-    this.minimap.place(
-      minimapPlacement({ canvasWidth: this.scale.width, pixelRatio: 1 / this.scale.zoom, hudLines: { right: this.text.x + this.text.width, bottom: this.text.y + this.text.height } }),
-    );
+    this.widestLinesRight = Math.max(this.widestLinesRight, this.text.x + this.text.width);
+    this.minimap.place(minimapPlacement({ canvasWidth: this.scale.width, pixelRatio: 1 / this.scale.zoom, hudLines: { right: this.widestLinesRight, bottom: this.text.y + this.text.height } }));
     this.minimap.show({ frame: this.readDrawnFrame(), localEid: findPlayerEntity(this.world.sim, this.world.localSlot) });
   }
 
@@ -79,5 +81,6 @@ export class HudScene extends Phaser.Scene {
     this.text.setFontSize(Math.round(HUD_FONT_SIZE * pixelRatio));
     this.text.setPadding(Math.round(HUD_PADDING.x * pixelRatio), Math.round(HUD_PADDING.y * pixelRatio));
     this.text.setPosition(HUD_MARGIN * pixelRatio, HUD_MARGIN * pixelRatio);
+    this.widestLinesRight = 0;
   }
 }

@@ -20,9 +20,6 @@ import { check, summarize, writeProof } from './lib.mjs';
 
 const PORT = 5962;
 const VIEWPORT = { width: 960, height: 720 };
-/** The most chunks a square of 80 tiles can touch (3 by 3 when it straddles edges... 4 by 4 at worst), and the most it keeps with its margin (5 by 5). The unit test derives both. */
-const MOST_CHUNKS_SHOWN = 16;
-const MOST_CHUNKS_KEPT = 25;
 const results = [];
 const report = {};
 const errors = [];
@@ -37,7 +34,11 @@ try {
   const start = await stateOf(page);
   report.start = start;
   const reach = start.minimap.tilesAcross / 2;
-  results.push(check('the map is the generated 400x300 one', start.bounds.width === 400 && start.bounds.height === 300, `${start.minimap.chunksInMap} chunks`));
+  // What a square of that many tiles can touch at worst, and with the half chunk it keeps on every side: the screen and the chunk size decide, never the map.
+  const MOST_CHUNKS_SHOWN = (Math.floor(start.minimap.tilesAcross / start.chunkSize) + 2) ** 2;
+  const MOST_CHUNKS_KEPT = (Math.floor((start.minimap.tilesAcross + start.chunkSize) / start.chunkSize) + 2) ** 2;
+  const chunksOfMap = Math.ceil(start.bounds.width / start.chunkSize) * Math.ceil(start.bounds.height / start.chunkSize);
+  results.push(check('the map is the generated 400x300 one', start.bounds.width === 400 && start.bounds.height === 300 && start.minimap.chunksInMap === chunksOfMap && chunksOfMap > 100, `${start.minimap.chunksInMap} chunks; a minimap shows at most ${MOST_CHUNKS_SHOWN} and keeps at most ${MOST_CHUNKS_KEPT}`));
   results.push(check('at the start only the chunks under the minimap are painted', start.minimap.chunksDrawn.length <= MOST_CHUNKS_SHOWN && start.minimap.chunksPainted === start.minimap.chunksDrawn.length, `${start.minimap.chunksDrawn.length} of ${start.minimap.chunksInMap}: ${start.minimap.chunksDrawn.join(' ')}`));
   const terrainAtStart = await terrainOnMinimap(page);
   report.terrainAtStart = terrainAtStart;
@@ -124,12 +125,12 @@ async function pointsHome(page, state, when) {
   const half = state.minimap.rect.width / 2;
   const picture = await pictureOf(page);
   const pixel = picture.colorAt(mark.x, mark.y);
-  // The arrowhead is past the marker, toward home: a point in the middle of it must be the marker's colour too.
+  // The arrowhead is past the marker, toward home: 8 px out is past the diamond's corner (5 px) and inside the arrow, so it must be the marker's colour too.
   const straight = Math.hypot(mark.x - centre.x, mark.y - centre.y);
   const arrow = picture.colorAt(mark.x + ((mark.x - centre.x) / straight) * 8, mark.y + ((mark.y - centre.y) / straight) * 8);
   return check(
     `${when}, ${distanceToStart(state).toFixed(1)} tiles from the start: its marker is on the minimap's edge and points home`,
-    distanceToStart(state) > state.minimap.tilesAcross / 2 && mark.onEdge && fromCentre < half && fromCentre > half - 20 && offBy < 1 && pixel === mark.color && arrow === mark.color,
-    `home is at ${home.toFixed(1)} degrees, the marker at ${bearingOfMark(state).toFixed(1)}; ${fromCentre.toFixed(1)} of ${half} px from the middle; pixel ${hex(pixel)}, arrow ${hex(arrow)}, marker ${hex(mark.color)}`,
+    distanceToStart(state) > state.minimap.tilesAcross / 2 && mark.onEdge && Math.abs(fromCentre - (half - state.minimap.edgeInset)) <= 1.5 && offBy < 1 && pixel === mark.color && arrow === mark.color,
+    `home is at ${home.toFixed(1)} degrees, the marker at ${bearingOfMark(state).toFixed(1)}; ${fromCentre.toFixed(1)} px from the middle of a minimap ${half} px to its edge, ${state.minimap.edgeInset} px inside it; pixel ${hex(pixel)}, arrow ${hex(arrow)}, marker ${hex(mark.color)}`,
   );
 }

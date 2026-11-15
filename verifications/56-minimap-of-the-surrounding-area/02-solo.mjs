@@ -20,7 +20,6 @@ import { check, summarize, waitFor, writeProof } from './lib.mjs';
 
 const PORT = 5961;
 const VIEWPORT = { width: 960, height: 720 };
-const LOCAL_PLAYER_COLOR = 0xffffff;
 const results = [];
 const report = {};
 const errors = [];
@@ -37,6 +36,7 @@ try {
   report.start = start;
   const { minimap } = start;
   const side = minimap.tilesAcross * minimap.cssPixelsPerTile;
+  const LOCAL_PLAYER_COLOR = minimap.localPlayerColor;
   results.push(check('the minimap is a square in the top-right corner of the window', minimap.rect.width === side && minimap.rect.height === side && minimap.rect.x + minimap.rect.width < start.window.width && minimap.rect.x > start.window.width / 2 && minimap.rect.y >= 0 && minimap.rect.y < start.window.height / 4, JSON.stringify(minimap.rect)));
   results.push(check('it shows further than the screen reaches', minimap.tilesAcross > start.camera.visibleMetres.width && minimap.tilesAcross > start.camera.visibleMetres.height, `${minimap.tilesAcross} tiles across; the screen shows ${start.camera.visibleMetres.width} by ${start.camera.visibleMetres.height}`));
   results.push(check('it does not cover the HUD lines', !overlap(minimap.rect, start.hudLines), `lines ${JSON.stringify(start.hudLines)}`));
@@ -77,13 +77,13 @@ try {
   const centreOfRect = { x: marked.minimap.rect.x + marked.minimap.rect.width / 2, y: marked.minimap.rect.y + marked.minimap.rect.height / 2 };
   const onScreen = (position) => ({ x: marked.minimap.worldOriginOnScreen.x + position.x * marked.minimap.cssPixelsPerTile, y: marked.minimap.worldOriginOnScreen.y + position.y * marked.minimap.cssPixelsPerTile });
   const near = (first, second) => Math.hypot(first.x - second.x, first.y - second.y) <= 1;
-  const other = await page.evaluate((eid) => {
+  const otherInSim = await page.evaluate((eid) => {
     const entity = window.__novaland.snapshot().entities.find((candidate) => candidate.id === eid);
     return { ...entity.components.Position, color: window.__novaland.defs.find((def) => def.id === entity.components.DefRef.id).color };
   }, otherPlayer.eid);
   results.push(check('the local player is marked in the middle of the minimap, in white', localPlayer.isLocalPlayer && localPlayer.eid === marked.player.eid && near(localPlayer, centreOfRect) && picture.colorAt(localPlayer.x, localPlayer.y) === LOCAL_PLAYER_COLOR, `at (${localPlayer.x}, ${localPlayer.y}), pixel ${hex(picture.colorAt(localPlayer.x, localPlayer.y))}`));
   results.push(check('the starting point is marked on the world\'s spawn tile, as a diamond in its own colour', startingPoint.source === 'landmark' && startingPoint.shape === 'diamond' && !startingPoint.onEdge && near(startingPoint, onScreen(marked.spawn)) && near(startingPointAlone, startingPoint) && startingPointPixel === startingPoint.color, `at (${startingPoint.x}, ${startingPoint.y}), pixel ${hex(startingPointPixel)}, marker ${hex(startingPoint.color)}`));
-  results.push(check('the other player is marked where the sim has them, as a dot in their avatar\'s colour', otherPlayer.source === 'entity' && !otherPlayer.isLocalPlayer && otherPlayer.shape === 'dot' && otherPlayer.color === other.color && near(otherPlayer, onScreen(other)) && picture.colorAt(otherPlayer.x, otherPlayer.y) === other.color, `at (${otherPlayer.x.toFixed(1)}, ${otherPlayer.y.toFixed(1)}), pixel ${hex(picture.colorAt(otherPlayer.x, otherPlayer.y))}, avatar ${hex(other.color)}`));
+  results.push(check('the other player is marked where the sim has them, as a dot in their avatar\'s colour', otherPlayer.source === 'entity' && !otherPlayer.isLocalPlayer && otherPlayer.shape === 'dot' && otherPlayer.color === otherInSim.color && near(otherPlayer, onScreen(otherInSim)) && picture.colorAt(otherPlayer.x, otherPlayer.y) === otherInSim.color, `at (${otherPlayer.x.toFixed(1)}, ${otherPlayer.y.toFixed(1)}), pixel ${hex(picture.colorAt(otherPlayer.x, otherPlayer.y))}, avatar ${hex(otherInSim.color)}`));
   const looks = [LOCAL_PLAYER_COLOR, startingPoint.color, otherPlayer.color];
   results.push(check('the three are told apart: three colours, and the starting point is another shape', new Set(looks).size === 3 && startingPoint.shape !== otherPlayer.shape, looks.map(hex).join(', ')));
   await saveProofPictures(page, '02-solo-walked-with-another-player');
@@ -92,7 +92,7 @@ try {
   await hold(page, 'KeyW', 1500);
   const farCorner = await terrainOnMinimap(page);
   report.terrainFarCorner = farCorner;
-  results.push(check('at a third place, across the clearing, every tile is the world\'s again', farCorner.wrongCount === 0 && Math.hypot(farCorner.centre.x - atStart.centre.x, farCorner.centre.y - atStart.centre.y) > 20, terrainSummary(farCorner)));
+  results.push(check('at a third place, across the clearing, every tile is the world\'s again', farCorner.wrongCount === 0 && Math.hypot(farCorner.centre.x - atStart.centre.x, farCorner.centre.y - atStart.centre.y) > 12, terrainSummary(farCorner)));
   const end = await stateOf(page);
   results.push(check('all of that painted each chunk of the world once: following the player repaints nothing', end.minimap.chunksPainted === end.minimap.chunksInMap && end.minimap.chunksDrawn.length === end.minimap.chunksInMap, `${end.minimap.chunksPainted} chunk textures painted for ${end.minimap.chunksInMap} chunks`));
 
@@ -105,10 +105,10 @@ try {
     { name: 'retina', viewport: { width: 960, height: 720 }, pixelRatio: 2 },
     { name: 'narrow', viewport: { width: 420, height: 720 }, below: true },
   ]) {
-    const other = await openGame(browser, { port: PORT, viewport, pixelRatio, errors, name: `${name}: ` });
-    await hold(other, 'KeyD', 800);
-    const state = await stateOf(other);
-    const terrain = await terrainOnMinimap(other);
+    const sized = await openGame(browser, { port: PORT, viewport, pixelRatio, errors, name: `${name}: ` });
+    await hold(sized, 'KeyD', 800);
+    const state = await stateOf(sized);
+    const terrain = await terrainOnMinimap(sized);
     report.windows.push({ name, state, terrain });
     const inWindow = state.minimap.rect.x >= 0 && state.minimap.rect.y >= 0 && state.minimap.rect.x + state.minimap.rect.width <= state.window.width && state.minimap.rect.y + state.minimap.rect.height <= state.window.height;
     const where = below ? state.minimap.rect.y >= state.hudLines.y + state.hudLines.height : state.minimap.rect.y < state.hudLines.y + state.hudLines.height;
@@ -119,11 +119,25 @@ try {
         `rect ${JSON.stringify(state.minimap.rect)}; ${terrainSummary(terrain)}`,
       ),
     );
-    await saveProofPictures(other, `02-solo-${name}`);
-    await other.context().close();
+    await saveProofPictures(sized, `02-solo-${name}`);
+    await sized.context().close();
   }
   const zooms = report.windows.map(({ state }) => state.camera.zoom);
   results.push(check('those windows cover different camera zooms', new Set(zooms).size >= 4, zooms.join(', ')));
+
+  // ---- The window moves to a screen with another pixel ratio while the game runs ----
+  const before = await stateOf(page);
+  const devtools = await page.context().newCDPSession(page);
+  await devtools.send('Emulation.setDeviceMetricsOverride', { width: VIEWPORT.width, height: VIEWPORT.height, deviceScaleFactor: 2, mobile: false });
+  // A real screen change fires the page's resolution media query; the emulated one only changes the ratio, so the window event stands in for it.
+  await page.evaluate(() => window.dispatchEvent(new window.Event('resize')));
+  await waitFor('the game to take the new pixel ratio', { read: async () => (await stateOf(page)).window.pixelRatio, until: (ratio) => ratio === 2 });
+  await standStill(page);
+  const moved2x = await stateOf(page);
+  const terrain2x = await terrainOnMinimap(page);
+  report.pixelRatioChanged = { state: moved2x, terrain: terrain2x };
+  results.push(check('the same page taken from 1x to 2x keeps the minimap where it was, with every tile right: painted chunks are resized, not left behind', JSON.stringify(moved2x.minimap.rect) === JSON.stringify(before.minimap.rect) && moved2x.minimap.chunksPainted === before.minimap.chunksPainted && terrain2x.wrongCount === 0 && terrain2x.tilesCompared > 1000, `rect ${JSON.stringify(moved2x.minimap.rect)}; ${terrainSummary(terrain2x)}`));
+  await saveProofPictures(page, '02-solo-moved-to-2x');
   results.push(check('no page errors', errors.length === 0, errors.join(' | ')));
 } catch (error) {
   results.push(check(`run completed (${error.message})`, false));

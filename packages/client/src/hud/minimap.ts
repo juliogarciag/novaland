@@ -1,19 +1,20 @@
-import { CHUNK_SIZE, findChunk, mapLandmarks, readMapTiles, spawnPoint, TILE_SIZE, type Landmark, type MapChunk, type MapTiles, type WorldMap } from '@novaland/sim';
+import { CHUNK_SIZE, findChunk, mapLandmarks, readMapTiles, spawnPoint, TILE_SIZE, type Landmark, type MapChunk, type MapTiles, type MinimapMarkerShape, type TileCoordinate, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
-import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, sameChunkRange, type ChunkRange } from '../render/chunkRange';
+import { chunkKey, chunkRangeOfTiles, chunksToDropAndBuild, sameChunkRange, type ChunkRange } from '../render/chunkRange';
 import type { ViewFrame } from '../render/viewFrame';
-import { minimapMarks, type MinimapMark } from './minimapMarks';
+import { minimapCentre, minimapMarks, type MinimapMark } from './minimapMarks';
 import { MINIMAP_TILES_ACROSS, sameMinimapPlacement, type MinimapPlacement } from './minimapPlacement';
-import { chunkPixels, MINIMAP_KEEP_MARGIN_TILES, worldPixelsShown } from './minimapTerrain';
+import { chunkColorBytes, minimapChunkRanges } from './minimapTerrain';
 
 /** Behind the terrain, where no area put a tile: the colour of the HUD lines' backdrop, opaque so the world behind does not read as terrain. */
 const BACKDROP_COLOR = 0x0b0f14;
-/** The line around the minimap: the HUD's text colour, in CSS pixels. */
+/** The line around the minimap: the colour of the HUD's text. */
 const BORDER_COLOR = 0xe2e8f0;
 const BORDER_ALPHA = 0.6;
+/** CSS pixels. */
 const BORDER_WIDTH = 1;
 
-/** Marker sizes in CSS pixels: a dot's radius, a diamond's half diagonal. The local player's dot is the largest thing on the minimap and the only white one. */
+/** Marker sizes in CSS pixels: a dot's radius, a diamond's half diagonal. The local player's dot is larger than any other dot and the only white thing on the minimap. */
 const DOT_RADIUS = 3;
 const DIAMOND_RADIUS = 5;
 const LOCAL_PLAYER_RADIUS = 4;
@@ -21,11 +22,14 @@ const LOCAL_PLAYER_COLOR = 0xffffff;
 /** Every marker has a dark rim, so it reads over any tile colour. */
 const OUTLINE_COLOR = 0x0b0f14;
 const OUTLINE_WIDTH = 1.5;
-/** A mark on the edge has an arrowhead beyond it, pointing at the thing: its length, and the gap between mark and arrow, in CSS pixels. */
+/** A mark on the edge has an arrowhead beyond it, pointing at the thing: its length, half the width of its base, and the gap between mark and arrow, in CSS pixels. */
 const ARROW_LENGTH = 5;
+const ARROW_HALF_BASE = 3.5;
 const ARROW_GAP = 1;
-/** How far inside the minimap's edge an out-of-range mark sits, so the mark and its arrow are drawn whole. */
-const EDGE_INSET = DIAMOND_RADIUS + ARROW_GAP + ARROW_LENGTH + 2;
+/** Room left for the arrow's rim. */
+const ARROW_RIM = 2;
+/** How far inside the minimap's edge the furthest mark sits, so the largest mark and its arrow are drawn whole. */
+const EDGE_INSET = DIAMOND_RADIUS + ARROW_GAP + ARROW_LENGTH + ARROW_RIM;
 
 const TERRAIN_DEPTH = 0;
 const MARKER_DEPTH = 1;
@@ -45,7 +49,16 @@ export interface MinimapReport {
   readonly chunksInMap: number;
   /** Chunk textures painted since the page loaded: it grows when the player walks into new chunks and at no other time. */
   readonly chunksPainted: number;
+  /** The colour the local player's dot is drawn in, whatever its avatar: 0xRRGGBB. */
+  readonly localPlayerColor: number;
+  /** How far inside the minimap's edge the furthest mark sits. */
+  readonly edgeInset: number;
   readonly marks: readonly (Omit<MinimapMark, 'offset'> & { readonly x: number; readonly y: number })[];
+}
+
+interface PaintedChunk {
+  readonly coordinate: TileCoordinate;
+  readonly image: Phaser.GameObjects.Image;
 }
 
 /**
@@ -59,12 +72,14 @@ export interface MinimapReport {
  * chunk comes within the minimap's square and dropped when it is well out
  * of it (the terrain renderer's pattern, ADR 0013). A frame in which the
  * player stays in the same chunks paints nothing: following the player is
- * moving a camera.
+ * moving a camera. The markers are drawn again every frame; `minimapMarks`
+ * walks the frame's entities for them and stops at a fixed number.
  *
  * That camera belongs to the minimap alone: its viewport is the minimap's
  * square, which clips the chunk textures and the markers, and it scrolls
- * over a space where one tile is `pixelsPerTile` device pixels. The HUD's
- * own camera draws the backdrop and the border and ignores the rest.
+ * over a space where one tile is `pixelsPerTile` device pixels. It draws the
+ * minimap's own objects and nothing else the scene holds, now or later; the
+ * scene's main camera draws everything but them.
  */
 export class Minimap {
   private readonly tiles: MapTiles;
@@ -72,67 +87,67 @@ export class Minimap {
   /** Every chunk the map could hold: nothing outside it is ever looked for. */
   private readonly chunksOfMap: ChunkRange;
   private readonly camera: Phaser.Cameras.Scene2D.Camera;
-  /** Two filled squares under the minimap's camera: the border is the larger one showing around the backdrop. Whole pixels, where a stroked outline would straddle them. */
+  /** Two filled squares the scene's main camera draws under the minimap: the border is the larger one, showing around the backdrop. Whole pixels, where a stroked outline would straddle them. */
   private readonly border: Phaser.GameObjects.Rectangle;
   private readonly backdrop: Phaser.GameObjects.Rectangle;
   private readonly markers: Phaser.GameObjects.Graphics;
-  private readonly chunkImages = new Map<string, Phaser.GameObjects.Image>();
+  private readonly paintedChunks = new Map<string, PaintedChunk>();
   private placement: MinimapPlacement | undefined;
   private lastRanges: { readonly draw: ChunkRange; readonly keep: ChunkRange } | undefined;
   private centre: { readonly x: number; readonly y: number };
   private marks: readonly MinimapMark[] = [];
   private chunksPainted = 0;
 
-  /** `otherHudObjects` is everything else the HUD scene draws: the minimap's camera must not draw it a second time. */
   constructor(
     private readonly scene: Phaser.Scene,
     map: WorldMap,
-    otherHudObjects: readonly Phaser.GameObjects.GameObject[],
   ) {
     this.tiles = readMapTiles(map);
     this.landmarks = mapLandmarks(map);
     this.chunksOfMap = chunkRangeOfTiles(this.tiles.bounds);
     // Until the local player is drawn the minimap looks at where they will appear.
     this.centre = spawnPoint(map);
+    this.camera = scene.cameras.add(0, 0, 1, 1);
+    // The scene's other objects, those here already and those added later, are not the minimap camera's to draw.
+    this.camera.ignore(scene.children.list);
+    const ignoreNewObject = (gameObject: Phaser.GameObjects.GameObject): void => {
+      this.camera.ignore(gameObject);
+    };
+    scene.events.on(Phaser.Scenes.Events.ADDED_TO_SCENE, ignoreNewObject);
     this.border = scene.add.rectangle(0, 0, 1, 1, BORDER_COLOR, BORDER_ALPHA).setOrigin(0, 0);
     this.backdrop = scene.add.rectangle(0, 0, 1, 1, BACKDROP_COLOR, 1).setOrigin(0, 0);
-    this.markers = scene.add.graphics().setDepth(MARKER_DEPTH);
-    this.camera = scene.cameras.add(0, 0, 1, 1);
-    this.camera.ignore([...otherHudObjects, this.border, this.backdrop]);
-    scene.cameras.main.ignore(this.markers);
+    this.markers = this.drawnByMinimapCameraOnly(scene.add.graphics().setDepth(MARKER_DEPTH));
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      for (const key of [...this.chunkImages.keys()]) this.dropChunk(key);
+      scene.events.off(Phaser.Scenes.Events.ADDED_TO_SCENE, ignoreNewObject);
+      for (const key of [...this.paintedChunks.keys()]) this.dropChunk(key);
     });
   }
 
   /** Puts the minimap where `placement` says. Call when the canvas, the pixel ratio or the HUD lines change size; the same placement again does nothing. */
   place(placement: MinimapPlacement): void {
     if (this.placement && sameMinimapPlacement(this.placement, placement)) return;
-    const tileSizeChanged = this.placement?.pixelsPerTile !== placement.pixelsPerTile;
     this.placement = placement;
     const { x, y, size, pixelsPerTile, pixelRatio } = placement;
     this.camera.setViewport(x, y, size, size);
     const borderWidth = Math.max(1, Math.round(BORDER_WIDTH * pixelRatio));
     this.border.setPosition(x - borderWidth, y - borderWidth).setSize(size + 2 * borderWidth, size + 2 * borderWidth);
     this.backdrop.setPosition(x, y).setSize(size, size);
-    if (!tileSizeChanged) return;
-    for (const [key, image] of this.chunkImages) {
-      const [column, row] = key.split(',').map(Number) as [number, number];
-      image.setPosition(column * CHUNK_SIZE * pixelsPerTile, row * CHUNK_SIZE * pixelsPerTile).setScale(pixelsPerTile);
+    // A tile may take another number of pixels now (the window moved to another screen).
+    for (const { coordinate, image } of this.paintedChunks.values()) {
+      image.setPosition(coordinate.column * CHUNK_SIZE * pixelsPerTile, coordinate.row * CHUNK_SIZE * pixelsPerTile).setScale(pixelsPerTile);
     }
   }
 
   /**
    * Shows the world around the local player as `frame` drew it. Call every frame, after `place`.
    * Without a frame or a local player the minimap stays where it was. Positions come from the server
-   * online, so none is trusted: a centre that is not finite changes nothing, and only chunks inside the map are looked at.
+   * online, so none is trusted: see `minimapCentre` and `minimapMarks`.
    */
   show({ frame, localEid }: { frame: ViewFrame | undefined; localEid: number | undefined }): void {
     const placement = this.placement;
     if (!placement) return;
     const renderables = frame?.renderables ?? [];
-    const localPlayer = localEid === undefined ? undefined : renderables.find((renderable) => renderable.eid === localEid);
-    if (localPlayer && Number.isFinite(localPlayer.x) && Number.isFinite(localPlayer.y)) this.centre = { x: localPlayer.x, y: localPlayer.y };
+    this.centre = minimapCentre({ renderables, localEid, previous: this.centre });
     this.showChunksNear(this.centre, placement);
     const { size, pixelsPerTile, pixelRatio } = placement;
     // Whole device pixels, so every tile of the minimap covers the same pixels on screen.
@@ -160,9 +175,11 @@ export class Minimap {
       cssPixelsPerTile,
       centre: this.centre,
       worldOriginOnScreen: origin,
-      chunksDrawn: [...this.chunkImages.keys()],
+      chunksDrawn: [...this.paintedChunks.keys()],
       chunksInMap: this.tiles.chunks.length,
       chunksPainted: this.chunksPainted,
+      localPlayerColor: LOCAL_PLAYER_COLOR,
+      edgeInset: EDGE_INSET,
       marks: this.marks.map(({ offset, ...mark }) => ({
         ...mark,
         x: origin.x + (this.centre.x / TILE_SIZE + offset.x) * cssPixelsPerTile,
@@ -172,16 +189,14 @@ export class Minimap {
   }
 
   private showChunksNear(centre: { readonly x: number; readonly y: number }, { pixelsPerTile }: MinimapPlacement): void {
-    const shown = worldPixelsShown(centre, MINIMAP_TILES_ACROSS);
-    const draw = chunkRangeWithin(chunkRangeAround(shown, 0), this.chunksOfMap);
-    const keep = chunkRangeWithin(chunkRangeAround(shown, MINIMAP_KEEP_MARGIN_TILES), this.chunksOfMap);
+    const { draw, keep } = minimapChunkRanges({ centre, tilesAcross: MINIMAP_TILES_ACROSS, chunksOfMap: this.chunksOfMap });
     if (this.lastRanges && sameChunkRange(this.lastRanges.draw, draw) && sameChunkRange(this.lastRanges.keep, keep)) return;
     this.lastRanges = { draw, keep };
-    const { drop, build } = chunksToDropAndBuild({ drawnKeys: this.chunkImages.keys(), draw, keep });
+    const { drop, build } = chunksToDropAndBuild({ drawnKeys: this.paintedChunks.keys(), draw, keep });
     for (const key of drop) this.dropChunk(key);
     for (const coordinate of build) {
       const chunk = findChunk(this.tiles, coordinate);
-      if (chunk) this.chunkImages.set(chunkKey(coordinate), this.paintChunk(chunk, pixelsPerTile));
+      if (chunk) this.paintedChunks.set(chunkKey(coordinate), { coordinate, image: this.paintChunk(chunk, pixelsPerTile) });
     }
   }
 
@@ -190,24 +205,28 @@ export class Minimap {
     if (this.scene.textures.exists(textureKey)) this.scene.textures.remove(textureKey);
     const texture = this.scene.textures.createCanvas(textureKey, CHUNK_SIZE, CHUNK_SIZE);
     if (!texture) throw new Error('Could not create a minimap chunk texture');
-    texture.getContext().putImageData(new ImageData(chunkPixels(chunk), CHUNK_SIZE, CHUNK_SIZE), 0, 0);
+    texture.getContext().putImageData(new ImageData(chunkColorBytes(chunk), CHUNK_SIZE, CHUNK_SIZE), 0, 0);
     texture.refresh();
     // Scaled up with linear filtering, a tile's colour would bleed into its neighbours.
     texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     const image = this.scene.add.image(chunk.firstTile.column * pixelsPerTile, chunk.firstTile.row * pixelsPerTile, textureKey);
     image.setOrigin(0, 0).setScale(pixelsPerTile).setDepth(TERRAIN_DEPTH);
-    this.scene.cameras.main.ignore(image);
     this.chunksPainted += 1;
-    return image;
+    return this.drawnByMinimapCameraOnly(image);
   }
 
   private dropChunk(key: string): void {
-    this.chunkImages.get(key)?.destroy();
-    this.chunkImages.delete(key);
+    this.paintedChunks.get(key)?.image.destroy();
+    this.paintedChunks.delete(key);
     if (this.scene.textures.exists(chunkTextureKey(key))) this.scene.textures.remove(chunkTextureKey(key));
   }
 
-  /** Markers are few (the seats and the landmarks), so they are simply drawn again every frame, in the minimap camera's space. */
+  /** Makes one of the minimap's own objects visible to its camera and to no other: a camera skips an object whose filter has the camera's bit. */
+  private drawnByMinimapCameraOnly<T extends Phaser.GameObjects.GameObject>(gameObject: T): T {
+    gameObject.cameraFilter = this.scene.cameras.main.id;
+    return gameObject;
+  }
+
   private drawMarks({ pixelsPerTile, pixelRatio }: MinimapPlacement): void {
     const graphics = this.markers;
     graphics.clear();
@@ -215,35 +234,56 @@ export class Minimap {
     for (const mark of this.marks) {
       const x = (this.centre.x / TILE_SIZE + mark.offset.x) * pixelsPerTile;
       const y = (this.centre.y / TILE_SIZE + mark.offset.y) * pixelsPerTile;
-      const radius = (mark.isLocalPlayer ? LOCAL_PLAYER_RADIUS : mark.shape === 'diamond' ? DIAMOND_RADIUS : DOT_RADIUS) * pixelRatio;
+      const radius = (mark.isLocalPlayer ? LOCAL_PLAYER_RADIUS : radiusOfShape(mark.shape)) * pixelRatio;
       graphics.fillStyle(mark.isLocalPlayer ? LOCAL_PLAYER_COLOR : mark.color, 1);
-      if (mark.onEdge) {
-        const distance = Math.hypot(mark.offset.x, mark.offset.y);
-        const toward = { x: mark.offset.x / distance, y: mark.offset.y / distance };
-        const base = radius + ARROW_GAP * pixelRatio;
-        const tip = base + ARROW_LENGTH * pixelRatio;
-        const halfBase = ARROW_LENGTH * pixelRatio * 0.7;
-        const corners = [x + toward.x * tip, y + toward.y * tip, x + toward.x * base - toward.y * halfBase, y + toward.y * base + toward.x * halfBase, x + toward.x * base + toward.y * halfBase, y + toward.y * base - toward.x * halfBase] as const;
+      const distance = Math.hypot(mark.offset.x, mark.offset.y);
+      if (mark.onEdge && distance > 0) {
+        const corners = arrowCorners({ from: { x, y }, toward: { x: mark.offset.x / distance, y: mark.offset.y / distance }, startsAt: radius + ARROW_GAP * pixelRatio, pixelRatio });
         graphics.fillTriangle(...corners);
         graphics.strokeTriangle(...corners);
       }
-      if (mark.shape === 'diamond') {
-        graphics.beginPath();
-        graphics.moveTo(x, y - radius);
-        graphics.lineTo(x + radius, y);
-        graphics.lineTo(x, y + radius);
-        graphics.lineTo(x - radius, y);
-        graphics.closePath();
-        graphics.fillPath();
-        graphics.strokePath();
-      } else {
-        graphics.fillCircle(x, y, radius);
-        graphics.strokeCircle(x, y, radius);
-      }
+      drawShape(graphics, mark.shape, { x, y, radius });
     }
   }
 }
 
 function chunkTextureKey(key: string): string {
   return `minimap-chunk:${key}`;
+}
+
+function radiusOfShape(shape: MinimapMarkerShape): number {
+  switch (shape) {
+    case 'dot':
+      return DOT_RADIUS;
+    case 'diamond':
+      return DIAMOND_RADIUS;
+  }
+}
+
+/** Fills and rims one marker shape. A shape added to `MinimapMarkerShape` does not compile until it has a case here and in `radiusOfShape`. */
+function drawShape(graphics: Phaser.GameObjects.Graphics, shape: MinimapMarkerShape, { x, y, radius }: { x: number; y: number; radius: number }): void {
+  switch (shape) {
+    case 'dot':
+      graphics.fillCircle(x, y, radius);
+      graphics.strokeCircle(x, y, radius);
+      return;
+    case 'diamond':
+      graphics.beginPath();
+      graphics.moveTo(x, y - radius);
+      graphics.lineTo(x + radius, y);
+      graphics.lineTo(x, y + radius);
+      graphics.lineTo(x - radius, y);
+      graphics.closePath();
+      graphics.fillPath();
+      graphics.strokePath();
+      return;
+  }
+}
+
+/** The three corners of an arrowhead, as x and y pairs: its tip `ARROW_LENGTH` past `startsAt` from `from` along the unit vector `toward`, its base across that line at `startsAt`. */
+function arrowCorners({ from, toward, startsAt, pixelRatio }: { from: { x: number; y: number }; toward: { x: number; y: number }; startsAt: number; pixelRatio: number }): [number, number, number, number, number, number] {
+  const tip = startsAt + ARROW_LENGTH * pixelRatio;
+  const halfBase = ARROW_HALF_BASE * pixelRatio;
+  const base = { x: from.x + toward.x * startsAt, y: from.y + toward.y * startsAt };
+  return [from.x + toward.x * tip, from.y + toward.y * tip, base.x - toward.y * halfBase, base.y + toward.x * halfBase, base.x + toward.y * halfBase, base.y - toward.x * halfBase];
 }

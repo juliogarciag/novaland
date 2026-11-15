@@ -1,6 +1,6 @@
-import { avatarDefIds, createSim, findPlayerEntity, getDef, getRenderables, mapLandmarks, tileCentre, TILE_SIZE, worldMap, type Landmark, type Renderable } from '@novaland/sim';
+import { avatarDefIds, createSim, DefId, findPlayerEntity, getDef, getRenderables, mapLandmarks, tileCentre, TILE_SIZE, WORLD_LIMIT_TILES, worldMap, type Landmark, type Renderable } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { minimapMarks, type MinimapMarksOptions } from './minimapMarks';
+import { minimapCentre, minimapMarks, MOST_ENTITY_MARKS, type MinimapMarksOptions } from './minimapMarks';
 
 describe('minimapMarks', () => {
   it('marks the starting point, the other players and the local player, in that drawing order, each where it is', async () => {
@@ -34,10 +34,14 @@ describe('minimapMarks', () => {
     }
   });
 
-  it('draws a thing where it is up to the very edge of the range, on both axes', () => {
+  it('never jumps: a thing walking out of range slides to the edge distance, stays there, and only gains its arrow past the range', () => {
     const centre = tileCentre({ column: 10, row: 10 });
-    expect(minimapMarks({ ...NEARBY, landmarks: [landmarkAt({ column: 10 + RANGE_TILES, row: 10 - RANGE_TILES })], centre })[0]).toMatchObject({ onEdge: false, offset: { x: RANGE_TILES, y: -RANGE_TILES } });
-    expect(minimapMarks({ ...NEARBY, landmarks: [landmarkAt({ column: 10 + RANGE_TILES + 1, row: 10 })], centre })[0]).toMatchObject({ onEdge: true });
+    const markAt = (tilesEast: number) => minimapMarks({ ...NEARBY, landmarks: [landmarkAt({ column: 10 + tilesEast, row: 10 })], centre })[0];
+    expect(markAt(EDGE_TILES)).toMatchObject({ onEdge: false, offset: { x: EDGE_TILES, y: 0 } });
+    expect(markAt(EDGE_TILES + 3)).toMatchObject({ onEdge: false, offset: { x: EDGE_TILES, y: 0 } });
+    expect(markAt(RANGE_TILES)).toMatchObject({ onEdge: false, offset: { x: EDGE_TILES, y: 0 } });
+    expect(markAt(RANGE_TILES + 1)).toMatchObject({ onEdge: true, offset: { x: EDGE_TILES, y: 0 } });
+    expect(minimapMarks({ ...NEARBY, landmarks: [landmarkAt({ column: 10 + RANGE_TILES, row: 10 - RANGE_TILES })], centre })[0]).toMatchObject({ onEdge: false, offset: { x: EDGE_TILES, y: -EDGE_TILES } });
   });
 
   it('leaves out a far thing whose marker says hidden, and shows it again once in range', () => {
@@ -58,6 +62,43 @@ describe('minimapMarks', () => {
       expect(minimapMarks({ ...NEARBY, renderables: [{ eid: 1, defId, x, y: 0, halfWidth: 0.4, halfHeight: 0.4 }], centre: { x: 0, y: 0 } }), String(x)).toEqual([]);
     }
   });
+
+  it('leaves out a def id that is no def or has no marker instead of throwing', () => {
+    for (const defId of [0, -1, 1.5, 99_999, Number.NaN, DefId.Tree]) {
+      expect(minimapMarks({ ...NEARBY, renderables: [{ eid: 1, defId, x: 0, y: 0, halfWidth: 0.4, halfHeight: 0.4 }] }), String(defId)).toEqual([]);
+    }
+  });
+
+  it('stops at MOST_ENTITY_MARKS entities however many a frame holds, and still marks the local player', () => {
+    const defId = avatarDefIds[0] as number;
+    const renderables = Array.from({ length: 5000 }, (_, index) => ({ eid: index + 1, defId, x: index % 50, y: 0, halfWidth: 0.4, halfHeight: 0.4 }));
+    const marks = minimapMarks({ ...NEARBY, renderables, localEid: 5000 });
+    expect(marks).toHaveLength(MOST_ENTITY_MARKS + 1);
+    expect(marks.at(-1)).toMatchObject({ eid: 5000, isLocalPlayer: true });
+  });
+});
+
+describe('minimapCentre', () => {
+  it('is where the frame drew the local player', () => {
+    expect(minimapCentre({ renderables: [player(3, 12.25, -7.5), player(4, 1, 1)], localEid: 3, previous: { x: 0, y: 0 } })).toEqual({ x: 12.25, y: -7.5 });
+  });
+
+  it('stays where it was without a local player: none seated yet, or not in the frame', () => {
+    const previous = { x: 6.5, y: 14.5 };
+    expect(minimapCentre({ renderables: [player(4, 1, 1)], localEid: undefined, previous })).toBe(previous);
+    expect(minimapCentre({ renderables: [player(4, 1, 1)], localEid: 3, previous })).toBe(previous);
+    expect(minimapCentre({ renderables: [], localEid: 3, previous })).toBe(previous);
+  });
+
+  it('stays where it was for a position no area can be at: not finite, or past the world\'s limit', () => {
+    const previous = { x: 6.5, y: 14.5 };
+    const limit = WORLD_LIMIT_TILES * TILE_SIZE;
+    for (const x of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 1e300, -Number.MAX_VALUE, limit + 1]) {
+      expect(minimapCentre({ renderables: [player(3, x, 0)], localEid: 3, previous }), String(x)).toBe(previous);
+      expect(minimapCentre({ renderables: [player(3, 0, x)], localEid: 3, previous }), String(x)).toBe(previous);
+    }
+    expect(minimapCentre({ renderables: [player(3, limit, -limit)], localEid: 3, previous })).toEqual({ x: limit, y: -limit });
+  });
 });
 
 // ---- Helpers ----
@@ -69,4 +110,8 @@ const NEARBY: MinimapMarksOptions = { renderables: [], localEid: undefined, land
 
 function landmarkAt(tile: { column: number; row: number }, beyondRange: 'edge' | 'hidden' = 'edge'): Landmark {
   return { name: 'somewhere', tile, minimap: { shape: 'diamond', color: 0x123456, beyondRange } };
+}
+
+function player(eid: number, x: number, y: number): Renderable {
+  return { eid, defId: avatarDefIds[0] as number, x, y, halfWidth: 0.4, halfHeight: 0.4 };
 }

@@ -56,6 +56,7 @@ export function stateOf(page) {
       hudLines: { x: text.x / pixelRatio, y: text.y / pixelRatio, width: text.width / pixelRatio, height: text.height / pixelRatio },
       spawn: api.tileCentre(api.map.spawn),
       bounds: api.tiles.bounds,
+      chunkSize: api.chunkSize,
     };
   });
 }
@@ -109,14 +110,16 @@ export async function standStill(page) {
   });
 }
 
-/** The page as a PNG in device pixels, with a reader of one pixel by CSS coordinates. */
-export async function pictureOf(page, pixelRatio = 1) {
+/** The page as a PNG, with a reader of one pixel by CSS coordinates. `scale` is PNG pixels per CSS pixel: the pixel ratio, or 1 when the browser hands back a picture in CSS pixels (it does after an emulated screen change). */
+export async function pictureOf(page) {
   const png = PNG.sync.read(await page.screenshot());
+  const scale = png.width / (await page.evaluate(() => window.innerWidth));
   return {
     png,
-    /** The colour of the device pixel that holds a CSS point, as 0xRRGGBB. */
+    scale,
+    /** The colour of the PNG pixel that holds a CSS point, as 0xRRGGBB. */
     colorAt(x, y) {
-      const index = (Math.floor(y * pixelRatio) * png.width + Math.floor(x * pixelRatio)) * 4;
+      const index = (Math.floor(y * scale) * png.width + Math.floor(x * scale)) * 4;
       return (png.data[index] << 16) | (png.data[index + 1] << 8) | png.data[index + 2];
     },
   };
@@ -132,8 +135,8 @@ const MARKER_REACH = 16;
  * backdrop. Tiles under a marker are skipped. The player must stand still.
  */
 export async function terrainOnMinimap(page) {
-  const { minimap, window: view } = await stateOf(page);
-  const picture = await pictureOf(page, view.pixelRatio);
+  const { minimap } = await stateOf(page);
+  const picture = await pictureOf(page);
   const after = (await stateOf(page)).minimap;
   if (after.centre.x !== minimap.centre.x || after.centre.y !== minimap.centre.y) throw new Error('the minimap moved while it was compared');
   const tiles = await page.evaluate(() => {
@@ -179,15 +182,15 @@ export function terrainSummary(result) {
 
 /** Saves the page, and the minimap alone four times larger so a person can read it. */
 export async function saveProofPictures(page, name) {
-  const { minimap, window: view } = await stateOf(page);
-  const { png } = await pictureOf(page, view.pixelRatio);
+  const { minimap } = await stateOf(page);
+  const { png, scale: pixelsPerCssPixel } = await pictureOf(page);
   writeFileSync(path.join(PROOF, `${name}.png`), PNG.sync.write(png));
   const pad = 4;
-  const left = Math.max(0, Math.floor((minimap.rect.x - pad) * view.pixelRatio));
-  const top = Math.max(0, Math.floor((minimap.rect.y - pad) * view.pixelRatio));
-  const width = Math.min(png.width - left, Math.ceil((minimap.rect.width + 2 * pad) * view.pixelRatio));
-  const height = Math.min(png.height - top, Math.ceil((minimap.rect.height + 2 * pad) * view.pixelRatio));
-  const scale = Math.max(1, Math.round(4 / view.pixelRatio));
+  const left = Math.max(0, Math.floor((minimap.rect.x - pad) * pixelsPerCssPixel));
+  const top = Math.max(0, Math.floor((minimap.rect.y - pad) * pixelsPerCssPixel));
+  const width = Math.min(png.width - left, Math.ceil((minimap.rect.width + 2 * pad) * pixelsPerCssPixel));
+  const height = Math.min(png.height - top, Math.ceil((minimap.rect.height + 2 * pad) * pixelsPerCssPixel));
+  const scale = Math.max(1, Math.round(4 / pixelsPerCssPixel));
   const closeUp = new PNG({ width: width * scale, height: height * scale });
   for (let y = 0; y < closeUp.height; y += 1) {
     for (let x = 0; x < closeUp.width; x += 1) {
