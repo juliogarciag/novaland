@@ -72,7 +72,7 @@
     {
       "name": "pnpm test passes",
       "pass": true,
-      "details": "421 of 421 tests in 136 suites"
+      "details": "426 of 426 tests in 139 suites"
     },
     {
       "name": "world.test.ts: spawns on grass, with every other walkable tile of every area within reach on foot",
@@ -107,9 +107,9 @@
       "pass": true
     },
     {
-      "name": "git names the files changed since the branch this one is stacked on",
+      "name": "git names the files this branch changed since main",
       "pass": true,
-      "details": "51 files since 81ffa8b"
+      "details": "51 files since 98e8e5d"
     },
     {
       "name": "no file under packages/sim/src/core changed",

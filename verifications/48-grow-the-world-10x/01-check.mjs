@@ -47,14 +47,14 @@ const promised = [
 ];
 for (const [file, title] of promised) results.push(check(`${file}: ${title}`, passedTitles.has(`${file} > ${title}`)));
 
-// Content only: nothing under the sim's core changed since the branch this one is stacked on.
-const mergeBase = await run('git', ['merge-base', 'HEAD', 'origin/47-world-as-chunks']);
+// Content only: nothing under the sim's core changed since this branch left main (which holds #47, the branch it was stacked on).
+const mergeBase = await run('git', ['merge-base', 'HEAD', 'origin/main']);
 const base = mergeBase.output.trim();
 const diff = mergeBase.code === 0 ? await run('git', ['diff', '--name-only', base, 'HEAD']) : { code: 1, output: '' };
 const changed = diff.output.trim().split('\n').filter(Boolean);
 const core = changed.filter((file) => file.startsWith('packages/sim/src/core/'));
 const hasDiff = mergeBase.code === 0 && diff.code === 0 && /^[0-9a-f]{40}$/.test(base) && changed.length > 0;
-results.push(check('git names the files changed since the branch this one is stacked on', hasDiff, hasDiff ? `${changed.length} files since ${base.slice(0, 7)}` : `${mergeBase.output} ${diff.output}`.slice(0, 200)));
+results.push(check('git names the files this branch changed since main', hasDiff, hasDiff ? `${changed.length} files since ${base.slice(0, 7)}` : `${mergeBase.output} ${diff.output}`.slice(0, 200)));
 results.push(check('no file under packages/sim/src/core changed', hasDiff && core.length === 0, core.join(' ')));
 const format = changed.filter((file) => ['packages/sim/src/content/world/types.ts', 'packages/sim/src/content/world/tiles.ts'].includes(file));
 results.push(check('the area format (types.ts, tiles.ts) did not change', hasDiff && format.length === 0, format.join(' ')));

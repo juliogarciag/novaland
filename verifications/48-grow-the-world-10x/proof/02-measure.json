@@ -15,29 +15,29 @@
       "deltaBytesPerSend": 458,
       "physicsBytes": 12792,
       "tickMs": {
-        "median": 0.023284228333328275,
-        "lowest": 0.02044472333333273,
-        "highest": 0.04387231500000004
+        "median": 0.022816081111109776,
+        "lowest": 0.02189332888889036,
+        "highest": 0.05499937222222175
       },
       "emptyTickMs": {
-        "median": 0.01026908350000008,
-        "lowest": 0.009087354000000004,
-        "highest": 0.017990770999999996
+        "median": 0.010427416500000163,
+        "lowest": 0.009663542000000008,
+        "highest": 0.019068521000000005
       },
       "perSendMs": {
-        "median": 0.01165298333334628,
-        "lowest": 0.010405281666664146,
-        "highest": 0.02594471333333208
+        "median": 0.01148208333332756,
+        "lowest": 0.010982671666661947,
+        "highest": 0.030760534999999343
       },
       "bootMs": {
-        "median": 0.20958299999983865,
-        "lowest": 0.203125,
-        "highest": 0.38324999999997544
+        "median": 0.21316600000000108,
+        "lowest": 0.19158299999980954,
+        "highest": 0.4499169999999708
       },
       "snapshotAndHashMs": {
-        "median": 0.30582079999999223,
-        "lowest": 0.2559167000000343,
-        "highest": 0.5561459000000013
+        "median": 0.295379099999991,
+        "lowest": 0.2599916000000121,
+        "highest": 0.5343375000000037
       }
     },
     "now": {
@@ -51,29 +51,29 @@
       "deltaBytesPerSend": 458,
       "physicsBytes": 141726,
       "tickMs": {
-        "median": 0.0954514177777777,
-        "lowest": 0.08934522388888695,
-        "highest": 0.11127165944444516
+        "median": 0.09876944555555055,
+        "lowest": 0.09336608722222586,
+        "highest": 0.12659381833333158
       },
       "emptyTickMs": {
-        "median": 0.08779297899999995,
-        "lowest": 0.0794425,
-        "highest": 0.09195395799999984
+        "median": 0.08007737500000008,
+        "lowest": 0.07889747899999998,
+        "highest": 0.10604335399999996
       },
       "perSendMs": {
-        "median": 0.011885181666668436,
-        "lowest": 0.010905071666670665,
-        "highest": 0.015398831666661105
+        "median": 0.012727845000003603,
+        "lowest": 0.011576240000010026,
+        "highest": 0.017587443333335576
       },
       "bootMs": {
-        "median": 1.3762909999995827,
-        "lowest": 1.21295900000041,
-        "highest": 1.8889170000001059
+        "median": 1.2960840000000644,
+        "lowest": 1.1285840000000462,
+        "highest": 2.130999999999972
       },
       "snapshotAndHashMs": {
-        "median": 2.5852207999999792,
-        "lowest": 2.225104200000078,
-        "highest": 3.5804874999999923
+        "median": 2.7236917000000176,
+        "lowest": 2.238512499999979,
+        "highest": 3.783312499999988
       }
     }
   },
@@ -85,12 +85,12 @@
     "entities in world state                 5                             5                             ",
     "full state on join or resync, bytes     1456                          1458                          ",
     "delta, bytes per send                   458                           458                           ",
-    "build + diff world state, ms per send   0.0117 (0.0104 to 0.0259)     0.0119 (0.0109 to 0.0154)     ",
-    "one tick of the sim, ms                 0.0233 (0.0204 to 0.0439)     0.0955 (0.0893 to 0.1113)     ",
-    "one tick with nobody in the world, ms   0.0103 (0.0091 to 0.0180)     0.0878 (0.0794 to 0.0920)     ",
+    "build + diff world state, ms per send   0.0115 (0.0110 to 0.0308)     0.0127 (0.0116 to 0.0176)     ",
+    "one tick of the sim, ms                 0.0228 (0.0219 to 0.0550)     0.0988 (0.0934 to 0.1266)     ",
+    "one tick with nobody in the world, ms   0.0104 (0.0097 to 0.0191)     0.0801 (0.0789 to 0.1060)     ",
     "physics world in a snapshot, bytes      12792                         141726                        ",
-    "creating the sim, ms                    0.2096 (0.2031 to 0.3832)     1.3763 (1.2130 to 1.8889)     ",
-    "snapshot + hash, ms                     0.3058 (0.2559 to 0.5561)     2.5852 (2.2251 to 3.5805)     "
+    "creating the sim, ms                    0.2132 (0.1916 to 0.4499)     1.2961 (1.1286 to 2.1310)     ",
+    "snapshot + hash, ms                     0.2954 (0.2600 to 0.5343)     2.7237 (2.2385 to 3.7833)     "
   ],
   "results": [
     {
@@ -119,22 +119,22 @@
     {
       "name": "per-send cost is the same within noise",
       "pass": true,
-      "details": "0.0117 (0.0104 to 0.0259) ms before, 0.0119 (0.0109 to 0.0154) ms now: 1.02 times"
+      "details": "0.0115 (0.0110 to 0.0308) ms before, 0.0127 (0.0116 to 0.0176) ms now: 1.11 times"
     },
     {
       "name": "tick cost is the same within noise",
       "pass": false,
-      "details": "0.0233 (0.0204 to 0.0439) ms before, 0.0955 (0.0893 to 0.1113) ms now: 4.1 times"
+      "details": "0.0228 (0.0219 to 0.0550) ms before, 0.0988 (0.0934 to 0.1266) ms now: 4.3 times"
     },
     {
       "name": "the extra tick cost is there with nobody in the world: it is the terrain in the physics step, not the players",
       "pass": true,
-      "details": "0.0103 (0.0091 to 0.0180) ms before, 0.0878 (0.0794 to 0.0920) ms now; the physics world is 11.1 times the bytes"
+      "details": "0.0104 (0.0097 to 0.0191) ms before, 0.0801 (0.0789 to 0.1060) ms now; the physics world is 11.1 times the bytes"
     },
     {
       "name": "one tick still takes under 1% of the time a tick has",
       "pass": true,
-      "details": "the slowest round 0.1113 ms of 16.67 ms: 0.67%; the median 0.57%"
+      "details": "the slowest round 0.1266 ms of 16.67 ms: 0.76%; the median 0.59%"
     }
   ]
 }
