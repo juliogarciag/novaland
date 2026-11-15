@@ -1,7 +1,7 @@
 import { isPlayerToken } from '@novaland/sim';
 
 /** Where the browser keeps the player token. */
-export const PLAYER_TOKEN_STORAGE_KEY = 'novaland.playerToken';
+const PLAYER_TOKEN_STORAGE_KEY = 'novaland.playerToken';
 
 /** The part of `localStorage` the token needs; tests pass a fake. */
 export type TokenStorage = Pick<Storage, 'getItem' | 'setItem'>;
@@ -33,6 +33,9 @@ export function readOrCreatePlayerToken(storage: TokenStorage | undefined = brow
     if (!storage) throw new Error('no storage');
     storage.setItem(PLAYER_TOKEN_STORAGE_KEY, token);
     unstoredToken = undefined;
+    // Two tabs opened at once both find no token and both store one: whatever the storage holds now is the one both use.
+    const stored = storage.getItem(PLAYER_TOKEN_STORAGE_KEY);
+    if (isPlayerToken(stored)) return stored;
   } catch {
     unstoredToken = token;
   }
@@ -58,6 +61,7 @@ function browserStorage(): TokenStorage | undefined {
 }
 
 export const __testing__ = {
+  PLAYER_TOKEN_STORAGE_KEY,
   forgetUnstoredToken: (): void => {
     unstoredToken = undefined;
   },

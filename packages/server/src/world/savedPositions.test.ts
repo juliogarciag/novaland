@@ -2,8 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { openSavedPositions, SAVED_POSITIONS_FILE, type SavedPositions } from './savedPositions';
-import { MAX_SAVED_PLAYERS } from './tuning';
+import { __testing__, openSavedPositions, type SavedPositions } from './savedPositions';
 
 describe('saved positions', () => {
   afterEach(() => {
@@ -42,7 +41,7 @@ describe('saved positions', () => {
     expect(store.find('ana')).toEqual({ x: 1, y: 2 });
   });
 
-  it(`remembers ${MAX_SAVED_PLAYERS} players by default and never more than its limit: one more forgets whoever was seen longest ago`, () => {
+  it('never remembers more players than its limit: one more forgets whoever was seen longest ago', () => {
     let time = 1000;
     const store = open({ maxPlayers: 3, now: () => time });
     for (const player of ['ana', 'ben', 'cleo']) {
@@ -127,6 +126,8 @@ describe('saved positions', () => {
 });
 
 // ---- Helpers ----
+
+const { SAVED_POSITIONS_FILE } = __testing__;
 
 const stores: SavedPositions[] = [];
 const directories: string[] = [];

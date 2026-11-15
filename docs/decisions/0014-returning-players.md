@@ -41,7 +41,7 @@ Why this and not the others:
 | Colyseus `allowReconnection` | Keeps a seat for a dropped client for some seconds inside one process. It does not survive a restart, and ADR 0005 turned `reconnect` off on purpose. |
 | The browser remembers its own position and sends it | A client would choose where it appears. Rejected by rule 1. |
 
-`node:sqlite` is marked experimental in Node 24 and prints one `ExperimentalWarning` line at boot. The surface used is `DatabaseSync`, `exec`, `prepare`, `get`, `run`, `close`, all behind the `SavedPositions` interface in `world/savedPositions.ts`, so replacing it is one file. Its calls are synchronous; at this size a read or a write is microseconds, so they run on the room's loop.
+`node:sqlite` is marked experimental in Node 24 and prints one `ExperimentalWarning` line at boot. The surface used is `DatabaseSync`, `exec`, `prepare`, `get`, `run`, `close`, all behind the `SavedPositions` interface in `world/savedPositions.ts`, so replacing it is one file. Its calls are synchronous and run on the room's loop, so a save must never wait for the disk: the file is opened with a write-ahead log and `synchronous = NORMAL` (a save is appended, not synced; a crash of the process loses nothing, a power cut may lose the last saves but not the file), and a player who has not moved since their last save is not written again, so a join, a leave or a takeover that changes nothing costs no write.
 
 ### How the position reaches the sim
 
@@ -52,8 +52,10 @@ Why this and not the others:
 ### When positions are saved
 
 - When a seat is freed: a leave, a dropped connection, an idle kick, a takeover.
-- Every `POSITION_SAVE_INTERVAL_MS` (5 s) for every seated player who moved since their last save. That is what a crash loses.
+- Every `POSITION_SAVE_INTERVAL_MS` (5 s) for every seated player. That is what a crash loses.
 - When the room is disposed (a stop on `SIGTERM`, which is how a deploy ends the old process).
+
+In all three, a player who stands where their last save put them is skipped.
 
 ### One token, one player
 
@@ -66,9 +68,9 @@ The client that receives 4101 shows a screen (`data-screen="elsewhere"`, "You ar
 Tokens are free to make up, so two limits:
 
 - **A new token earns a row only after its session has held a seat for `NEW_PLAYER_SAVE_AFTER_MS` (10 s).** With five seats, rows are added no faster than five every ten seconds, however fast someone joins. A token the store already knows is saved from its first tick.
-- **The store holds at most `MAX_SAVED_PLAYERS` (10,000) rows**; saving one more forgets whoever was seen longest ago. A row is under 100 bytes.
+- **The store holds at most `MAX_SAVED_PLAYERS` (100,000) rows**; saving one more forgets whoever was seen longest ago. A row is under 100 bytes, so the file stays near ten megabytes.
 
-Pushing every real player out therefore takes holding all five seats for more than five hours, during which nobody could play anyway.
+One seat held by a script adds one row every ten seconds, so pushing out every player seen before it started takes that seat eleven and a half days, and all five seats more than two days. It does not need the whole world: one seat is enough, slowly, and the game stays playable meanwhile. Nothing here stops that; a limit on joins per address would, and is not in this ticket.
 
 ## Consequences
 

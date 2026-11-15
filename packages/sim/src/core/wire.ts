@@ -9,7 +9,9 @@ import type { WorldState } from './worldState';
  * messages below. 2: `player/move` carries a sequence and the server
  * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
  * names the map by its checksum instead of a level name, and world states no
- * longer hold terrain (ADR 0013).
+ * longer hold terrain (ADR 0013). Not counted up for `JoinOptions.playerToken`
+ * (ADR 0014): a join without it and a server that ignores it both still work,
+ * so no page has to reload for it.
  */
 export const WIRE_PROTOCOL = 3;
 
@@ -58,7 +60,7 @@ export interface JoinOptions {
 }
 
 /** Characters of a player token: 32 random bytes as base64url, without padding. */
-export const PLAYER_TOKEN_LENGTH = 43;
+const PLAYER_TOKEN_LENGTH = 43;
 
 const PLAYER_TOKEN_PATTERN = /^[A-Za-z0-9_-]+$/;
 

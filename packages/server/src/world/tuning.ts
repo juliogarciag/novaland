@@ -44,8 +44,8 @@ export const IDLE_TIMEOUT_MS = 10 * 60 * 1000;
 export const POSITION_SAVE_INTERVAL_MS = 5000;
 /** Milliseconds a player the store has never seen must hold a seat before their position is first saved. Tokens are free to mint, so this is what a new row costs: with five seats, nobody adds rows faster than five every ten seconds. A known player is saved from their first tick. */
 export const NEW_PLAYER_SAVE_AFTER_MS = 10_000;
-/** Most players whose position is remembered. Saving one more forgets whoever was seen longest ago. A row is under 100 bytes, so the file stays near a megabyte. */
-export const MAX_SAVED_PLAYERS = 10_000;
+/** Most players whose position is remembered. Saving one more forgets whoever was seen longest ago. A row is under 100 bytes, so the file stays near ten megabytes; at one new row per seat every ten seconds, filling it takes one seat eleven days and all five more than two. */
+export const MAX_SAVED_PLAYERS = 100_000;
 
 /** Port when `PORT` is not set. Colyseus's conventional one. */
 export const DEFAULT_PORT = 2567;

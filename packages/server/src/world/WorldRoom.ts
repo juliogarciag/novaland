@@ -209,7 +209,8 @@ export class WorldRoom extends Room {
       playerKey,
       seatedAt: replaced?.seatedAt ?? now,
       remembered: savedPosition !== undefined,
-      savedPosition: undefined,
+      // What the store holds for this player right now, so a join that changes nothing writes nothing.
+      savedPosition,
       replaced: false,
       lastSent: undefined,
       welcomedAt: undefined,
@@ -253,19 +254,19 @@ export class WorldRoom extends Room {
    * seat is freed and its session closed with `REPLACED_KICK`, and what the
    * join that takes over needs is returned: where the player stands right now
    * (undefined when their own join has not run yet), when they first sat down
-   * and whether the store knows them. Undefined when the player holds no seat.
+   * and the last position saved for them. Undefined when the player holds no seat.
    * The newest join wins because the older session may be a connection the
    * player already lost and the server has not yet seen drop; refusing the
    * new one would lock the player out of their own character.
    */
-  private replaceSessionOf(playerKey: string): { readonly position: SavedPosition | undefined; readonly seatedAt: number; readonly remembered: boolean } | undefined {
+  private replaceSessionOf(playerKey: string): { readonly position: SavedPosition | undefined; readonly seatedAt: number; readonly savedPosition: SavedPosition | undefined } | undefined {
     for (const session of this.sessions.values()) {
       if (session.playerKey !== playerKey) continue;
       const position = this.positionOf(session);
       session.replaced = true;
       this.freeSeat(session.client);
       session.client.leave(REPLACED_KICK.code, REPLACED_KICK.reason);
-      return { position, seatedAt: session.seatedAt, remembered: session.remembered };
+      return { position, seatedAt: session.seatedAt, savedPosition: session.savedPosition };
     }
     return undefined;
   }
@@ -281,19 +282,16 @@ export class WorldRoom extends Room {
     if (session.playerKey === undefined || !this.savedPositions) return;
     if (!session.remembered && now - session.seatedAt < NEW_PLAYER_SAVE_AFTER_MS) return;
     const position = this.positionOf(session);
-    if (!position) return;
-    this.savedPositions.save(session.playerKey, position);
+    // A player who has not moved since their last save is not written again: a join, a leave or a takeover that changes nothing costs the disk nothing.
+    if (!position || (position.x === session.savedPosition?.x && position.y === session.savedPosition.y)) return;
+    if (!this.savedPositions.save(session.playerKey, position)) return;
     session.remembered = true;
     session.savedPosition = position;
   }
 
   /** Saves every seated player who moved since their last save. Runs every `POSITION_SAVE_INTERVAL_MS`, so a crash loses that much walking at most. */
   private saveMovedPlayers(now: number): void {
-    for (const session of this.sessions.values()) {
-      if (session.playerKey === undefined) continue;
-      const position = this.positionOf(session);
-      if (position && (position.x !== session.savedPosition?.x || position.y !== session.savedPosition.y)) this.savePosition(session, now);
-    }
+    for (const session of this.sessions.values()) this.savePosition(session, now);
   }
 
   /**

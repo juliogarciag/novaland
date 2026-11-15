@@ -23,8 +23,8 @@ export interface SavedPositions {
   readonly count: number;
   /** Where the player last stood, or undefined for a player this store has never saved. */
   find(playerKey: string): SavedPosition | undefined;
-  /** Remembers where the player stands now. A position that is not two finite numbers is not saved. Never throws: a store that cannot write says so in the log and the game goes on. */
-  save(playerKey: string, position: SavedPosition): void;
+  /** Remembers where the player stands now, and says whether it did. A position that is not two finite numbers is not saved. Never throws: a store that cannot write says so in the log and the game goes on. */
+  save(playerKey: string, position: SavedPosition): boolean;
   /** Releases the file. Nothing can be read or saved afterwards. */
   close(): void;
 }
@@ -42,7 +42,7 @@ export interface SavedPositionsOptions {
 const FAILURE_LOG_INTERVAL_MS = 60_000;
 
 /** Name of the store's file inside its directory. */
-export const SAVED_POSITIONS_FILE = 'saved-positions.sqlite';
+const SAVED_POSITIONS_FILE = 'saved-positions.sqlite';
 
 /**
  * Opens the store: one SQLite table, in `directory` when one is given and in
@@ -50,7 +50,8 @@ export const SAVED_POSITIONS_FILE = 'saved-positions.sqlite';
  * hand-written file would have to earn: a save is atomic, a crash mid-write
  * leaves the last good state, and one player's save rewrites one row. The
  * calls are synchronous and take microseconds at this size (a few rows every
- * few seconds), so they run on the room's own loop.
+ * few seconds, appended to a write-ahead log), so they run on the room's own
+ * loop.
  *
  * Throws when the directory or the file cannot be opened or is not a store
  * this code can read: whoever asked for a directory decides what that means
@@ -62,6 +63,9 @@ export function openSavedPositions({ directory, maxPlayers = MAX_SAVED_PLAYERS, 
   if (directory !== undefined) mkdirSync(directory, { recursive: true });
   const database = new DatabaseSync(directory === undefined ? ':memory:' : path.join(directory, SAVED_POSITIONS_FILE));
   try {
+    // Saves run on the room's loop, so none may wait for the disk: with a write-ahead log and `synchronous = NORMAL` a save
+    // is appended without a sync of its own. A crash of the process loses nothing; a power cut may lose the last saves, never the file.
+    if (directory !== undefined) database.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;');
     // The key is the hash of a token, so a copy of this file names no one and opens no seat.
     database.exec(`
       CREATE TABLE IF NOT EXISTS saved_positions (
@@ -104,18 +108,20 @@ export function openSavedPositions({ directory, maxPlayers = MAX_SAVED_PLAYERS, 
         }
       },
       save(playerKey, position) {
-        if (closed || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return;
+        if (closed || !Number.isFinite(position.x) || !Number.isFinite(position.y)) return false;
         try {
           const known = findRow.get(playerKey) !== undefined;
           saveRow.run(playerKey, position.x, position.y, Math.trunc(now()));
-          if (known) return;
+          if (known) return true;
           count += 1;
           if (count > maxPlayers) {
             forgetLongestUnseen.run(count - maxPlayers);
             count = readCount();
           }
+          return true;
         } catch (error) {
           logFailure('save', error);
+          return false;
         }
       },
       close() {
@@ -127,9 +133,9 @@ export function openSavedPositions({ directory, maxPlayers = MAX_SAVED_PLAYERS, 
 
     /** One line a minute at most, and never the key: a full disk must not also fill the log. */
     function logFailure(operation: 'find' | 'save', error: unknown): void {
-      const at = now();
-      if (at - failureLoggedAt < FAILURE_LOG_INTERVAL_MS) return;
-      failureLoggedAt = at;
+      const failedAt = now();
+      if (failedAt - failureLoggedAt < FAILURE_LOG_INTERVAL_MS) return;
+      failureLoggedAt = failedAt;
       console.error(JSON.stringify({ event: 'saved-positions-failed', operation, error: error instanceof Error ? error.message : String(error) }));
     }
   } catch (error) {
@@ -137,3 +143,5 @@ export function openSavedPositions({ directory, maxPlayers = MAX_SAVED_PLAYERS, 
     throw error;
   }
 }
+
+export const __testing__ = { SAVED_POSITIONS_FILE };

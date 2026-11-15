@@ -1,10 +1,20 @@
-import { WIRE } from '@novaland/sim';
+import { isPlayerToken, WIRE, WIRE_PROTOCOL } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, REPLACED_KICK_CODE } from './tuning';
 
-const { isWorldFullRefusal } = __testing__;
+const { isWorldFullRefusal, joinOptions } = __testing__;
+
+describe('joinOptions', () => {
+  it('presents the wire protocol and a player token, the same token on every join of this page', () => {
+    const first = joinOptions();
+    expect(first.protocol).toBe(WIRE_PROTOCOL);
+    expect(isPlayerToken(first.playerToken)).toBe(true);
+    expect(Object.keys(first).sort()).toEqual(['playerToken', 'protocol']);
+    expect(joinOptions()).toEqual(first);
+  });
+});
 
 describe('WorldConnection', () => {
   beforeEach(() => {
@@ -162,6 +172,17 @@ describe('WorldConnection', () => {
     rooms[1]!.receive(WIRE.welcome, { ...WELCOME, slot: 0 });
     expect(connection.status).toEqual({ kind: 'online', slot: 0 });
     expect(statuses.map((status) => status.kind)).toEqual(['connecting', 'online', 'elsewhere', 'connecting', 'online']);
+  });
+
+  it('waits for the player when another tab took the seat while this join was still in flight', async () => {
+    const { connection, endpoints } = connect(['replaced', 'room']);
+    await settle();
+    expect(connection.status).toEqual({ kind: 'elsewhere' });
+    await vi.advanceTimersByTimeAsync(JOIN_TIMEOUT_MS + 60_000);
+    expect(endpoints).toHaveLength(1);
+    connection.retryNow();
+    await settle();
+    expect(endpoints).toHaveLength(2);
   });
 
   it('stays away after a 4100 that comes before the welcome, past the join timeout too', async () => {

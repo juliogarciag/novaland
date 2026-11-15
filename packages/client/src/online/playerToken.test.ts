@@ -1,6 +1,10 @@
-import { isPlayerToken, PLAYER_TOKEN_LENGTH } from '@novaland/sim';
+import { isPlayerToken } from '@novaland/sim';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { __testing__, PLAYER_TOKEN_STORAGE_KEY, readOrCreatePlayerToken, type TokenStorage } from './playerToken';
+import { __testing__, readOrCreatePlayerToken, type TokenStorage } from './playerToken';
+
+const { PLAYER_TOKEN_STORAGE_KEY } = __testing__;
+/** Characters of a token: 32 bytes as base64url. */
+const PLAYER_TOKEN_LENGTH = 43;
 
 describe('readOrCreatePlayerToken', () => {
   beforeEach(() => {
@@ -19,6 +23,14 @@ describe('readOrCreatePlayerToken', () => {
   it('makes a different token for every browser', () => {
     const tokens = new Set(Array.from({ length: 200 }, () => readOrCreatePlayerToken(memoryStorage())));
     expect(tokens.size).toBe(200);
+  });
+
+  it('uses the token another tab stored a moment earlier, so two tabs opened at once are one player', () => {
+    const storage = memoryStorage();
+    const otherTabs = readOrCreatePlayerToken(memoryStorage());
+    // The other tab's write lands between this tab's read and its own write.
+    const racing: TokenStorage = { getItem: (key) => storage.getItem(key), setItem: (key) => storage.setItem(key, otherTabs) };
+    expect(readOrCreatePlayerToken(racing)).toBe(otherTabs);
   });
 
   it('replaces a stored value that is not a token', () => {

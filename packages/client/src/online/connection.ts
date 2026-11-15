@@ -1,7 +1,7 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
 import { JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveMessage } from '@novaland/sim';
 import { readOrCreatePlayerToken } from './playerToken';
-import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, REPLACED_KICK_CODE, WORLD_ROOM_ID } from './tuning';
+import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, REPLACED_KICK_CODE, REPLACED_REFUSAL, WORLD_ROOM_ID } from './tuning';
 
 /**
  * Where the client stands with the world server. The screens draw it, the
@@ -180,6 +180,11 @@ export class WorldConnection {
       if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);
+      } else if (isReplacedRefusal(error)) {
+        // Another tab of this browser joined while this join was still in flight: that one plays, this one waits to be asked.
+        this.failedConnections = 0;
+        this.attempt = 0;
+        this.setStatus({ kind: 'elsewhere' });
       } else if (isProtocolRefusal(error)) {
         // Asking again would be refused again: only another build of this page can join.
         this.close();
@@ -323,8 +328,7 @@ export class WorldConnection {
  * a tab that lost its storage still joins as someone.
  */
 export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
-  const options: JoinOptions = { protocol: WIRE_PROTOCOL, playerToken: readOrCreatePlayerToken() };
-  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, options);
+  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, joinOptions());
   room.reconnection.enabled = false;
   return {
     onMessage: (type, callback) => {
@@ -342,6 +346,11 @@ export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
     },
     leave: () => room.leave(true),
   };
+}
+
+/** What this browser presents when it joins: the wire protocol it was built against and its player token. */
+function joinOptions(): JoinOptions {
+  return { protocol: WIRE_PROTOCOL, playerToken: readOrCreatePlayerToken() };
 }
 
 /**
@@ -366,9 +375,16 @@ function isProtocolRefusal(error: unknown): boolean {
   return typeof message === 'string' && message.includes(JOIN_REFUSAL.protocolMismatch);
 }
 
+/** True when the join failed because a newer join of the same player token took its place before it was seated: the server closes it with `REPLACED_KICK_CODE` and refuses it with the reason `REPLACED_REFUSAL`. */
+function isReplacedRefusal(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  return code === REPLACED_KICK_CODE || (typeof message === 'string' && message.includes(REPLACED_REFUSAL));
+}
+
 /** The slot of a welcome the handlers accepted; they checked it is a non-negative integer. */
 function readSlot(payload: unknown): number {
   return (payload as { slot: number }).slot;
 }
 
-export const __testing__ = { isWorldFullRefusal, isProtocolRefusal };
+export const __testing__ = { isWorldFullRefusal, isProtocolRefusal, isReplacedRefusal, joinOptions };

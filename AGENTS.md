@@ -96,7 +96,7 @@ Dependency versions live in one place: the `catalog` in `pnpm-workspace.yaml`. P
 ```
 pnpm install
 pnpm dev          # client dev server, solo mode. PORT=5180 pnpm dev to pin a port (needed when several worktrees run at once). VITE_GENERATED_MAP=400x300 plays a generated map of that size instead of the world, to measure big maps
-pnpm dev:online   # the world server and the client together; SERVER_PORT=<n> PORT=<m> pin them. Or run them apart: PORT=<n> pnpm --filter @novaland/server dev, then VITE_SERVER_URL=ws://localhost:<n> PORT=<m> pnpm dev. VITE_PREDICTION=off draws the local player from server states, to compare
+pnpm dev:online   # the world server and the client together; SERVER_PORT=<n> PORT=<m> pin them. Or run them apart: PORT=<n> pnpm --filter @novaland/server dev, then VITE_SERVER_URL=ws://localhost:<n> PORT=<m> pnpm dev. VITE_PREDICTION=off draws the local player from server states, to compare. DATA_DIRECTORY="$PWD/.data" keeps where players stood across restarts of the server (unset, a restart forgets them)
 pnpm test         # all tests in all packages, headless
 pnpm typecheck    # tsc for every package
 pnpm lint         # eslint, including the boundary rules

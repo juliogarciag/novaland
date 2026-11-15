@@ -17,6 +17,8 @@ export const INTERPOLATION_BUFFER_TICKS = INTERPOLATION_BUFFER_SENDS * TICKS_PER
 export const IDLE_KICK_CODE = 4100;
 /** Close code of a session the server closed because the same player token joined again, from another tab or window (`REPLACED_KICK` in packages/server/src/world/kicks.ts, #55). The client does not rejoin by itself after it. Duplicated like `IDLE_KICK_CODE`. */
 export const REPLACED_KICK_CODE = 4101;
+/** The reason that goes with `REPLACED_KICK_CODE`, and what a join that was replaced before it was seated is refused with (`REPLACED_KICK.reason` on the server). */
+export const REPLACED_REFUSAL = 'joined-elsewhere';
 /** Waits before the next attempt after a drop or an unreachable server, in order; the last one repeats. */
 export const RECONNECT_DELAYS_MS: readonly number[] = [1000, 2000, 4000, 8000];
 /** How long a client refused for a full world waits before asking for a seat again by itself. */

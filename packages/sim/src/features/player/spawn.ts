@@ -43,21 +43,21 @@ const RETURN_SEARCH_RINGS = 8;
  * Nothing here is random, and the search is the same few hundred tiles
  * however big the map is.
  */
-export function pickReturnPoint(sim: Sim, left: { readonly x: number; readonly y: number }): { x: number; y: number } | undefined {
-  const leftTile = tileAt(left.x, left.y);
+export function pickReturnPoint(sim: Sim, leftAt: { readonly x: number; readonly y: number }): { x: number; y: number } | undefined {
+  const leftTile = tileAt(leftAt.x, leftAt.y);
   // No area reaches past the world's limit, and tile numbers that large stop counting up one by one: the rings below would never end.
   if (!leftTile || Math.abs(leftTile.column) > WORLD_LIMIT_TILES || Math.abs(leftTile.row) > WORLD_LIMIT_TILES) return undefined;
   const tiles = readMapTiles(sim.map);
   const occupied = occupiedTileKeys(sim);
   const isFree = (tile: TileCoordinate): boolean => isWalkable(tiles, tile) && !occupied.has(tileKey(tile));
-  if (isFree(leftTile)) return { x: left.x, y: left.y };
+  if (isFree(leftTile)) return { x: leftAt.x, y: leftAt.y };
   let nearest: { x: number; y: number } | undefined;
   let nearestDistance = Infinity;
   for (let ring = 1; ring <= RETURN_SEARCH_RINGS; ring += 1) {
     for (const tile of ringTiles(leftTile, ring)) {
       if (!isFree(tile)) continue;
       const centre = tileCentre(tile);
-      const distance = Math.hypot(centre.x - left.x, centre.y - left.y);
+      const distance = Math.hypot(centre.x - leftAt.x, centre.y - leftAt.y);
       if (distance < nearestDistance) {
         nearest = centre;
         nearestDistance = distance;

@@ -107,14 +107,25 @@ describe('a join that returns a player to where they left (headless)', () => {
     const random = seededRandom(55);
     const sim = await createSimInternal({ seed: 1, map: field });
     const tiles = readMapTiles(field);
+    let returnedExactly = 0;
     for (let round = 0; round < 2000; round += 1) {
       const returnTo = randomPoint(random);
       expect(() => sim.step([{ type: 'player/join', slot: 0, returnTo } as unknown as Command])).not.toThrow();
       const tile = playerTile(sim, 0);
       const defId = tileDefIdAt(tiles, tile);
       expect(defId !== undefined && !getTileDef(defId).solid, `${JSON.stringify(returnTo)} left the player on ${JSON.stringify(tile)}`).toBe(true);
+      // A finite point on a free tile is where the player stands (physics may nudge a body that overlaps a rock out of it): the fuzz must not pass by always falling back to the spawn.
+      const { x, y } = (returnTo ?? {}) as { x?: unknown; y?: unknown };
+      const pointTile = typeof x === 'number' && typeof y === 'number' ? tileAt(x, y) : undefined;
+      const pointDefId = pointTile && tileDefIdAt(tiles, pointTile);
+      if (pointDefId !== undefined && !getTileDef(pointDefId).solid) {
+        returnedExactly += 1;
+        const position = getPlayerPosition(sim, 0) as { x: number; y: number };
+        expect(Math.hypot(position.x - (x as number), position.y - (y as number)), JSON.stringify(returnTo)).toBeLessThan(0.5);
+      }
       sim.step([{ type: 'player/leave', slot: 0 }]);
     }
+    expect(returnedExactly).toBeGreaterThan(200);
     sim.destroy();
   });
 });
@@ -152,7 +163,8 @@ function join(slot: number, returnTo?: { x: number; y: number }): Command {
 
 /** The point as a body holds it: physics keeps positions as 32-bit floats, so a point comes back rounded to one. */
 function asPhysicsKeepsIt({ x, y }: { x: number; y: number }): { x: number; y: number } {
-  return { x: Math.fround(x), y: Math.fround(y) };
+  // Adding 0 turns -0 into 0, which is what a body reports.
+  return { x: Math.fround(x) + 0, y: Math.fround(y) + 0 };
 }
 
 function playerTile(sim: Sim, slot: number): TileCoordinate {

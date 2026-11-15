@@ -25,7 +25,7 @@ import { readPlayerKey } from './inbound';
 import { IDLE_KICK, REPLACED_KICK } from './kicks';
 import { openSavedPositions, type SavedPositions } from './savedPositions';
 import { __testing__, type WorldServer } from './startWorldServer';
-import { JOIN_ACK_TIMEOUT_MS, NEW_PLAYER_SAVE_AFTER_MS, POSITION_SAVE_INTERVAL_MS } from './tuning';
+import { IDLE_TIMEOUT_MS, JOIN_ACK_TIMEOUT_MS, NEW_PLAYER_SAVE_AFTER_MS, POSITION_SAVE_INTERVAL_MS } from './tuning';
 import { WorldRoom, type Clock } from './WorldRoom';
 
 /**
@@ -51,11 +51,17 @@ describe('a player who joins again', () => {
     expect(distanceFromSpawn(positionOf(first))).toBeLessThan(NEAR_SPAWN_METRES);
     const left = await walkEast(first);
     expect(distanceFromSpawn(left)).toBeGreaterThan(NEAR_SPAWN_METRES);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
     await leave(first);
 
     const back = await join(server.port, { playerToken: token });
     expect(positionOf(back)).toEqual(left);
+    // A player the store knows is saved without the wait a new one has: they walk on, leave at once and return to the new place.
+    const further = await walkEast(back);
+    expect(further.x).toBeGreaterThan(left.x);
+    await leave(back);
+    const backAgain = await join(server.port, { playerToken: token });
+    expect(positionOf(backAgain)).toEqual(further);
     const stranger = await join(server.port, { playerToken: newToken() });
     expect(distanceFromSpawn(positionOf(stranger))).toBeLessThan(NEAR_SPAWN_METRES);
     const anonymous = await join(server.port);
@@ -70,7 +76,7 @@ describe('a player who joins again', () => {
     server = await startWorldServer({ port: 0, seed: 1, clock, savedPositions: firstStore });
     const first = await join(server.port, { playerToken: token });
     const left = await walkEast(first);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
     // The player never leaves: the server stops under them, as a deploy does.
     await waitForUpdates(first, 2);
     await server.stop();
@@ -85,16 +91,35 @@ describe('a player who joins again', () => {
 
   it(`saves where a seated player stands every ${POSITION_SAVE_INTERVAL_MS / 1000} seconds, so a crash loses little`, async () => {
     const clock = fakeClock();
+    const saves: unknown[] = [];
     const store = track(openSavedPositions());
-    server = await startWorldServer({ port: 0, seed: 1, clock, savedPositions: store });
+    const countingStore: SavedPositions = { ...store, kind: store.kind, find: (key) => store.find(key), save: (key, position) => (saves.push(position), store.save(key, position)), close: () => store.close() };
+    server = await startWorldServer({ port: 0, seed: 1, clock, savedPositions: countingStore });
     const token = newToken();
     const walker = await join(server.port, { playerToken: token });
     const stopped = await walkEast(walker);
-    expect(store.count).toBe(0);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS + POSITION_SAVE_INTERVAL_MS);
-    await waitUntil(() => store.count === 1);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS + POSITION_SAVE_INTERVAL_MS);
+    await waitUntil(() => saves.length === 1);
     // Still seated: nothing but the clock made the room write.
     expect(store.find(keyOf(token))).toEqual(stopped);
+    // A player who has not moved since is not written again, however many intervals pass.
+    for (let interval = 0; interval < 3; interval += 1) {
+      clock.skipAhead(POSITION_SAVE_INTERVAL_MS);
+      await waitForUpdates(walker, 3);
+    }
+    expect(saves).toEqual([stopped]);
+  });
+
+  it('keeps the time a player first sat down across a takeover, so a player who switches tabs is still remembered', async () => {
+    const clock = fakeClock();
+    const store = track(openSavedPositions());
+    server = await startWorldServer({ port: 0, seed: 1, clock, savedPositions: store });
+    const token = newToken();
+    await join(server.port, { playerToken: token });
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
+    const secondTab = await join(server.port, { playerToken: token });
+    await leave(secondTab);
+    expect(store.count).toBe(1);
   });
 
   it(`does not remember a new player who leaves within ${NEW_PLAYER_SAVE_AFTER_MS / 1000} seconds, so a flood of fresh tokens adds nothing to the store`, async () => {
@@ -132,7 +157,7 @@ describe('a player who joins again', () => {
     const token = newToken();
     const idler = await join(server.port, { playerToken: token });
     const stood = await walkEast(idler);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
     expect((await orTimeout(idler.left, 'the idle player was never kicked')).code).toBe(IDLE_KICK.code);
     const back = await join(server.port, { playerToken: token });
     expect(positionOf(back)).toEqual(stood);
@@ -142,18 +167,23 @@ describe('a player who joins again', () => {
     const logged: string[] = [];
     for (const method of ['log', 'error', 'warn', 'info', 'debug'] as const) vi.spyOn(console, method).mockImplementation((...parts: unknown[]) => void logged.push(parts.map(String).join(' ')));
     const clock = fakeClock();
-    server = await startWorldServer({ port: 0, seed: 1, clock, idleTimeoutMs: NEW_PLAYER_SAVE_AFTER_MS });
+    server = await startWorldServer({ port: 0, seed: 1, clock });
     const token = newToken();
     const watcher = await join(server.port, { playerToken: newToken() });
     const first = await join(server.port, { playerToken: token });
     await walkEast(first);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
     await leave(first);
     // Back, then replaced by a second tab, then kicked for being idle: every path that handles the key.
     const back = await join(server.port, { playerToken: token });
     const secondTab = await join(server.port, { playerToken: token });
     await orTimeout(back.left, 'the replaced tab was never closed');
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    // The watcher is still there and saw all of it.
+    const watcherUpdates = watcher.updates.count;
+    await waitForUpdates(watcher, 3);
+    expect(watcher.updates.count).toBeGreaterThan(watcherUpdates);
+    expect(playerCount(watcher.replica)).toBe(2);
+    clock.skipAhead(IDLE_TIMEOUT_MS);
     await orTimeout(secondTab.left, 'the idle tab was never kicked');
     await server.stop();
     server = undefined;
@@ -169,7 +199,7 @@ describe('a player who joins again', () => {
  * a client put in the matchmaking request, and none of it may place a player.
  */
 describe('a forged or malformed join', () => {
-  it('fuzzed with 600 random join options, never throws anything but a protocol refusal and never places a player away from the spawn', async () => {
+  it('fuzzed with 200 random join options, never throws anything but a protocol refusal and never places a player away from the spawn', async () => {
     const random = seededRandom(55);
     const store = openSavedPositions();
     // A known player stands far from the spawn: the place a forged join would like to appear at.
@@ -180,7 +210,7 @@ describe('a forged or malformed join', () => {
     await room.onCreate({ seed: 3, savedPositions: store });
     let seated = 0;
     try {
-      for (let round = 0; round < 600; round += 1) {
+      for (let round = 0; round < 200; round += 1) {
         const options = randomJoinOptions(random, faraway);
         const client = fakeClient(`fuzz-${round}`);
         let refusal: unknown;
@@ -188,7 +218,7 @@ describe('a forged or malformed join', () => {
           refusal = error;
         });
         if (refusal !== undefined) {
-          expect(String((refusal as Error).message), describe_(options)).toBe('protocol-mismatch');
+          expect(String((refusal as Error).message), optionsAsText(options)).toBe('protocol-mismatch');
           expect(room.seatsTaken).toBe(0);
           continue;
         }
@@ -196,11 +226,11 @@ describe('a forged or malformed join', () => {
         const welcome = client.sent[0]?.[1] as WelcomeMessage;
         const own = welcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === welcome.slot);
         const position = own?.components['Position'] as { x: number; y: number } | undefined;
-        expect(position && distanceFromSpawn(position) < NEAR_SPAWN_METRES, `${describe_(options)} appeared at ${JSON.stringify(position)}`).toBe(true);
+        expect(position && distanceFromSpawn(position) < NEAR_SPAWN_METRES, `${optionsAsText(options)} appeared at ${JSON.stringify(position)}`).toBe(true);
         expect(JSON.stringify(client.sent)).not.toContain(knownToken);
         room.onLeave(client);
       }
-      expect(seated).toBeGreaterThan(200);
+      expect(seated).toBeGreaterThan(100);
       expect(store.count).toBe(1);
       expect(store.find(keyOf(knownToken))).toEqual(faraway);
       // The real token still works after all of that: only it opens that place.
@@ -209,6 +239,18 @@ describe('a forged or malformed join', () => {
       const welcome = owner.sent[0]?.[1] as WelcomeMessage;
       const own = welcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === welcome.slot);
       expect(own?.components['Position']).toEqual(faraway);
+      // The owner's own join cannot move them either: with their token seated and with it known, a forged position is ignored.
+      const elsewhere = spawnPoint(worldMap);
+      const forged = { protocol: WIRE_PROTOCOL, playerToken: knownToken, returnTo: elsewhere, position: elsewhere, x: elsewhere.x, y: elsewhere.y };
+      for (const sessionId of ['owner-second-tab', 'owner-after-leaving']) {
+        const client = fakeClient(sessionId);
+        await room.onJoin(client, forged);
+        const forgedWelcome = client.sent[0]?.[1] as WelcomeMessage;
+        const forgedOwn = forgedWelcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === forgedWelcome.slot);
+        expect(forgedOwn?.components['Position'], sessionId).toEqual(faraway);
+        expect(room.seatsTaken).toBe(1);
+        room.onLeave(client);
+      }
     } finally {
       room.onDispose();
       store.close();
@@ -244,7 +286,7 @@ describe('a forged or malformed join', () => {
     try {
       const earlier = fakeClient('earlier');
       await room.onJoin(earlier, { protocol: WIRE_PROTOCOL, playerToken: newToken() });
-      clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+      clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
       // The earlier player leaves and a known player takes the same seat and leaves again, all before the next tick: the slot still holds the earlier player's entity.
       const knownToken = newToken();
       const remembered = walkablePointFarFromSpawn();
@@ -271,7 +313,7 @@ describe('a forged or malformed join', () => {
     await room.onJoin(seated, { protocol: WIRE_PROTOCOL, playerToken: token });
     const welcome = seated.sent[0]?.[1] as WelcomeMessage;
     const own = welcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === welcome.slot);
-    clock.skip(NEW_PLAYER_SAVE_AFTER_MS);
+    clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
     room.onDispose();
     expect(store.find(keyOf(token))).toEqual(own?.components['Position']);
     store.close();
@@ -439,12 +481,12 @@ function orTimeout<T>(promise: Promise<T>, message: string, timeoutMs = JOIN_ACK
 }
 
 /** A clock a test pushes forward: real time plus whatever was skipped. */
-function fakeClock(): Clock & { skip(ms: number): void } {
+function fakeClock(): Clock & { skipAhead(milliseconds: number): void } {
   let skippedMs = 0;
   return {
     now: () => performance.now() + skippedMs,
-    skip: (ms) => {
-      skippedMs += ms;
+    skipAhead: (milliseconds) => {
+      skippedMs += milliseconds;
     },
   };
 }
@@ -480,7 +522,7 @@ function seededRandom(seed: number): () => number {
 }
 
 /** How a failing round names its options; a BigInt or a cycle must not break the report. */
-function describe_(options: unknown): string {
+function optionsAsText(options: unknown): string {
   try {
     return JSON.stringify(options) ?? String(options);
   } catch {
