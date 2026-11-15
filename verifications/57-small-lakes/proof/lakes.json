@@ -102,7 +102,7 @@
     }
   ],
   "keyboardRoute": {
-    "length": 25,
+    "length": 26,
     "first": {
       "key": "D",
       "code": "KeyD",
@@ -115,39 +115,39 @@
       "axis": "y"
     },
     "turnAt": {
-      "column": 29,
+      "column": 31,
       "row": 14
     },
     "turnAtMetres": {
-      "x": 29.5,
+      "x": 31.5,
       "y": 14.5
     },
     "water": {
-      "column": 29,
-      "row": 16
+      "column": 31,
+      "row": 15
     },
-    "waterFaceMetres": 16
+    "waterFaceMetres": 15
   },
   "shore": {
     "lake": "clearing",
     "player": {
-      "x": 29.500301361083984,
-      "y": 15.601883888244629,
+      "x": 31.667034149169922,
+      "y": 14.601884841918945,
       "radius": 0.4,
       "intent": {
         "x": 0,
         "y": 1
       },
       "tile": {
-        "column": 29,
-        "row": 15
+        "column": 31,
+        "row": 14
       },
-      "tick": 393,
+      "tick": 410,
       "still": true,
       "standsOn": "grass",
       "tileAhead": "water"
     },
-    "gapToWater": -0.0018838882446274852
+    "gapToWater": -0.0018848419189456678
   },
   "visited": [
     "clearing",
@@ -180,7 +180,7 @@
       "details": "35/9x6 14/5x4 26/8x5 9/4x3 18/6x4 30/9x5 27/8x5 15/5x4"
     },
     {
-      "name": "no lake is on the spawn or right next to it",
+      "name": "no lake is on the spawn or near it: none within ten tiles",
       "pass": true,
       "details": "nearest water is 23 tiles from the spawn tile"
     },
@@ -192,12 +192,12 @@
     {
       "name": "from where the player stands, a walk along one row and then one column over grass alone runs into water",
       "pass": true,
-      "details": "D to column 29, then S to the water at (29, 16)"
+      "details": "D to column 31, then S to the water at (31, 15)"
     },
     {
       "name": "walking into the lake on the keyboard, the player stops at the shore",
       "pass": true,
-      "details": "moved 23.0 m from the start, stopped -0.002 m from the water's edge with S still held"
+      "details": "moved 25.2 m from the start, stopped -0.002 m from the water's edge with S still held"
     },
     {
       "name": "the player stands on grass with water on the next tile",
@@ -217,7 +217,7 @@
     {
       "name": "the lake in south-glade is reached on foot and its water holds the player on the shore",
       "pass": true,
-      "details": "36 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+      "details": "39 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
     },
     {
       "name": "the lake in south-glade is on screen and drawn as water, with grass around it",
@@ -290,7 +290,7 @@
       "details": "clearing, south-glade, north-meadow, stone-hollow, west-woods, east-glade, far-clearing, rock-field"
     },
     {
-      "name": "on the whole walk the player was never on a water, tree or rock tile",
+      "name": "walking between the lakes, the player was on a water, tree or rock tile in no frame",
       "pass": true
     },
     {

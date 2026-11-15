@@ -5,8 +5,8 @@
  *
  * 1. Reads the world through `window.__novaland` and finds every lake (water
  *    tiles that touch side to side).
- * 2. Walks from the spawn to the nearest lake with the keyboard, as a person
- *    does, and keeps walking into the water: the player must stop on the
+ * 2. Walks from the spawn to a lake with the keyboard, as a person does
+ *    (the shortest walk of two keys that ends in water), and keeps walking into the water: the player must stop on the
  *    shore. Screenshot.
  * 3. Walks on to every other lake over walkable tiles alone (which also shows
  *    each one can be reached), pushes into its water, checks the player is
@@ -56,12 +56,12 @@ try {
   results.push(check('water is a tile def of its own: solid, flat, with a colour', world.water !== undefined && world.water.solid === true && world.water.standingSprite === undefined && Number.isInteger(world.water.color), JSON.stringify(world.water)));
   results.push(check(`the world has several lakes: at least ${LAKES_THE_TICKET_ASKS_FOR}`, world.lakes.length >= LAKES_THE_TICKET_ASKS_FOR, world.lakes.map((lake) => `${lake.area} (${lake.tiles.length} tiles)`).join(', ')));
   results.push(check('no lake is a plain rectangle', world.lakes.every((lake) => lake.tiles.length < lake.box.width * lake.box.height), world.lakes.map((lake) => `${lake.tiles.length}/${lake.box.width}x${lake.box.height}`).join(' ')));
-  const lakesNearSpawn = world.lakes.filter((lake) => lake.tilesFromSpawn <= 5);
-  results.push(check('no lake is on the spawn or right next to it', lakesNearSpawn.length === 0, `nearest water is ${Math.min(...world.lakes.map((lake) => lake.tilesFromSpawn))} tiles from the spawn tile`));
+  const lakesNearSpawn = world.lakes.filter((lake) => lake.tilesFromSpawn <= 10);
+  results.push(check('no lake is on the spawn or near it: none within ten tiles', lakesNearSpawn.length === 0, `nearest water is ${Math.min(...world.lakes.map((lake) => lake.tilesFromSpawn))} tiles from the spawn tile`));
   results.push(check('the water sheet loaded: lakes are drawn from it, not from the flat fallback', await page.evaluate((key) => window.__novaland.game.textures.exists(key), world.water.groundSprite?.key), world.water.groundSprite?.key));
 
   // ---- 2. To the nearest lake and into it, on the keyboard ----
-  const start0 = await page.evaluate(() => window.__lakes.player());
+  const startedAt = await page.evaluate(() => window.__lakes.player());
   const route = await page.evaluate(() => window.__lakes.keyboardRouteToWater());
   report.keyboardRoute = route;
   results.push(check('from where the player stands, a walk along one row and then one column over grass alone runs into water', route !== undefined, route && `${route.first.key} to column ${route.turnAt.column}, then ${route.second.key} to the water at (${route.water.column}, ${route.water.row})`));
@@ -76,7 +76,7 @@ try {
   const pushed = await page.evaluate(() => window.__lakes.settled());
   const faceMetres = route.waterFaceMetres;
   const gapToWater = route.second.sign > 0 ? faceMetres - (pushed.y + pushed.radius) : pushed.y - pushed.radius - faceMetres;
-  results.push(check('walking into the lake on the keyboard, the player stops at the shore', pushed.still && pushed.intent[route.second.axis] === route.second.sign && Math.abs(gapToWater) < 0.05, `moved ${Math.hypot(pushed.x - start0.x, pushed.y - start0.y).toFixed(1)} m from the start, stopped ${gapToWater.toFixed(3)} m from the water's edge with ${route.second.key} still held`));
+  results.push(check('walking into the lake on the keyboard, the player stops at the shore', pushed.still && pushed.intent[route.second.axis] === route.second.sign && Math.abs(gapToWater) < 0.05, `moved ${Math.hypot(pushed.x - startedAt.x, pushed.y - startedAt.y).toFixed(1)} m from the start, stopped ${gapToWater.toFixed(3)} m from the water's edge with ${route.second.key} still held`));
   results.push(check('the player stands on grass with water on the next tile', pushed.standsOn === 'grass' && pushed.tileAhead === 'water', `on ${pushed.standsOn}, facing ${pushed.tileAhead}`));
   results.push(check('a second of pushing moves the player nowhere', Math.hypot(pushed.x - atShore.x, pushed.y - atShore.y) < 0.001, `${Math.hypot(pushed.x - atShore.x, pushed.y - atShore.y).toFixed(4)} m`));
   const shoreLake = world.lakes.find((lake) => lake.tiles.some((tile) => tile.column === route.water.column && tile.row === route.water.row));
@@ -89,10 +89,10 @@ try {
 
   // ---- 3. Every other lake, on foot ----
   const visited = [shoreLake.area];
-  let everInWater = false;
-  for (const lake of world.lakes.filter((other) => other !== shoreLake).sort((a, b) => a.tilesFromSpawn - b.tilesFromSpawn)) {
+  let everOnSolidTile = false;
+  for (const lake of world.lakes.filter((other) => other !== shoreLake).sort((nearer, farther) => nearer.tilesFromSpawn - farther.tilesFromSpawn)) {
     const walk = await page.evaluate((target) => window.__lakes.walkToShoreOf(target), lake);
-    everInWater ||= walk.framesOnSolidTile > 0;
+    everOnSolidTile ||= walk.framesOnSolidTile > 0;
     if (!walk.arrived) {
       results.push(check(`the lake in ${lake.area} is reached on foot`, false, walk.why));
       continue;
@@ -105,7 +105,7 @@ try {
   }
   report.visited = visited;
   results.push(check('every lake was visited and photographed', visited.length === world.lakes.length && visited.length >= LAKES_THE_TICKET_ASKS_FOR, visited.join(', ')));
-  results.push(check('on the whole walk the player was never on a water, tree or rock tile', !everInWater));
+  results.push(check('walking between the lakes, the player was on a water, tree or rock tile in no frame', !everOnSolidTile));
 
   // ---- 4. The world by colour alone ----
   const overview = paintWorldByColour(world);
@@ -171,8 +171,8 @@ function pixelOf(png, x, y) {
 
 function colourDistance(first, second) {
   const channels = (color) => [(color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff];
-  const [a, b] = [channels(first), channels(second)];
-  return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  const [firstChannels, secondChannels] = [channels(first), channels(second)];
+  return Math.hypot(firstChannels[0] - secondChannels[0], firstChannels[1] - secondChannels[1], firstChannels[2] - secondChannels[2]);
 }
 
 /** The whole world, every tile filled with its def's `color` and nothing else. */
@@ -224,10 +224,10 @@ function installWalker() {
     const seen = new Set();
     const lakes = [];
     for (let row = bounds.row; row < bounds.row + bounds.height; row += 1) {
-      const ids = [];
+      const defIdsOfRow = [];
       for (let column = bounds.column; column < bounds.column + bounds.width; column += 1) {
         const tile = { column, row };
-        ids.push(api.tileDefIdAt(tile));
+        defIdsOfRow.push(api.tileDefIdAt(tile));
         if (api.tileDefIdAt(tile) !== waterDef?.id || seen.has(keyOf(tile))) continue;
         const tiles = [];
         const toVisit = [tile];
@@ -246,13 +246,13 @@ function installWalker() {
         const tilesFromSpawn = Math.min(...tiles.map((lakeTile) => Math.max(Math.abs(lakeTile.column - api.map.spawn.column), Math.abs(lakeTile.row - api.map.spawn.row))));
         lakes.push({ area: area?.name ?? 'nowhere', box, tiles, tilesFromSpawn });
       }
-      defIdRows.push(ids);
+      defIdRows.push(defIdsOfRow);
     }
     const tileColours = api.defs.filter((def) => typeof def.solid === 'boolean').map(({ id, name, color }) => ({ id, name, color }));
     return { water: waterDef, lakes, bounds, defIdRows, tileColours, spawn: api.map.spawn };
   }
 
-  /** A walk a person can do with two keys: along the player's row over grass, then straight up or down over grass into water. The shortest one. */
+  /** A walk a person can do with two keys: along the player's row over grass, then straight up or down over grass into the middle of a stretch of water. The shortest one. */
   function keyboardRouteToWater() {
     const from = player().tile;
     let best;
@@ -268,6 +268,8 @@ function installWalker() {
           let row = from.row;
           while (nameAt({ column, row }) === 'grass') row += second.sign;
           if (nameAt({ column, row }) !== 'water') continue;
+          // Water on both sides of where the player arrives: stopping a little past the column still meets the same shore.
+          if (nameAt({ column: column - 1, row }) !== 'water' || nameAt({ column: column + 1, row }) !== 'water') continue;
           const length = Math.abs(column - from.column) + Math.abs(row - from.row);
           if (best && best.length <= length) continue;
           const water = { column, row };
@@ -309,7 +311,7 @@ function installWalker() {
     const path = [];
     for (let tile = shore; tile; tile = cameFrom.get(keyOf(tile))) path.unshift(tile);
     let framesOnSolidTile = 0;
-    let sent;
+    let directionSent;
     let framesSinceSent = 0;
     const deadline = Date.now() + 120000;
     for (const waypoint of path) {
@@ -317,17 +319,17 @@ function installWalker() {
       for (;;) {
         const now = player();
         if (!isWalkable(now.tile)) framesOnSolidTile += 1;
-        const [dx, dy] = [target.x - now.x, target.y - now.y];
-        if (Math.hypot(dx, dy) < 0.12) break;
+        const [eastward, southward] = [target.x - now.x, target.y - now.y];
+        if (Math.hypot(eastward, southward) < 0.12) break;
         if (Date.now() > deadline) {
           move(0, 0);
           return { arrived: false, why: `stuck at (${now.x.toFixed(2)}, ${now.y.toFixed(2)}) on the way to tile ${keyOf(waypoint)}`, framesOnSolidTile };
         }
-        const direction = `${Math.abs(dx) > 0.06 ? Math.sign(dx) : 0},${Math.abs(dy) > 0.06 ? Math.sign(dy) : 0}`;
+        const direction = `${Math.abs(eastward) > 0.06 ? Math.sign(eastward) : 0},${Math.abs(southward) > 0.06 ? Math.sign(southward) : 0}`;
         // Said again now and then: the sim keeps the last intent it was given, whoever gave it.
         framesSinceSent += 1;
-        if (direction !== sent || framesSinceSent > 30) {
-          sent = direction;
+        if (direction !== directionSent || framesSinceSent > 30) {
+          directionSent = direction;
           framesSinceSent = 0;
           move(...direction.split(',').map(Number));
         }

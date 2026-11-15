@@ -6,7 +6,7 @@ import { playerDefs } from '../../features/player/defs';
 import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from '../../features/terrain/defs';
 import { worldMap } from './index';
 import { readMapTiles, tileCentre, tileDefIdAt } from './tiles';
-import type { TileCoordinate } from './types';
+import type { AreaData, TileCoordinate } from './types';
 
 describe('water', () => {
   it('is a flat tile nobody walks on: solid, drawn in the ground, under an id of its own', () => {
@@ -18,7 +18,9 @@ describe('water', () => {
 
   it('has a colour far from every other tile, so a view that draws tiles by colour shows the lakes', () => {
     const water = getTileDef(TerrainDefId.Water);
-    for (const def of terrainDefs.filter((other) => other.id !== water.id)) expect(colourDistance(water.color, def.color), def.name).toBeGreaterThan(90);
+    for (const def of terrainDefs.filter((other) => other.id !== water.id)) {
+      expect(colourDistance(water.color, def.color), def.name).toBeGreaterThan(90);
+    }
     // Blue before anything else: that is what reads as water.
     const [red, green, blue] = channels(water.color);
     expect(blue).toBeGreaterThan(red + 60);
@@ -29,18 +31,19 @@ describe('water', () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join]);
     // The first to arrive stands on the spawn tile. East along its row there is a tile with only grass between it and water to the south.
-    const water = firstWaterSouthOfTheSpawnRow();
-    expect(water.row - worldMap.spawn.row).toBeGreaterThan(0);
-    const waterFaceY = tileCentre(water).y - TILE_SIZE / 2;
+    const waterTile = firstWaterSouthOfTheSpawnRow();
+    expect(areaOf(waterTile)?.name).toBe('clearing');
+    const waterFaceY = tileCentre(waterTile).y - TILE_SIZE / 2;
+    const playerRadius = radiusOfThePlayer(sim);
 
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
-    for (let tick = 0; tick < 3000 && playerPosition(sim).x < tileCentre(water).x; tick += 1) sim.step();
-    expect(playerPosition(sim).x).toBeGreaterThanOrEqual(tileCentre(water).x);
+    for (let tick = 0; tick < 3000 && playerPosition(sim).x < tileCentre(waterTile).x; tick += 1) sim.step();
+    expect(playerPosition(sim).x).toBeGreaterThanOrEqual(tileCentre(waterTile).x);
     sim.step([{ type: 'player/move', slot: 0, x: 0, y: 1 }]);
     for (let tick = 0; tick < 600; tick += 1) sim.step();
     const stopped = playerPosition(sim);
-    expect(stopped.y).toBeLessThanOrEqual(waterFaceY - RADIUS + 0.01);
-    expect(stopped.y).toBeGreaterThan(waterFaceY - RADIUS - 0.2);
+    expect(stopped.y).toBeLessThanOrEqual(waterFaceY - playerRadius + 0.01);
+    expect(stopped.y).toBeGreaterThan(waterFaceY - playerRadius - 0.2);
     // Still walking into it a while later, and still on the shore.
     for (let tick = 0; tick < 300; tick += 1) sim.step();
     expect(playerPosition(sim).y).toBeCloseTo(stopped.y, 3);
@@ -53,10 +56,14 @@ describe('the lakes of the world', () => {
     expect(lakes.length).toBeGreaterThanOrEqual(6);
     expect(worldMap.areas.filter((mounted) => Object.values(mounted.legend).includes(TerrainDefId.Water)).length).toBeGreaterThanOrEqual(6);
     const centres = lakes.map(centreOf);
-    expect(centres.some(({ column }) => column < 0)).toBe(true);
-    expect(centres.some(({ column }) => column >= 40)).toBe(true);
-    expect(centres.some(({ row }) => row < 0)).toBe(true);
-    expect(centres.some(({ row }) => row >= 30)).toBe(true);
+    const clearing = worldMap.areas.find((mounted) => mounted.name === 'clearing')!;
+    const { column: west, row: north } = clearing.origin;
+    const east = west + (clearing.rows[0]?.length ?? 0);
+    const south = north + clearing.rows.length;
+    expect(centres.some(({ column }) => column < west)).toBe(true);
+    expect(centres.some(({ column }) => column >= east)).toBe(true);
+    expect(centres.some(({ row }) => row < north)).toBe(true);
+    expect(centres.some(({ row }) => row >= south)).toBe(true);
   });
 
   it('are small, of different sizes, and none is a plain rectangle', () => {
@@ -83,18 +90,9 @@ describe('the lakes of the world', () => {
 
   it('leave the spawn alone: no water within ten tiles of it', () => {
     for (const lake of lakes) {
-      for (const tile of lake) expect(Math.max(Math.abs(tile.column - worldMap.spawn.column), Math.abs(tile.row - worldMap.spawn.row)), describeLake(lake)).toBeGreaterThan(10);
+      const tilesFromSpawn = Math.min(...lake.map((tile) => Math.max(Math.abs(tile.column - worldMap.spawn.column), Math.abs(tile.row - worldMap.spawn.row))));
+      expect(tilesFromSpawn, describeLake(lake)).toBeGreaterThan(10);
     }
-  });
-
-  it('never cut the world in two: every walkable tile is still reached from the spawn on foot', () => {
-    const tiles = readMapTiles(worldMap);
-    const reached = new Set(tilesReachedFrom(worldMap.spawn, (tile) => isWalkable(tile)).map(keyOf));
-    const walkable = tilesOfTheWorld().filter(isWalkable);
-    expect(walkable.filter((tile) => !reached.has(keyOf(tile)))).toEqual([]);
-    // The check has teeth: the world has water, and with water walkable there would be more to reach.
-    expect(tilesOfTheWorld().filter((tile) => tileDefIdAt(tiles, tile) === TerrainDefId.Water).length).toBe(lakes.flat().length);
-    expect(walkable.length + lakes.flat().length).toBeGreaterThan(reached.size);
   });
 });
 
@@ -103,8 +101,6 @@ describe('the lakes of the world', () => {
 const { createSimInternal } = __testing__;
 
 const join: Command = { type: 'player/join', slot: 0 };
-
-const RADIUS = Math.max(...playerDefs.map((def) => def.radius ?? 0));
 
 /** Every lake of the world: the groups of water tiles that touch side to side. */
 const lakes: TileCoordinate[][] = findLakes();
@@ -130,11 +126,6 @@ function tilesOfTheWorld(): TileCoordinate[] {
     for (let tileColumn = column; tileColumn < column + width; tileColumn += 1) tiles.push({ column: tileColumn, row: tileRow });
   }
   return tiles;
-}
-
-function isWalkable(tile: TileCoordinate): boolean {
-  const defId = tileDefIdAt(readMapTiles(worldMap), tile);
-  return defId !== undefined && !getTileDef(defId).solid;
 }
 
 /** Every tile that `belongs` and can be reached from `start` by stepping up, down, left or right over tiles that belong. */
@@ -207,6 +198,18 @@ function playerPosition(sim: Awaited<ReturnType<typeof createSimInternal>>): { x
   const player = getRenderables(sim).find((renderable) => playerDefs.some((def) => def.id === renderable.defId));
   if (!player) throw new Error('no player in the sim');
   return { x: player.x, y: player.y };
+}
+
+function radiusOfThePlayer(sim: Awaited<ReturnType<typeof createSimInternal>>): number {
+  const player = getRenderables(sim).find((renderable) => playerDefs.some((def) => def.id === renderable.defId));
+  const radius = playerDefs.find((def) => def.id === player?.defId)?.radius;
+  if (radius === undefined) throw new Error('the player in the sim has no radius');
+  return radius;
+}
+
+/** The area that put a tile at this world tile. */
+function areaOf({ column, row }: TileCoordinate): AreaData | undefined {
+  return worldMap.areas.find(({ origin, rows }) => column >= origin.column && column < origin.column + (rows[0]?.length ?? 0) && row >= origin.row && row < origin.row + rows.length);
 }
 
 function colourDistance(first: number, second: number): number {

@@ -13,8 +13,7 @@ import type { AreaData } from '../types';
  * 21 and 22, north in columns 34 and 35, south in columns 20 and 21. None
  * is in line with the spawn.
  *
- * A pond lies in its east half, south of the lone rock, well away from the
- * spawn. Water (`~`) is solid: nobody walks on it.
+ * A pond lies in its east half, well away from the spawn.
  */
 export const clearing: AreaData = {
   name: 'clearing',

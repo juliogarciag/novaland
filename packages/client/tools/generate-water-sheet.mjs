@@ -4,8 +4,8 @@
  * water's `groundSprite` in packages/sim/src/features/terrain/defs.ts.
  *
  * Every tile is still water all over: one blue, with a few short ripples
- * lying flat on it, some lighter than the water and some darker, and now and
- * then a glint. Ripples never touch the edge of a tile, so any two tiles
+ * lying flat on it, a lighter one and a darker one by turns down the tile,
+ * and now and then a glint. Ripples never touch the edge of a tile, so any two tiles
  * can sit side by side without a seam and a lake reads as one calm surface.
  * The tiles differ only in where the ripples fall, which is what keeps a
  * lake from repeating. It is a placeholder: no shore, no movement.

@@ -53,7 +53,7 @@ interface DrawnChunk {
  * Each drawn chunk is two things. The ground is a Phaser tilemap of
  * `CHUNK_SIZE` by `CHUNK_SIZE` tiles below everything; all chunks share one
  * tileset, put together here once (render/groundTiles.ts says which tile is
- * where): a def with a `groundSprite` (grass) brings the variants of its
+ * where): a def with a `groundSprite` (grass, water) brings the variants of its
  * sheet and each tile shows the one its world column and row pick; any
  * other def is one flat tile in its colour. Where no area put a tile,
  * nothing is drawn.
@@ -162,8 +162,9 @@ function standingTileSprites(): StandingTileSprite[] {
 /**
  * The ground tileset: one strip with the tiles of every slot in order. A
  * slot with a ground sprite gets the tiles of its sheet copied in; any
- * other gets one flat-colour tile, with a darker rim when the def is solid
- * so that a tree or rock whose image is missing still reads as an object.
+ * other gets one flat-colour tile, with a darker rim when the def stands up
+ * from the ground, so that a tree or rock whose image is missing still reads
+ * as an object. Water without its sheet has no rim: a lake is one surface.
  */
 function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSlot[]): void {
   // Built again for every renderer: the slots depend on which sheets loaded, and a strip from an earlier scene may be laid out differently.
@@ -180,7 +181,7 @@ function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSl
     }
     context.fillStyle = cssColor(slot.def.color);
     context.fillRect(slotLeft, 0, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS);
-    if (slot.def.solid) {
+    if (slot.def.standingSprite) {
       context.strokeStyle = cssColor(darken(slot.def.color));
       context.lineWidth = 1;
       context.strokeRect(slotLeft + 0.5, 0.5, GROUND_TILE_PIXELS - 1, GROUND_TILE_PIXELS - 1);
