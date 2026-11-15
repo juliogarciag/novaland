@@ -15,6 +15,8 @@ export const INTERPOLATION_BUFFER_TICKS = INTERPOLATION_BUFFER_SENDS * TICKS_PER
 
 /** Close code of a session the server freed for sending no input for its idle timeout (`IDLE_KICK` in packages/server/src/world/kicks.ts, #22). The client does not rejoin by itself after it. Duplicated like `WORLD_ROOM_ID` until #26 moves the wire values into the sim. */
 export const IDLE_KICK_CODE = 4100;
+/** Close code of a session the server closed because the same player token joined again, from another tab or window (`REPLACED_KICK` in packages/server/src/world/kicks.ts, #55). The client does not rejoin by itself after it. Duplicated like `IDLE_KICK_CODE`. */
+export const REPLACED_KICK_CODE = 4101;
 /** Waits before the next attempt after a drop or an unreachable server, in order; the last one repeats. */
 export const RECONNECT_DELAYS_MS: readonly number[] = [1000, 2000, 4000, 8000];
 /** How long a client refused for a full world waits before asking for a seat again by itself. */

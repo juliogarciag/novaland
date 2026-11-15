@@ -1,9 +1,9 @@
 import { query } from 'bitecs';
-import { readMapTiles, tileAt, tileCentre, tileDefIdAt } from '../../content/world/tiles';
+import { readMapTiles, tileAt, tileCentre, tileDefIdAt, WORLD_LIMIT_TILES } from '../../content/world/tiles';
 import type { MapTiles, TileCoordinate } from '../../content/world/types';
 import type { Sim } from '../../core/sim';
 import { Position } from '../../core/transform';
-import { getTileDef } from '../terrain/defs';
+import { getTileDef, TILE_SIZE } from '../terrain/defs';
 import { Player } from './components';
 
 /** How many tiles out from the spawn tile a free tile is looked for. Far more room than every seat needs. */
@@ -29,6 +29,44 @@ export function pickSpawnPoint(sim: Sim): { x: number; y: number } {
     if (free.length > 0) return tileCentre(free[sim.rng.nextInt(free.length)] as TileCoordinate);
   }
   return tileCentre(sim.map.spawn);
+}
+
+/** How many tiles out from the tile a returning player left a free tile is looked for; with none that close the player spawns as a new one. */
+const RETURN_SEARCH_RINGS = 8;
+
+/**
+ * Where a returning player appears, in metres: the point they left when its
+ * tile is still free, else the centre of the free tile nearest to that point
+ * (the map may have changed since, or someone may be standing there).
+ * Undefined when the point is not finite, lies past the world's limit, or no tile within
+ * `RETURN_SEARCH_RINGS` of it is free: the caller spawns the player as new.
+ * Nothing here is random, and the search is the same few hundred tiles
+ * however big the map is.
+ */
+export function pickReturnPoint(sim: Sim, left: { readonly x: number; readonly y: number }): { x: number; y: number } | undefined {
+  const leftTile = tileAt(left.x, left.y);
+  // No area reaches past the world's limit, and tile numbers that large stop counting up one by one: the rings below would never end.
+  if (!leftTile || Math.abs(leftTile.column) > WORLD_LIMIT_TILES || Math.abs(leftTile.row) > WORLD_LIMIT_TILES) return undefined;
+  const tiles = readMapTiles(sim.map);
+  const occupied = occupiedTileKeys(sim);
+  const isFree = (tile: TileCoordinate): boolean => isWalkable(tiles, tile) && !occupied.has(tileKey(tile));
+  if (isFree(leftTile)) return { x: left.x, y: left.y };
+  let nearest: { x: number; y: number } | undefined;
+  let nearestDistance = Infinity;
+  for (let ring = 1; ring <= RETURN_SEARCH_RINGS; ring += 1) {
+    for (const tile of ringTiles(leftTile, ring)) {
+      if (!isFree(tile)) continue;
+      const centre = tileCentre(tile);
+      const distance = Math.hypot(centre.x - left.x, centre.y - left.y);
+      if (distance < nearestDistance) {
+        nearest = centre;
+        nearestDistance = distance;
+      }
+    }
+    // A tile of a later ring is at least `ring` tiles minus the half tile the point may be off its own centre away.
+    if (nearestDistance <= (ring + 0.5) * TILE_SIZE) break;
+  }
+  return nearest;
 }
 
 /** Tiles at Chebyshev distance `ring` from `centre`, top row first and left to right. Ring 0 is the centre itself. */

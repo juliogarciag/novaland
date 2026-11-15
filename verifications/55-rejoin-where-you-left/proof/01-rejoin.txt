@@ -1,0 +1,19 @@
+PASS  room server (positions on disk) and dev server up, both started by this run  ({"event":"world-room-listening","port":5955,"roomId":"world","seed":1265757047,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"<repo>/packages/client/dist","savedPositions":"disk","dataDirectory":"<scratch>","savedPlayers":0,"allowedOrigins":[],"loopbackOrigins":true})
+PASS  /health says positions are kept on disk  ({"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":0,"savedPositions":"disk"})
+PASS  A, a browser with no token, spawns next to the spawn tile  (0 tiles from the spawn)
+PASS  A now keeps a player token: 43 base64url characters  (43 characters)
+PASS  A walks east, well away from the spawn  (13 tiles from the spawn, at (19.083, 14.500))
+PASS  A closes the tab, opens it again and stands where they were  (left at (19.083, 14.500), back at (19.083, 14.500))
+PASS  B, a second browser profile, has another token and spawns as a new player next to the spawn tile  (0 tiles from the spawn, seat 1)
+PASS  a new server process starts on the same data directory and finds one saved player  ({"event":"world-room-listening","port":5955,"roomId":"world","seed":1596449041,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"<repo>/packages/client/dist","savedPositions":"disk","dataDirectory":"<scratch>","savedPlayers":1,"allowedOrigins":[],"loopbackOrigins":true})
+PASS  after the server process was killed and started again, A stands where they were  (before (19.083, 22.000), after (19.083, 22.000))
+PASS  after the server was stopped as a deploy stops it, with no time for a periodic save, A stands where they were  (before (13.083, 22.000), after (13.083, 22.000))
+PASS  a second tab of the same browser takes the player over: the first tab shows the "elsewhere" screen  (You are playing in another tab or window. Play here to carry on in this one.)
+PASS  the world holds one player for that token, standing where they were  (1 player, 1 seat taken, at (13.083, 22.000))
+PASS  the replaced tab does not take the player back by itself  (elsewhere)
+PASS  "Play here" takes the player back: the first tab plays, the second shows "elsewhere", still one player in the same place  (1 player at (13.083, 22.000))
+PASS  the server never printed either token  (22 lines of server output read)
+PASS  the token is not in the world state a client holds nor on the debug API
+PASS  no page errors
+
+ALL 17 CHECKS PASSED

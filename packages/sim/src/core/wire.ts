@@ -47,6 +47,24 @@ export const JOIN_REFUSAL = {
 export interface JoinOptions {
   /** The `WIRE_PROTOCOL` the client was built against. */
   readonly protocol: number;
+  /**
+   * The secret that says which player this is, so the server can put them
+   * back where they left (ADR 0014). The browser makes it up once and keeps
+   * it; there are no accounts. It is a credential: it travels only in the
+   * join, client to server, and is never sent to anyone else. A join without
+   * one, or with one that is not `isPlayerToken`, is a new player.
+   */
+  readonly playerToken?: string;
+}
+
+/** Characters of a player token: 32 random bytes as base64url, without padding. */
+export const PLAYER_TOKEN_LENGTH = 43;
+
+const PLAYER_TOKEN_PATTERN = /^[A-Za-z0-9_-]+$/;
+
+/** True when `value` has the shape of a player token: a string of exactly `PLAYER_TOKEN_LENGTH` base64url characters. The shape says nothing about whether any server has seen it. */
+export function isPlayerToken(value: unknown): value is string {
+  return typeof value === 'string' && value.length === PLAYER_TOKEN_LENGTH && PLAYER_TOKEN_PATTERN.test(value);
 }
 
 /** World-state deltas per second a server sends its players. The server may be configured with another rate. */
