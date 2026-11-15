@@ -32,10 +32,11 @@ export function readOrCreatePlayerToken(storage: TokenStorage | undefined = brow
   try {
     if (!storage) throw new Error('no storage');
     storage.setItem(PLAYER_TOKEN_STORAGE_KEY, token);
-    unstoredToken = undefined;
     // Two tabs opened at once both find no token and both store one: whatever the storage holds now is the one both use.
     const stored = storage.getItem(PLAYER_TOKEN_STORAGE_KEY);
-    if (isPlayerToken(stored)) return stored;
+    if (!isPlayerToken(stored)) throw new Error('the storage did not keep the token');
+    unstoredToken = undefined;
+    return stored;
   } catch {
     unstoredToken = token;
   }

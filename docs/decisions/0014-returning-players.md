@@ -68,7 +68,7 @@ The client that receives 4101 shows a screen (`data-screen="elsewhere"`, "You ar
 Tokens are free to make up, so two limits:
 
 - **A new token earns a row only after its session has held a seat for `NEW_PLAYER_SAVE_AFTER_MS` (10 s).** With five seats, rows are added no faster than five every ten seconds, however fast someone joins. A token the store already knows is saved from its first tick.
-- **The store holds at most `MAX_SAVED_PLAYERS` (100,000) rows**; saving one more forgets whoever was seen longest ago. A row is under 100 bytes, so the file stays near ten megabytes.
+- **The store holds at most `MAX_SAVED_PLAYERS` (100,000) rows**; saving one more forgets whoever was last saved longest ago (a save happens when a player has moved, so that is when they last walked). A row is under 100 bytes, so the file stays near ten megabytes.
 
 One seat held by a script adds one row every ten seconds, so pushing out every player seen before it started takes that seat eleven and a half days, and all five seats more than two days. It does not need the whole world: one seat is enough, slowly, and the game stays playable meanwhile. Nothing here stops that; a limit on joins per address would, and is not in this ticket.
 

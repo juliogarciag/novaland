@@ -253,20 +253,20 @@ export class WorldRoom extends Room {
    * One token is one player. If the player `playerKey` holds a seat, that
    * seat is freed and its session closed with `REPLACED_KICK`, and what the
    * join that takes over needs is returned: where the player stands right now
-   * (undefined when their own join has not run yet), when they first sat down
-   * and the last position saved for them. Undefined when the player holds no seat.
+   * (undefined when their own join has not run yet) and when they first sat
+   * down. Undefined when the player holds no seat.
    * The newest join wins because the older session may be a connection the
    * player already lost and the server has not yet seen drop; refusing the
    * new one would lock the player out of their own character.
    */
-  private replaceSessionOf(playerKey: string): { readonly position: SavedPosition | undefined; readonly seatedAt: number; readonly savedPosition: SavedPosition | undefined } | undefined {
+  private replaceSessionOf(playerKey: string): { readonly position: SavedPosition | undefined; readonly seatedAt: number } | undefined {
     for (const session of this.sessions.values()) {
       if (session.playerKey !== playerKey) continue;
       const position = this.positionOf(session);
       session.replaced = true;
       this.freeSeat(session.client);
       session.client.leave(REPLACED_KICK.code, REPLACED_KICK.reason);
-      return { position, seatedAt: session.seatedAt, savedPosition: session.savedPosition };
+      return { position, seatedAt: session.seatedAt };
     }
     return undefined;
   }

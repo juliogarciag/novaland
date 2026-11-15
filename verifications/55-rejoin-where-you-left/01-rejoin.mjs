@@ -184,7 +184,16 @@ function stateOf(page) {
 /** Holds a key for a while, lets go, and returns the state once the player has come to rest. */
 async function walk(page, key, holdMs) {
   await page.bringToFront();
-  await page.keyboard.down(key);
+  // The game takes keys once its canvas has the focus; a key pressed before that is lost, so press until the player is seen moving.
+  await page.mouse.click(VIEWPORT.width / 2, VIEWPORT.height / 2);
+  const before = await stateOf(page);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await page.keyboard.down(key);
+    const moving = await waitFor('the player to start moving', { read: () => stateOf(page), until: (state) => !samePoint(state.position, before.position), timeoutMs: 1500 }).catch(() => undefined);
+    if (moving) break;
+    await page.keyboard.up(key);
+    await sleep(300);
+  }
   await sleep(holdMs);
   await page.keyboard.up(key);
   let last = await stateOf(page);
