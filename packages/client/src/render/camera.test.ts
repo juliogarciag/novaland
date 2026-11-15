@@ -1,4 +1,4 @@
-import { readMapTiles, worldMap } from '@novaland/sim';
+import { generatedWorldMap, readMapTiles, worldMap } from '@novaland/sim';
 import type Phaser from 'phaser';
 import { describe, expect, it } from 'vitest';
 import { __testing__, MapCamera } from './camera';
@@ -8,9 +8,10 @@ describe('MapCamera.view', () => {
   it('is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)', () => {
     // A 1920 px canvas at zoom 6 shows 320 px of a 640 px map; Phaser will clamp the untouched scroll of 0 when it renders.
     const camera = fakeCamera({ width: 1920, height: 1080, zoom: 6 });
-    const mapCamera = new MapCamera(camera, worldMap);
+    const smallMap = generatedWorldMap({ columns: 40, rows: 30 });
+    const mapCamera = new MapCamera(camera, smallMap);
     const view = mapCamera.view();
-    const { bounds } = readMapTiles(worldMap);
+    const { bounds } = readMapTiles(smallMap);
     expect(view.width).toBe(320);
     expect(view.x).toBeGreaterThanOrEqual(bounds.column * PIXELS_PER_METRE);
     expect(view.x + view.width).toBeLessThanOrEqual((bounds.column + bounds.width) * PIXELS_PER_METRE);
