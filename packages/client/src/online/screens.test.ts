@@ -14,7 +14,7 @@ describe('describeStatus', () => {
     expect(describeStatus({ kind: 'disconnected', retryAt: Date.now() - 100, attempt: 2 })).toBe('Disconnected from the world. Retrying in 0s…');
     expect(describeStatus({ kind: 'away' })).toBe('You were away too long, so the server freed your seat. Rejoin to play again.');
     expect(describeStatus({ kind: 'incompatible', reason: 'this page and the server have different versions of the world' })).toBe('Cannot play on this server: this page and the server have different versions of the world.');
-    expect(describeStatus({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true })).toBe('Cannot play on this server: the server did not accept your character.');
+    expect(describeStatus({ kind: 'character-refused' })).toBe('The server did not accept your character. Make a new one to play.');
     expect(describeStatus({ kind: 'online', slot: 0 })).toBe('');
   });
 });

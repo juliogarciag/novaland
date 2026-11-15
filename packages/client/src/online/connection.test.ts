@@ -4,7 +4,6 @@ import { __testing__, PROTOCOL_MISMATCH_REASON, WorldConnection, type Connection
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS } from './tuning';
 
-const { isCharacterRefusal, isWorldFullRefusal } = __testing__;
 
 describe('WorldConnection', () => {
   beforeEach(() => {
@@ -227,12 +226,12 @@ describe('WorldConnection', () => {
   it('stops for good when the server refuses the character, and says so, instead of asking again with the same one', async () => {
     const { connection, statuses, endpoints } = connect(['character-refused', 'room']);
     await settle();
-    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true });
+    expect(connection.status).toEqual({ kind: 'character-refused' });
     await vi.advanceTimersByTimeAsync(10 * JOIN_TIMEOUT_MS);
     connection.retryNow();
     await settle();
     expect(endpoints).toHaveLength(1);
-    expect(statuses.at(-1)?.kind).toBe('incompatible');
+    expect(statuses.at(-1)?.kind).toBe('character-refused');
   });
 
   it('tells a refused character from every other refusal', () => {
@@ -409,6 +408,8 @@ describe('isWorldFullRefusal', () => {
 });
 
 // ---- Helpers ----
+
+const { isCharacterRefusal, isWorldFullRefusal } = __testing__;
 
 const JOIN_OPTIONS = { protocol: WIRE_PROTOCOL, character: guestCharacter(2) };
 

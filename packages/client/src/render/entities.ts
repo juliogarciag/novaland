@@ -71,7 +71,10 @@ export class EntityRenderer {
       if (view.sheetSprite) this.animate(view.sheetSprite, frame, renderable.eid);
       if (view.nameLabel && character) {
         // The id may have gone to another player with the same look between two frames: the label always says the current name.
-        if (view.nameLabel.text !== character.name) view.nameLabel.setText(character.name);
+        if (view.nameLabel.text !== character.name) {
+          view.nameLabel.setText(character.name);
+          fitNameLabel(view.nameLabel, this.labelScale);
+        }
         view.nameLabel.setPosition(x, y - view.topOffset - NAME_GAP_PIXELS);
       }
     }

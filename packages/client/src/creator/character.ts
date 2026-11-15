@@ -4,7 +4,7 @@ import { chooseCharacter } from './creatorScreen';
 import { browserCharacterStorage, readRememberedCharacter, rememberCharacter } from './rememberedCharacter';
 
 /** The address that opens the creator even when the browser remembers a character: `…/#creator`. */
-export const CREATOR_HASH = '#creator';
+const CREATOR_HASH = '#creator';
 
 /**
  * The character this visit is played as. A browser that remembers one goes
@@ -23,9 +23,19 @@ export async function characterForThisVisit(): Promise<Character> {
     previewSheet: { url: spriteSheetUrl(sprite?.key ?? 'player'), frameWidth: sprite?.frameWidth ?? 16, frameHeight: sprite?.frameHeight ?? 24 },
   });
   rememberCharacter(storage, character);
-  // The address goes back to the plain one, so a reload plays instead of opening the creator again.
-  if (creatorAsked) window.history.replaceState(null, '', window.location.pathname + window.location.search);
+  if (creatorAsked) forgetCreatorWasAsked();
   return character;
+}
+
+/**
+ * Opens the creator when `#creator` is added to the address of a page that is
+ * already playing: the page loads again, as it does for the Change character
+ * button. Call once, when the game has started.
+ */
+export function openCreatorWhenAddressAsks(): void {
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash === CREATOR_HASH) window.location.reload();
+  });
 }
 
 /** Leaves the world for the creator: the page loads again at `#creator`, and the next join is the new character. */
@@ -51,6 +61,22 @@ export function addChangeCharacterButton(parent: HTMLElement): void {
 
 /** A suggestion for a first visit, so two new players rarely start out looking the same. Only a starting point: the player picks. */
 function randomLook(): CharacterLook {
-  const anyOf = (swatches: readonly unknown[]): number => Math.floor(Math.random() * swatches.length);
-  return { skin: anyOf(characterPalettes.skin), hair: anyOf(characterPalettes.hair), clothes: anyOf(characterPalettes.clothes) };
+  const randomIndexOf = (swatches: readonly unknown[]): number => Math.floor(Math.random() * swatches.length);
+  return { skin: randomIndexOf(characterPalettes.skin), hair: randomIndexOf(characterPalettes.hair), clothes: randomIndexOf(characterPalettes.clothes) };
+}
+
+/**
+ * Puts the plain address back, so a reload plays instead of opening the
+ * creator again. Built from the whole URL, never from the path alone (a path
+ * that starts with two slashes would read as another site and throw), and a
+ * browser that refuses is left as it is: a stale address must not stop the game.
+ */
+function forgetCreatorWasAsked(): void {
+  try {
+    const address = new URL(window.location.href);
+    address.hash = '';
+    window.history.replaceState(null, '', address);
+  } catch {
+    // The address keeps its #creator: the next reload opens the creator once more, nothing worse.
+  }
 }

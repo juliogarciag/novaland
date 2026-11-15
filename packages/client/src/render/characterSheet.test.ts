@@ -1,6 +1,6 @@
 import { characterPalettes } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { cssColor, lookColors, lookKey, paintLook, shadeOf, TEMPLATE_COLORS } from './characterSheet';
+import { __testing__, cssColor, lookKey, paintLook } from './characterSheet';
 
 describe('painting a look over the template sheet', () => {
   it('swaps each template colour for the look\'s and leaves every other pixel alone', () => {
@@ -32,6 +32,10 @@ describe('painting a look over the template sheet', () => {
     expect(lookKey(one)).toBe(lookKey({ ...one }));
   });
 
+  it('falls back to the template colours for an index outside a palette instead of failing in the draw loop', () => {
+    expect(lookColors({ skin: 99, hair: -1, clothes: 1.5 })).toEqual({ ...TEMPLATE_COLORS, clothesShade: shadeOf(TEMPLATE_COLORS.clothes) });
+  });
+
   it('shades the clothes darker and writes colours the way CSS reads them', () => {
     expect(shadeOf(0xffffff)).toBe(0xbfbfbf);
     expect(shadeOf(0x000000)).toBe(0x000000);
@@ -41,6 +45,8 @@ describe('painting a look over the template sheet', () => {
 });
 
 // ---- Helpers ----
+
+const { lookColors, shadeOf, TEMPLATE_COLORS } = __testing__;
 
 function rgba(colors: readonly number[]): Uint8ClampedArray {
   return new Uint8ClampedArray(colors.flatMap((color) => [(color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff, 255]));

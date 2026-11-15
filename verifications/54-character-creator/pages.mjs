@@ -106,6 +106,8 @@ export function worldState(page, storageKey = STORAGE_KEY) {
             hair: hex(api.characterPalettes.hair[character.look.hair].color),
             clothes: hex(api.characterPalettes.clothes[character.look.clothes].color),
           },
+          // Every palette colour of the three parts that this character did not pick: none may be left in its texture.
+          colorsOfOtherLooks: character && ['skin', 'hair', 'clothes'].flatMap((part) => api.characterPalettes[part].filter((_, index) => index !== character.look[part]).map((swatch) => hex(swatch.color))),
           position: { x: position.x * api.pixelsPerMetre, y: position.y * api.pixelsPerMetre },
           label: label ? { name: label.name, x: label.x, y: label.y, textureKey: label.textureKey } : null,
           textureColors: colorsOfTexture(label?.textureKey),
@@ -113,6 +115,8 @@ export function worldState(page, storageKey = STORAGE_KEY) {
       })
       .sort((a, b) => a.slot - b.slot);
     return {
+      // Every name label alive in the world scene, drawn for a seat or not: a label left behind by a player who went away shows up here.
+      nameLabelsAlive: world.children.list.filter((child) => child.type === 'Text').length,
       localSlot: api.localSlot(),
       isReplica: api.sim.isReplica === true,
       status: api.online?.status() ?? null,
@@ -131,7 +135,8 @@ export function drawnAsItsCharacter(seat, character) {
   if (!seat || !seat.label || seat.name !== character.name) return false;
   const sameLook = seat.look.skin === character.look.skin && seat.look.hair === character.look.hair && seat.look.clothes === character.look.clothes;
   const colors = seat.expectedColors;
-  const painted = [colors.skin, colors.hair, colors.clothes].every((color) => seat.textureColors.includes(color));
+  // Its own three colours are in the texture and nobody else's are: an unpainted sheet (the template's colours are palette colours too) does not pass.
+  const painted = [colors.skin, colors.hair, colors.clothes].every((color) => seat.textureColors.includes(color)) && !seat.colorsOfOtherLooks.some((color) => seat.textureColors.includes(color));
   // The label is centred on the character and ends just above its head: the sprite is 24 px tall with its origin at 3/4.
   const above = Math.abs(seat.label.x - seat.position.x) <= 1 && seat.label.y < seat.position.y - 17 && seat.label.y > seat.position.y - 24;
   return sameLook && painted && above && seat.label.name === character.name && seat.label.textureKey === `player/look/${character.look.skin}-${character.look.hair}-${character.look.clothes}`;
@@ -139,16 +144,4 @@ export function drawnAsItsCharacter(seat, character) {
 
 export function screenshot(page, file) {
   return page.screenshot({ path: path.join(PROOF, file) });
-}
-
-/** Polls `read` until `accept` likes what it returns, and returns that; throws with the last value on timeout. */
-export async function waitFor(read, accept, what, timeoutMs = 15000) {
-  const deadline = Date.now() + timeoutMs;
-  let last;
-  while (Date.now() < deadline) {
-    last = await read();
-    if (accept(last)) return last;
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  throw new Error(`timed out waiting for ${what}: ${JSON.stringify(last)}`);
 }

@@ -1,6 +1,6 @@
 import type { Character } from '@novaland/sim';
 import Phaser from 'phaser';
-import { addChangeCharacterButton, characterForThisVisit, openCreator } from './creator/character';
+import { addChangeCharacterButton, characterForThisVisit, openCreator, openCreatorWhenAddressAsks } from './creator/character';
 import { exposeDebugApi, type OnlineDebugApi } from './debug';
 import { OnlineWorld } from './online/OnlineWorld';
 import { createConnectionScreens } from './online/screens';
@@ -41,6 +41,7 @@ async function boot(): Promise<void> {
   });
   keepCanvasAtWindowSize(game);
   addChangeCharacterButton(document.body);
+  openCreatorWhenAddressAsks();
   if (import.meta.env.DEV) exposeDebugApi({ world, game, online });
 }
 

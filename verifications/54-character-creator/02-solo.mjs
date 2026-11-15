@@ -11,13 +11,13 @@
  * key) shows a second, differently named character.
  */
 import { chromium } from 'playwright';
-import { check, lastLinesOf, start, summarize, waitFor as waitForReady, waitForPort, writeProof } from './lib.mjs';
-import { STORAGE_KEY, creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitFor, waitInWorld, worldState } from './pages.mjs';
+import { check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { STORAGE_KEY, creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitInWorld, worldState } from './pages.mjs';
 
 const CLIENT_PORT = 5354;
 const URL = `http://localhost:${CLIENT_PORT}/`;
 const ADA = { name: 'Ada Lovelace', look: { skin: 4, hair: 6, clothes: 1 } };
-const JOSE = { name: 'José 🚀', look: { skin: 1, hair: 0, clothes: 6 } };
+const JOSE = { name: 'José 🚀', look: { skin: 2, hair: 0, clothes: 6 } };
 /* global document */
 const results = [];
 const report = {};
@@ -27,7 +27,7 @@ const client = start('pnpm', ['dev'], { env: { PORT: String(CLIENT_PORT), VITE_S
 let browser;
 try {
   // The ready line proves the port is this run's server, not something that was already listening there.
-  const ready = (await waitForPort(CLIENT_PORT)) && (await waitForReady("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
+  const ready = (await waitForPort(CLIENT_PORT)) && (await waitFor("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
   results.push(check('client dev server up, started by this run (solo: no VITE_SERVER_URL)', ready, ready ? undefined : lastLinesOf(client.output)));
   if (!ready) throw new Error('nothing to open');
   browser = await chromium.launch();
@@ -97,7 +97,7 @@ try {
 
   // 6. A second seat is a second character with its own name.
   await page.keyboard.press('j');
-  const two = await waitFor(() => worldState(page), (state) => state.seats.length === 2 && state.seats.every((seat) => seat.label), 'a second character drawn');
+  const two = await waitFor('a second character drawn', { read: () => worldState(page), until: (state) => state.seats.length === 2 && state.seats.every((seat) => seat.label), timeoutMs: 15000 });
   await screenshot(page, '02-solo-7-two-characters.png');
   const guest = two.seats[1];
   results.push(check('a second seat shows a second character with a different name and look, both names drawn', drawnAsItsCharacter(two.seats[0], JOSE) && guest.name === 'Guest 2' && guest.label.name === 'Guest 2' && guest.label.textureKey !== two.seats[0].label.textureKey, JSON.stringify(two.seats.map((seat) => ({ name: seat.name, label: seat.label })))));

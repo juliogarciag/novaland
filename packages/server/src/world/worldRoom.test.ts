@@ -430,6 +430,22 @@ describe('WorldRoom over a real connection', () => {
 });
 
 describe('WorldRoom driven directly', () => {
+  it('refuses a join without a legal character before it claims a seat, so it never holds one even for a moment', async () => {
+    const room = new WorldRoom();
+    await room.onCreate({ seed: 11 });
+    try {
+      for (let seat = 0; seat < MAX_SEATS - 1; seat += 1) await room.onJoin(fakeClient(`sitter-${seat}`), LEGAL_JOIN);
+      await expect(room.onJoin(fakeClient('nameless'), { protocol: WIRE_PROTOCOL, character: null })).rejects.toThrow(JOIN_REFUSAL.invalidCharacter);
+      // Checked before any onLeave runs for the refused client: the seat was never taken, so the last seat is still there for a legal join.
+      expect(room.seatsTaken).toBe(MAX_SEATS - 1);
+      expect(room.refusedJoins.invalidCharacter).toBe(1);
+      await room.onJoin(fakeClient('fifth'), LEGAL_JOIN);
+      expect(room.seatsTaken).toBe(MAX_SEATS);
+    } finally {
+      room.onDispose();
+    }
+  });
+
   it('frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held', async () => {
     const room = new WorldRoom();
     await room.onCreate({ seed: 11 });
@@ -493,7 +509,6 @@ describe('WorldRoom driven directly', () => {
 
 /** The room on a bare port: these tests are about the room, not about what stands in front of it. */
 const { startBareWorldServer: startWorldServer } = __testing__;
-/** The join options of a client built against this contract. */
 /** Join options the room accepts: the protocol it speaks and a legal character. */
 const LEGAL_JOIN = { protocol: WIRE_PROTOCOL, character: guestCharacter(0) };
 
@@ -607,12 +622,13 @@ function positionOf(replica: ReplicaHandle, slot: number): { x: number; y: numbe
   return { x: renderable.x, y: renderable.y };
 }
 
-/** Every player entity as drawn, one per seat taken. */
+/** The character (name and look) of the player in `slot`, as a replica shows it. */
 function characterInSeat(replica: ReplicaHandle, slot: number): Character | undefined {
   const eid = findPlayerEntity(replica, slot);
   return eid === undefined ? undefined : getCharacter(replica, eid);
 }
 
+/** Every player entity as drawn, one per seat taken. */
 function playerRenderables(replica: ReplicaHandle): Renderable[] {
   return getRenderables(replica).filter((renderable) => isPlayerDefId(renderable.defId));
 }

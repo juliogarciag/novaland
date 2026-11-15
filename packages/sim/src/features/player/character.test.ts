@@ -1,3 +1,4 @@
+import { addComponent } from 'bitecs';
 import { describe, expect, it } from 'vitest';
 import type { Command } from '../../core/commands';
 import { __testing__, createReplica } from '../../core/create';
@@ -5,6 +6,7 @@ import { applyWorldState } from '../../core/replica';
 import { createRng } from '../../core/rng';
 import type { Sim, SimHandle } from '../../core/sim';
 import { hashSnapshot } from '../../core/snapshot';
+import { Position } from '../../core/transform';
 import { getRenderables } from '../../core/view';
 import { diffWorldState, worldState, type WorldState } from '../../core/worldState';
 import { codePointsOf, guestCharacter, readCharacter, readCharacterName, type Character } from './character';
@@ -48,12 +50,36 @@ describe('readCharacterName', () => {
     for (const value of ['', ' ', '   ', '\u00a0\u3000']) expect(readCharacterName(value)).toEqual({ problem: 'empty' });
     const forbidden = ['Ada\n', 'A\tda', 'Ada\u0000', 'Ada\u001b[31m', 'Ada\u007f', 'Ada\u2028', 'Ada\u2029', '\u202eadA', 'Ada\u2066', '\ufeffAda', 'A\u00adda', 'Ada\ud800', '\udc00Ada'];
     for (const value of forbidden) expect(readCharacterName(value)).toEqual({ problem: 'forbidden-character' });
-    // Marks stacked on one letter: two are a real spelling (they compose here into one letter), a pile is not.
-    expect(readCharacterName('ậ')).toEqual({ name: 'ậ' });
-    expect(readCharacterName(`a${'́'.repeat(8)}`)).toEqual({ problem: 'forbidden-character' });
     // Marks stacked on one letter: two are a real spelling, a pile is not.
     expect(readCharacterName('a\u0323\u0302')).toEqual({ name: '\u1ead' });
     expect(readCharacterName(`a${'\u0301'.repeat(8)}`)).toEqual({ problem: 'forbidden-character' });
+  });
+
+  it('refuses a name that shows nothing: the required name cannot be made of invisible characters', () => {
+    // Zero-width joiners, blank letters (the Hangul fillers), variation selectors, the grapheme joiner, the braille blank, a private-use character, a bare mark.
+    const invisible = ['\u200d', '\u200c', '\u200c\u200c', '\u200d \u200d', '\u3164', '\uffa0', '\u115f', '\u1160', '\ufe0f', '\ufe0e', '\u034f', '\u{e0100}', '\u17b4', '\u2800', '\ue000', '\u0301', ' \u0301'];
+    for (const value of invisible) expect('name' in readCharacterName(value), JSON.stringify(value)).toBe(false);
+  });
+
+  it('refuses invisible characters that would make one name look exactly like another', () => {
+    const twins = ['Julio\u200d', '\u200dJulio', 'Julio \u200d', 'Ju\u200d\u200dlio', 'Julio\ufe0f', 'Jul\u034fio', 'Julio\u3164', 'Julio \u0301'];
+    for (const value of twins) expect(readCharacterName(value), JSON.stringify(value)).toEqual({ problem: 'forbidden-character' });
+  });
+
+  it('keeps the joiners and selectors real spellings need: emoji sequences, a keycap, a Persian word', () => {
+    // A family, a heart on fire (selector then joiner), an astronaut with a skin tone, a keycap, and a zero-width non-joiner inside a Persian word.
+    const spellings = ['\u{1f468}\u200d\u{1f469}\u200d\u{1f467}', '\u2764\ufe0f\u200d\u{1f525}', '\u{1f469}\u{1f3fd}\u200d\u{1f680}', '1\ufe0f\u20e3 up', '\u0645\u06cc\u200c\u062e\u0648\u0627\u0647\u0645'];
+    for (const value of spellings) expect(readCharacterName(value), JSON.stringify(value)).toEqual({ name: value });
+  });
+
+  it('accepts everyday words of scripts that put several marks on one letter, and still refuses a pile', () => {
+    // Burmese "city", Tibetan "accomplished" and pointed Hebrew "song": four or five marks on one visible character.
+    const words = ['\u1019\u103c\u102d\u102f\u1037', '\u0f56\u0f66\u0f92\u0fb2\u0f74\u0f56\u0f66', '\u05e9\u05c1\u05b4\u05bc\u05d9\u05e8'];
+    for (const value of words) expect('name' in readCharacterName(value), JSON.stringify(value)).toBe(true);
+    // Marks kept apart by joiners are one visible character all the same, and Thai marks piled past any spelling are refused too.
+    expect('name' in readCharacterName(`a${'\u030d\u030d\u200d'.repeat(13)}`)).toBe(false);
+    expect(readCharacterName(`\u0e01${'\u0e49'.repeat(7)}`)).toEqual({ problem: 'forbidden-character' });
+    expect(readCharacterName('a\u0307\u0308\u030a\u030b')).toEqual({ problem: 'forbidden-character' });
   });
 });
 
@@ -188,8 +214,10 @@ describe('player/join with a character', () => {
   it('reads no character for something that has none, or for an id that is no entity', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join(0, guestCharacter(0))]);
-    const terrain = getRenderables(sim).find((renderable) => !isPlayerDefId(renderable.defId));
-    if (terrain) expect(getCharacter(sim, terrain.eid)).toBeUndefined();
+    // An entity that is not a player: it has a position and nothing of a character.
+    const bystander = sim.createEntity();
+    addComponent(sim.world, bystander, sim.store(Position));
+    expect(getCharacter(sim, bystander)).toBeUndefined();
     for (const eid of [0, -1, 1.5, NaN, sim.capacity + 1, 2 ** 40]) expect(getCharacter(sim, eid)).toBeUndefined();
     sim.destroy();
   });
@@ -257,6 +285,8 @@ describe('fuzzing player/join', () => {
       expect(readCharacter(character)).toEqual(character);
       expect(character).toEqual(readCharacter(command.character));
       expect(codePointsOf(character.name).length).toBeLessThanOrEqual(MAX_NAME_CODE_POINTS);
+      // And by a rule written here, so that a weakened rule in the sim cannot vouch for itself.
+      expectLegalByTheTicket(character);
       sim.step([{ type: 'player/leave', slot: 0 }]);
     }
     // The generator must reach both sides of the rule, or the loop above proves nothing.
@@ -303,6 +333,21 @@ function tampered(state: WorldState, eid: number, component: string, fields: Rec
   if (!entity) throw new Error(`no entity ${eid} in the state`);
   entity.components[component] = { ...entity.components[component], ...fields };
   return copy as unknown as WorldState;
+}
+
+/** What the ticket promises of any character in the world, checked without the sim's own rule. */
+function expectLegalByTheTicket(character: Character): void {
+  const visibleCharacters = [...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(character.name)].length;
+  expect(visibleCharacters).toBeGreaterThanOrEqual(1);
+  expect(visibleCharacters).toBeLessThanOrEqual(20);
+  expect(character.name).not.toMatch(/[\p{Cc}\p{Cs}\p{Zl}\p{Zp}]/u);
+  expect(character.name).toBe(character.name.trim());
+  expect(character.name).toMatch(/[\p{L}\p{N}\p{S}\p{P}\p{Extended_Pictographic}]/u);
+  for (const part of ['skin', 'hair', 'clothes'] as const) {
+    expect(Number.isInteger(character.look[part])).toBe(true);
+    expect(character.look[part]).toBeGreaterThanOrEqual(0);
+    expect(character.look[part]).toBeLessThan(characterPalettes[part].length);
+  }
 }
 
 function characterInSlot(sim: SimHandle, slot: number): Character | undefined {

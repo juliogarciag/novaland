@@ -23,6 +23,14 @@ describe('OnlineWorld', () => {
     expect(world.occupancy).toEqual({ online: 2, seats: WORLD_SEATS });
   });
 
+  it('joins as the character it was given, and again as the same one after a drop', async () => {
+    const { room, join, server } = await seated(0);
+    room.drop();
+    server.welcome(await nextRoom(join, 1), 0);
+    const asked = { protocol: WIRE_PROTOCOL, character: guestCharacter(0) };
+    expect(join.joinOptions).toEqual([asked, asked]);
+  });
+
   it('never steps: the replica throws, the frame comes from server updates', async () => {
     const { world } = await seated(0);
     expect(() => world.sim.step()).toThrow(/replica/);

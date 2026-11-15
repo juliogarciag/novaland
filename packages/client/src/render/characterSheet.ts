@@ -5,7 +5,7 @@ import { characterPalettes, type CharacterLook } from '@novaland/sim';
  * player's look replaces. They must match TEMPLATE_PALETTE in
  * tools/generate-player-sheet.mjs (the generator's test checks it).
  */
-export const TEMPLATE_COLORS = {
+const TEMPLATE_COLORS = {
   skin: 0xf1c27d,
   hair: 0x6b3e1e,
   clothes: 0x3b82f6,
@@ -16,7 +16,7 @@ export const TEMPLATE_COLORS = {
 const SHADE = 0.75;
 
 /** The colours a look paints the template with, as 0xRRGGBB. */
-export function lookColors(look: CharacterLook): Record<keyof typeof TEMPLATE_COLORS, number> {
+function lookColors(look: CharacterLook): Record<keyof typeof TEMPLATE_COLORS, number> {
   const clothes = characterPalettes.clothes[look.clothes]?.color ?? TEMPLATE_COLORS.clothes;
   return {
     skin: characterPalettes.skin[look.skin]?.color ?? TEMPLATE_COLORS.skin,
@@ -27,7 +27,7 @@ export function lookColors(look: CharacterLook): Record<keyof typeof TEMPLATE_CO
 }
 
 /** A darker shade of a colour, channel by channel. */
-export function shadeOf(color: number): number {
+function shadeOf(color: number): number {
   const shade = (channel: number): number => Math.round(channel * SHADE);
   return (shade((color >> 16) & 0xff) << 16) | (shade((color >> 8) & 0xff) << 8) | shade(color & 0xff);
 }
@@ -60,3 +60,5 @@ export function paintLook(pixels: Uint8ClampedArray, look: CharacterLook): void 
 export function cssColor(color: number): string {
   return `#${color.toString(16).padStart(6, '0')}`;
 }
+
+export const __testing__ = { lookColors, shadeOf, TEMPLATE_COLORS };

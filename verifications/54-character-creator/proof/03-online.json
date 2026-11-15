@@ -1,6 +1,7 @@
 {
   "bothSeeBoth": {
     "aSees": {
+      "nameLabelsAlive": 2,
       "localSlot": 0,
       "isReplica": true,
       "status": {
@@ -22,6 +23,27 @@
             "hair": "ec4899",
             "clothes": "e11d48"
           },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
           "position": {
             "x": 104,
             "y": 232
@@ -58,14 +80,35 @@
             "hair": "d97706",
             "clothes": "0d9488"
           },
+          "colorsOfOtherLooks": [
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "38bdf8",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "475569"
+          ],
           "position": {
             "x": 120,
-            "y": 216
+            "y": 248
           },
           "label": {
             "name": "José 🚀",
             "x": 120,
-            "y": 196,
+            "y": 228,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -81,13 +124,14 @@
           ]
         }
       ],
-      "hud": "fps  13   latency  30 ms   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  33   latency   1 ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
       "changeButton": true
     },
     "bSees": {
+      "nameLabelsAlive": 2,
       "localSlot": 1,
       "isReplica": true,
       "status": {
@@ -109,6 +153,27 @@
             "hair": "ec4899",
             "clothes": "e11d48"
           },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
           "position": {
             "x": 104,
             "y": 232
@@ -145,14 +210,35 @@
             "hair": "d97706",
             "clothes": "0d9488"
           },
+          "colorsOfOtherLooks": [
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "38bdf8",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "475569"
+          ],
           "position": {
             "x": 120,
-            "y": 216
+            "y": 248
           },
           "label": {
             "name": "José 🚀",
             "x": 120,
-            "y": 196,
+            "y": 228,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -261,6 +347,7 @@
   },
   "afterRestart": {
     "aBack": {
+      "nameLabelsAlive": 2,
       "localSlot": 1,
       "isReplica": true,
       "status": {
@@ -282,6 +369,27 @@
             "hair": "d97706",
             "clothes": "0d9488"
           },
+          "colorsOfOtherLooks": [
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "38bdf8",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "475569"
+          ],
           "position": {
             "x": 104,
             "y": 232
@@ -318,13 +426,34 @@
             "hair": "ec4899",
             "clothes": "e11d48"
           },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
           "position": {
-            "x": 88,
+            "x": 104,
             "y": 248
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": 88,
+            "x": 104,
             "y": 228,
             "textureKey": "player/look/4-6-1"
           },
@@ -341,13 +470,14 @@
           ]
         }
       ],
-      "hud": "fps  22   latency  -- ms   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  45   latency  -- ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
       "changeButton": true
     },
     "bBack": {
+      "nameLabelsAlive": 2,
       "localSlot": 0,
       "isReplica": true,
       "status": {
@@ -369,6 +499,27 @@
             "hair": "d97706",
             "clothes": "0d9488"
           },
+          "colorsOfOtherLooks": [
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "38bdf8",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "475569"
+          ],
           "position": {
             "x": 104,
             "y": 232
@@ -405,13 +556,34 @@
             "hair": "ec4899",
             "clothes": "e11d48"
           },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
           "position": {
-            "x": 88,
+            "x": 104,
             "y": 248
           },
           "label": {
             "name": "Ada Lovelace",
-            "x": 88,
+            "x": 104,
             "y": 228,
             "textureKey": "player/look/4-6-1"
           },
@@ -428,7 +600,7 @@
           ]
         }
       ],
-      "hud": "fps  22   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
+      "hud": "fps  44   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
       "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":0,\"hair\":3,\"clothes\":6}}",
       "hash": "",
       "creatorShown": false,

@@ -15,7 +15,7 @@ export interface ConnectionScreenActions {
   readonly onRetry: () => void;
   /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
   readonly onReload: () => void;
-  /** The same button when the server refused the player's character: it reads "Make a new character" and leads back to the creator. */
+  /** The "Make a new character" button of the character-refused screen: back to the creator. */
   readonly onNewCharacter: () => void;
 }
 
@@ -37,8 +37,12 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   const reloadButton = document.createElement('button');
   reloadButton.type = 'button';
   reloadButton.textContent = 'Reload page';
-  reloadButton.addEventListener('click', () => (shown?.kind === 'incompatible' && shown.characterRefused ? actions.onNewCharacter() : actions.onReload()));
-  screen.append(message, retryButton, reloadButton);
+  reloadButton.addEventListener('click', actions.onReload);
+  const newCharacterButton = document.createElement('button');
+  newCharacterButton.type = 'button';
+  newCharacterButton.textContent = 'Make a new character';
+  newCharacterButton.addEventListener('click', actions.onNewCharacter);
+  screen.append(message, retryButton, reloadButton, newCharacterButton);
   parent.append(screen);
   let countdown: ReturnType<typeof setInterval> | undefined;
   let shown: ConnectionStatus | undefined;
@@ -54,7 +58,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
     retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && shown.kind !== 'away';
     retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : 'Retry now';
     reloadButton.hidden = shown.kind !== 'incompatible';
-    reloadButton.textContent = shown.kind === 'incompatible' && shown.characterRefused ? 'Make a new character' : 'Reload page';
+    newCharacterButton.hidden = shown.kind !== 'character-refused';
   };
 
   return {
@@ -94,6 +98,8 @@ function describeStatus(status: ConnectionStatus): string {
       return `Disconnected from the world. Retrying in ${secondsUntil(status.retryAt)}s…`;
     case 'away':
       return 'You were away too long, so the server freed your seat. Rejoin to play again.';
+    case 'character-refused':
+      return 'The server did not accept your character. Make a new one to play.';
     case 'incompatible':
       return `Cannot play on this server: ${status.reason}.`;
   }

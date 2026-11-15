@@ -1,7 +1,7 @@
 import { hasComponent, query } from 'bitecs';
 import { asEntityWorld } from '../../core/entityWorld';
 import type { SimHandle } from '../../core/sim';
-import { isPaletteIndex, readCharacterName, type Character } from './character';
+import { holdsOnlyNameCharacters, isPaletteIndex, showsSomething, type Character } from './character';
 import { Facing, MoveIntent, nameCodePointField, PlayerLook, PlayerName, Player } from './components';
 import { MAX_NAME_CODE_POINTS } from './defs';
 
@@ -76,7 +76,8 @@ function readStoredName(playerName: Record<string, Uint32Array>, eid: number): s
     if (codePoint > 0x10ffff) return UNREADABLE_NAME;
     codePoints.push(codePoint);
   }
-  const read = readCharacterName(String.fromCodePoint(...codePoints));
-  // Stored names are already normalised, so one that reads back differently was not written by a sim.
-  return 'name' in read ? read.name : UNREADABLE_NAME;
+  const name = String.fromCodePoint(...codePoints);
+  // Only what protects the view is asked here, not the whole rule: the sim that stored the name judged its length with
+  // its own Unicode tables, and this engine's may count a newer emoji differently.
+  return holdsOnlyNameCharacters(name) && showsSomething(name) && name === name.trim() ? name : UNREADABLE_NAME;
 }

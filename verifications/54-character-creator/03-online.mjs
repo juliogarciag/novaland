@@ -1,3 +1,4 @@
+/* global window, document */
 /**
  * V3: two browsers against one real world room. Each makes a different
  * character on the creator (which shows before anything is sent to the
@@ -15,9 +16,9 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { ROOT, check, lastLinesOf, start, summarize, waitFor as waitForReady, waitForPort, writeProof } from './lib.mjs';
+import { ROOT, check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 import { isPortOpen } from './processes.mjs';
-import { creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitFor, waitInWorld, worldState } from './pages.mjs';
+import { STORAGE_KEY, creatorState, drawnAsItsCharacter, fillCreator, openPlayer, screenshot, submitCreator, waitInWorld, worldState } from './pages.mjs';
 
 const SERVER_PORT = 5355;
 const CLIENT_PORT = 5356;
@@ -44,8 +45,8 @@ let browser;
 try {
   // The boot line and the ready line prove both ports are this run's servers, not something that was already listening there.
   const portsUp = (await waitForPort(SERVER_PORT)) && (await waitForPort(CLIENT_PORT));
-  const bootLine = portsUp && (await waitForReady("the room server's boot line", { read: () => server.output.split('\n').find((line) => line.includes('world-room-listening')), until: Boolean }).catch(() => undefined));
-  const clientReady = portsUp && (await waitForReady("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
+  const bootLine = portsUp && (await waitFor("the room server's boot line", { read: () => server.output.split('\n').find((line) => line.includes('world-room-listening')), until: Boolean }).catch(() => undefined));
+  const clientReady = portsUp && (await waitFor("the dev server's ready line", { read: () => client.output.includes(`localhost:${CLIENT_PORT}/`), until: Boolean }).catch(() => false));
   results.push(check('room server and dev server up, both started by this run', Boolean(bootLine) && clientReady, bootLine || `${lastLinesOf(server.output)} | ${lastLinesOf(client.output)}`));
   if (!bootLine || !clientReady) throw new Error('nothing to open');
   results.push(check('the wire protocol counts this change: 4 or later', WIRE_PROTOCOL >= 4, String(WIRE_PROTOCOL)));
@@ -74,8 +75,8 @@ try {
   await waitInWorld(b.page);
 
   // 2. Both see both.
-  const aSees = await waitFor(() => worldState(a.page), seesBoth, 'A to see both characters');
-  const bSees = await waitFor(() => worldState(b.page), seesBoth, 'B to see both characters');
+  const aSees = await waitFor('A to see both characters', { read: () => worldState(a.page), until: seesBoth, timeoutMs: 15000 });
+  const bSees = await waitFor('B to see both characters', { read: () => worldState(b.page), until: seesBoth, timeoutMs: 15000 });
   await screenshot(a.page, '03-online-3-A-sees-both.png');
   await screenshot(b.page, '03-online-4-B-sees-both.png');
   results.push(check('both pages are online replicas in different seats', aSees.isReplica && bSees.isReplica && aSees.status.kind === 'online' && bSees.status.kind === 'online' && aSees.localSlot !== bSees.localSlot, JSON.stringify({ a: aSees.localSlot, b: bSees.localSlot })));
@@ -90,7 +91,7 @@ try {
   await a.page.keyboard.down('d');
   await a.page.waitForTimeout(700);
   await a.page.keyboard.up('d');
-  const bAfterWalk = await waitFor(() => worldState(b.page), (state) => seesBoth(state) && seatOf(state, ADA).label.x > adaBefore.x + 16, 'B to see Ada walk');
+  const bAfterWalk = await waitFor('B to see Ada walk', { read: () => worldState(b.page), until: (state) => seesBoth(state) && seatOf(state, ADA).label.x > adaBefore.x + 16, timeoutMs: 15000 });
   await screenshot(b.page, '03-online-5-B-sees-A-walked.png');
   results.push(check("after A walks, B sees A's name still right above A's character, further right", seesBoth(bAfterWalk), `label x ${adaBefore.x} -> ${seatOf(bAfterWalk, ADA).label.x}`));
 
@@ -155,30 +156,66 @@ try {
   // 5. A legal join whose name needs normalising arrives normalised.
   const untidy = await joinDirectly({ character: { name: '  Grace    Hopper ', look: { skin: 2, hair: 1, clothes: 3 } } });
   untidy.onMessage('*', () => undefined);
-  const withGrace = await waitFor(() => worldState(a.page), (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label), 'A to see the third player');
+  const withGrace = await waitFor('A to see the third player', { read: () => worldState(a.page), until: (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label), timeoutMs: 15000 });
   await screenshot(a.page, '03-online-6-A-sees-normalised-third.png');
   const grace = withGrace.seats.find((seat) => seat.name !== ADA.name && seat.name !== JOSE.name);
   results.push(check('a name sent with stray spaces is shown as the server normalised it', grace?.name === 'Grace Hopper' && grace.label.name === 'Grace Hopper', JSON.stringify(grace?.name)));
   await untidy.leave();
   console.error = logError;
   console.warn = logWarning;
-  await waitFor(() => worldState(a.page), (state) => state.seats.length === 2, 'the third player to leave');
+  // The drawn frame trails the replica by the interpolation buffer, so wait for the drawing to catch up before counting labels.
+  const afterGrace = await waitFor('the third player to leave and its label to go', { read: () => worldState(a.page), until: (state) => state.seats.length === 2 && state.nameLabelsAlive === 2, timeoutMs: 15000 }).catch(() => worldState(a.page));
+  results.push(check("when a player leaves, its name goes with it: exactly one name label per character left", afterGrace.nameLabelsAlive === 2 && seesBoth(afterGrace), `labels alive: ${afterGrace.nameLabelsAlive}`));
+
+  // 5b. An entity id that changes hands shows the newcomer's name and look, never the leaver's.
+  const first = await joinDirectly({ character: { name: 'First Guest', look: ADA.look } });
+  first.onMessage('*', () => undefined);
+  const withFirst = await waitFor('A to see the first guest', { read: () => worldState(a.page), until: (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label), timeoutMs: 15000 });
+  const firstSeat = withFirst.seats.find((seat) => seat.name === 'First Guest');
+  await first.leave();
+  await waitFor('the first guest to leave', { read: () => worldState(a.page), until: (state) => state.seats.length === 2, timeoutMs: 15000 });
+  const secondGuest = { name: 'Second Guest', look: { skin: 5, hair: 7, clothes: 4 } };
+  const second = await joinDirectly({ character: secondGuest });
+  second.onMessage('*', () => undefined);
+  const withSecond = await waitFor('A to see the second guest', { read: () => worldState(a.page), until: (state) => state.seats.length === 3 && state.seats.every((seat) => seat.label) && state.nameLabelsAlive === 3, timeoutMs: 15000 }).catch(() => worldState(a.page));
+  const secondSeat = withSecond.seats.find((seat) => seat.name === secondGuest.name);
+  results.push(check('a seat and entity id taken over by another player shows the new name and the new colours, with one label per character', secondSeat?.eid === firstSeat?.eid && drawnAsItsCharacter(secondSeat, secondGuest) && withSecond.nameLabelsAlive === 3, JSON.stringify({ firstEid: firstSeat?.eid, secondEid: secondSeat?.eid, label: secondSeat?.label, labelsAlive: withSecond.nameLabelsAlive })));
+  await second.leave();
+  await waitFor('the second guest to leave', { read: () => worldState(a.page), until: (state) => state.seats.length === 2, timeoutMs: 15000 });
+
+  // 5c. A browser whose remembered character the server refuses is told so and led back to the creator.
+  const c = await openPlayer(browser, 'about:blank', { name: 'C', errors: [] });
+  await c.context.addInitScript(([key, value]) => window.localStorage.setItem(key, value), [STORAGE_KEY, JSON.stringify({ name: 'Refused', look: { skin: 0, hair: 0, clothes: 0 } })]);
+  // The page sends its remembered character; on the way the name is made illegal, as if the page and the server disagreed on the rule. The real room refuses it.
+  await c.page.route('**/matchmake/**', (route) => {
+    const sent = JSON.parse(route.request().postData() ?? '{}');
+    return route.continue({ postData: JSON.stringify({ ...sent, character: { ...sent.character, name: 'a'.repeat(21) } }) });
+  });
+  await c.page.goto(URL);
+  await c.page.waitForSelector('#screen[data-screen="character-refused"]', { timeout: 15000 });
+  const refusedScreen = await c.page.evaluate(() => ({ text: document.querySelector('#screen p').textContent, buttons: [...document.querySelectorAll('#screen button')].filter((button) => !button.hidden).map((button) => button.textContent) }));
+  await c.page.unroute('**/matchmake/**');
+  await c.page.locator('#screen button', { hasText: 'Make a new character' }).click();
+  await c.page.waitForSelector('#creator[data-screen="creator"]');
+  const backAtCreator = await creatorState(c.page);
+  results.push(check('a page whose character the server refuses shows the character-refused screen with one button, which opens the creator', /did not accept your character/.test(refusedScreen.text) && refusedScreen.buttons.join() === 'Make a new character' && backAtCreator.shown && !backAtCreator.hasGame, JSON.stringify(refusedScreen)));
+  await c.context.close();
 
   // 6. A returning player is not asked again, online either.
   await b.page.reload();
   await waitInWorld(b.page);
-  const bReturned = await waitFor(() => worldState(b.page), seesBoth, 'B back in the world');
-  const aSeesReturn = await waitFor(() => worldState(a.page), seesBoth, 'A to see B back');
+  const bReturned = await waitFor('B back in the world', { read: () => worldState(b.page), until: seesBoth, timeoutMs: 15000 });
+  const aSeesReturn = await waitFor('A to see B back', { read: () => worldState(a.page), until: seesBoth, timeoutMs: 15000 });
   results.push(check('after a reload B is not asked again: straight back in as the same character, and A sees it', !bReturned.creatorShown && seesBoth(bReturned) && seesBoth(aSeesReturn)));
 
   // 7. A rejoin after the server restarts carries the same character.
   server.stop();
   await a.page.waitForSelector('#screen[data-screen="disconnected"]', { timeout: 20000 });
-  await waitFor(() => isPortOpen(SERVER_PORT), (open) => !open, 'the server to stop');
+  await waitFor('the server to stop', { read: () => isPortOpen(SERVER_PORT), until: (open) => !open, timeoutMs: 15000 });
   server = startServer();
   results.push(check('room server restarted', await waitForPort(SERVER_PORT)));
-  const aBack = await waitFor(() => worldState(a.page), (state) => state.status?.kind === 'online' && seesBoth(state), 'A back after the restart', 40000);
-  const bBack = await waitFor(() => worldState(b.page), (state) => state.status?.kind === 'online' && seesBoth(state), 'B back after the restart', 40000);
+  const aBack = await waitFor('A back after the restart', { read: () => worldState(a.page), until: (state) => state.status?.kind === 'online' && seesBoth(state), timeoutMs: 40000 });
+  const bBack = await waitFor('B back after the restart', { read: () => worldState(b.page), until: (state) => state.status?.kind === 'online' && seesBoth(state), timeoutMs: 40000 });
   await screenshot(a.page, '03-online-7-A-back-after-restart.png');
   results.push(check('after the server restarts both pages rejoin by themselves as the same two characters, without the creator', !aBack.creatorShown && !bBack.creatorShown && seesBoth(aBack) && seesBoth(bBack)));
   report.afterRestart = { aBack, bBack };

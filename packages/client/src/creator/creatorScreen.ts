@@ -121,9 +121,9 @@ function describeNameProblem(problem: CharacterNameProblem): string {
     case 'empty':
       return 'Your character needs a name.';
     case 'too-long':
-      return `That name is too long: use ${MAX_NAME_CHARACTERS} characters or fewer.`;
+      return `That name is too long: use ${MAX_NAME_CHARACTERS} characters or fewer. Emoji made of several parts count for more.`;
     case 'forbidden-character':
-      return 'That name has characters that cannot be shown. Use letters, numbers, spaces and emoji.';
+      return 'That name has characters that cannot be shown, or marks piled on one letter. Use letters, numbers, spaces and emoji.';
   }
 }
 

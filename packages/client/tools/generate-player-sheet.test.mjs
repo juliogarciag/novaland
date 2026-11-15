@@ -1,6 +1,6 @@
 import { DefId, getDef } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { TEMPLATE_COLORS } from '../src/render/characterSheet.ts';
+import { __testing__ as characterSheet } from '../src/render/characterSheet.ts';
 import { DIRECTIONS, FIXED_PALETTE, FRAME_HEIGHT, FRAME_WIDTH, FRAMES_PER_DIRECTION, paintPlayerSheet, PLAYER_SHEET_KEY, TEMPLATE_PALETTE } from './generate-player-sheet.mjs';
 
 describe('player sheet generator', () => {
@@ -9,7 +9,7 @@ describe('player sheet generator', () => {
   });
 
   it('paints in the template colours the client swaps, and uses them for nothing else', () => {
-    expect(TEMPLATE_COLORS).toEqual({
+    expect(characterSheet.TEMPLATE_COLORS).toEqual({
       skin: rgb(TEMPLATE_PALETTE.skin),
       hair: rgb(TEMPLATE_PALETTE.hair),
       clothes: rgb(TEMPLATE_PALETTE.shirt),

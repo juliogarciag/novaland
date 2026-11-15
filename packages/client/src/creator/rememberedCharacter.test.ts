@@ -1,6 +1,6 @@
 import { guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { CHARACTER_STORAGE_KEY, readRememberedCharacter, rememberCharacter, type CharacterStorage } from './rememberedCharacter';
+import { __testing__, readRememberedCharacter, rememberCharacter, type CharacterStorage } from './rememberedCharacter';
 
 describe('the remembered character', () => {
   it('comes back as it was remembered', () => {
@@ -47,6 +47,8 @@ describe('the remembered character', () => {
 });
 
 // ---- Helpers ----
+
+const { CHARACTER_STORAGE_KEY } = __testing__;
 
 function fakeStorage(initial: Record<string, string> = {}): CharacterStorage {
   const items = new Map(Object.entries(initial));

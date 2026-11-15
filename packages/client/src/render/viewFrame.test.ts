@@ -12,6 +12,14 @@ describe('readViewFrame', () => {
     expect(frame.renderables).toHaveLength(1);
     expect(frame.headings.get(frame.renderables[0]!.eid)?.moveIntent).toEqual({ x: 1, y: 0 });
   });
+
+  it('reads the character of each player: the name to draw above it and its look', async () => {
+    const sim = await createSim({ seed: 1 });
+    const ada = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    sim.step([{ type: 'player/join', slot: 0, character: ada }]);
+    const frame = readViewFrame(sim);
+    expect(frame.characters.get(frame.renderables[0]!.eid)).toEqual(ada);
+  });
 });
 
 describe('interpolateViewFrames', () => {
@@ -49,6 +57,12 @@ describe('interpolateViewFrames', () => {
     const from = frame(10, [renderable(1, 0, 0)]);
     const to = { ...frame(13, [renderable(1, 0, 3)]), headings: new Map([[1, heading]]) };
     expect(interpolateViewFrames(from, to, 0.5).headings.get(1)).toBe(heading);
+  });
+
+  it("takes the newer frame's characters, so an entity id that changed hands never shows the name of who had it before", () => {
+    const from = { ...frame(10, [renderable(1, 0, 0)]), characters: new Map([[1, guestCharacter(0)]]) };
+    const to = { ...frame(13, [renderable(1, 0, 3)]), characters: new Map([[1, guestCharacter(1)]]) };
+    expect(interpolateViewFrames(from, to, 0.5).characters.get(1)).toEqual(guestCharacter(1));
   });
 });
 

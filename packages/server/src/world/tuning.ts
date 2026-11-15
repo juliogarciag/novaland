@@ -27,7 +27,7 @@ export const JOIN_ACK_TIMEOUT_MS = 5000;
 export const MAX_FRAME_BYTES = 1024;
 /** Largest decoded payload the room reads; a bigger one is dropped. A `player/move` is under 60 bytes as JSON. */
 export const MAX_INBOUND_BYTES = 128;
-/** Largest join options the room reads, as JSON; bigger ones refuse the join. A character is under 200 bytes: 40 code points of name and three palette indexes. */
+/** Largest join options the room reads, as JSON, all fields together; bigger ones refuse the join before any field is read. A character is under 300 bytes (40 code points of name and three palette indexes), which leaves room for the small fields other features add. */
 export const MAX_JOIN_OPTIONS_BYTES = 1024;
 /** Sustained inbound messages per second a session may send; anything over its budget is dropped. */
 export const INBOUND_MESSAGES_PER_SECOND = 20;

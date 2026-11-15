@@ -17,8 +17,10 @@ export type ConnectionStatus =
   | { readonly kind: 'disconnected'; readonly retryAt: number; readonly attempt: number }
   /** The server freed this seat because the player sent no input for its idle timeout (close code `IDLE_KICK_CODE`). Nothing is retried until the player rejoins with `retryNow`. */
   | { readonly kind: 'away' }
-  /** The server runs a world this client cannot show, or refused the character this client asked to be (`characterRefused`). Nothing is retried. */
-  | { readonly kind: 'incompatible'; readonly reason: string; readonly characterRefused?: true };
+  /** The server runs a world this client cannot show. Nothing is retried. */
+  | { readonly kind: 'incompatible'; readonly reason: string }
+  /** The server refused the character this client asked to be (`JOIN_REFUSAL.invalidCharacter`). Nothing is retried: the same character would be refused again, so the way on is the creator. */
+  | { readonly kind: 'character-refused' };
 
 /** What the incompatible screen says when the page and the server were built against different wire protocols; the screen offers the reload that fetches the server's build. */
 export const PROTOCOL_MISMATCH_REASON = 'this page and the server are different versions of the game';
@@ -130,7 +132,7 @@ export class WorldConnection {
 
   /** Tries again now instead of at the scheduled time, or rejoins after an idle kick (the screens' button). Does nothing while a join is in flight or once seated. */
   retryNow(): void {
-    if (this.closed || this.status.kind === 'connecting' || this.status.kind === 'online' || this.status.kind === 'incompatible') return;
+    if (this.closed || this.status.kind === 'connecting' || this.status.kind === 'online' || this.status.kind === 'incompatible' || this.status.kind === 'character-refused') return;
     this.clearRetry();
     void this.tryToJoin();
   }
@@ -177,7 +179,7 @@ export class WorldConnection {
       if (isCharacterRefusal(error)) {
         // Asking again with the same character would be refused again: stop, and let the player make another.
         this.close();
-        this.setStatus({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true });
+        this.setStatus({ kind: 'character-refused' });
       } else if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);

@@ -506,6 +506,11 @@
   },
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom driven directly refuses a join without a legal character before it claims a seat, so it never holds one even for a moment",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom driven directly frees the seat of a client that leaves while its join is waiting for a tick, and refuses a join when every seat is held",
     "status": "passed"
   },
@@ -630,6 +635,11 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/creator/creatorScreen.test.ts",
+    "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/creator/rememberedCharacter.test.ts",
     "name": "the remembered character comes back as it was remembered",
     "status": "passed"
@@ -705,6 +715,31 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/input/direction.test.ts",
     "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
@@ -772,31 +807,6 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
@@ -897,6 +907,11 @@
   {
     "file": "packages/client/src/online/OnlineWorld.test.ts",
     "name": "OnlineWorld resolves once welcomed, with a replica that holds the world, the seat and the count of players",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "OnlineWorld joins as the character it was given, and again as the same one after a drop",
     "status": "passed"
   },
   {
@@ -1226,6 +1241,11 @@
   },
   {
     "file": "packages/client/src/render/characterSheet.test.ts",
+    "name": "painting a look over the template sheet falls back to the template colours for an index outside a palette instead of failing in the draw loop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/characterSheet.test.ts",
     "name": "painting a look over the template sheet shades the clothes darker and writes colours the way CSS reads them",
     "status": "passed"
   },
@@ -1340,6 +1360,16 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "the width a name may draw leaves a name that fits at its own size",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "the width a name may draw shrinks a wider one to exactly the widest allowed",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/render/pose.test.ts",
     "name": "poseFromHeading walks in the direction of a non-zero move intent, whatever the facing says",
     "status": "passed"
@@ -1416,6 +1446,11 @@
   },
   {
     "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "readViewFrame reads the character of each player: the name to draw above it and its look",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
     "name": "interpolateViewFrames moves an entity part of the way between two frames and gives the frame a fractional tick",
     "status": "passed"
   },
@@ -1437,6 +1472,11 @@
   {
     "file": "packages/client/src/render/viewFrame.test.ts",
     "name": "interpolateViewFrames takes the newer frame's headings",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/viewFrame.test.ts",
+    "name": "interpolateViewFrames takes the newer frame's characters, so an entity id that changed hands never shows the name of who had it before",
     "status": "passed"
   },
   {
@@ -1656,7 +1696,7 @@
   },
   {
     "file": "packages/sim/src/core/replica.test.ts",
-    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013 and 0014 list",
+    "name": "the wire contract the server and the client are built against pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013 and 0015 list",
     "status": "passed"
   },
   {
@@ -1947,6 +1987,26 @@
   {
     "file": "packages/sim/src/features/player/character.test.ts",
     "name": "readCharacterName refuses what is not text, what is empty and what holds control or formatting characters",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "readCharacterName refuses a name that shows nothing: the required name cannot be made of invisible characters",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "readCharacterName refuses invisible characters that would make one name look exactly like another",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "readCharacterName keeps the joiners and selectors real spellings need: emoji sequences, a keycap, a Persian word",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "readCharacterName accepts everyday words of scripts that put several marks on one letter, and still refuses a pile",
     "status": "passed"
   },
   {
