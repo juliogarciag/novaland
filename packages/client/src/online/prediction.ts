@@ -101,7 +101,7 @@ export class LocalPlayerPrediction {
    * being drawn until now, when it was: the step from there to the
    * predicted position fades like any correction instead of showing as a hop.
    */
-  follow(replica: SimHandle, slot: number, drawnAt?: Point): void {
+  startFrom(replica: SimHandle, slot: number, drawnAt?: Point): void {
     this.stop();
     this.slot = slot;
     this.moves = [];
