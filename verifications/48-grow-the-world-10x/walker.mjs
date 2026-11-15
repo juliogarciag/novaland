@@ -127,7 +127,8 @@ export function installWalker() {
      * One entry per frame drawn while walking: `ms` since the frame before;
      * `gameMs` of that spent in the game (the scene's update, the render
      * call, and the WebSocket message handlers that ran since the frame
-     * before); `walkerMs` this walker spent reading snapshots;
+     * before, also given by itself as `messageHandlerMs`); `walkerMs` this
+     * walker spent reading snapshots;
      * `framesSinceChunkChange`, 0 for a frame whose update built or dropped
      * a chunk; and the tile the player was on.
      */
@@ -192,6 +193,8 @@ export function installWalker() {
       leg.lastProgressAt = now;
       if (leg.nextTileIndex === leg.tiles.length) {
         sendHeading({ x: 0, y: 0 }, now);
+        // What is left of the leg counts too, once it is ten ticks or more.
+        if (game.sim.tick - leg.thirtyTicksStartedAt >= 10) leg.metresPerThirtyTicks.push((leg.metresTheseThirtyTicks * 30) / (game.sim.tick - leg.thirtyTicksStartedAt));
         // The first thirty ticks start from standing: that is not walking yet.
         const walkingSpans = leg.metresPerThirtyTicks.slice(1);
         walk.legs.push({ from: leg.from, to: leg.to, tiles: leg.tiles.length, metres: leg.metres, seconds: (now - leg.startedAt) / 1000, spansOfThirtyTicks: walkingSpans.length, leastMetresInThirtyTicks: Math.min(...walkingSpans) });
@@ -240,6 +243,7 @@ export function installWalker() {
       walk.frames.push({
         ms: now - lastFrameAt,
         gameMs: updateMs + (now - renderStartedAt) + (messageHandlerMs - messageHandlerMsAtLastFrame),
+        messageHandlerMs: messageHandlerMs - messageHandlerMsAtLastFrame,
         walkerMs: walkerMsThisFrame,
         framesSinceChunkChange: Number.isFinite(framesSinceChunkChange) ? framesSinceChunkChange : null,
         tile: drawnAt ? game.tileAt(drawnAt.x, drawnAt.y) : leg.tiles[Math.min(leg.nextTileIndex, leg.tiles.length - 1)],

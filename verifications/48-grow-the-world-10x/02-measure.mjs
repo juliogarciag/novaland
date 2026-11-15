@@ -57,7 +57,7 @@ if (measured) {
   results.push(check('tick cost is the same within noise', isWithinNoise(before.tickMs, now.tickMs), `${roundsOf(before.tickMs)} ms before, ${roundsOf(now.tickMs)} ms now: ${timesBefore(before.tickMs, now.tickMs).toFixed(1)} times`));
   // Why: the step costs time for the terrain itself. With nobody in the world the difference is the same.
   results.push(check('the extra tick cost is there with nobody in the world: it is the terrain in the physics step, not the players', now.emptyTickMs.median - before.emptyTickMs.median > 0.5 * (now.tickMs.median - before.tickMs.median), `${roundsOf(before.emptyTickMs)} ms before, ${roundsOf(now.emptyTickMs)} ms now; the physics world is ${(now.physicsBytes / before.physicsBytes).toFixed(1)} times the bytes`));
-  results.push(check('one tick still takes under 1% of the time a tick has', now.tickMs.highest < TICK_BUDGET_MS / 100, `${now.tickMs.highest.toFixed(4)} ms of ${TICK_BUDGET_MS.toFixed(2)} ms: ${((100 * now.tickMs.median) / TICK_BUDGET_MS).toFixed(2)}%`));
+  results.push(check('one tick still takes under 1% of the time a tick has', now.tickMs.highest < TICK_BUDGET_MS / 100, `the slowest round ${now.tickMs.highest.toFixed(4)} ms of ${TICK_BUDGET_MS.toFixed(2)} ms: ${((100 * now.tickMs.highest) / TICK_BUDGET_MS).toFixed(2)}%; the median ${((100 * now.tickMs.median) / TICK_BUDGET_MS).toFixed(2)}%`));
   writeProof('02-measure.json', { measured, table: text.split('\n'), results });
 }
 process.exit(summarize(results) ? 0 : 1);

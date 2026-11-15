@@ -14,8 +14,8 @@
  * - checks the walk had no hitch: the player made way in every thirty
  *   ticks of every leg, every chunk the camera showed was drawn in every
  *   frame, the game's own work per frame stayed small and no more than in
- *   the clearing, and frames did not come late more often right after a
- *   chunk was built than at any other time.
+ *   the clearing, and frames right after a chunk was built did not come
+ *   late much more often than at any other time.
  *
  * How often frames came late at all is reported for both walks, with the
  * machine's load, and not asserted: in headless Chromium it follows what
@@ -208,7 +208,7 @@ try {
     results.push(check(`${mode}: the game's work per frame in the new land is no more than in the old clearing (by under half a millisecond)`, clearingFrames.length > 500 && inNewLand.game.median < inClearing.game.median + 0.5 && inNewLand.game.percentile99 < inClearing.game.percentile99 + 0.5, `${clearingFrames.length} frames in the clearing: ${describe(inClearing)}`));
     results.push(check(`${mode}: building or dropping chunks cost the game no more than any other frame`, chunkChangeFrames.count >= 3 && chunkChangeFrames.game.longest < GAME_WORK_LIMIT_MS, `${chunkChangeFrames.count} such frames: ${describe(chunkChangeFrames)}`));
     results.push(check(`${mode}: no frame that came ${LATE_FRAME_MS} ms late had ${GAME_WORK_LIMIT_MS} ms of game work in it`, lateWithGameWork.length === 0, `${lateInNewLand.length} late frames in the new land, the most game work in one ${Math.max(0, ...lateInNewLand.map((frame) => frame.gameMs)).toFixed(2)} ms`));
-    results.push(check(`${mode}: frames right after a chunk was built or dropped came late no more often than the rest`, framesAfterChunkChange.length >= 12 && lateShare(lateAfterChunkChange, framesAfterChunkChange) <= lateShare(lateInNewLand, newLandFrames) + LATE_SHARE_A_CHUNK_CHANGE_MAY_ADD, `${lateAfterChunkChange.length} of the ${framesAfterChunkChange.length} frames within ${FRAMES_A_CHUNK_CHANGE_MAY_DELAY} frames of a chunk change were late (${lateShare(lateAfterChunkChange, framesAfterChunkChange).toFixed(1)}%); of all frames in the new land ${lateShare(lateInNewLand, newLandFrames).toFixed(1)}%`));
+    results.push(check(`${mode}: frames right after a chunk was built or dropped were not late much more often than the rest (by under ${LATE_SHARE_A_CHUNK_CHANGE_MAY_ADD} in a hundred)`, framesAfterChunkChange.length >= 12 && lateShare(lateAfterChunkChange, framesAfterChunkChange) <= lateShare(lateInNewLand, newLandFrames) + LATE_SHARE_A_CHUNK_CHANGE_MAY_ADD, `${lateAfterChunkChange.length} of the ${framesAfterChunkChange.length} frames within ${FRAMES_A_CHUNK_CHANGE_MAY_DELAY} frames of a chunk change were late (${lateShare(lateAfterChunkChange, framesAfterChunkChange).toFixed(1)}%); of all frames in the new land ${lateShare(lateInNewLand, newLandFrames).toFixed(1)}%`));
     // Not a check: late frames with no work of the game in them are the browser's and the machine's.
     const loadAverage = os.loadavg()[0];
     console.log(`INFO  ${mode}: frames that came ${LATE_FRAME_MS} ms late: new land ${lateInNewLand.length} of ${newLandFrames.length} (${lateShare(lateInNewLand, newLandFrames).toFixed(2)}%), median ${inNewLand.median.toFixed(1)} ms, 99th percentile ${inNewLand.percentile99.toFixed(1)} ms, ${inNewLand.framesPerSecond.toFixed(1)} frames a second; clearing ${lateInClearing.length} of ${clearingFrames.length} (${lateShare(lateInClearing, clearingFrames).toFixed(2)}%), median ${inClearing.median.toFixed(1)} ms, 99th percentile ${inClearing.percentile99.toFixed(1)} ms, ${inClearing.framesPerSecond.toFixed(1)} frames a second; machine load average ${loadAverage.toFixed(1)} on ${os.cpus().length} cores`);
@@ -234,7 +234,7 @@ try {
       routeMetres,
       seconds,
       machine: { loadAverage, cores: os.cpus().length },
-      frames: { inClearing, inNewLand, chunkChangeFrames, framesRightAfterChunkChange: framesAfterChunkChange.length, lateRightAfterChunkChange: lateAfterChunkChange.length, lateFrames, walkerMsPerFrame: { clearing: meanOf(clearingFrames.map((frame) => frame.walkerMs)), newLand: meanOf(newLandFrames.map((frame) => frame.walkerMs)) } },
+      frames: { inClearing, inNewLand, chunkChangeFrames, framesRightAfterChunkChange: framesAfterChunkChange.length, lateRightAfterChunkChange: lateAfterChunkChange.length, lateFrames, walkerMsPerFrame: { clearing: meanOf(clearingFrames.map((frame) => frame.walkerMs)), newLand: meanOf(newLandFrames.map((frame) => frame.walkerMs)) }, messageHandlerMsPerFrame: { clearing: meanOf(clearingFrames.map((frame) => frame.messageHandlerMs)), newLand: meanOf(newLandFrames.map((frame) => frame.messageHandlerMs)) } },
       mostChunksDrawn: walk.mostChunksDrawn,
       framesMissingAChunk: walk.framesMissingAChunk,
       connection,
