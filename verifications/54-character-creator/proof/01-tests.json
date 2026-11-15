@@ -635,31 +635,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/creator/creatorScreen.test.ts",
-    "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character comes back as it was remembered",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character is nothing on a first visit",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character is nothing when what the browser holds is not a legal character any more",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
-    "name": "the remembered character never throws when the browser denies storage",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/hud/hudLines.test.ts",
     "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
     "status": "passed"
@@ -715,73 +690,53 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys is zero with nothing pressed",
+    "file": "packages/client/src/creator/creatorScreen.test.ts",
+    "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character comes back as it was remembered",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys cancels opposite keys",
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character is nothing on a first visit",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character is nothing when what the browser holds is not a legal character any more",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/direction.test.ts",
-    "name": "directionFromKeys compares directions by value",
+    "file": "packages/client/src/creator/rememberedCharacter.test.ts",
+    "name": "the remembered character never throws when the browser denies storage",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits nothing while no key is held",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput collapses a press and release between drains into nothing",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/input/keyboard.test.ts",
-    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
@@ -1170,28 +1125,73 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys is zero with nothing pressed",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys maps single keys to unit axes, y pointing down",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys cancels opposite keys",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys reports diagonals raw; the sim normalises them",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
+    "file": "packages/client/src/input/direction.test.ts",
+    "name": "directionFromKeys compares directions by value",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput registers WASD and the arrow keys with the scene",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits nothing while no key is held",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits one player/move for the given slot when a key goes down",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits only on change: holding a key produces no repeats",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput emits a stop (0, 0) when the last key is released",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput treats arrows and WASD as the same direction, so switching between them is silent",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput reports diagonals and opposite-key cancellation as the direction mapping does",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput collapses a press and release between drains into nothing",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/input/keyboard.test.ts",
+    "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
     "status": "passed"
   },
   {
@@ -1371,6 +1371,16 @@
   },
   {
     "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "the size of one pixel of a letter is a whole number of device pixels at every zoom, never none",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "the size of one pixel of a letter is finer than a pixel of the world once the zoom leaves room",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/nameLabel.test.ts",
     "name": "waiting for the name font loads every face of the name font and no other",
     "status": "passed"
   },
@@ -1532,21 +1542,6 @@
   {
     "file": "packages/client/src/worlds/LocalWorld.test.ts",
     "name": "createLocalWorld refuses a size it cannot read instead of quietly playing the world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/content/defs.test.ts",
-    "name": "entity definitions terrain colliders come from the map, so a new obstacle is only a character in a row",
     "status": "passed"
   },
   {
@@ -1887,6 +1882,21 @@
   {
     "file": "packages/sim/src/core/worldState.test.ts",
     "name": "diffWorldState and applyWorldStateDelta refuses a whole delta when one entry is malformed, and agrees with a replica on it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions have unique, stable ids inside their feature block and resolve by id",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions a new kind of tile is only a data entry: every terrain def resolves and has a placeholder colour",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/content/defs.test.ts",
+    "name": "entity definitions terrain colliders come from the map, so a new obstacle is only a character in a row",
     "status": "passed"
   },
   {

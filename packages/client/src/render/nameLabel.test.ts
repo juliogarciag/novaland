@@ -16,6 +16,22 @@ describe('the width a name may draw', () => {
   });
 });
 
+describe('the size of one pixel of a letter', () => {
+  it('is a whole number of device pixels at every zoom, never none', () => {
+    for (let cameraZoom = 1; cameraZoom <= 16; cameraZoom += 1) {
+      const letterPixel = letterPixelFor(cameraZoom);
+      expect(Number.isInteger(letterPixel)).toBe(true);
+      expect(letterPixel).toBeGreaterThanOrEqual(1);
+      expect(letterPixel).toBeLessThanOrEqual(cameraZoom);
+    }
+  });
+
+  it('is finer than a pixel of the world once the zoom leaves room', () => {
+    expect(letterPixelFor(8)).toBe(5);
+    expect(letterPixelFor(4)).toBe(2);
+  });
+});
+
 describe('waiting for the name font', () => {
   it('loads every face of the name font and no other', async () => {
     const faces = [fakeFace('Tiny5'), fakeFace('"Tiny5"'), fakeFace('Other')];
@@ -53,4 +69,4 @@ function fontSetOf(faces: readonly FakeFace[]): FontFaceSet {
   return faces as unknown as FontFaceSet;
 }
 
-const { scaleWithinWidth } = __testing__;
+const { scaleWithinWidth, letterPixelFor } = __testing__;
