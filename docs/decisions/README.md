@@ -16,3 +16,4 @@ One file per decision, numbered, never edited after the fact (write a new one th
 - [0012 - Client-side prediction: a second, local sim that only ever guesses](0012-client-side-prediction.md)
 - [0013 - The world as chunks: one map that grows, authored as areas, with terrain out of world state](0013-world-as-chunks.md)
 - [0014 - Returning players: a token the browser keeps, positions in SQLite on a volume, and a join command that says where](0014-returning-players.md)
+- [0015 - The player's character: a look as palette indexes, a name as code points, both chosen by the player and judged by the sim](0015-player-character.md)

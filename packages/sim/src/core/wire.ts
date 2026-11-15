@@ -1,4 +1,5 @@
-import type { MoveCommand } from '../features/player/commands';
+import type { Character } from '../features/player/character';
+import type { ChangeCharacterCommand, MoveCommand } from '../features/player/commands';
 import type { WorldState } from './worldState';
 
 /**
@@ -9,11 +10,13 @@ import type { WorldState } from './worldState';
  * messages below. 2: `player/move` carries a sequence and the server
  * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
  * names the map by its checksum instead of a level name, and world states no
- * longer hold terrain (ADR 0013). Not counted up for `JoinOptions.playerToken`
+ * longer hold terrain (ADR 0013). 4: a join carries the player's character
+ * and is refused without a legal one, and `player/change-character` changes
+ * it afterwards (ADR 0015). Not counted up for `JoinOptions.playerToken`
  * (ADR 0014): a join without it and a server that ignores it both still work,
  * so no page has to reload for it.
  */
-export const WIRE_PROTOCOL = 3;
+export const WIRE_PROTOCOL = 4;
 
 /**
  * The messages between a browser and the world server, as ADR 0004 and 0012
@@ -33,6 +36,8 @@ export const WIRE = {
   resync: 'world/resync',
   /** Client → server: the player's move intent. Payload: MoveMessage. The server stamps the slot. */
   move: 'player/move',
+  /** Client → server: the player becomes another character where it stands. Payload: ChangeCharacterMessage. The server stamps the slot. */
+  changeCharacter: 'player/change-character',
   /** Server → client, just before the first world update that includes a move of this client. Payload: MoveAppliedMessage. */
   moveApplied: 'player/move-applied',
 } as const;
@@ -43,12 +48,16 @@ export const JOIN_REFUSAL = {
   worldFull: 'world-full',
   /** The client was built against another `WIRE_PROTOCOL`, or sent none. */
   protocolMismatch: 'protocol-mismatch',
+  /** The join's options hold no legal character (`readCharacter`). */
+  invalidCharacter: 'invalid-character',
 } as const;
 
-/** What a client passes when it joins the room. */
+/** What a client passes when it joins the room. The server reads each field on its own and trusts none. */
 export interface JoinOptions {
   /** The `WIRE_PROTOCOL` the client was built against. */
   readonly protocol: number;
+  /** The character the player made: the server refuses the join with `JOIN_REFUSAL.invalidCharacter` unless `readCharacter` accepts it. */
+  readonly character: Character;
   /**
    * The secret that says which player this is, so the server can put them
    * back where they left (ADR 0014). The browser makes it up once and keeps
@@ -96,6 +105,13 @@ export interface WelcomeMessage {
  * already includes. The sequence stays in the room: the sim's command has none.
  */
 export type MoveMessage = Omit<MoveCommand, 'type' | 'slot'> & { readonly sequence: number };
+
+/**
+ * A `player/change-character` as the client sends it: no type (the message
+ * name is the type) and no slot (the server adds the client's). There is no
+ * answer: the change arrives with the next world update, like anyone's.
+ */
+export type ChangeCharacterMessage = Omit<ChangeCharacterCommand, 'type' | 'slot'>;
 
 /**
  * The sim applied this client's move `sequence`, and every move it sent

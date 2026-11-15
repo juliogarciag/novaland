@@ -8,8 +8,9 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { getTileDef, TerrainDefId } from '../terrain/defs';
-import { avatarDefIds } from './defs';
+import { PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
+import { guestCharacter } from './character';
 
 describe('spread spawns (headless)', () => {
   it('puts the first player on the spawn tile itself', async () => {
@@ -122,7 +123,7 @@ describe('spread spawns (headless)', () => {
 
 const { createSimInternal } = __testing__;
 
-const SPEED = getDef(avatarDefIds[0] as number).speed ?? 0;
+const SPEED = getDef(PlayerDefId.Player).speed ?? 0;
 
 const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefId.Dirt, o: TerrainDefId.Rock };
 
@@ -131,7 +132,7 @@ function mapOf(rows: readonly string[], spawn: TileCoordinate): WorldMap {
   return { areas: [{ name: 'test', origin: { column: 0, row: 0 }, legend, rows }], spawn };
 }
 
-const join = (slot: number): Command => ({ type: 'player/join', slot });
+const join = (slot: number): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot: number): Command => ({ type: 'player/move', slot, x, y });
 
 function playerPosition(sim: Sim, slot: number): { x: number; y: number } {

@@ -6,9 +6,9 @@ import type { Feature } from '../../core/feature';
 import { attachDynamicBall, Body, type BallBodyOptions } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents, Position } from '../../core/transform';
-import { pickAvatarDefId } from './avatars';
-import { Facing, MoveIntent, Player } from './components';
-import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MIN_MOVE_INTENT } from './defs';
+import { codePointsOf, readCharacter, type Character } from './character';
+import { Facing, MoveIntent, nameCodePointField, Player, PlayerLook, PlayerName } from './components';
+import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MAX_NAME_CODE_POINTS, MIN_MOVE_INTENT, PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
 import { pickReturnPoint, pickSpawnPoint } from './spawn';
 
@@ -27,10 +27,11 @@ const PLAYER_LAYER = 1 << 0;
 const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 
 /**
- * Player-controlled bodies. A `player/join` dresses the new player in an
- * avatar the sim picks (never the client) and spawns it on a free tile near
- * the map's spawn, or where the command says a returning player left
- * (`returnTo`, set only by whoever steps the sim), `player/move` sets its intended direction and every tick
+ * Player-controlled bodies. A `player/join` spawns the character the player
+ * made (its look and name, once `readCharacter` accepts them) on a free tile
+ * near the map's spawn, or where the command says a returning player left
+ * (`returnTo`, set only by whoever steps the sim), `player/change-character` gives the same entity another
+ * look and name where it stands, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped
@@ -45,11 +46,13 @@ export const playerFeature: Feature = {
 
   handleCommand(sim, command: Command) {
     switch (command.type) {
-      case 'player/join':
-        if (isValidSlot(command.slot) && !sim.isFull && findPlayerEntity(sim, command.slot) === undefined) {
-          spawnPlayer(sim, command.slot, readPoint(command.returnTo));
-        }
+      case 'player/join': {
+        if (!isValidSlot(command.slot) || sim.isFull || findPlayerEntity(sim, command.slot) !== undefined) return;
+        // The command's own character is never stored: only what `readCharacter` made of it.
+        const character = readCharacter(command.character);
+        if (character) spawnPlayer(sim, { slot: command.slot, character, returnTo: readPoint(command.returnTo) });
         return;
+      }
       case 'player/leave': {
         const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
         if (eid !== undefined) sim.destroyEntity(eid);
@@ -68,6 +71,14 @@ export const playerFeature: Feature = {
           facing.x[eid] = x / length;
           facing.y[eid] = y / length;
         }
+        return;
+      }
+      case 'player/change-character': {
+        const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
+        if (eid === undefined) return;
+        // As in a join: only what `readCharacter` made of the command's character is stored.
+        const character = readCharacter(command.character);
+        if (character) writeCharacter(sim, eid, character);
         return;
       }
     }
@@ -105,9 +116,9 @@ function attachPlayerBody(sim: Sim, eid: number, ball: BallBodyOptions): void {
   for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
 }
 
-/** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. A returning player appears where it left (`returnTo`) when a free tile is there or near it. */
-function spawnPlayer(sim: Sim, slot: number, returnTo: { readonly x: number; readonly y: number } | undefined): number {
-  const def = getDef(pickAvatarDefId(sim));
+/** The spawn point is picked before the entity exists, so the new player never counts as present for its own choice. A returning player appears where it left (`returnTo`) when a free tile is there or near it. */
+function spawnPlayer(sim: Sim, { slot, character, returnTo }: { slot: number; character: Character; returnTo: { readonly x: number; readonly y: number } | undefined }): number {
+  const def = getDef(PlayerDefId.Player);
   const spawn = (returnTo && pickReturnPoint(sim, returnTo)) ?? pickSpawnPoint(sim);
   const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
@@ -122,6 +133,7 @@ function spawnPlayer(sim: Sim, slot: number, returnTo: { readonly x: number; rea
   addComponent(sim.world, eid, defRef);
   addComponent(sim.world, eid, extents);
   player.slot[eid] = slot;
+  writeCharacter(sim, eid, character);
   intent.x[eid] = 0;
   intent.y[eid] = 0;
   facing.x[eid] = SPAWN_FACING.x;
@@ -131,6 +143,27 @@ function spawnPlayer(sim: Sim, slot: number, returnTo: { readonly x: number; rea
   extents.halfHeight[eid] = radius;
   attachPlayerBody(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
+}
+
+/** Makes the entity this character, at its spawn and whenever its player changes it: the look and the whole name are written over what was there. */
+function writeCharacter(sim: Sim, eid: number, character: Character): void {
+  const look = sim.store(PlayerLook);
+  addComponent(sim.world, eid, look);
+  look.skin[eid] = character.look.skin;
+  look.hair[eid] = character.look.hair;
+  look.clothes[eid] = character.look.clothes;
+  writePlayerName(sim, eid, character.name);
+}
+
+/** Gives the entity its name: every field is written, so nothing of the name an earlier holder of the id had is left behind. */
+function writePlayerName(sim: Sim, eid: number, name: string): void {
+  const playerName = sim.store(PlayerName);
+  addComponent(sim.world, eid, playerName);
+  const codePoints = codePointsOf(name);
+  (playerName['length'] as Uint32Array)[eid] = codePoints.length;
+  for (let index = 0; index < MAX_NAME_CODE_POINTS; index += 1) {
+    (playerName[nameCodePointField(index)] as Uint32Array)[eid] = codePoints[index] ?? 0;
+  }
 }
 
 function isValidSlot(slot: unknown): slot is number {

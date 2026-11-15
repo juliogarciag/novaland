@@ -1,16 +1,24 @@
-import { createSim, type Renderable } from '@novaland/sim';
+import { createSim, type Renderable, guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { interpolateViewFrames, readViewFrame, type ViewFrame } from './viewFrame';
 
 describe('readViewFrame', () => {
   it('reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)', async () => {
     const sim = await createSim({ seed: 1 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     const frame = readViewFrame(sim);
     expect(frame.tick).toBe(2);
     expect(frame.renderables).toHaveLength(1);
     expect(frame.headings.get(frame.renderables[0]!.eid)?.moveIntent).toEqual({ x: 1, y: 0 });
+  });
+
+  it('reads the character of each player: the name to draw above it and its look', async () => {
+    const sim = await createSim({ seed: 1 });
+    const ada = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    sim.step([{ type: 'player/join', slot: 0, character: ada }]);
+    const frame = readViewFrame(sim);
+    expect(frame.characters.get(frame.renderables[0]!.eid)).toEqual(ada);
   });
 });
 
@@ -50,6 +58,12 @@ describe('interpolateViewFrames', () => {
     const to = { ...frame(13, [renderable(1, 0, 3)]), headings: new Map([[1, heading]]) };
     expect(interpolateViewFrames(from, to, 0.5).headings.get(1)).toBe(heading);
   });
+
+  it("takes the newer frame's characters, so an entity id that changed hands never shows the name of who had it before", () => {
+    const from = { ...frame(10, [renderable(1, 0, 0)]), characters: new Map([[1, guestCharacter(0)]]) };
+    const to = { ...frame(13, [renderable(1, 0, 3)]), characters: new Map([[1, guestCharacter(1)]]) };
+    expect(interpolateViewFrames(from, to, 0.5).characters.get(1)).toEqual(guestCharacter(1));
+  });
 });
 
 // ---- Helpers ----
@@ -59,5 +73,5 @@ function renderable(eid: number, x: number, y: number): Renderable {
 }
 
 function frame(tick: number, renderables: Renderable[]): ViewFrame {
-  return { tick, renderables, headings: new Map() };
+  return { tick, renderables, headings: new Map(), characters: new Map() };
 }

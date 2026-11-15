@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, getRenderables, hashSnapshot, type Command } from '@novaland/sim';
+import { createSim, findPlayerEntity, getRenderables, hashSnapshot, type Command, guestCharacter } from '@novaland/sim';
 
 export interface HeadlessRunOptions {
   /** Number of ticks to simulate (the join happens on the first one). */
@@ -39,7 +39,7 @@ export async function runHeadless({ ticks, seed = 0 }: HeadlessRunOptions): Prom
 
 /** Join, walk right, then down, then stop. */
 function scriptedCommands(tick: number): Command[] {
-  if (tick === 0) return [{ type: 'player/join', slot: 0 }];
+  if (tick === 0) return [{ type: 'player/join', slot: 0, character: guestCharacter(0) }];
   if (tick === SCRIPT.right) return [{ type: 'player/move', slot: 0, x: 1, y: 0 }];
   if (tick === SCRIPT.down) return [{ type: 'player/move', slot: 0, x: 0, y: 1 }];
   if (tick === SCRIPT.stop) return [{ type: 'player/move', slot: 0, x: 0, y: 0 }];

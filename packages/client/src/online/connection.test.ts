@@ -1,18 +1,17 @@
-import { isPlayerToken, WIRE, WIRE_PROTOCOL } from '@novaland/sim';
+import { guestCharacter, isPlayerToken, WIRE, WIRE_PROTOCOL } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, REPLACED_KICK_CODE } from './tuning';
 
-const { isWorldFullRefusal, joinOptions } = __testing__;
-
-describe('joinOptions', () => {
-  it('presents the wire protocol and a player token, the same token on every join of this page', () => {
-    const first = joinOptions();
+describe('withPlayerToken', () => {
+  it('adds a player token to what the connection joins with, the same token on every join of this page', () => {
+    const first = withPlayerToken(JOIN_OPTIONS);
     expect(first.protocol).toBe(WIRE_PROTOCOL);
+    expect(first.character).toEqual(JOIN_OPTIONS.character);
     expect(isPlayerToken(first.playerToken)).toBe(true);
-    expect(Object.keys(first).sort()).toEqual(['playerToken', 'protocol']);
-    expect(joinOptions()).toEqual(first);
+    expect(Object.keys(first).sort()).toEqual(['character', 'playerToken', 'protocol']);
+    expect(withPlayerToken(JOIN_OPTIONS)).toEqual(first);
   });
 });
 
@@ -258,6 +257,74 @@ describe('WorldConnection', () => {
     expect(connection.status.kind).toBe('connecting');
   });
 
+  it('joins as the character it was given, on the first join and on every rejoin after a drop', async () => {
+    const { rooms, joinOptions } = connect(['room', 'room']);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions).toEqual([JOIN_OPTIONS, JOIN_OPTIONS]);
+  });
+
+  it('changes character by asking the server while online, and joins as the new one after a drop', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    connection.changeCharacter(changed);
+    expect(rooms[0]!.sent).toEqual([{ type: WIRE.changeCharacter, payload: { character: changed } }]);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions).toEqual([JOIN_OPTIONS, { ...JOIN_OPTIONS, character: changed }]);
+  });
+
+  it('sends no character change while not seated: the next join brings the new character', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    connection.changeCharacter(changed);
+    expect(rooms[0]!.sent).toEqual([]);
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions[1]).toEqual({ ...JOIN_OPTIONS, character: changed });
+    expect(rooms[1]!.sent).toEqual([]);
+  });
+
+  it('sends a change made while a join was on its way as soon as that join is welcomed', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    // The second join left with the old character and has not been welcomed yet.
+    expect(joinOptions[1]).toEqual(JOIN_OPTIONS);
+    connection.changeCharacter(changed);
+    expect(rooms[1]!.sent).toEqual([]);
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    expect(rooms[1]!.sent).toEqual([{ type: WIRE.changeCharacter, payload: { character: changed } }]);
+  });
+
+  it('stops for good when the server refuses the character, and says so, instead of asking again with the same one', async () => {
+    const { connection, statuses, endpoints } = connect(['character-refused', 'room']);
+    await settle();
+    expect(connection.status).toEqual({ kind: 'character-refused' });
+    await vi.advanceTimersByTimeAsync(10 * JOIN_TIMEOUT_MS);
+    connection.retryNow();
+    await settle();
+    expect(endpoints).toHaveLength(1);
+    expect(statuses.at(-1)?.kind).toBe('character-refused');
+  });
+
+  it('tells a refused character from every other refusal', () => {
+    expect(isCharacterRefusal(Object.assign(new Error('invalid-character'), { code: 526 }))).toBe(true);
+    expect(isCharacterRefusal(Object.assign(new Error('invalid-character'), { code: 522 }))).toBe(false);
+    expect(isCharacterRefusal(matchMakeError('room "world" is locked'))).toBe(false);
+    expect(isCharacterRefusal(new TypeError('Failed to fetch'))).toBe(false);
+    expect(isCharacterRefusal(undefined)).toBe(false);
+  });
+
   it('stops for good on a welcome the world cannot use', async () => {
     const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'another world' }));
     await settle();
@@ -425,6 +492,10 @@ describe('isWorldFullRefusal', () => {
 
 // ---- Helpers ----
 
+const { isCharacterRefusal, isWorldFullRefusal, withPlayerToken } = __testing__;
+
+const JOIN_OPTIONS = { protocol: WIRE_PROTOCOL, character: guestCharacter(2) };
+
 const WELCOME = { slot: 2, map: 'a1b2c3d4', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
@@ -438,9 +509,9 @@ function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHan
       statuses.push(status);
     }),
   };
-  const connection = new WorldConnection({ endpoint: 'ws://world.test:5118', handlers, join: script.join });
+  const connection = new WorldConnection({ endpoint: 'ws://world.test:5118', joinOptions: JOIN_OPTIONS, handlers, join: script.join });
   connection.connect();
-  return { connection, handlers, statuses, rooms: script.rooms, endpoints: script.endpoints };
+  return { connection, handlers, statuses, rooms: script.rooms, endpoints: script.endpoints, joinOptions: script.joinOptions };
 }
 
 /** A connection that is seated and whose first ping the server answered in `milliseconds`. */

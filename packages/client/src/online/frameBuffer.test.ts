@@ -98,5 +98,5 @@ function newBuffer(): ViewFrameBuffer {
 
 function frameAt(tick: number, x: number): ViewFrame {
   const renderable: Renderable = { eid: 1, defId: 1, x, y: 0, halfWidth: 0.4, halfHeight: 0.4 };
-  return { tick, renderables: [renderable], headings: new Map() };
+  return { tick, renderables: [renderable], headings: new Map(), characters: new Map() };
 }

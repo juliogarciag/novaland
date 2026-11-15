@@ -35,7 +35,7 @@ Content search skips every ticket folder, yours included (the root `.ignore`). T
 |---|---|
 | `solo.mjs` | Starts `PORT=<n> pnpm dev`, opens Chromium, reads the sim through `window.__novaland`, presses a key, writes a screenshot and a report |
 | `online.mjs` | Starts the room server and a client with `VITE_SERVER_URL`, seats two tabs, reads each replica and connection, writes screenshots and a report |
-| `lib.mjs` | `start` (a server that stops with the script, printing without colours), `waitForPort`, `waitFor`, `lastLinesOf`, `check`, `summarize`, `writeProof`, and the `ROOT` and `PROOF` paths |
+| `lib.mjs` | `start` (a server that stops with the script, printing without colours), `waitForPort`, `waitFor`, `lastLinesOf`, `rememberCharacter` (a browser context that skips the creator screen), `check`, `summarize`, `writeProof`, and the `ROOT` and `PROOF` paths |
 | `run.sh` | Installs on first run, runs the scripts in order, keeps their console output as proof |
 
 ## What the template relies on
@@ -46,5 +46,6 @@ A ticket that changes any of these updates the template in the same PR, and runs
 - `PORT=<n> pnpm dev` in `packages/server` starts the room server and prints a `world-room-listening` line; `VITE_SERVER_URL=ws://localhost:<n>` makes the client join it.
 - `window.__novaland`: `sim.tick`, `snapshot()` as `entities[].components` with `Player.slot` and `MoveIntent`, `localSlot()`, and online `online.status()` with `kind` and `slot`.
 - The connection screens are `#screen[data-screen]`, hidden while playing.
+- A page whose browser remembers a legal character (`localStorage['novaland.character']`, a JSON `{ name, look: { skin, hair, clothes } }` of palette indexes) goes straight into the world; one that remembers none stops at the creator screen (`#creator[data-screen="creator"]`) and neither starts the game nor joins until the form is submitted.
 - Holding D moves the local player east (`MoveIntent.x > 0`).
 - Online, a new browser context is a new player with a seat of its own. Two tabs of one context share a player token (`localStorage`), so the second takes the player over from the first, which shows `data-screen="elsewhere"`.

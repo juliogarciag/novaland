@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@colyseus/sdk": "catalog:",
+    "@fontsource/tiny5": "catalog:",
     "@novaland/sim": "workspace:*",
     "phaser": "catalog:"
   },

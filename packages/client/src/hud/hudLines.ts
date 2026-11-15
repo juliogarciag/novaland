@@ -1,4 +1,4 @@
-import { findPlayerEntity, getDef, getRenderables, isAvatarDefId } from '@novaland/sim';
+import { findPlayerEntity, getCharacter, getRenderables, isPlayerDefId } from '@novaland/sim';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 /** What the HUD shows that the world does not know: facts about this client's own drawing. */
@@ -18,10 +18,10 @@ export function hudLines(world: PlayableWorld, { framesPerSecond }: HudViewFacts
   const occupancy = world.occupancy;
   const firstLineParts = [`fps ${wholeNumberOrDashes(framesPerSecond)}`];
   if (occupancy) firstLineParts.push(`latency ${wholeNumberOrDashes(world.latencyMs)} ms`, `${occupancy.online}/${occupancy.seats} online`);
-  const players = getRenderables(world.sim).filter((renderable) => isAvatarDefId(renderable.defId));
+  const players = getRenderables(world.sim).filter((renderable) => isPlayerDefId(renderable.defId));
   const localEid = findPlayerEntity(world.sim, world.localSlot);
-  const localPlayer = players.find((player) => player.eid === localEid);
-  const lines = [firstLineParts.join('   '), `you: ${localPlayer ? getDef(localPlayer.defId).name : 'joining...'}   players: ${players.length}`];
+  const localName = localEid === undefined ? undefined : getCharacter(world.sim, localEid)?.name;
+  const lines = [firstLineParts.join('   '), `you: ${localName ?? 'joining...'}   players: ${players.length}`];
   if (import.meta.env.DEV && world.joinAnotherSeat) lines.push('J: seat another player (dev)');
   return lines;
 }

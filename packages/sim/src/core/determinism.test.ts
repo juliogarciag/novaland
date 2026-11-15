@@ -3,6 +3,7 @@ import { spawnPoint } from '../content/world/tiles';
 import type { Command } from './commands';
 import { __testing__ } from './create';
 import { hashSnapshot } from './snapshot';
+import { guestCharacter } from '../features/player/character';
 
 describe('determinism', () => {
   it('same seed + same commands = identical state, including physics bytes', async () => {
@@ -19,8 +20,8 @@ describe('determinism', () => {
   it('two live sims never share component data', async () => {
     const a = await createSimInternal({ seed: 1 });
     const b = await createSimInternal({ seed: 1 });
-    a.step([{ type: 'player/join', slot: 0 }]);
-    b.step([{ type: 'player/join', slot: 0 }]);
+    a.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
+    b.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     a.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     for (let i = 0; i < 30; i += 1) {
       a.step();
@@ -55,7 +56,7 @@ const { createSimInternal } = __testing__;
 function script(tick: number): Command[] {
   switch (tick) {
     case 0:
-      return [{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }];
+      return [{ type: 'player/join', slot: 0, character: guestCharacter(0) }, { type: 'player/join', slot: 1, character: guestCharacter(1) }];
     case 1:
       return [{ type: 'player/move', slot: 0, x: 1, y: 0 }, { type: 'player/move', slot: 1, x: -0.3, y: 0.7 }];
     case 90:
@@ -63,7 +64,7 @@ function script(tick: number): Command[] {
     case 200:
       return [{ type: 'player/leave', slot: 1 }, { type: 'player/move', slot: 0, x: -1, y: -1 }];
     case 260:
-      return [{ type: 'player/join', slot: 2 }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
+      return [{ type: 'player/join', slot: 2, character: guestCharacter(2) }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
     default:
       return [];
   }

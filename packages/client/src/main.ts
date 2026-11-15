@@ -1,9 +1,13 @@
+import type { Character } from '@novaland/sim';
+import '@fontsource/tiny5/index.css';
 import Phaser from 'phaser';
+import { addChangeCharacterButton, characterForThisVisit, openCreator, openCreatorWhenAddressAsks } from './creator/character';
 import { exposeDebugApi, type OnlineDebugApi } from './debug';
 import { OnlineWorld } from './online/OnlineWorld';
 import { createConnectionScreens } from './online/screens';
 import { worldServerUrl } from './online/serverUrl';
 import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
+import { loadNameFont } from './render/nameLabel';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
 import { WorldScene } from './scenes/WorldScene';
@@ -11,7 +15,9 @@ import { createLocalWorld } from './worlds/LocalWorld';
 import type { PlayableWorld } from './worlds/PlayableWorld';
 
 /**
- * Boots the game around a playable world. With a world server to reach
+ * Boots the game around a playable world, as the character the player made:
+ * the one this browser remembers, or the one the creator screen gives on a
+ * first visit. With a world server to reach
  * (`VITE_SERVER_URL`, or the page's own origin in a production build, which
  * the world server serves itself) the world is the shared one on that server,
  * joined before the game exists (the seat comes with the welcome); otherwise
@@ -22,7 +28,14 @@ async function boot(): Promise<void> {
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
   // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
   if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
-  const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld({ generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
+  const character = await characterForThisVisit();
+  // From here on, also while a connection screen is up, adding #creator to the address opens the creator.
+  openCreatorWhenAddressAsks();
+  const { world, online } = serverUrl
+    ? await joinSharedWorld(serverUrl, character)
+    : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
+  // Labels are measured when they are made: the font they are drawn in has to be there first.
+  await loadNameFont();
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
@@ -33,23 +46,34 @@ async function boot(): Promise<void> {
     scale: windowViewportConfig(),
   });
   keepCanvasAtWindowSize(game);
+  addChangeCharacterButton(document.body, {
+    playing: character,
+    changeTo: (chosen) => world.changeCharacter(chosen),
+    holdGameKeys: (held) => {
+      // Phaser swallows the keys the game listens to, so the name could not be typed; and a key held when the creator opens must not keep walking.
+      if (game.input.keyboard) game.input.keyboard.enabled = !held;
+      // Letting go of every key makes the keyboard send its own stop on the next frame.
+      if (held) game.scene.getScene('world')?.input.keyboard?.resetKeys();
+    },
+  });
   if (import.meta.env.DEV) exposeDebugApi({ world, game, online });
 }
 
 /**
- * Joins the world server, showing the connection screens until seated; they
+ * Joins the world server as `character`, showing the connection screens until seated; they
  * stay for drops and come down again when seated. The screens' buttons reach
  * the connection from the first moment, before anyone is seated: that is
  * when the full and disconnected screens show.
  */
-async function joinSharedWorld(serverUrl: string): Promise<{ world: PlayableWorld; online: OnlineDebugApi }> {
+async function joinSharedWorld(serverUrl: string, character: Character): Promise<{ world: PlayableWorld; online: OnlineDebugApi }> {
   // The screens need the connection and the connection reports to the screens; `join` returns synchronously, before any click can happen.
   const screens = createConnectionScreens(document.body, {
     onRetry: () => joining.connection.retryNow(),
     onReload: () => window.location.reload(),
+    onNewCharacter: openCreator,
   });
   // VITE_PREDICTION=off draws the local player from server states like everyone else, to compare the two (ADR 0012).
-  const joining = OnlineWorld.join({ endpoint: serverUrl, predictsLocalPlayer: import.meta.env.VITE_PREDICTION !== 'off', onStatus: (status) => screens.show(status) });
+  const joining = OnlineWorld.join({ endpoint: serverUrl, character, predictsLocalPlayer: import.meta.env.VITE_PREDICTION !== 'off', onStatus: (status) => screens.show(status) });
   const world = await joining.seated;
   // A hidden tab pauses the game loop, so the keyboard's own stop never goes out: send it here, or the server keeps an abandoned tab walking and seated.
   window.addEventListener('blur', () => world.stopWalking());
