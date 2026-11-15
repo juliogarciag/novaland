@@ -102,12 +102,12 @@
             "475569"
           ],
           "position": {
-            "x": 104,
+            "x": 120,
             "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": 104,
+            "x": 120,
             "y": 197,
             "textureKey": "player/look/0-3-6"
           },
@@ -124,7 +124,7 @@
           ]
         }
       ],
-      "hud": "fps  31   latency   1 ms   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  36   latency   1 ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
@@ -232,12 +232,12 @@
             "475569"
           ],
           "position": {
-            "x": 104,
+            "x": 120,
             "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": 104,
+            "x": 120,
             "y": 197,
             "textureKey": "player/look/0-3-6"
           },
@@ -348,73 +348,16 @@
   "afterRestart": {
     "aBack": {
       "nameLabelsAlive": 2,
-      "localSlot": 0,
+      "localSlot": 1,
       "isReplica": true,
       "status": {
         "kind": "online",
-        "slot": 0
+        "slot": 1
       },
       "seats": [
         {
           "slot": 0,
           "eid": 1,
-          "name": "Ada Lovelace",
-          "look": {
-            "skin": 4,
-            "hair": 6,
-            "clothes": 1
-          },
-          "expectedColors": {
-            "skin": "8d5524",
-            "hair": "ec4899",
-            "clothes": "e11d48"
-          },
-          "colorsOfOtherLooks": [
-            "ffdbac",
-            "f1c27d",
-            "e0ac69",
-            "c68642",
-            "5c3a21",
-            "2a2523",
-            "6b3e1e",
-            "b45309",
-            "d97706",
-            "f3e5ab",
-            "6b7280",
-            "38bdf8",
-            "3b82f6",
-            "16a34a",
-            "f59e0b",
-            "7c3aed",
-            "ea580c",
-            "0d9488",
-            "475569"
-          ],
-          "position": {
-            "x": 104,
-            "y": 232
-          },
-          "label": {
-            "name": "Ada Lovelace",
-            "x": 104,
-            "y": 213,
-            "textureKey": "player/look/4-6-1"
-          },
-          "textureColors": [
-            "14121a",
-            "1f1a17",
-            "1f2937",
-            "262d3a",
-            "374151",
-            "8d5524",
-            "a91636",
-            "e11d48",
-            "ec4899"
-          ]
-        },
-        {
-          "slot": 1,
-          "eid": 2,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -449,12 +392,12 @@
           ],
           "position": {
             "x": 104,
-            "y": 216
+            "y": 232
           },
           "label": {
             "name": "José 🚀",
             "x": 104,
-            "y": 197,
+            "y": 213,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -467,6 +410,63 @@
             "374151",
             "d97706",
             "ffdbac"
+          ]
+        },
+        {
+          "slot": 1,
+          "eid": 2,
+          "name": "Ada Lovelace",
+          "look": {
+            "skin": 4,
+            "hair": 6,
+            "clothes": 1
+          },
+          "expectedColors": {
+            "skin": "8d5524",
+            "hair": "ec4899",
+            "clothes": "e11d48"
+          },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
+          "position": {
+            "x": 104,
+            "y": 216
+          },
+          "label": {
+            "name": "Ada Lovelace",
+            "x": 104,
+            "y": 197,
+            "textureKey": "player/look/4-6-1"
+          },
+          "textureColors": [
+            "14121a",
+            "1f1a17",
+            "1f2937",
+            "262d3a",
+            "374151",
+            "8d5524",
+            "a91636",
+            "e11d48",
+            "ec4899"
           ]
         }
       ],
@@ -478,73 +478,16 @@
     },
     "bBack": {
       "nameLabelsAlive": 2,
-      "localSlot": 1,
+      "localSlot": 0,
       "isReplica": true,
       "status": {
         "kind": "online",
-        "slot": 1
+        "slot": 0
       },
       "seats": [
         {
           "slot": 0,
           "eid": 1,
-          "name": "Ada Lovelace",
-          "look": {
-            "skin": 4,
-            "hair": 6,
-            "clothes": 1
-          },
-          "expectedColors": {
-            "skin": "8d5524",
-            "hair": "ec4899",
-            "clothes": "e11d48"
-          },
-          "colorsOfOtherLooks": [
-            "ffdbac",
-            "f1c27d",
-            "e0ac69",
-            "c68642",
-            "5c3a21",
-            "2a2523",
-            "6b3e1e",
-            "b45309",
-            "d97706",
-            "f3e5ab",
-            "6b7280",
-            "38bdf8",
-            "3b82f6",
-            "16a34a",
-            "f59e0b",
-            "7c3aed",
-            "ea580c",
-            "0d9488",
-            "475569"
-          ],
-          "position": {
-            "x": 104,
-            "y": 232
-          },
-          "label": {
-            "name": "Ada Lovelace",
-            "x": 104,
-            "y": 213,
-            "textureKey": "player/look/4-6-1"
-          },
-          "textureColors": [
-            "14121a",
-            "1f1a17",
-            "1f2937",
-            "262d3a",
-            "374151",
-            "8d5524",
-            "a91636",
-            "e11d48",
-            "ec4899"
-          ]
-        },
-        {
-          "slot": 1,
-          "eid": 2,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -579,12 +522,12 @@
           ],
           "position": {
             "x": 104,
-            "y": 216
+            "y": 232
           },
           "label": {
             "name": "José 🚀",
             "x": 104,
-            "y": 197,
+            "y": 213,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -597,6 +540,63 @@
             "374151",
             "d97706",
             "ffdbac"
+          ]
+        },
+        {
+          "slot": 1,
+          "eid": 2,
+          "name": "Ada Lovelace",
+          "look": {
+            "skin": 4,
+            "hair": 6,
+            "clothes": 1
+          },
+          "expectedColors": {
+            "skin": "8d5524",
+            "hair": "ec4899",
+            "clothes": "e11d48"
+          },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "38bdf8",
+            "3b82f6",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
+          "position": {
+            "x": 104,
+            "y": 216
+          },
+          "label": {
+            "name": "Ada Lovelace",
+            "x": 104,
+            "y": 197,
+            "textureKey": "player/look/4-6-1"
+          },
+          "textureColors": [
+            "14121a",
+            "1f1a17",
+            "1f2937",
+            "262d3a",
+            "374151",
+            "8d5524",
+            "a91636",
+            "e11d48",
+            "ec4899"
           ]
         }
       ],
@@ -610,136 +610,6 @@
   "changedInPlace": {
     "aChanged": {
       "nameLabelsAlive": 2,
-      "localSlot": 0,
-      "isReplica": true,
-      "status": {
-        "kind": "online",
-        "slot": 0
-      },
-      "seats": [
-        {
-          "slot": 0,
-          "eid": 1,
-          "name": "Grace Hopper",
-          "look": {
-            "skin": 5,
-            "hair": 7,
-            "clothes": 4
-          },
-          "expectedColors": {
-            "skin": "5c3a21",
-            "hair": "38bdf8",
-            "clothes": "7c3aed"
-          },
-          "colorsOfOtherLooks": [
-            "ffdbac",
-            "f1c27d",
-            "e0ac69",
-            "c68642",
-            "8d5524",
-            "2a2523",
-            "6b3e1e",
-            "b45309",
-            "d97706",
-            "f3e5ab",
-            "6b7280",
-            "ec4899",
-            "3b82f6",
-            "e11d48",
-            "16a34a",
-            "f59e0b",
-            "ea580c",
-            "0d9488",
-            "475569"
-          ],
-          "position": {
-            "x": 104,
-            "y": 232
-          },
-          "label": {
-            "name": "Grace Hopper",
-            "x": 104,
-            "y": 213,
-            "textureKey": "player/look/5-7-4"
-          },
-          "textureColors": [
-            "14121a",
-            "1f1a17",
-            "1f2937",
-            "262d3a",
-            "374151",
-            "38bdf8",
-            "5c3a21",
-            "5d2cb2",
-            "7c3aed"
-          ]
-        },
-        {
-          "slot": 1,
-          "eid": 2,
-          "name": "José 🚀",
-          "look": {
-            "skin": 0,
-            "hair": 3,
-            "clothes": 6
-          },
-          "expectedColors": {
-            "skin": "ffdbac",
-            "hair": "d97706",
-            "clothes": "0d9488"
-          },
-          "colorsOfOtherLooks": [
-            "f1c27d",
-            "e0ac69",
-            "c68642",
-            "8d5524",
-            "5c3a21",
-            "2a2523",
-            "6b3e1e",
-            "b45309",
-            "f3e5ab",
-            "6b7280",
-            "ec4899",
-            "38bdf8",
-            "3b82f6",
-            "e11d48",
-            "16a34a",
-            "f59e0b",
-            "7c3aed",
-            "ea580c",
-            "475569"
-          ],
-          "position": {
-            "x": 104,
-            "y": 216
-          },
-          "label": {
-            "name": "José 🚀",
-            "x": 104,
-            "y": 197,
-            "textureKey": "player/look/0-3-6"
-          },
-          "textureColors": [
-            "0a6f66",
-            "0d9488",
-            "14121a",
-            "1f1a17",
-            "1f2937",
-            "262d3a",
-            "374151",
-            "d97706",
-            "ffdbac"
-          ]
-        }
-      ],
-      "hud": "fps  60   latency  -- ms   2/5 online\nyou: Grace Hopper   players: 2",
-      "remembered": "{\"name\":\"Grace Hopper\",\"look\":{\"skin\":5,\"hair\":7,\"clothes\":4}}",
-      "hash": "",
-      "creatorShown": false,
-      "changeButton": true
-    },
-    "bSeesChange": {
-      "nameLabelsAlive": 2,
       "localSlot": 1,
       "isReplica": true,
       "status": {
@@ -750,63 +620,6 @@
         {
           "slot": 0,
           "eid": 1,
-          "name": "Grace Hopper",
-          "look": {
-            "skin": 5,
-            "hair": 7,
-            "clothes": 4
-          },
-          "expectedColors": {
-            "skin": "5c3a21",
-            "hair": "38bdf8",
-            "clothes": "7c3aed"
-          },
-          "colorsOfOtherLooks": [
-            "ffdbac",
-            "f1c27d",
-            "e0ac69",
-            "c68642",
-            "8d5524",
-            "2a2523",
-            "6b3e1e",
-            "b45309",
-            "d97706",
-            "f3e5ab",
-            "6b7280",
-            "ec4899",
-            "3b82f6",
-            "e11d48",
-            "16a34a",
-            "f59e0b",
-            "ea580c",
-            "0d9488",
-            "475569"
-          ],
-          "position": {
-            "x": 104,
-            "y": 232
-          },
-          "label": {
-            "name": "Grace Hopper",
-            "x": 104,
-            "y": 213,
-            "textureKey": "player/look/5-7-4"
-          },
-          "textureColors": [
-            "14121a",
-            "1f1a17",
-            "1f2937",
-            "262d3a",
-            "374151",
-            "38bdf8",
-            "5c3a21",
-            "5d2cb2",
-            "7c3aed"
-          ]
-        },
-        {
-          "slot": 1,
-          "eid": 2,
           "name": "José 🚀",
           "look": {
             "skin": 0,
@@ -841,12 +654,12 @@
           ],
           "position": {
             "x": 104,
-            "y": 216
+            "y": 232
           },
           "label": {
             "name": "José 🚀",
             "x": 104,
-            "y": 197,
+            "y": 213,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -860,9 +673,196 @@
             "d97706",
             "ffdbac"
           ]
+        },
+        {
+          "slot": 1,
+          "eid": 2,
+          "name": "Grace Hopper",
+          "look": {
+            "skin": 5,
+            "hair": 7,
+            "clothes": 4
+          },
+          "expectedColors": {
+            "skin": "5c3a21",
+            "hair": "38bdf8",
+            "clothes": "7c3aed"
+          },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
+          "position": {
+            "x": 104,
+            "y": 216
+          },
+          "label": {
+            "name": "Grace Hopper",
+            "x": 104,
+            "y": 197,
+            "textureKey": "player/look/5-7-4"
+          },
+          "textureColors": [
+            "14121a",
+            "1f1a17",
+            "1f2937",
+            "262d3a",
+            "374151",
+            "38bdf8",
+            "5c3a21",
+            "5d2cb2",
+            "7c3aed"
+          ]
         }
       ],
-      "hud": "fps  57   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
+      "hud": "fps  52   latency  -- ms   2/5 online\nyou: Grace Hopper   players: 2",
+      "remembered": "{\"name\":\"Grace Hopper\",\"look\":{\"skin\":5,\"hair\":7,\"clothes\":4}}",
+      "hash": "",
+      "creatorShown": false,
+      "changeButton": true
+    },
+    "bSeesChange": {
+      "nameLabelsAlive": 2,
+      "localSlot": 0,
+      "isReplica": true,
+      "status": {
+        "kind": "online",
+        "slot": 0
+      },
+      "seats": [
+        {
+          "slot": 0,
+          "eid": 1,
+          "name": "José 🚀",
+          "look": {
+            "skin": 0,
+            "hair": 3,
+            "clothes": 6
+          },
+          "expectedColors": {
+            "skin": "ffdbac",
+            "hair": "d97706",
+            "clothes": "0d9488"
+          },
+          "colorsOfOtherLooks": [
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "5c3a21",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "38bdf8",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "7c3aed",
+            "ea580c",
+            "475569"
+          ],
+          "position": {
+            "x": 104,
+            "y": 232
+          },
+          "label": {
+            "name": "José 🚀",
+            "x": 104,
+            "y": 213,
+            "textureKey": "player/look/0-3-6"
+          },
+          "textureColors": [
+            "0a6f66",
+            "0d9488",
+            "14121a",
+            "1f1a17",
+            "1f2937",
+            "262d3a",
+            "374151",
+            "d97706",
+            "ffdbac"
+          ]
+        },
+        {
+          "slot": 1,
+          "eid": 2,
+          "name": "Grace Hopper",
+          "look": {
+            "skin": 5,
+            "hair": 7,
+            "clothes": 4
+          },
+          "expectedColors": {
+            "skin": "5c3a21",
+            "hair": "38bdf8",
+            "clothes": "7c3aed"
+          },
+          "colorsOfOtherLooks": [
+            "ffdbac",
+            "f1c27d",
+            "e0ac69",
+            "c68642",
+            "8d5524",
+            "2a2523",
+            "6b3e1e",
+            "b45309",
+            "d97706",
+            "f3e5ab",
+            "6b7280",
+            "ec4899",
+            "3b82f6",
+            "e11d48",
+            "16a34a",
+            "f59e0b",
+            "ea580c",
+            "0d9488",
+            "475569"
+          ],
+          "position": {
+            "x": 104,
+            "y": 216
+          },
+          "label": {
+            "name": "Grace Hopper",
+            "x": 104,
+            "y": 197,
+            "textureKey": "player/look/5-7-4"
+          },
+          "textureColors": [
+            "14121a",
+            "1f1a17",
+            "1f2937",
+            "262d3a",
+            "374151",
+            "38bdf8",
+            "5c3a21",
+            "5d2cb2",
+            "7c3aed"
+          ]
+        }
+      ],
+      "hud": "fps  52   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
       "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":0,\"hair\":3,\"clothes\":6}}",
       "hash": "",
       "creatorShown": false,

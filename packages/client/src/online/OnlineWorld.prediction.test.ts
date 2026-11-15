@@ -364,7 +364,12 @@ describe('OnlineWorld predicting the local player', () => {
     link.frame([move(0, 0)]);
     link.frames(MAX_PREDICTION_TICKS + 60);
     expect(link.world.predictionReport!.predicting).toBe(true);
-    expect(link.drawn()).toEqual(link.serverPosition());
+    // The walk can end against a tree or a rock. The prediction runs a few ticks ahead of the server, and physics still
+    // settles a body that rests on a wall by a few millionths of a metre per tick, so the two agree to far less than a
+    // pixel (a sixteenth of a metre), not to the last bit.
+    const drawn = link.drawn();
+    const server = link.serverPosition();
+    expect(Math.hypot(drawn.x - server.x, drawn.y - server.y)).toBeLessThan(1e-5);
   });
 });
 

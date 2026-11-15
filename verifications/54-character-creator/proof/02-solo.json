@@ -4,9 +4,9 @@
     "hasGame": false,
     "name": "",
     "look": {
-      "skin": 2,
-      "hair": 0,
-      "clothes": 2
+      "skin": 5,
+      "hair": 5,
+      "clothes": 6
     },
     "swatches": {
       "skin": 6,
@@ -15,7 +15,7 @@
     },
     "problem": null,
     "problemText": "",
-    "previewLook": "2-0-2"
+    "previewLook": "5-5-6"
   },
   "nameProblems": {
     "empty": {
@@ -23,9 +23,9 @@
       "hasGame": false,
       "name": "",
       "look": {
-        "skin": 2,
-        "hair": 0,
-        "clothes": 2
+        "skin": 5,
+        "hair": 5,
+        "clothes": 6
       },
       "swatches": {
         "skin": 6,
@@ -34,16 +34,16 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "2-0-2"
+      "previewLook": "5-5-6"
     },
     "blank": {
       "shown": true,
       "hasGame": false,
       "name": "   ",
       "look": {
-        "skin": 2,
-        "hair": 0,
-        "clothes": 2
+        "skin": 5,
+        "hair": 5,
+        "clothes": 6
       },
       "swatches": {
         "skin": 6,
@@ -52,16 +52,16 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "2-0-2"
+      "previewLook": "5-5-6"
     },
     "tooLong": {
       "shown": true,
       "hasGame": false,
       "name": "aaaaaaaaaaaaaaaaaaaaa",
       "look": {
-        "skin": 2,
-        "hair": 0,
-        "clothes": 2
+        "skin": 5,
+        "hair": 5,
+        "clothes": 6
       },
       "swatches": {
         "skin": 6,
@@ -70,16 +70,16 @@
       },
       "problem": "too-long",
       "problemText": "That name is too long: use 20 characters or fewer. Emoji made of several parts count for more.",
-      "previewLook": "2-0-2"
+      "previewLook": "5-5-6"
     },
     "control": {
       "shown": true,
       "hasGame": false,
       "name": "Ada\tLovelace",
       "look": {
-        "skin": 2,
-        "hair": 0,
-        "clothes": 2
+        "skin": 5,
+        "hair": 5,
+        "clothes": 6
       },
       "swatches": {
         "skin": 6,
@@ -88,7 +88,7 @@
       },
       "problem": "forbidden-character",
       "problemText": "That name has characters that cannot be shown, or marks piled on one letter. Use letters, numbers, spaces and emoji.",
-      "previewLook": "2-0-2"
+      "previewLook": "5-5-6"
     }
   },
   "entered": {
@@ -203,12 +203,12 @@
           "475569"
         ],
         "position": {
-          "x": 114.666748046875,
+          "x": 110.66671752929688,
           "y": 232
         },
         "label": {
           "name": "José 🚀",
-          "x": 114.666748046875,
+          "x": 110.66671752929688,
           "y": 213,
           "textureKey": "player/look/2-0-6"
         },
