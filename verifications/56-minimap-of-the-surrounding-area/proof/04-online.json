@@ -19,11 +19,21 @@
           "y": 63
         },
         "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
           "0,0",
-          "1,0"
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
         ],
-        "chunksInMap": 2,
-        "chunksPainted": 2,
+        "chunksInMap": 15,
+        "chunksPainted": 12,
         "localPlayerColor": 16777215,
         "edgeInset": 13,
         "marks": [
@@ -39,22 +49,22 @@
           },
           {
             "source": "entity",
-            "name": "player-teal",
+            "name": "player-rose",
             "eid": 2,
             "isLocalPlayer": false,
             "shape": "dot",
-            "color": 889992,
+            "color": 14753096,
             "onEdge": false,
             "x": 855,
-            "y": 106.1669921875
+            "y": 102.16680908203125
           },
           {
             "source": "entity",
-            "name": "player-rose",
+            "name": "player-teal",
             "eid": 1,
             "isLocalPlayer": true,
             "shape": "dot",
-            "color": 14753096,
+            "color": 889992,
             "onEdge": false,
             "x": 867.9998397827148,
             "y": 92
@@ -63,7 +73,7 @@
       },
       "player": {
         "eid": 1,
-        "defId": 2,
+        "defId": 7,
         "x": 13.999919891357422,
         "y": 14.5
       },
@@ -78,10 +88,10 @@
         "width": 960,
         "height": 720,
         "bounds": {
-          "x": 0,
-          "y": 0,
-          "width": 640,
-          "height": 480
+          "x": -720,
+          "y": -496,
+          "width": 2080,
+          "height": 1472
         },
         "worldView": {
           "x": 64,
@@ -110,10 +120,10 @@
         "y": 14.5
       },
       "bounds": {
-        "column": 0,
-        "row": 0,
-        "width": 40,
-        "height": 30
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
       },
       "chunkSize": 32
     },
@@ -129,18 +139,28 @@
         "cssPixelsPerTile": 2,
         "centre": {
           "x": 7.5,
-          "y": 21.58349609375
+          "y": 19.583404541015625
         },
         "worldOriginOnScreen": {
           "x": 853,
-          "y": 49
+          "y": 53
         },
         "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
           "0,0",
-          "1,0"
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
         ],
-        "chunksInMap": 2,
-        "chunksPainted": 2,
+        "chunksInMap": 15,
+        "chunksPainted": 12,
         "localPlayerColor": 16777215,
         "edgeInset": 13,
         "marks": [
@@ -152,57 +172,57 @@
             "color": 16767050,
             "onEdge": false,
             "x": 866,
-            "y": 78
-          },
-          {
-            "source": "entity",
-            "name": "player-rose",
-            "eid": 1,
-            "isLocalPlayer": false,
-            "shape": "dot",
-            "color": 14753096,
-            "onEdge": false,
-            "x": 880.9998397827148,
-            "y": 78
+            "y": 82
           },
           {
             "source": "entity",
             "name": "player-teal",
-            "eid": 2,
-            "isLocalPlayer": true,
+            "eid": 1,
+            "isLocalPlayer": false,
             "shape": "dot",
             "color": 889992,
             "onEdge": false,
+            "x": 880.9998397827148,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 2,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
             "x": 868,
-            "y": 92.1669921875
+            "y": 92.16680908203125
           }
         ]
       },
       "player": {
         "eid": 2,
-        "defId": 7,
+        "defId": 2,
         "x": 7.5,
-        "y": 21.58349609375
+        "y": 19.583404541015625
       },
       "drawnAt": {
         "x": 7.5,
-        "y": 21.58349609375
+        "y": 19.583404541015625
       },
       "camera": {
         "zoom": 3,
-        "scrollX": -320,
-        "scrollY": -14.666666666666657,
+        "scrollX": -360,
+        "scrollY": -46.66666666666666,
         "width": 960,
         "height": 720,
         "bounds": {
-          "x": 0,
-          "y": 0,
-          "width": 640,
-          "height": 480
+          "x": -720,
+          "y": -496,
+          "width": 2080,
+          "height": 1472
         },
         "worldView": {
-          "x": 0,
-          "y": 225.33333333333337,
+          "x": -40,
+          "y": 193.33333333333337,
           "width": 320,
           "height": 240
         },
@@ -227,10 +247,10 @@
         "y": 14.5
       },
       "bounds": {
-        "column": 0,
-        "row": 0,
-        "width": 40,
-        "height": 30
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
       },
       "chunkSize": 32
     }
@@ -255,11 +275,21 @@
           "y": 63
         },
         "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
           "0,0",
-          "1,0"
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
         ],
-        "chunksInMap": 2,
-        "chunksPainted": 2,
+        "chunksInMap": 15,
+        "chunksPainted": 12,
         "localPlayerColor": 16777215,
         "edgeInset": 13,
         "marks": [
@@ -275,22 +305,22 @@
           },
           {
             "source": "entity",
-            "name": "player-teal",
+            "name": "player-rose",
             "eid": 2,
             "isLocalPlayer": false,
             "shape": "dot",
-            "color": 889992,
+            "color": 14753096,
             "onEdge": false,
-            "x": 871.4997711181641,
-            "y": 106.1669921875
+            "x": 872.4997787475586,
+            "y": 102.16680908203125
           },
           {
             "source": "entity",
-            "name": "player-rose",
+            "name": "player-teal",
             "eid": 1,
             "isLocalPlayer": true,
             "shape": "dot",
-            "color": 14753096,
+            "color": 889992,
             "onEdge": false,
             "x": 867.9998397827148,
             "y": 92
@@ -299,7 +329,7 @@
       },
       "player": {
         "eid": 1,
-        "defId": 2,
+        "defId": 7,
         "x": 13.999919891357422,
         "y": 14.5
       },
@@ -314,10 +344,10 @@
         "width": 960,
         "height": 720,
         "bounds": {
-          "x": 0,
-          "y": 0,
-          "width": 640,
-          "height": 480
+          "x": -720,
+          "y": -496,
+          "width": 2080,
+          "height": 1472
         },
         "worldView": {
           "x": 64,
@@ -346,10 +376,10 @@
         "y": 14.5
       },
       "bounds": {
-        "column": 0,
-        "row": 0,
-        "width": 40,
-        "height": 30
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
       },
       "chunkSize": 32
     },
@@ -364,19 +394,29 @@
         "tilesAcross": 80,
         "cssPixelsPerTile": 2,
         "centre": {
-          "x": 15.749885559082031,
-          "y": 21.58349609375
+          "x": 16.249889373779297,
+          "y": 19.583404541015625
         },
         "worldOriginOnScreen": {
-          "x": 837,
-          "y": 49
+          "x": 836,
+          "y": 53
         },
         "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
           "0,0",
-          "1,0"
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
         ],
-        "chunksInMap": 2,
-        "chunksPainted": 2,
+        "chunksInMap": 15,
+        "chunksPainted": 12,
         "localPlayerColor": 16777215,
         "edgeInset": 13,
         "marks": [
@@ -387,58 +427,58 @@
             "shape": "diamond",
             "color": 16767050,
             "onEdge": false,
-            "x": 850,
-            "y": 78
-          },
-          {
-            "source": "entity",
-            "name": "player-rose",
-            "eid": 1,
-            "isLocalPlayer": false,
-            "shape": "dot",
-            "color": 14753096,
-            "onEdge": false,
-            "x": 864.9998397827148,
-            "y": 78
+            "x": 849,
+            "y": 82
           },
           {
             "source": "entity",
             "name": "player-teal",
-            "eid": 2,
-            "isLocalPlayer": true,
+            "eid": 1,
+            "isLocalPlayer": false,
             "shape": "dot",
             "color": 889992,
             "onEdge": false,
-            "x": 868.4997711181641,
-            "y": 92.1669921875
+            "x": 863.9998397827148,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 2,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 868.4997787475586,
+            "y": 92.16680908203125
           }
         ]
       },
       "player": {
         "eid": 2,
-        "defId": 7,
-        "x": 15.749885559082031,
-        "y": 21.58349609375
+        "defId": 2,
+        "x": 16.249889373779297,
+        "y": 19.583404541015625
       },
       "drawnAt": {
-        "x": 15.749885559082031,
-        "y": 21.58349609375
+        "x": 16.249889373779297,
+        "y": 19.583404541015625
       },
       "camera": {
         "zoom": 3,
-        "scrollX": -228,
-        "scrollY": -14.666666666666657,
+        "scrollX": -220,
+        "scrollY": -46.66666666666666,
         "width": 960,
         "height": 720,
         "bounds": {
-          "x": 0,
-          "y": 0,
-          "width": 640,
-          "height": 480
+          "x": -720,
+          "y": -496,
+          "width": 2080,
+          "height": 1472
         },
         "worldView": {
-          "x": 92,
-          "y": 225.33333333333337,
+          "x": 100,
+          "y": 193.33333333333337,
           "width": 320,
           "height": 240
         },
@@ -463,40 +503,40 @@
         "y": 14.5
       },
       "bounds": {
-        "column": 0,
-        "row": 0,
-        "width": 40,
-        "height": 30
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
       },
       "chunkSize": 32
     },
     "before": {
       "source": "entity",
-      "name": "player-teal",
+      "name": "player-rose",
       "eid": 2,
       "isLocalPlayer": false,
       "shape": "dot",
-      "color": 889992,
+      "color": 14753096,
       "onEdge": false,
       "x": 855,
-      "y": 106.1669921875
+      "y": 102.16680908203125
     },
     "during": [
-      857.5349473019414,
-      861.6093425010631,
-      865.5251067321078,
-      869.7230183001911
+      857.711938288342,
+      861.8899043923502,
+      866.0261121443169,
+      870.1763013130743
     ],
     "after": {
       "source": "entity",
-      "name": "player-teal",
+      "name": "player-rose",
       "eid": 2,
       "isLocalPlayer": false,
       "shape": "dot",
-      "color": 889992,
+      "color": 14753096,
       "onEdge": false,
-      "x": 871.4997711181641,
-      "y": 106.1669921875
+      "x": 872.4997787475586,
+      "y": 102.16680908203125
     }
   },
   "results": [
@@ -508,7 +548,7 @@
     {
       "name": "A sees the other player as a dot in the other's avatar colour, where the other is",
       "pass": true,
-      "details": "dot at (855.0, 106.2), the other stands at (855.0, 106.2) on this minimap; pixel #0d9488, avatar #0d9488"
+      "details": "dot at (855.0, 102.2), the other stands at (855.0, 102.2) on this minimap; pixel #e11d48, avatar #e11d48"
     },
     {
       "name": "A sees the starting point marked on the spawn tile",
@@ -517,12 +557,12 @@
     {
       "name": "B is in the middle of its own minimap, in white, centred on where its last frame drew it",
       "pass": true,
-      "details": "centre {\"x\":7.5,\"y\":21.58349609375}, drawn at {\"x\":7.5,\"y\":21.58349609375}"
+      "details": "centre {\"x\":7.5,\"y\":19.583404541015625}, drawn at {\"x\":7.5,\"y\":19.583404541015625}"
     },
     {
       "name": "B sees the other player as a dot in the other's avatar colour, where the other is",
       "pass": true,
-      "details": "dot at (881.0, 78.0), the other stands at (881.0, 78.0) on this minimap; pixel #e11d48, avatar #e11d48"
+      "details": "dot at (881.0, 82.0), the other stands at (881.0, 82.0) on this minimap; pixel #0d9488, avatar #0d9488"
     },
     {
       "name": "B sees the starting point marked on the spawn tile",
@@ -531,17 +571,17 @@
     {
       "name": "while B walks east its dot moves east on A's minimap, sample after sample",
       "pass": true,
-      "details": "855.0 -> 857.5 -> 861.6 -> 865.5 -> 869.7"
+      "details": "855.0 -> 857.7 -> 861.9 -> 866.0 -> 870.2"
     },
     {
       "name": "and it ends as many pixels east as the tiles B walked, while A's minimap stayed put",
       "pass": true,
-      "details": "B walked 8.25 m; its dot moved 16.5 px at 2 px a tile"
+      "details": "B walked 8.75 m; its dot moved 17.5 px at 2 px a tile"
     },
     {
       "name": "on B's own minimap the terrain moved instead, and A's dot is still where A stands",
       "pass": true,
-      "details": "A's dot at (865.0, 78.0), expected (865.0, 78.0)"
+      "details": "A's dot at (864.0, 82.0), expected (864.0, 82.0)"
     },
     {
       "name": "no page errors",

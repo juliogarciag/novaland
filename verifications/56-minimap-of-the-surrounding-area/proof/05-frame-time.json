@@ -3,28 +3,28 @@
     {
       "round": 0,
       "map": "world",
-      "frames": 741,
+      "frames": 182,
       "frameMs": {
-        "median": 10.599999999999909,
-        "mean": 10.842375168690962,
-        "p95": 15.300000000001091
+        "median": 43.399999999999636,
+        "mean": 44.575824175824174,
+        "p95": 76.5
       },
-      "minimapMsPerFrame": 0.019002694807283962,
-      "chunksDrawn": 2,
-      "chunksInMap": 2,
-      "chunksPainted": 2,
+      "minimapMsPerFrame": 0.02622950793615456,
+      "chunksDrawn": 12,
+      "chunksInMap": 15,
+      "chunksPainted": 12,
       "chunksPaintedWhileMeasured": 0
     },
     {
       "round": 0,
       "map": "big",
-      "frames": 614,
+      "frames": 203,
       "frameMs": {
-        "median": 12,
-        "mean": 13.107491856677525,
-        "p95": 28.199999999999818
+        "median": 36.19999999999982,
+        "mean": 40.309852216748766,
+        "p95": 78
       },
-      "minimapMsPerFrame": 0.02097560952349407,
+      "minimapMsPerFrame": 0.03578431290738723,
       "chunksDrawn": 12,
       "chunksInMap": 130,
       "chunksPainted": 12,
@@ -33,28 +33,28 @@
     {
       "round": 1,
       "map": "world",
-      "frames": 696,
+      "frames": 142,
       "frameMs": {
-        "median": 11.199999999998909,
-        "mean": 11.55488505747126,
-        "p95": 16.5
+        "median": 51.5,
+        "mean": 57.72112676056339,
+        "p95": 101.39999999999964
       },
-      "minimapMsPerFrame": 0.019942611156611393,
-      "chunksDrawn": 2,
-      "chunksInMap": 2,
-      "chunksPainted": 2,
+      "minimapMsPerFrame": 0.020979019728573887,
+      "chunksDrawn": 12,
+      "chunksInMap": 15,
+      "chunksPainted": 12,
       "chunksPaintedWhileMeasured": 0
     },
     {
       "round": 1,
       "map": "big",
-      "frames": 766,
+      "frames": 169,
       "frameMs": {
-        "median": 10.099999999998545,
-        "mean": 10.489817232375978,
-        "p95": 14.799999999999272
+        "median": 42.80000000000109,
+        "mean": 48.54674556213018,
+        "p95": 84.89999999999964
       },
-      "minimapMsPerFrame": 0.020338983703623227,
+      "minimapMsPerFrame": 0.029411762952804565,
       "chunksDrawn": 12,
       "chunksInMap": 130,
       "chunksPainted": 12,
@@ -63,130 +63,130 @@
     {
       "round": 2,
       "map": "world",
-      "frames": 440,
+      "frames": 135,
       "frameMs": {
-        "median": 14.099999999999909,
-        "mean": 18.35477272727273,
-        "p95": 46
+        "median": 55,
+        "mean": 60.754814814814814,
+        "p95": 107.80000000000018
       },
-      "minimapMsPerFrame": 0.02063492055382588,
-      "chunksDrawn": 2,
-      "chunksInMap": 2,
-      "chunksPainted": 2,
+      "minimapMsPerFrame": 0.027205882265287286,
+      "chunksDrawn": 12,
+      "chunksInMap": 15,
+      "chunksPainted": 12,
       "chunksPaintedWhileMeasured": 0
     },
     {
       "round": 2,
       "map": "big",
-      "frames": 460,
+      "frames": 183,
       "frameMs": {
-        "median": 14.200000000000728,
-        "mean": 17.600217391304344,
-        "p95": 36.20000000000027
+        "median": 37.5,
+        "mean": 44.15191256830601,
+        "p95": 82.10000000000036
       },
-      "minimapMsPerFrame": 0.02776572631910411,
+      "minimapMsPerFrame": 0.02934782466162806,
+      "chunksDrawn": 12,
+      "chunksInMap": 130,
+      "chunksPainted": 12,
+      "chunksPaintedWhileMeasured": 3
+    },
+    {
+      "round": 3,
+      "map": "world",
+      "frames": 756,
+      "frameMs": {
+        "median": 9.5,
+        "mean": 10.624206349206348,
+        "p95": 17
+      },
+      "minimapMsPerFrame": 0.02140026339766529,
+      "chunksDrawn": 12,
+      "chunksInMap": 15,
+      "chunksPainted": 18,
+      "chunksPaintedWhileMeasured": 6
+    },
+    {
+      "round": 3,
+      "map": "big",
+      "frames": 735,
+      "frameMs": {
+        "median": 9.399999999999636,
+        "mean": 10.945034013605435,
+        "p95": 21.299999999999727
+      },
+      "minimapMsPerFrame": 0.02105978204180365,
       "chunksDrawn": 12,
       "chunksInMap": 130,
       "chunksPainted": 15,
       "chunksPaintedWhileMeasured": 6
     },
     {
-      "round": 3,
-      "map": "world",
-      "frames": 806,
-      "frameMs": {
-        "median": 9.399999999999636,
-        "mean": 9.99429280397022,
-        "p95": 15.800000000000182
-      },
-      "minimapMsPerFrame": 0.015489466719172406,
-      "chunksDrawn": 2,
-      "chunksInMap": 2,
-      "chunksPainted": 2,
-      "chunksPaintedWhileMeasured": 0
-    },
-    {
-      "round": 3,
-      "map": "big",
-      "frames": 712,
-      "frameMs": {
-        "median": 10.699999999999818,
-        "mean": 11.292415730337087,
-        "p95": 16.5
-      },
-      "minimapMsPerFrame": 0.018653576203516122,
-      "chunksDrawn": 12,
-      "chunksInMap": 130,
-      "chunksPainted": 12,
-      "chunksPaintedWhileMeasured": 3
-    },
-    {
       "round": 4,
       "map": "world",
-      "frames": 715,
+      "frames": 583,
       "frameMs": {
-        "median": 10.700000000000273,
-        "mean": 11.233566433566438,
-        "p95": 15.5
+        "median": 11.700000000000728,
+        "mean": 13.799313893653517,
+        "p95": 31.09999999999991
       },
-      "minimapMsPerFrame": 0.01703910679457574,
-      "chunksDrawn": 2,
-      "chunksInMap": 2,
-      "chunksPainted": 2,
-      "chunksPaintedWhileMeasured": 0
+      "minimapMsPerFrame": 0.025342465875899955,
+      "chunksDrawn": 12,
+      "chunksInMap": 15,
+      "chunksPainted": 18,
+      "chunksPaintedWhileMeasured": 6
     },
     {
       "round": 4,
       "map": "big",
-      "frames": 790,
+      "frames": 402,
       "frameMs": {
-        "median": 9.800000000000182,
-        "mean": 10.172025316455695,
-        "p95": 13.899999999999636
+        "median": 13,
+        "mean": 21.198756218905466,
+        "p95": 52.90000000000009
       },
-      "minimapMsPerFrame": 0.021365360047211387,
+      "minimapMsPerFrame": 0.0327543440291071,
       "chunksDrawn": 12,
       "chunksInMap": 130,
-      "chunksPainted": 12,
-      "chunksPaintedWhileMeasured": 3
+      "chunksPainted": 15,
+      "chunksPaintedWhileMeasured": 6
     }
   ],
   "summary": {
-    "worldFrameMs": 10.700000000000273,
-    "bigFrameMs": 10.699999999999818,
-    "difference": -4.547473508864641e-13,
-    "noise": 4.700000000000273,
-    "allowance": 4.700000000000273,
-    "worldMinimapMs": 0.019002694807283962,
-    "bigMinimapMs": 0.02097560952349407,
-    "worldP95Ms": 15.800000000000182,
-    "bigP95Ms": 16.5
+    "worldFrameMs": 43.399999999999636,
+    "bigFrameMs": 36.19999999999982,
+    "difference": -7.199999999999818,
+    "noise": 45.5,
+    "allowance": 45.5,
+    "worldMinimapMs": 0.025342465875899955,
+    "bigMinimapMs": 0.029411762952804565,
+    "worldP95Ms": 76.5,
+    "bigP95Ms": 78
   },
   "results": [
     {
       "name": "the big map has over a hundred chunks and the minimap keeps a handful of them",
       "pass": true,
-      "details": "130 chunks against the world's 2; kept 12, 12, 12, 12, 12"
+      "details": "130 chunks against the world's 15; kept 12, 12, 12, 12, 12"
     },
     {
-      "name": "the measured walk on the big map includes painting new chunks, which the world never needs",
+      "name": "the measured walk on the big map includes painting new chunks in every round",
       "pass": true,
-      "details": "painted during the walk: big 3, 3, 6, 3, 3; world 0, 0, 0, 0, 0"
+      "details": "painted during the walk: big 3, 3, 3, 6, 6; world 0, 0, 0, 6, 6"
     },
     {
       "name": "frame time on the 400x300 map is within noise of the world's",
       "pass": true,
-      "details": "world 10.700 ms (rounds 10.600, 11.200, 14.100, 9.400, 10.700); big 10.700 ms (rounds 12.000, 10.100, 14.200, 10.700, 9.800); difference -0.000 ms, allowed 4.700 ms"
+      "details": "world 43.400 ms (rounds 43.400, 51.500, 55.000, 9.500, 11.700); big 36.200 ms (rounds 36.200, 42.800, 37.500, 9.400, 13.000); difference -7.200 ms, allowed 45.500 ms"
     },
     {
       "name": "and so are its slow frames (the 95th percentile)",
       "pass": true,
-      "details": "world 15.800 ms (rounds 15.300, 16.500, 46.000, 15.800, 15.500); big 16.500 ms (rounds 28.200, 14.800, 36.200, 16.500, 13.900); allowed 30.700 ms more"
+      "details": "world 76.500 ms (rounds 76.500, 101.400, 107.800, 17.000, 31.100); big 78.000 ms (rounds 78.000, 84.900, 82.100, 21.300, 52.900); allowed 90.800 ms more"
     },
     {
       "name": "the minimap's own share of a frame is under a twentieth of a millisecond on both maps",
       "pass": true,
-      "details": "world 19.0 µs a frame, big 21.0 µs a frame"
+      "details": "world 25.3 µs a frame, big 29.4 µs a frame"
     },
     {
       "name": "no page errors",

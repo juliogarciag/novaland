@@ -1,5 +1,5 @@
 $ pnpm install
-(node:96714) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:32085) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
@@ -13,7 +13,7 @@ Already up to date
 │                                                                              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
-Done in 537ms using pnpm v10.9.0
+Done in 716ms using pnpm v10.9.0
 
 
 $ pnpm typecheck
@@ -21,7 +21,7 @@ $ pnpm typecheck
 > novaland@0.0.0 typecheck <repo>
 > tsc -p tsconfig.json && pnpm -r typecheck
 
-(node:96741) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:32127) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
@@ -44,34 +44,34 @@ $ pnpm build
 > novaland@0.0.0 build <repo>
 > pnpm -r build
 
-(node:96934) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:32443) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
-packages/server build$ vite build
 packages/client build$ vite build
+packages/server build$ vite build
 packages/server build: vite v8.3.6 building ssr environment for production...
 packages/client build: vite v8.3.6 building client environment for production...
 packages/server build: transforming...
 packages/client build: transforming...
-packages/server build: ✓ 147 modules transformed.
+packages/server build: ✓ 155 modules transformed.
 packages/server build: rendering chunks...
 packages/server build: computing gzip size...
-packages/server build: dist/index.mjs                    285.70 kB │ gzip:    74.30 kB │ map:   735.01 kB
+packages/server build: dist/index.mjs                    303.38 kB │ gzip:    76.83 kB │ map:   757.77 kB
 packages/server build: dist/assets/rapier-CIsgl35y.js  3,488.08 kB │ gzip: 1,316.44 kB │ map: 3,650.85 kB
-packages/server build: ✓ built in 212ms
+packages/server build: ✓ built in 273ms
 packages/server build: Done
-packages/client build: ✓ 219 modules transformed.
+packages/client build: ✓ 227 modules transformed.
 packages/client build: rendering chunks...
 packages/client build: computing gzip size...
 packages/client build: dist/index.html                     1.03 kB │ gzip:     0.60 kB
-packages/client build: dist/assets/index-BItN6C-U.js   1,704.39 kB │ gzip:   461.57 kB
+packages/client build: dist/assets/index-gDGJY0Uv.js   1,716.31 kB │ gzip:   463.05 kB
 packages/client build: dist/assets/rapier-C1NO8tr2.js  3,446.04 kB │ gzip: 1,313.58 kB
 packages/client build: [plugin builtin:vite-reporter] 
 packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
 packages/client build: - Using dynamic import() to code-split the application
 packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-packages/client build: ✓ built in 690ms
+packages/client build: ✓ built in 739ms
 packages/client build: Done
 
 

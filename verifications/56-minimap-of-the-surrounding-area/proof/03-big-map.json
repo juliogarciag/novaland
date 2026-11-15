@@ -134,11 +134,11 @@
       "tilesAcross": 80,
       "cssPixelsPerTile": 2,
       "centre": {
-        "x": 221.16162109375,
+        "x": 221.494873046875,
         "y": 150.5
       },
       "worldOriginOnScreen": {
-        "x": 426,
+        "x": 425,
         "y": -209
       },
       "chunksDrawn": [
@@ -167,7 +167,7 @@
           "shape": "diamond",
           "color": 16767050,
           "onEdge": false,
-          "x": 827,
+          "x": 826,
           "y": 92
         },
         {
@@ -178,7 +178,7 @@
           "shape": "dot",
           "color": 15357964,
           "onEdge": false,
-          "x": 868.3232421875,
+          "x": 867.98974609375,
           "y": 92
         }
       ]
@@ -186,12 +186,12 @@
     "player": {
       "eid": 1,
       "defId": 6,
-      "x": 221.16162109375,
+      "x": 221.494873046875,
       "y": 150.5
     },
     "camera": {
       "zoom": 3,
-      "scrollX": 3058.6666666666665,
+      "scrollX": 3064,
       "scrollY": 2048,
       "width": 960,
       "height": 720,
@@ -202,7 +202,7 @@
         "height": 4800
       },
       "worldView": {
-        "x": 3378.6666666666665,
+        "x": 3384,
         "y": 2288,
         "width": 320,
         "height": 240
@@ -246,12 +246,12 @@
       "tilesAcross": 80,
       "cssPixelsPerTile": 2,
       "centre": {
-        "x": 262.1457214355469,
-        "y": 155.0562286376953
+        "x": 261.83831787109375,
+        "y": 151.59173583984375
       },
       "worldOriginOnScreen": {
         "x": 344,
-        "y": -218
+        "y": -211
       },
       "chunksDrawn": [
         "6,3",
@@ -263,16 +263,12 @@
         "8,3",
         "8,4",
         "8,5",
-        "6,6",
-        "7,6",
-        "8,6",
         "9,3",
         "9,4",
-        "9,5",
-        "9,6"
+        "9,5"
       ],
       "chunksInMap": 130,
-      "chunksPainted": 19,
+      "chunksPainted": 15,
       "localPlayerColor": 16777215,
       "edgeInset": 13,
       "marks": [
@@ -283,8 +279,8 @@
           "shape": "diamond",
           "color": 16767050,
           "onEdge": true,
-          "x": 801.2914428710938,
-          "y": 87.16049448516264
+          "x": 800.6766357421875,
+          "y": 90.99096585611318
         },
         {
           "source": "entity",
@@ -294,21 +290,21 @@
           "shape": "dot",
           "color": 15357964,
           "onEdge": false,
-          "x": 868.2914428710938,
-          "y": 92.11245727539062
+          "x": 867.6766357421875,
+          "y": 92.1834716796875
         }
       ]
     },
     "player": {
       "eid": 1,
       "defId": 6,
-      "x": 262.1457214355469,
-      "y": 155.0562286376953
+      "x": 261.83831787109375,
+      "y": 151.59173583984375
     },
     "camera": {
       "zoom": 3,
-      "scrollX": 3714.3333333333335,
-      "scrollY": 2121,
+      "scrollX": 3709.3333333333335,
+      "scrollY": 2065.3333333333335,
       "width": 960,
       "height": 720,
       "bounds": {
@@ -318,8 +314,8 @@
         "height": 4800
       },
       "worldView": {
-        "x": 4034.333333333334,
-        "y": 2361,
+        "x": 4029.333333333334,
+        "y": 2305.3333333333335,
         "width": 320,
         "height": 240
       },
@@ -362,33 +358,33 @@
       "tilesAcross": 80,
       "cssPixelsPerTile": 2,
       "centre": {
-        "x": 262.4075927734375,
-        "y": 186.26856994628906
+        "x": 263.33905029296875,
+        "y": 182.17164611816406
       },
       "worldOriginOnScreen": {
-        "x": 343,
-        "y": -281
+        "x": 341,
+        "y": -272
       },
       "chunksDrawn": [
+        "6,3",
+        "7,3",
         "6,4",
         "7,4",
         "6,5",
         "7,5",
+        "8,3",
         "8,4",
         "8,5",
+        "9,3",
+        "9,4",
+        "9,5",
         "6,6",
         "7,6",
         "8,6",
-        "9,4",
-        "9,5",
-        "9,6",
-        "6,7",
-        "7,7",
-        "8,7",
-        "9,7"
+        "9,6"
       ],
       "chunksInMap": 130,
-      "chunksPainted": 23,
+      "chunksPainted": 19,
       "localPlayerColor": 16777215,
       "edgeInset": 13,
       "marks": [
@@ -399,8 +395,8 @@
           "shape": "diamond",
           "color": 16767050,
           "onEdge": true,
-          "x": 800.815185546875,
-          "y": 52.826311720470244
+          "x": 800.6781005859375,
+          "y": 58.57447682578669
         },
         {
           "source": "entity",
@@ -410,21 +406,21 @@
           "shape": "dot",
           "color": 15357964,
           "onEdge": false,
-          "x": 867.815185546875,
-          "y": 91.53713989257812
+          "x": 867.6781005859375,
+          "y": 92.34329223632812
         }
       ]
     },
     "player": {
       "eid": 1,
       "defId": 6,
-      "x": 262.4075927734375,
-      "y": 186.26856994628906
+      "x": 263.33905029296875,
+      "y": 182.17164611816406
     },
     "camera": {
       "zoom": 3,
-      "scrollX": 3718.6666666666665,
-      "scrollY": 2620.3333333333335,
+      "scrollX": 3733.3333333333335,
+      "scrollY": 2554.6666666666665,
       "width": 960,
       "height": 720,
       "bounds": {
@@ -434,8 +430,8 @@
         "height": 4800
       },
       "worldView": {
-        "x": 4038.666666666666,
-        "y": 2860.3333333333335,
+        "x": 4053.333333333334,
+        "y": 2794.6666666666665,
         "width": 320,
         "height": 240
       },
@@ -469,15 +465,15 @@
   },
   "terrainFar": {
     "centre": {
-      "x": 262.4075927734375,
-      "y": 186.26856994628906
+      "x": 263.33905029296875,
+      "y": 182.17164611816406
     },
-    "tilesCompared": 5853,
+    "tilesCompared": 5932,
     "tilesUnderMarkers": 388,
     "byKind": {
-      "grass": 5688,
-      "tree": 123,
-      "rock": 42
+      "grass": 5760,
+      "tree": 127,
+      "rock": 45
     },
     "wrong": [],
     "wrongCount": 0
@@ -499,34 +495,34 @@
       "details": "6048 tiles compared around (200.5, 150.5): 5863 grass, 119 tree, 66 rock; 193 under markers skipped; 0 wrong"
     },
     {
-      "name": "20.7 tiles from the start, within reach: the starting point is marked where it is",
+      "name": "21.0 tiles from the start, within reach: the starting point is marked where it is",
       "pass": true,
-      "details": "marker at (827.0, 92.0), the spawn tile is drawn at (827.0, 92.0)"
+      "details": "marker at (826.0, 92.0), the spawn tile is drawn at (826.0, 92.0)"
     },
     {
-      "name": "walked east past the reach, 61.6 tiles from the start: its marker is on the minimap's edge and points home",
+      "name": "walked east past the reach, 61.3 tiles from the start: its marker is on the minimap's edge and points home",
       "pass": true,
-      "details": "home is at -175.8 degrees, the marker at -175.9; 66.7 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a"
+      "details": "home is at -179.0 degrees, the marker at -179.1; 67.3 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a"
     },
     {
-      "name": "then south, round a corner, 61.9 tiles from the start: its marker is on the minimap's edge and points home",
+      "name": "then south, round a corner, 62.8 tiles from the start: its marker is on the minimap's edge and points home",
       "pass": true,
-      "details": "home is at -150.0 degrees, the marker at -149.8; 67.2 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a"
+      "details": "home is at -153.3 degrees, the marker at -153.6; 67.3 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a"
     },
     {
       "name": "the marker moved along the edge as the direction home changed",
       "pass": true,
-      "details": "-175.9 degrees, then -149.8 degrees"
+      "details": "-179.1 degrees, then -153.6 degrees"
     },
     {
       "name": "far from the start every tile on the minimap is still the map's",
       "pass": true,
-      "details": "5853 tiles compared around (262.4, 186.3): 5688 grass, 123 tree, 42 rock; 388 under markers skipped; 0 wrong"
+      "details": "5932 tiles compared around (263.3, 182.2): 5760 grass, 127 tree, 45 rock; 388 under markers skipped; 0 wrong"
     },
     {
       "name": "walking changed which chunks are painted, and never to more than the minimap can keep",
       "pass": true,
-      "details": "9, 12, 16, 16 chunks kept at the four stops; 23 painted in all, of 130; now 6,4 7,4 6,5 7,5 8,4 8,5 6,6 7,6 8,6 9,4 9,5 9,6 6,7 7,7 8,7 9,7"
+      "details": "9, 12, 12, 16 chunks kept at the four stops; 19 painted in all, of 130; now 6,3 7,3 6,4 7,4 6,5 7,5 8,3 8,4 8,5 9,3 9,4 9,5 6,6 7,6 8,6 9,6"
     },
     {
       "name": "Phaser holds one texture per kept chunk: the dropped ones are gone",
@@ -536,7 +532,7 @@
     {
       "name": "standing still for a second and a half painted nothing",
       "pass": true,
-      "details": "23 before and after"
+      "details": "19 before and after"
     },
     {
       "name": "no page errors",

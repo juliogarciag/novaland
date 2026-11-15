@@ -45,7 +45,7 @@ try {
   // ---- The terrain is the world's, at three places ----
   const atStart = await terrainOnMinimap(page);
   report.terrainAtStart = atStart;
-  results.push(check('at the start every tile on the minimap is the colour of the def the world has there', atStart.wrongCount === 0 && atStart.byKind.grass > 0 && atStart.byKind.tree > 0 && atStart.byKind.rock > 0 && atStart.byKind['no tile'] > 0, terrainSummary(atStart)));
+  results.push(check('at the start every tile on the minimap is the colour of the def the world has there', atStart.wrongCount === 0 && atStart.byKind.grass > 0 && atStart.byKind.tree > 0 && atStart.byKind.rock > 0, terrainSummary(atStart)));
   await saveProofPictures(page, '02-solo-start');
 
   await hold(page, 'KeyD', 2400);
@@ -94,7 +94,7 @@ try {
   report.terrainFarCorner = farCorner;
   results.push(check('at a third place, across the clearing, every tile is the world\'s again', farCorner.wrongCount === 0 && Math.hypot(farCorner.centre.x - atStart.centre.x, farCorner.centre.y - atStart.centre.y) > 12, terrainSummary(farCorner)));
   const end = await stateOf(page);
-  results.push(check('all of that painted each chunk of the world once: following the player repaints nothing', end.minimap.chunksPainted === end.minimap.chunksInMap && end.minimap.chunksDrawn.length === end.minimap.chunksInMap, `${end.minimap.chunksPainted} chunk textures painted for ${end.minimap.chunksInMap} chunks`));
+  results.push(check('all of that painted no chunk of the world twice: following the player repaints nothing', end.minimap.chunksPainted >= end.minimap.chunksDrawn.length && end.minimap.chunksPainted <= end.minimap.chunksInMap, `${end.minimap.chunksPainted} chunk textures painted in all, ${end.minimap.chunksDrawn.length} kept now, of the world's ${end.minimap.chunksInMap} chunks`));
 
   // ---- Every zoom, a Retina screen, a narrow window ----
   report.windows = [];

@@ -19,7 +19,7 @@
     {
       "name": "pnpm test passes",
       "pass": true,
-      "details": "445 of 445 tests in 151 suites"
+      "details": "448 of 448 tests in 151 suites"
     },
     {
       "name": "landmarks.test.ts: lists the starting point of a map as a landmark on its spawn tile, kept on the edge when out of range",

@@ -79,14 +79,19 @@ export async function walk(page, { key, aside, metres }) {
   const deadline = Date.now() + 1000 * (metres / 2 + 10);
   await page.keyboard.down(key);
   let last = from;
+  // Blocked: step aside, and the other way the next time, so a pocket closed on one side is left by the other.
+  const opposite = { KeyW: 'KeyS', KeyS: 'KeyW', KeyA: 'KeyD', KeyD: 'KeyA' };
+  let timesBlocked = 0;
   while (Date.now() < deadline) {
     await page.waitForTimeout(300);
     const now = (await stateOf(page)).player[axis];
     if (Math.abs(now - from) >= metres) break;
     if (Math.abs(now - last) < 0.5) {
-      await page.keyboard.down(aside);
+      const sideKey = timesBlocked % 2 === 0 ? aside : opposite[aside];
+      timesBlocked += 1;
+      await page.keyboard.down(sideKey);
       await page.waitForTimeout(400);
-      await page.keyboard.up(aside);
+      await page.keyboard.up(sideKey);
     }
     last = now;
   }
