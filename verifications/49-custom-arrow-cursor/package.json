@@ -1,0 +1,12 @@
+{
+  "name": "verification-49-custom-arrow-cursor",
+  "private": true,
+  "type": "module",
+  "description": "Verification of ticket 49, the custom arrow cursor. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

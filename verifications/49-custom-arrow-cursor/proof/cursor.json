@@ -1,0 +1,51 @@
+{
+  "screens": {
+    "1x screen": {
+      "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto",
+      "image": {
+        "name": "arrow.png",
+        "width": 32,
+        "height": 32
+      }
+    },
+    "2x screen": {
+      "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto",
+      "image": {
+        "name": "arrow@2x.png",
+        "width": 64,
+        "height": 64
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "1x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "1x screen: arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "pass": true,
+      "details": "32x32"
+    },
+    {
+      "name": "2x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "2x screen: arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "pass": true,
+      "details": "64x64"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

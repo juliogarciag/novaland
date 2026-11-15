@@ -230,7 +230,7 @@ export class OnlineWorld implements PlayableWorld {
       this.predictionStartedAt = this.now();
       this.prediction = prediction;
       if (this.connection.status.kind !== 'online') return;
-      this.withPrediction((ready) => ready.follow(this.sim, this.slot, this.drawnLocalPlayer));
+      this.withPrediction((ready) => ready.startFrom(this.sim, this.slot, this.drawnLocalPlayer));
       // A key held since before the prediction existed was never recorded: sent again, its acknowledgement ties the prediction to the server's timeline.
       if (this.lastMove.x !== 0 || this.lastMove.y !== 0) this.sendMove(this.lastMove);
     } catch (error) {
@@ -292,7 +292,7 @@ export class OnlineWorld implements PlayableWorld {
     // The connection is not online yet while the welcome is being read, so a refused state is asked for again once it is.
     this.needsFullState = applyWorldState(this.sim, welcome.state) !== 'applied';
     if (!this.needsFullState) this.frames.push(readViewFrame(this.sim));
-    this.withPrediction((prediction) => prediction.follow(this.sim, this.slot));
+    this.withPrediction((prediction) => prediction.startFrom(this.sim, this.slot));
   }
 
   /**
