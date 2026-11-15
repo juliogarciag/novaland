@@ -4,7 +4,9 @@ import {
   findLevel,
   findPlayerEntity,
   TICK_RATE,
+  type Character,
   type Command,
+  type JoinOptions,
   type MoveMessage,
   type ReplicaHandle,
   type WelcomeMessage,
@@ -18,15 +20,17 @@ import { INTERPOLATION_BUFFER_TICKS, MAX_LEVEL_NAME_LENGTH, MAX_SLOT, RESYNC_RET
 
 export interface OnlineWorldOptions {
   readonly endpoint: string;
+  /** The character this player joins as, on the first join and on every rejoin after a drop. */
+  readonly character: Character;
   /** Every change of the connection's status, screens included. */
   readonly onStatus?: (status: ConnectionStatus) => void;
   /** How to join; tests pass a fake room. */
-  readonly join?: (endpoint: string) => Promise<JoinedRoom>;
+  readonly join?: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
 }
 
 /**
  * Online play: the server owns the sim and this client holds a replica of
- * it. The welcome gives the seat, the level and a full state; deltas keep
+ * it. The join carries the player's character; the welcome gives the seat, the level and a full state; deltas keep
  * the replica in step; `player/move` goes over the wire without a slot and
  * the server stamps the seat. Nothing here steps anything: the replica
  * throws on `step`, and the drawn frame comes from a buffer of the last
@@ -76,6 +80,7 @@ export class OnlineWorld implements PlayableWorld {
     });
     const connection = new WorldConnection({
       endpoint: options.endpoint,
+      joinOptions: { character: options.character },
       join: options.join,
       handlers: {
         onWelcome: (payload) => {

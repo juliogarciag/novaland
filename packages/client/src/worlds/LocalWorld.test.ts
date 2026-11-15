@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, MAX_PLAYER_SLOTS, starterLevel } from '@novaland/sim';
+import { createSim, findPlayerEntity, MAX_PLAYER_SLOTS, starterLevel, guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { LOCAL_SLOT } from '../seats';
 import { LocalWorld } from './LocalWorld';
@@ -16,7 +16,7 @@ describe('LocalWorld', () => {
 
   it('runs queued commands on the next earned tick, like keyboard commands', async () => {
     const world = await freshWorld();
-    world.queueCommand({ type: 'player/join', slot: 2 });
+    world.queueCommand({ type: 'player/join', slot: 2, character: guestCharacter(2) });
     world.nextFrame([], world.sim.dt);
     expect(findPlayerEntity(world.sim, 2)).toBeDefined();
   });
@@ -37,5 +37,5 @@ describe('LocalWorld', () => {
 // ---- Helpers ----
 
 async function freshWorld(): Promise<LocalWorld> {
-  return new LocalWorld(await createSim({ seed: 1, level: starterLevel }));
+  return new LocalWorld(await createSim({ seed: 1, level: starterLevel }), guestCharacter(LOCAL_SLOT));
 }

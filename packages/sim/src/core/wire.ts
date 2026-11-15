@@ -1,3 +1,4 @@
+import type { Character } from '../features/player/character';
 import type { MoveCommand } from '../features/player/commands';
 import type { WorldState } from './worldState';
 
@@ -25,7 +26,15 @@ export const WIRE = {
 export const JOIN_REFUSAL = {
   /** Every seat is taken. */
   worldFull: 'world-full',
+  /** The join's options hold no legal character (`readCharacter`). */
+  invalidCharacter: 'invalid-character',
 } as const;
+
+/** What a client sends with its request to join the world room. The server reads each field on its own and trusts none. */
+export interface JoinOptions {
+  /** The character the player made: the server refuses the join with `JOIN_REFUSAL.invalidCharacter` unless `readCharacter` accepts it. */
+  readonly character: Character;
+}
 
 /** World-state deltas per second a server sends its players. The server may be configured with another rate. */
 export const DEFAULT_SEND_RATE = 20;

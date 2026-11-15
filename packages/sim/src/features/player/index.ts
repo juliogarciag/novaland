@@ -6,9 +6,9 @@ import type { Feature } from '../../core/feature';
 import { attachDynamicBall, Body } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { DefRef, Extents } from '../../core/transform';
-import { pickAvatarDefId } from './avatars';
-import { Facing, MoveIntent, Player } from './components';
-import { MIN_MOVE_INTENT } from './defs';
+import { codePointsOf, readCharacter, type Character } from './character';
+import { Facing, MoveIntent, nameCodePointField, Player, PlayerLook, PlayerName } from './components';
+import { MAX_NAME_CODE_POINTS, MIN_MOVE_INTENT, PlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
 import { pickSpawnPoint } from './spawn';
 
@@ -27,9 +27,9 @@ const PLAYER_LAYER = 1 << 0;
 const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 
 /**
- * Player-controlled bodies. A `player/join` dresses the new player in an
- * avatar the sim picks (never the client) and spawns it on a free tile near
- * the level spawn, `player/move` sets its intended direction and every tick
+ * Player-controlled bodies. A `player/join` spawns the character the player
+ * made (its look and name, once `readCharacter` accepts them) on a free tile
+ * near the level spawn, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped
@@ -44,11 +44,13 @@ export const playerFeature: Feature = {
 
   handleCommand(sim, command: Command) {
     switch (command.type) {
-      case 'player/join':
-        if (isValidSlot(command.slot) && !sim.isFull && findPlayerEntity(sim, command.slot) === undefined) {
-          spawnPlayer(sim, command.slot);
-        }
+      case 'player/join': {
+        if (!isValidSlot(command.slot) || sim.isFull || findPlayerEntity(sim, command.slot) !== undefined) return;
+        // The command's own character is never stored: only what `readCharacter` made of it.
+        const character = readCharacter(command.character);
+        if (character) spawnPlayer(sim, command.slot, character);
         return;
+      }
       case 'player/leave': {
         const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
         if (eid !== undefined) sim.destroyEntity(eid);
@@ -86,9 +88,9 @@ export const playerFeature: Feature = {
   },
 };
 
-/** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. */
-function spawnPlayer(sim: Sim, slot: number): number {
-  const def = getDef(pickAvatarDefId(sim));
+/** The spawn point is picked before the entity exists, so the new player never counts as present for its own choice. */
+function spawnPlayer(sim: Sim, slot: number, character: Character): number {
+  const def = getDef(PlayerDefId.Player);
   const spawn = pickSpawnPoint(sim);
   const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
@@ -97,12 +99,18 @@ function spawnPlayer(sim: Sim, slot: number): number {
   const facing = sim.store(Facing);
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);
+  const look = sim.store(PlayerLook);
   addComponent(sim.world, eid, player);
   addComponent(sim.world, eid, intent);
   addComponent(sim.world, eid, facing);
   addComponent(sim.world, eid, defRef);
   addComponent(sim.world, eid, extents);
+  addComponent(sim.world, eid, look);
   player.slot[eid] = slot;
+  look.skin[eid] = character.look.skin;
+  look.hair[eid] = character.look.hair;
+  look.clothes[eid] = character.look.clothes;
+  writePlayerName(sim, eid, character.name);
   intent.x[eid] = 0;
   intent.y[eid] = 0;
   facing.x[eid] = SPAWN_FACING.x;
@@ -113,6 +121,17 @@ function spawnPlayer(sim: Sim, slot: number): number {
   const rigidBody = attachDynamicBall(sim, eid, { x: spawn.x, y: spawn.y, radius });
   for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
   return eid;
+}
+
+/** Gives the entity its name: every field is written, so nothing of the name an earlier holder of the id had is left behind. */
+function writePlayerName(sim: Sim, eid: number, name: string): void {
+  const playerName = sim.store(PlayerName);
+  addComponent(sim.world, eid, playerName);
+  const codePoints = codePointsOf(name);
+  (playerName['length'] as Uint32Array)[eid] = codePoints.length;
+  for (let index = 0; index < MAX_NAME_CODE_POINTS; index += 1) {
+    (playerName[nameCodePointField(index)] as Uint32Array)[eid] = codePoints[index] ?? 0;
+  }
 }
 
 function isValidSlot(slot: unknown): slot is number {

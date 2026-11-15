@@ -1,11 +1,11 @@
-import { createSim, type Renderable } from '@novaland/sim';
+import { createSim, type Renderable, guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { interpolateViewFrames, readViewFrame, type ViewFrame } from './viewFrame';
 
 describe('readViewFrame', () => {
   it('reads what a sim draws at its tick, with a heading for the player (terrain is a tilemap, not a renderable)', async () => {
     const sim = await createSim({ seed: 1 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     const frame = readViewFrame(sim);
     expect(frame.tick).toBe(2);
@@ -59,5 +59,5 @@ function renderable(eid: number, x: number, y: number): Renderable {
 }
 
 function frame(tick: number, renderables: Renderable[]): ViewFrame {
-  return { tick, renderables, headings: new Map() };
+  return { tick, renderables, headings: new Map(), characters: new Map() };
 }

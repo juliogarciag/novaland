@@ -1,0 +1,351 @@
+import { describe, expect, it } from 'vitest';
+import type { Command } from '../../core/commands';
+import { __testing__, createReplica } from '../../core/create';
+import { applyWorldState } from '../../core/replica';
+import { createRng } from '../../core/rng';
+import type { Sim, SimHandle } from '../../core/sim';
+import { hashSnapshot } from '../../core/snapshot';
+import { getRenderables } from '../../core/view';
+import { diffWorldState, worldState, type WorldState } from '../../core/worldState';
+import { codePointsOf, guestCharacter, readCharacter, readCharacterName, type Character } from './character';
+import { characterPalettes, isPlayerDefId, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS } from './defs';
+import { findPlayerEntity, getCharacter } from './queries';
+
+describe('readCharacterName', () => {
+  it('accepts a plain name and gives it back unchanged', () => {
+    expect(readCharacterName('Ada')).toEqual({ name: 'Ada' });
+  });
+
+  it('normalises instead of trusting: outer spaces go, runs of spaces become one, letters are composed', () => {
+    expect(readCharacterName('  Ada   Lovelace  ')).toEqual({ name: 'Ada Lovelace' });
+    expect(readCharacterName('Ada\u00a0\u3000Lovelace')).toEqual({ name: 'Ada Lovelace' });
+    // An "é" typed as e + combining acute is stored as the single composed letter.
+    expect(readCharacterName('Jose\u0301')).toEqual({ name: 'José' });
+  });
+
+  it('counts user-visible characters, not UTF-16 units: 20 emoji fit, 21 letters do not', () => {
+    const twentyEmoji = '😀'.repeat(MAX_NAME_CHARACTERS);
+    expect(twentyEmoji.length).toBe(2 * MAX_NAME_CHARACTERS);
+    expect(readCharacterName(twentyEmoji)).toEqual({ name: twentyEmoji });
+    expect(readCharacterName('a'.repeat(MAX_NAME_CHARACTERS))).toEqual({ name: 'a'.repeat(MAX_NAME_CHARACTERS) });
+    expect(readCharacterName('a'.repeat(MAX_NAME_CHARACTERS + 1))).toEqual({ problem: 'too-long' });
+    expect(readCharacterName('😀'.repeat(MAX_NAME_CHARACTERS + 1))).toEqual({ problem: 'too-long' });
+    // An accented letter and a family emoji are each one visible character.
+    expect(readCharacterName('e\u0301'.repeat(MAX_NAME_CHARACTERS))).toEqual({ name: '\u00e9'.repeat(MAX_NAME_CHARACTERS) });
+    expect(readCharacterName('👨‍👩‍👧 Ada')).toEqual({ name: '👨‍👩‍👧 Ada' });
+  });
+
+  it('refuses a name that would not fit the stored code points, however few characters it shows', () => {
+    // Twenty flags are twenty visible characters and forty code points: they fit. Twenty families do not.
+    expect(readCharacterName('\ud83c\uddf5\ud83c\uddea'.repeat(MAX_NAME_CHARACTERS))).toEqual({ name: '\ud83c\uddf5\ud83c\uddea'.repeat(MAX_NAME_CHARACTERS) });
+    expect(codePointsOf('\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67'.repeat(MAX_NAME_CHARACTERS)).length).toBeGreaterThan(MAX_NAME_CODE_POINTS);
+    expect(readCharacterName('\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67'.repeat(MAX_NAME_CHARACTERS))).toEqual({ problem: 'too-long' });
+    expect(readCharacterName('x'.repeat(100_000))).toEqual({ problem: 'too-long' });
+  });
+
+  it('refuses what is not text, what is empty and what holds control or formatting characters', () => {
+    for (const value of [undefined, null, 7, true, {}, [], ['Ada'], Symbol('Ada'), () => 'Ada']) expect(readCharacterName(value)).toEqual({ problem: 'not-text' });
+    for (const value of ['', ' ', '   ', '\u00a0\u3000']) expect(readCharacterName(value)).toEqual({ problem: 'empty' });
+    const forbidden = ['Ada\n', 'A\tda', 'Ada\u0000', 'Ada\u001b[31m', 'Ada\u007f', 'Ada\u2028', 'Ada\u2029', '\u202eadA', 'Ada\u2066', '\ufeffAda', 'A\u00adda', 'Ada\ud800', '\udc00Ada'];
+    for (const value of forbidden) expect(readCharacterName(value)).toEqual({ problem: 'forbidden-character' });
+    // Marks stacked on one letter: two are a real spelling (they compose here into one letter), a pile is not.
+    expect(readCharacterName('ậ')).toEqual({ name: 'ậ' });
+    expect(readCharacterName(`a${'́'.repeat(8)}`)).toEqual({ problem: 'forbidden-character' });
+    // Marks stacked on one letter: two are a real spelling, a pile is not.
+    expect(readCharacterName('a\u0323\u0302')).toEqual({ name: '\u1ead' });
+    expect(readCharacterName(`a${'\u0301'.repeat(8)}`)).toEqual({ problem: 'forbidden-character' });
+  });
+});
+
+describe('readCharacter', () => {
+  it('gives back a fresh, normalised character for a legal one', () => {
+    const given = { name: ' Ada ', look: { skin: 1, hair: 2, clothes: 3 } };
+    const read = readCharacter(given);
+    expect(read).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } });
+    expect(read?.look).not.toBe(given.look);
+  });
+
+  it('accepts every palette index and nothing outside the palettes', () => {
+    for (const part of ['skin', 'hair', 'clothes'] as const) {
+      const size = characterPalettes[part].length;
+      for (let index = 0; index < size; index += 1) expect(readCharacter(withLook({ [part]: index }))).toBeDefined();
+      for (const index of [-1, size, size + 1, 0.5, NaN, Infinity, -Infinity, 2 ** 32, '0', null, undefined, [0], {}]) {
+        expect(readCharacter(withLook({ [part]: index }))).toBeUndefined();
+      }
+    }
+  });
+
+  it('refuses anything that is not exactly a name and a look', () => {
+    const legal = guestCharacter(0);
+    const notCharacters: unknown[] = [
+      undefined,
+      null,
+      'Ada',
+      7,
+      [],
+      [legal],
+      {},
+      { name: 'Ada' },
+      { look: legal.look },
+      { ...legal, slot: 3 },
+      { ...legal, look: { ...legal.look, hat: 1 } },
+      { ...legal, look: { skin: 0, hair: 0 } },
+      { ...legal, look: [0, 0, 0] },
+      { ...legal, look: null },
+      { ...legal, name: 21 },
+      { ...legal, name: 'a'.repeat(MAX_NAME_CHARACTERS + 1) },
+      { ...legal, name: ['Ada'] },
+    ];
+    for (const value of notCharacters) expect(readCharacter(value)).toBeUndefined();
+  });
+
+  it('never throws, whatever it is handed', () => {
+    const throwing = new Proxy({}, { ownKeys: () => { throw new Error('boom'); } });
+    const throwingName = { look: guestCharacter(0).look, get name(): string { throw new Error('boom'); } };
+    expect(readCharacter(throwing)).toBeUndefined();
+    expect(readCharacter(throwingName)).toBeUndefined();
+    expect(readCharacter({ name: 'Ada', look: throwing })).toBeUndefined();
+  });
+
+  it('seats guests as legal characters that differ from seat to seat', () => {
+    const guests = [0, 1, 2, 3, 4].map((slot) => guestCharacter(slot));
+    for (const guest of guests) expect(readCharacter(guest)).toEqual(guest);
+    expect(new Set(guests.map((guest) => guest.name)).size).toBe(5);
+    expect(new Set(guests.map((guest) => guest.look.clothes)).size).toBe(5);
+    expect(readCharacter(guestCharacter(-1))).toBeDefined();
+    expect(readCharacter(guestCharacter(Number.NaN))).toBeDefined();
+  });
+});
+
+describe('player/join with a character', () => {
+  it('spawns the player with the look and the name it joined with', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1 } };
+    sim.step([join(0, ada), join(1, jose)]);
+    expect(characterInSlot(sim, 0)).toEqual(ada);
+    expect(characterInSlot(sim, 1)).toEqual(jose);
+    sim.destroy();
+  });
+
+  it('stores the normalised name, never the one the command carried', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    sim.step([join(0, { name: '  Ada   Lovelace ', look: { skin: 0, hair: 0, clothes: 0 } })]);
+    expect(characterInSlot(sim, 0)?.name).toBe('Ada Lovelace');
+    sim.destroy();
+  });
+
+  it('ignores a join whose character is not legal: nobody is seated and nothing throws', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    const malformed: unknown[] = [
+      { type: 'player/join', slot: 0 },
+      { type: 'player/join', slot: 0, character: null },
+      { type: 'player/join', slot: 0, character: 'Ada' },
+      join(0, { name: 'a'.repeat(MAX_NAME_CHARACTERS + 1), look: guestCharacter(0).look }),
+      join(0, { name: 21 as unknown as string, look: guestCharacter(0).look }),
+      join(0, { name: '', look: guestCharacter(0).look }),
+      join(0, { name: 'Ada\n', look: guestCharacter(0).look }),
+      join(0, { name: 'Ada', look: { skin: characterPalettes.skin.length, hair: 0, clothes: 0 } }),
+      join(0, { name: 'Ada', look: { skin: 0, hair: -1, clothes: 0 } }),
+      join(0, { name: 'Ada', look: { skin: 0, hair: 0, clothes: 1.5 } }),
+    ];
+    for (const command of malformed) {
+      expect(() => sim.step([command as Command])).not.toThrow();
+      expect(findPlayerEntity(sim, 0)).toBeUndefined();
+    }
+    expect(players(sim)).toHaveLength(0);
+    sim.destroy();
+  });
+
+  it('leaves nothing of a name behind when an entity id is used again by a shorter name', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    sim.step([join(0, { name: 'Bartholomew the Long', look: guestCharacter(0).look })]);
+    const firstEid = findPlayerEntity(sim, 0);
+    sim.step([{ type: 'player/leave', slot: 0 }]);
+    sim.step([join(0, { name: 'Al', look: guestCharacter(1).look })]);
+    expect(findPlayerEntity(sim, 0)).toBe(firstEid);
+    expect(characterInSlot(sim, 0)).toEqual({ name: 'Al', look: guestCharacter(1).look });
+    const stored = sim.snapshot().entities.find((entity) => entity.id === firstEid)?.components['PlayerName'] ?? {};
+    expect(stored['length']).toBe(2);
+    expect(Object.entries(stored).filter(([field, value]) => field !== 'length' && value !== 0)).toHaveLength(2);
+    sim.destroy();
+  });
+
+  it('keeps the same seed and joins deterministic, and a different name a different state', async () => {
+    const run = async (name: string): Promise<string> => {
+      const sim = await createSimInternal({ seed: 9 });
+      sim.step([join(0, { name, look: { skin: 1, hair: 1, clothes: 1 } })]);
+      for (let tick = 0; tick < 30; tick += 1) sim.step([]);
+      const hash = hashSnapshot(sim.snapshot());
+      sim.destroy();
+      return hash;
+    };
+    expect(await run('Ada')).toBe(await run('Ada'));
+    expect(await run('Ada')).not.toBe(await run('Bea'));
+  });
+
+  it('reads no character for something that has none, or for an id that is no entity', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    sim.step([join(0, guestCharacter(0))]);
+    const terrain = getRenderables(sim).find((renderable) => !isPlayerDefId(renderable.defId));
+    if (terrain) expect(getCharacter(sim, terrain.eid)).toBeUndefined();
+    for (const eid of [0, -1, 1.5, NaN, sim.capacity + 1, 2 ** 40]) expect(getCharacter(sim, eid)).toBeUndefined();
+    sim.destroy();
+  });
+});
+
+describe('a character on a replica', () => {
+  it('arrives with the join, in a full state and in a delta, as plain numbers', async () => {
+    const sim = await createSimInternal({ seed: 2 });
+    const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2 } };
+    sim.step([join(0, ada)]);
+    const first = worldState(sim);
+    expect(applyWorldState(replica, overTheWire(first))).toBe('applied');
+    expect(characterInSlot(replica, 0)).toEqual(ada);
+    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 5 } };
+    sim.step([join(1, bea)]);
+    const delta = diffWorldState(first, worldState(sim));
+    // The name travels once: the delta carries the newcomer's and not a field of the player who was already there.
+    expect(delta.changed.filter((change) => change.components['PlayerName'])).toHaveLength(1);
+    expect(applyWorldState(replica, overTheWire(delta))).toBe('applied');
+    expect(characterInSlot(replica, 0)).toEqual(ada);
+    expect(characterInSlot(replica, 1)).toEqual(bea);
+    sim.destroy();
+  });
+
+  it('shows a legal character whatever a server sends: an unreadable name is "?", a palette index out of range the first swatch', async () => {
+    const sim = await createSimInternal({ seed: 2 });
+    sim.step([join(0, { name: 'Ada', look: { skin: 1, hair: 1, clothes: 1 } })]);
+    const honest = worldState(sim);
+    const eid = findPlayerEntity(sim, 0) as number;
+    const hostileNames: Record<string, number>[] = [
+      { codePoint00: 0x110000 },
+      { codePoint00: 0xd800 },
+      { codePoint01: 0x202e },
+      { codePoint01: 0x0a },
+      { length: 0 },
+      { length: 4_000_000_000 },
+      { length: 3, codePoint00: 0x20, codePoint01: 0x20, codePoint02: 0x20 },
+    ];
+    for (const fields of hostileNames) {
+      const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+      expect(applyWorldState(replica, tampered(honest, eid, 'PlayerName', fields))).toBe('applied');
+      expect(getCharacter(replica, eid)?.name).toBe('?');
+    }
+    const replica = createReplica({ level: sim.level, capacity: sim.capacity });
+    expect(applyWorldState(replica, tampered(honest, eid, 'PlayerLook', { skin: 99, hair: 4_000_000_000, clothes: characterPalettes.clothes.length }))).toBe('applied');
+    expect(getCharacter(replica, eid)).toEqual({ name: 'Ada', look: { skin: 0, hair: 0, clothes: 0 } });
+    sim.destroy();
+  });
+});
+
+describe('fuzzing player/join', () => {
+  it('never throws and never seats an illegal character, for thousands of hostile joins', async () => {
+    const sim = await createSimInternal({ seed: 4 });
+    const random = createRng(54);
+    let seated = 0;
+    for (let round = 0; round < 4000; round += 1) {
+      const command = { type: 'player/join', slot: 0, character: hostileCharacter(random) };
+      expect(() => sim.step([command as unknown as Command])).not.toThrow();
+      const eid = findPlayerEntity(sim, 0);
+      if (eid === undefined) continue;
+      seated += 1;
+      const character = getCharacter(sim, eid) as Character;
+      // What is in the sim is legal by the sim's own rule, and it is what that rule made of the command's character.
+      expect(readCharacter(character)).toEqual(character);
+      expect(character).toEqual(readCharacter(command.character));
+      expect(codePointsOf(character.name).length).toBeLessThanOrEqual(MAX_NAME_CODE_POINTS);
+      sim.step([{ type: 'player/leave', slot: 0 }]);
+    }
+    // The generator must reach both sides of the rule, or the loop above proves nothing.
+    expect(seated).toBeGreaterThan(200);
+    expect(seated).toBeLessThan(3800);
+    expect(players(sim)).toHaveLength(0);
+    sim.destroy();
+  });
+
+  it('reads back any name it accepted as the same name', () => {
+    const random = createRng(55);
+    let accepted = 0;
+    for (let round = 0; round < 20_000; round += 1) {
+      const read = readCharacterName(hostileName(random));
+      if ('problem' in read) continue;
+      accepted += 1;
+      expect(readCharacterName(read.name)).toEqual({ name: read.name });
+    }
+    expect(accepted).toBeGreaterThan(1000);
+  });
+});
+
+// ---- Helpers ----
+
+const { createSimInternal } = __testing__;
+
+function join(slot: number, character: Character): Command {
+  return { type: 'player/join', slot, character };
+}
+
+function withLook(overrides: Record<string, unknown>): unknown {
+  return { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, ...overrides } };
+}
+
+/** What the receiving end holds after a trip through JSON, like a real connection. */
+function overTheWire<T>(message: T): T {
+  return JSON.parse(JSON.stringify(message)) as T;
+}
+
+/** A copy of `state` with some fields of one component of one entity replaced, as a server that lies would send it. */
+function tampered(state: WorldState, eid: number, component: string, fields: Record<string, number>): WorldState {
+  const copy = JSON.parse(JSON.stringify(state)) as { entities: { id: number; components: Record<string, Record<string, number>> }[] };
+  const entity = copy.entities.find((candidate) => candidate.id === eid);
+  if (!entity) throw new Error(`no entity ${eid} in the state`);
+  entity.components[component] = { ...entity.components[component], ...fields };
+  return copy as unknown as WorldState;
+}
+
+function characterInSlot(sim: SimHandle, slot: number): Character | undefined {
+  const eid = findPlayerEntity(sim, slot);
+  return eid === undefined ? undefined : getCharacter(sim, eid);
+}
+
+function players(sim: Sim): unknown[] {
+  return getRenderables(sim).filter((renderable) => isPlayerDefId(renderable.defId));
+}
+
+type Random = ReturnType<typeof createRng>;
+
+function pick<T>(random: Random, values: readonly T[]): T {
+  return values[random.nextInt(values.length)] as T;
+}
+
+/** Pieces a hostile name is built from: ordinary text, things that must be normalised, things that must be refused. */
+const NAME_PIECES = ['a', 'Z', '\u00e9', 'e\u0301', '😀', '👨‍👩‍👧', '🇵🇪', ' ', '  ', '\u00a0', '\u3000', '\u0301', '\u200d', '日本', 'ß', '\n', '\t', '\u0000', '\u202e', '\ud800', '\ufeff', '\u2028'];
+
+function hostileName(random: Random): unknown {
+  const kind = random.nextInt(10);
+  if (kind === 0) return pick(random, [undefined, null, 0, 21, true, {}, [], ['Ada'], { toString: () => 'Ada' }]);
+  if (kind === 1) return 'x'.repeat(random.nextInt(200));
+  // Mostly the benign pieces, so that a fair share of the names is legal.
+  const pieces = random.nextInt(4) === 0 ? NAME_PIECES : NAME_PIECES.slice(0, 15);
+  let name = '';
+  const length = random.nextInt(26);
+  for (let index = 0; index < length; index += 1) name += pick(random, pieces);
+  return name;
+}
+
+function hostileIndex(random: Random): unknown {
+  if (random.nextInt(4) !== 0) return random.nextInt(6);
+  return pick(random, [-1, 6, 7, 8, 9, 255, 2 ** 32, 0.5, NaN, Infinity, '1', null, undefined, {}, [1]]);
+}
+
+function hostileCharacter(random: Random): unknown {
+  const kind = random.nextInt(12);
+  if (kind === 0) return pick(random, [undefined, null, 'Ada', 3, [], { name: 'Ada' }, { look: {} }]);
+  const look: Record<string, unknown> = { skin: hostileIndex(random), hair: hostileIndex(random), clothes: hostileIndex(random) };
+  if (kind === 1) look['hat'] = 1;
+  if (kind === 2) delete look['hair'];
+  const character: Record<string, unknown> = { name: hostileName(random), look };
+  if (kind === 3) character['slot'] = 4;
+  return character;
+}

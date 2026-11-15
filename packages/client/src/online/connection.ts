@@ -1,5 +1,5 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
-import { JOIN_REFUSAL, WIRE, type MoveMessage } from '@novaland/sim';
+import { JOIN_REFUSAL, WIRE, type JoinOptions, type MoveMessage } from '@novaland/sim';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
@@ -17,8 +17,8 @@ export type ConnectionStatus =
   | { readonly kind: 'disconnected'; readonly retryAt: number; readonly attempt: number }
   /** The server freed this seat because the player sent no input for its idle timeout (close code `IDLE_KICK_CODE`). Nothing is retried until the player rejoins with `retryNow`. */
   | { readonly kind: 'away' }
-  /** The server runs a world this client cannot show. Nothing is retried. */
-  | { readonly kind: 'incompatible'; readonly reason: string };
+  /** The server runs a world this client cannot show, or refused the character this client asked to be (`characterRefused`). Nothing is retried. */
+  | { readonly kind: 'incompatible'; readonly reason: string; readonly characterRefused?: true };
 
 /** What the online world does with what arrives. Payloads are untrusted: they come off the network as the server sent them. */
 export interface WorldConnectionHandlers {
@@ -40,9 +40,11 @@ export interface JoinedRoom {
 export interface WorldConnectionOptions {
   /** `ws://host:port` or `http://host:port` of the world server. */
   readonly endpoint: string;
+  /** What every join carries: the character the player made. A rejoin after a drop sends the same. */
+  readonly joinOptions: JoinOptions;
   readonly handlers: WorldConnectionHandlers;
   /** How to join the room at an endpoint. Default: the Colyseus SDK. Tests pass a fake. */
-  readonly join?: (endpoint: string) => Promise<JoinedRoom>;
+  readonly join?: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
 }
 
 /**
@@ -60,8 +62,9 @@ export interface WorldConnectionOptions {
 export class WorldConnection {
   private currentStatus: ConnectionStatus = { kind: 'connecting', attempt: 0 };
   private readonly endpoint: string;
+  private readonly joinOptions: JoinOptions;
   private readonly handlers: WorldConnectionHandlers;
-  private readonly join: (endpoint: string) => Promise<JoinedRoom>;
+  private readonly join: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
   /** Bumped on every attempt, on every abandoned room and on close, so callbacks of an earlier room are ignored. */
   private generation = 0;
   /** Joins started since the client was last seated. */
@@ -75,6 +78,7 @@ export class WorldConnection {
 
   constructor(options: WorldConnectionOptions) {
     this.endpoint = options.endpoint;
+    this.joinOptions = options.joinOptions;
     this.handlers = options.handlers;
     this.join = options.join ?? joinWorldRoom;
   }
@@ -131,11 +135,15 @@ export class WorldConnection {
     this.joinTimer = setTimeout(() => this.abandon(generation), JOIN_TIMEOUT_MS);
     let room: JoinedRoom;
     try {
-      room = await this.join(this.endpoint);
+      room = await this.join(this.endpoint, this.joinOptions);
     } catch (error) {
       if (generation !== this.generation) return;
       this.clearJoinTimer();
-      if (isWorldFullRefusal(error)) {
+      if (isCharacterRefusal(error)) {
+        // Asking again with the same character would be refused again: stop, and let the player make another.
+        this.close();
+        this.setStatus({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true });
+      } else if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);
       } else {
@@ -228,12 +236,13 @@ export class WorldConnection {
 }
 
 /**
- * Joins the world room at `endpoint` with the Colyseus SDK and wraps the room
- * in the small interface the connection uses. The SDK's automatic
+ * Joins the world room at `endpoint` with the Colyseus SDK, as the character
+ * in `joinOptions`, and wraps the room in the small interface the connection
+ * uses. The SDK's automatic
  * reconnection is switched off before anything can drop (see the class).
  */
-export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
-  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID);
+export async function joinWorldRoom(endpoint: string, joinOptions: JoinOptions): Promise<JoinedRoom> {
+  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, joinOptions);
   room.reconnection.enabled = false;
   return {
     onMessage: (type, callback) => {
@@ -262,9 +271,16 @@ function isWorldFullRefusal(error: unknown): boolean {
   return /locked/i.test(message) || message.includes(JOIN_REFUSAL.worldFull);
 }
 
+/** True when a refused join means the server found no legal character in the join's options (`JOIN_REFUSAL.invalidCharacter`). */
+function isCharacterRefusal(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  return code === ErrorCode.APPLICATION_ERROR && message === JOIN_REFUSAL.invalidCharacter;
+}
+
 /** The slot of a welcome the handlers accepted; they checked it is a non-negative integer. */
 function readSlot(payload: unknown): number {
   return (payload as { slot: number }).slot;
 }
 
-export const __testing__ = { isWorldFullRefusal };
+export const __testing__ = { isCharacterRefusal, isWorldFullRefusal };

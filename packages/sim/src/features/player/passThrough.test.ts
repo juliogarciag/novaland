@@ -8,9 +8,10 @@ import { getBody } from '../../core/physics';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { TerrainDefId } from '../terrain/defs';
-import { avatarDefIds } from './defs';
+import { PlayerDefId } from './defs';
 import { __testing__ as playerTesting } from './index';
 import { findPlayerEntity } from './queries';
+import { guestCharacter } from './character';
 
 describe('players pass through each other (headless)', () => {
   it('two players walking at each other cross and each keeps walking at full speed', async () => {
@@ -71,7 +72,7 @@ describe('players pass through each other (headless)', () => {
 const { createSimInternal } = createTesting;
 const { PLAYER_COLLISION_GROUPS } = playerTesting;
 
-const avatarDef = getDef(avatarDefIds[0] as number);
+const avatarDef = getDef(PlayerDefId.Player);
 const SPEED = avatarDef.speed ?? 0;
 const RADIUS = avatarDef.radius ?? 0;
 
@@ -87,7 +88,7 @@ const hall: LevelData = {
   spawn: { column: 6, row: HALL_ROW },
 };
 
-const join = (slot: number): Command => ({ type: 'player/join', slot });
+const join = (slot: number): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot: number): Command => ({ type: 'player/move', slot, x, y });
 
 function playerPosition(sim: Sim, slot: number): { x: number; y: number } {

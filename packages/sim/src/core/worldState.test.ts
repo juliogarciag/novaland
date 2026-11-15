@@ -4,11 +4,12 @@ import type { Command } from './commands';
 import { createReplica, createSim } from './create';
 import { applyWorldState } from './replica';
 import { applyWorldStateDelta, diffWorldState, worldState, type WorldState, type WorldStateDelta } from './worldState';
+import { guestCharacter } from '../features/player/character';
 
 describe('worldState', () => {
   it('is the entities of the snapshot plus the tick, with no physics and no rng', async () => {
     const sim = await createSim({ seed: 2 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     const state = worldState(sim);
     const snapshot = sim.snapshot();
@@ -114,7 +115,7 @@ describe('diffWorldState and applyWorldStateDelta', () => {
 
   it('validates component names, fields and values exactly like a replica would, so both agree on bad input', async () => {
     const sim = await createSim({ seed: 2 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const state = worldState(sim);
     const player = findPlayerEntity(sim, 0) as number;
     const delta = {
@@ -170,13 +171,13 @@ describe('diffWorldState and applyWorldStateDelta', () => {
 function script(tick: number): Command[] {
   switch (tick) {
     case 0:
-      return [{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }];
+      return [{ type: 'player/join', slot: 0, character: guestCharacter(0) }, { type: 'player/join', slot: 1, character: guestCharacter(1) }];
     case 1:
       return [{ type: 'player/move', slot: 0, x: 1, y: 0 }, { type: 'player/move', slot: 1, x: -0.3, y: 0.7 }];
     case 80:
       return [{ type: 'player/leave', slot: 1 }];
     case 100:
-      return [{ type: 'player/join', slot: 2 }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
+      return [{ type: 'player/join', slot: 2, character: guestCharacter(2) }, { type: 'player/move', slot: 2, x: 0, y: 1 }];
     default:
       return [];
   }

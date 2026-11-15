@@ -1,10 +1,10 @@
-import { WIRE } from '@novaland/sim';
+import { guestCharacter, WIRE } from '@novaland/sim';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __testing__, WorldConnection, type ConnectionStatus, type WorldConnectionHandlers } from './connection';
 import { matchMakeError, scriptedJoin, type JoinOutcome } from './fakeRoom';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, RECONNECT_DELAYS_MS } from './tuning';
 
-const { isWorldFullRefusal } = __testing__;
+const { isCharacterRefusal, isWorldFullRefusal } = __testing__;
 
 describe('WorldConnection', () => {
   beforeEach(() => {
@@ -191,6 +191,34 @@ describe('WorldConnection', () => {
     expect(connection.status.kind).toBe('connecting');
   });
 
+  it('joins as the character it was given, on the first join and on every rejoin after a drop', async () => {
+    const { rooms, joinOptions } = connect(['room', 'room']);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions).toEqual([JOIN_OPTIONS, JOIN_OPTIONS]);
+  });
+
+  it('stops for good when the server refuses the character, and says so, instead of asking again with the same one', async () => {
+    const { connection, statuses, endpoints } = connect(['character-refused', 'room']);
+    await settle();
+    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true });
+    await vi.advanceTimersByTimeAsync(10 * JOIN_TIMEOUT_MS);
+    connection.retryNow();
+    await settle();
+    expect(endpoints).toHaveLength(1);
+    expect(statuses.at(-1)?.kind).toBe('incompatible');
+  });
+
+  it('tells a refused character from every other refusal', () => {
+    expect(isCharacterRefusal(Object.assign(new Error('invalid-character'), { code: 526 }))).toBe(true);
+    expect(isCharacterRefusal(Object.assign(new Error('invalid-character'), { code: 522 }))).toBe(false);
+    expect(isCharacterRefusal(matchMakeError('room "world" is locked'))).toBe(false);
+    expect(isCharacterRefusal(new TypeError('Failed to fetch'))).toBe(false);
+    expect(isCharacterRefusal(undefined)).toBe(false);
+  });
+
   it('stops for good on a welcome the world cannot use', async () => {
     const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'no such level' }));
     await settle();
@@ -238,6 +266,8 @@ describe('isWorldFullRefusal', () => {
 
 // ---- Helpers ----
 
+const JOIN_OPTIONS = { character: guestCharacter(2) };
+
 const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
@@ -250,9 +280,9 @@ function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHan
       statuses.push(status);
     }),
   };
-  const connection = new WorldConnection({ endpoint: 'ws://world.test:5118', handlers, join: script.join });
+  const connection = new WorldConnection({ endpoint: 'ws://world.test:5118', joinOptions: JOIN_OPTIONS, handlers, join: script.join });
   connection.connect();
-  return { connection, handlers, statuses, rooms: script.rooms, endpoints: script.endpoints };
+  return { connection, handlers, statuses, rooms: script.rooms, endpoints: script.endpoints, joinOptions: script.joinOptions };
 }
 
 /** Lets a join promise resolve and its handlers attach (no timers involved). */

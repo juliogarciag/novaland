@@ -1,11 +1,15 @@
+import type { Character } from './character';
+
 /**
- * A player joins the world in the given slot (0-based seat number). Ignored if
- * the slot is taken or the sim is full. It carries no avatar and no position:
- * the sim picks both, so a client can neither choose its look nor its spawn.
+ * A player joins the world in the given slot (0-based seat number) as the
+ * character they made: a look and a name. Ignored if the slot is taken, the
+ * sim is full or the character is not a legal one (`readCharacter`). It
+ * carries no position: the sim picks the spawn.
  */
 export interface JoinCommand {
   readonly type: 'player/join';
   readonly slot: number;
+  readonly character: Character;
 }
 
 /** A player leaves; their entity is removed. */

@@ -14,6 +14,7 @@ describe('describeStatus', () => {
     expect(describeStatus({ kind: 'disconnected', retryAt: Date.now() - 100, attempt: 2 })).toBe('Disconnected from the world. Retrying in 0s…');
     expect(describeStatus({ kind: 'away' })).toBe('You were away too long, so the server freed your seat. Rejoin to play again.');
     expect(describeStatus({ kind: 'incompatible', reason: 'this client has no level named "moon"' })).toBe('Cannot play on this server: this client has no level named "moon".');
+    expect(describeStatus({ kind: 'incompatible', reason: 'the server did not accept your character', characterRefused: true })).toBe('Cannot play on this server: the server did not accept your character.');
     expect(describeStatus({ kind: 'online', slot: 0 })).toBe('');
   });
 });

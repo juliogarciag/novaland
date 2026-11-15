@@ -1,17 +1,20 @@
-import { ClientState, type Client as ServerClient } from '@colyseus/core';
+import { ClientState, ErrorCode, type Client as ServerClient } from '@colyseus/core';
 import { Client, CloseCode, type Room } from '@colyseus/sdk';
 import {
   applyWorldState,
   createReplica,
   findLevel,
   findPlayerEntity,
+  getCharacter,
   getHeading,
   getRenderables,
-  isAvatarDefId,
+  guestCharacter,
+  isPlayerDefId,
   JOIN_REFUSAL,
   WIRE,
   readTileGrid,
   tileAt,
+  type Character,
   type Heading,
   type Renderable,
   type ReplicaHandle,
@@ -28,6 +31,7 @@ import {
   INBOUND_BURST,
   INBOUND_MESSAGES_PER_SECOND,
   JOIN_ACK_TIMEOUT_MS,
+  MAX_JOIN_OPTIONS_BYTES,
   MAX_FRAME_BYTES,
   MAX_INBOUND_BYTES,
   MAX_SEATS,
@@ -52,7 +56,7 @@ describe('WorldRoom over a real connection', () => {
   it(`seats ${MAX_SEATS} players by room id, each welcomed with its own seat and already in the world`, async () => {
     server = await startWorldServer({ port: 0, seed: 1 });
     expect(server.roomId).toBe(WORLD_ROOM_ID);
-    for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port));
+    for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port, guestCharacter(seat)));
     expect(players.map((player) => player.welcome.slot)).toEqual([0, 1, 2, 3, 4]);
     for (const player of players) {
       expect(findLevel(player.welcome.level)).toBeDefined();
@@ -63,12 +67,12 @@ describe('WorldRoom over a real connection', () => {
     // The last welcome holds everybody: the state is taken after the tick that spawned the joiner.
     const last = players[MAX_SEATS - 1] as Player;
     for (let seat = 0; seat < MAX_SEATS; seat += 1) expect(findPlayerEntity(last.replica, seat)).toBeDefined();
-    // The sim picks each joiner's avatar and spawn tile: five joins wear five avatars on five tiles.
-    const avatars = playerRenderables(last.replica);
-    expect(avatars).toHaveLength(MAX_SEATS);
-    expect(avatars.every((avatar) => isAvatarDefId(avatar.defId))).toBe(true);
-    expect(new Set(avatars.map((avatar) => avatar.defId)).size).toBe(MAX_SEATS);
-    expect(new Set(avatars.map((avatar) => tileKeyOf(last.replica, avatar))).size).toBe(MAX_SEATS);
+    // Each joiner is the character it asked to be, on a spawn tile of its own that the sim picked.
+    const characters = playerRenderables(last.replica);
+    expect(characters).toHaveLength(MAX_SEATS);
+    expect(characters.every((character) => isPlayerDefId(character.defId))).toBe(true);
+    for (let seat = 0; seat < MAX_SEATS; seat += 1) expect(characterInSeat(last.replica, seat)).toEqual(guestCharacter(seat));
+    expect(new Set(characters.map((character) => tileKeyOf(last.replica, character))).size).toBe(MAX_SEATS);
     expect(server.room.seatsTaken).toBe(MAX_SEATS);
   });
 
@@ -94,11 +98,70 @@ describe('WorldRoom over a real connection', () => {
     for (const player of players) expect(headingOf(player.replica, mover.welcome.slot)).toEqual({ moveIntent: { x: 0, y: 0 }, facing: { x: 1, y: 0 } });
   });
 
+  it('seats two players as two different characters, and shows both to each of them', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6 } };
+    players.push(await join(server.port, ada));
+    players.push(await join(server.port, jose));
+    const [first, second] = players as [Player, Player];
+    // The first player learns of the second through a delta; the second got both in its welcome.
+    await waitUntil(() => findPlayerEntity(first.replica, 1) !== undefined);
+    for (const player of [first, second]) {
+      expect(characterInSeat(player.replica, 0)).toEqual(ada);
+      expect(characterInSeat(player.replica, 1)).toEqual(jose);
+    }
+    expect(first.applyResults.every((result) => result === 'applied')).toBe(true);
+  });
+
+  it('normalises the name at the gate: the world holds what the rule made of it, not what the client sent', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    players.push(await join(server.port, { name: '  Ada   Lovelace ', look: { skin: 1, hair: 1, clothes: 1 } }));
+    expect(characterInSeat((players[0] as Player).replica, 0)?.name).toBe('Ada Lovelace');
+  });
+
+  it('refuses a join without a legal character before it takes a seat, and keeps serving the players it has', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    players.push(await join(server.port));
+    const watcher = players[0] as Player;
+    const legal = guestCharacter(1);
+    const malformedOptions: unknown[] = [
+      undefined,
+      {},
+      { character: null },
+      { character: 'Ada' },
+      { character: { name: 'Ada' } },
+      { character: { ...legal, name: 21 } },
+      { character: { ...legal, name: 'a'.repeat(21) } },
+      { character: { ...legal, name: '   ' } },
+      { character: { ...legal, name: 'Ada\nLovelace' } },
+      { character: { ...legal, look: { skin: 99, hair: 0, clothes: 0 } } },
+      { character: { ...legal, look: { skin: 0, hair: -1, clothes: 0 } } },
+      { character: { ...legal, look: { skin: 0, hair: 0 } } },
+      { character: { ...legal, slot: 0 } },
+      { character: legal, padding: 'x'.repeat(MAX_JOIN_OPTIONS_BYTES) },
+    ];
+    for (const options of malformedOptions) {
+      const refusal = await new Client(`ws://127.0.0.1:${server.port}`).joinById(WORLD_ROOM_ID, options).then(
+        (room) => room.leave().then(() => undefined),
+        (error: unknown) => error as { code: number; message: string },
+      );
+      expect(refusal, JSON.stringify(options)).toMatchObject({ code: ErrorCode.APPLICATION_ERROR, message: JOIN_REFUSAL.invalidCharacter });
+    }
+    expect(server.room.refusedJoins.invalidCharacter).toBe(malformedOptions.length);
+    expect(server.room.seatsTaken).toBe(1);
+    await waitForUpdates(players, 5);
+    expect(playerRenderables(watcher.replica)).toHaveLength(1);
+    // The world is as open as before: the next legal join is seated.
+    players.push(await join(server.port, legal));
+    expect(characterInSeat((players[1] as Player).replica, 1)).toEqual(legal);
+  });
+
   it('refuses the sixth player, and refuses to create or join rooms any other way', async () => {
     server = await startWorldServer({ port: 0, seed: 3 });
     for (let seat = 0; seat < MAX_SEATS; seat += 1) players.push(await join(server.port));
     const sixth = new Client(`ws://127.0.0.1:${server.port}`);
-    const refusal = await sixth.joinById(WORLD_ROOM_ID).then(() => undefined, (error: unknown) => error as { code: number; message: string });
+    const refusal = await sixth.joinById(WORLD_ROOM_ID, { character: guestCharacter(5) }).then(() => undefined, (error: unknown) => error as { code: number; message: string });
     expect(refusal).toBeDefined();
     expect(refusal?.code).toBe(522);
     expect(refusal?.message).toMatch(/locked/);
@@ -313,7 +376,7 @@ describe('WorldRoom driven directly', () => {
     await room.onCreate({ seed: 11 });
     try {
       const leaverClient = fakeClient('leaver');
-      const joining = room.onJoin(leaverClient);
+      const joining = room.onJoin(leaverClient, { character: guestCharacter(0) });
       room.onLeave(leaverClient);
       await joining;
       expect(room.seatsTaken).toBe(0);
@@ -321,9 +384,9 @@ describe('WorldRoom driven directly', () => {
       expect(leaverClient.sent.map(([type]) => type)).toEqual([WIRE.welcome]);
       const welcome = leaverClient.sent[0]?.[1] as WelcomeMessage;
       expect(welcome.state.entities.some((entity) => entity.components['Player'] !== undefined)).toBe(false);
-      for (let seat = 0; seat < MAX_SEATS; seat += 1) await room.onJoin(fakeClient(`sitter-${seat}`));
+      for (let seat = 0; seat < MAX_SEATS; seat += 1) await room.onJoin(fakeClient(`sitter-${seat}`), { character: guestCharacter(0) });
       expect(room.seatsTaken).toBe(MAX_SEATS);
-      await expect(room.onJoin(fakeClient('sixth'))).rejects.toThrow(JOIN_REFUSAL.worldFull);
+      await expect(room.onJoin(fakeClient('sixth'), { character: guestCharacter(0) })).rejects.toThrow(JOIN_REFUSAL.worldFull);
     } finally {
       room.onDispose();
     }
@@ -336,7 +399,7 @@ describe('WorldRoom driven directly', () => {
     try {
       // A peer that never answers the close handshake: its `leave` closes nothing, so `onLeave` never runs for it.
       const idler = fakeClient('idler');
-      await room.onJoin(idler);
+      await room.onJoin(idler, { character: guestCharacter(0) });
       room.clients.push(idler);
       expect(room.seatsTaken).toBe(1);
       clock.skip(2000);
@@ -345,7 +408,7 @@ describe('WorldRoom driven directly', () => {
       expect(room.seatsTaken).toBe(0);
       // The seat is already the next joiner's, and the kicked session is not kicked again while its socket lingers.
       const next = fakeClient('next');
-      await room.onJoin(next);
+      await room.onJoin(next, { character: guestCharacter(0) });
       expect((idler.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
       expect((next.sent[0]?.[1] as WelcomeMessage).slot).toBe(0);
       expect(room.idleSeatsFreed).toBe(1);
@@ -361,7 +424,7 @@ describe('WorldRoom driven directly', () => {
   it('fails a join that is waiting for a tick when the room is disposed instead of hanging it', async () => {
     const room = new WorldRoom();
     await room.onCreate({ seed: 12 });
-    const joining = room.onJoin(fakeClient('late'));
+    const joining = room.onJoin(fakeClient('late'), { character: guestCharacter(0) });
     room.onDispose();
     await expect(joining).rejects.toThrow(/shutting down/);
   });
@@ -389,9 +452,9 @@ const players: Player[] = [];
  * welcome is awaited: a delta can arrive in the same batch as the welcome, and
  * the SDK drops a message that has no handler yet.
  */
-async function join(port: number): Promise<Player> {
+async function join(port: number, character: Character = guestCharacter(0)): Promise<Player> {
   const client = new Client(`ws://127.0.0.1:${port}`);
-  const room = await client.joinById(WORLD_ROOM_ID);
+  const room = await client.joinById(WORLD_ROOM_ID, { character });
   const updates: WorldStateUpdate[] = [];
   const applyResults: WorldStateApplyResult[] = [];
   const bound: { replica?: ReplicaHandle } = {};
@@ -417,7 +480,7 @@ async function join(port: number): Promise<Player> {
 async function reserveSeat(port: number): Promise<{ sessionId: string; roomId: string; processId: string }> {
   const response = await fetch(`http://127.0.0.1:${port}/matchmake/joinById/${WORLD_ROOM_ID}`, {
     method: 'POST',
-    body: '{}',
+    body: JSON.stringify({ character: guestCharacter(0) }),
     headers: { 'content-type': 'application/json' },
   });
   return (await response.json()) as { sessionId: string; roomId: string; processId: string };
@@ -480,8 +543,13 @@ function positionOf(replica: ReplicaHandle, slot: number): { x: number; y: numbe
 }
 
 /** Every player entity as drawn, one per seat taken. */
+function characterInSeat(replica: ReplicaHandle, slot: number): Character | undefined {
+  const eid = findPlayerEntity(replica, slot);
+  return eid === undefined ? undefined : getCharacter(replica, eid);
+}
+
 function playerRenderables(replica: ReplicaHandle): Renderable[] {
-  return getRenderables(replica).filter((renderable) => isAvatarDefId(renderable.defId));
+  return getRenderables(replica).filter((renderable) => isPlayerDefId(renderable.defId));
 }
 
 /** The tile a renderable's centre stands on, as one comparable string. */

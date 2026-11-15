@@ -12,7 +12,7 @@ import {
   type WorldStateDelta,
 } from '@novaland/sim';
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
-import { MessageBudget, payloadLength, readMoveMessage } from './inbound';
+import { MessageBudget, payloadLength, readJoinCharacter, readMoveMessage } from './inbound';
 import { IDLE_KICK } from './kicks';
 import { RoomSeats } from './roomSeats';
 import { takeWholeTicks } from './takeWholeTicks';
@@ -25,6 +25,7 @@ import {
   LOOP_INTERVAL_MS,
   MAX_CATCH_UP_SECONDS,
   MAX_INBOUND_BYTES,
+  MAX_JOIN_OPTIONS_BYTES,
   MAX_SEATS,
   RESYNC_BURST,
   RESYNCS_PER_SECOND,
@@ -73,12 +74,19 @@ export interface DroppedMessages {
   overBudget: number;
 }
 
+/** Joins the room refused at the edge, by reason. Printed when the server stops. */
+export interface RefusedJoins {
+  /** The options were too big or held no legal character. */
+  invalidCharacter: number;
+}
+
 /**
  * The world: one authoritative sim, five seats, created once at boot and
  * joined by id (ADR 0004, 0005). The room is the only thing that steps the
  * sim, one whole tick of `FIXED_DT` at a time as real time earns them.
  * Sessions get a seat (`slot`) on join and lose it on leave; the sim sees
- * that as `player/join` and `player/leave`. Inbound messages pass the edge
+ * that as `player/join` and `player/leave`. A join brings the character the
+ * player made; one without a legal character is refused before it gets a seat. Inbound messages pass the edge
  * gate in `inbound.ts` (allow-list, budget, size, exact shape) and leave it
  * stamped with the session's slot; the sim's own handlers validate again.
  * Outbound, each session gets a full state in its welcome and then a delta
@@ -95,6 +103,7 @@ export class WorldRoom extends Room {
   override seatReservationTimeout = SEAT_RESERVATION_SECONDS;
 
   readonly dropped: DroppedMessages = { unknownType: 0, oversized: 0, malformed: 0, overBudget: 0 };
+  readonly refusedJoins: RefusedJoins = { invalidCharacter: 0 };
   /** Sessions closed with `IDLE_KICK` since the room was created. Printed when the server stops. */
   idleSeatsFreed = 0;
 
@@ -141,8 +150,18 @@ export class WorldRoom extends Room {
    * spawned its player, so the client finds its own entity in it. The
    * matchmaker refuses a sixth join before this runs (`maxClients`, ADR
    * 0005); the refusal here is the guard behind it.
+   *
+   * The join's options are the edge gate for the character: size, then the
+   * sim's own rule for a legal one. A join that fails it is refused before a
+   * seat is claimed, so the sim never has a session without a player. The
+   * command carries what the rule made of the options, never the options.
    */
-  override async onJoin(client: Client): Promise<void> {
+  override async onJoin(client: Client, options?: unknown): Promise<void> {
+    const character = payloadLength(options) <= MAX_JOIN_OPTIONS_BYTES ? readJoinCharacter(options) : undefined;
+    if (!character) {
+      this.refusedJoins.invalidCharacter += 1;
+      throw new ServerError(ErrorCode.APPLICATION_ERROR, JOIN_REFUSAL.invalidCharacter);
+    }
     const slot = this.seats.claim(client.sessionId);
     if (slot === undefined) throw new ServerError(ErrorCode.MATCHMAKE_INVALID_ROOM_ID, JOIN_REFUSAL.worldFull);
     const now = this.time.now();
@@ -157,7 +176,7 @@ export class WorldRoom extends Room {
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
     };
     this.sessions.set(client.sessionId, session);
-    this.pendingCommands.push({ type: 'player/join', slot });
+    this.pendingCommands.push({ type: 'player/join', slot, character });
     const ticked = await this.afterNextTick();
     if (!ticked || !this.sim) throw new ServerError(ErrorCode.MATCHMAKE_UNHANDLED, 'the world is shutting down');
     const state = worldState(this.sim);

@@ -1,3 +1,4 @@
+import { JOIN_REFUSAL, type JoinOptions } from '@novaland/sim';
 import type { JoinedRoom } from './connection';
 
 /**
@@ -49,24 +50,35 @@ export class FakeRoom implements JoinedRoom {
 }
 
 /** What one join attempt does: hands out a room, fails the way the SDK fails, or never settles. */
-export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting' | 'hangs';
+export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting' | 'hangs' | 'character-refused';
 
 /**
  * A `join` for the connection that plays a script of outcomes, one per
- * attempt (the last one repeats), and keeps every room it handed out.
+ * attempt (the last one repeats), and keeps every room it handed out and the
+ * options every attempt carried.
  */
-export function scriptedJoin(outcomes: readonly JoinOutcome[]): { join: (endpoint: string) => Promise<JoinedRoom>; rooms: FakeRoom[]; endpoints: string[] } {
+export function scriptedJoin(outcomes: readonly JoinOutcome[]): {
+  join: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
+  rooms: FakeRoom[];
+  endpoints: string[];
+  joinOptions: JoinOptions[];
+} {
   const rooms: FakeRoom[] = [];
   const endpoints: string[] = [];
+  const joinOptions: JoinOptions[] = [];
   return {
     rooms,
     endpoints,
-    join: (endpoint) => {
+    joinOptions,
+    join: (endpoint, options) => {
       endpoints.push(endpoint);
+      joinOptions.push(options);
       const outcome = outcomes[Math.min(endpoints.length, outcomes.length) - 1];
       switch (outcome) {
         case 'full':
           return Promise.reject(matchMakeError('room "world" is locked'));
+        case 'character-refused':
+          return Promise.reject(Object.assign(new Error(JOIN_REFUSAL.invalidCharacter), { code: 526 }));
         case 'booting':
           return Promise.reject(matchMakeError('room "world" not found'));
         case 'unreachable':

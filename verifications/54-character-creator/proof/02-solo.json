@@ -1,0 +1,275 @@
+{
+  "firstVisit": {
+    "shown": true,
+    "hasGame": false,
+    "name": "",
+    "look": {
+      "skin": 4,
+      "hair": 6,
+      "clothes": 6
+    },
+    "swatches": {
+      "skin": 6,
+      "hair": 8,
+      "clothes": 8
+    },
+    "problem": null,
+    "problemText": "",
+    "previewLook": "4-6-6"
+  },
+  "nameProblems": {
+    "empty": {
+      "shown": true,
+      "hasGame": false,
+      "name": "",
+      "look": {
+        "skin": 4,
+        "hair": 6,
+        "clothes": 6
+      },
+      "swatches": {
+        "skin": 6,
+        "hair": 8,
+        "clothes": 8
+      },
+      "problem": "empty",
+      "problemText": "Your character needs a name.",
+      "previewLook": "4-6-6"
+    },
+    "blank": {
+      "shown": true,
+      "hasGame": false,
+      "name": "   ",
+      "look": {
+        "skin": 4,
+        "hair": 6,
+        "clothes": 6
+      },
+      "swatches": {
+        "skin": 6,
+        "hair": 8,
+        "clothes": 8
+      },
+      "problem": "empty",
+      "problemText": "Your character needs a name.",
+      "previewLook": "4-6-6"
+    },
+    "tooLong": {
+      "shown": true,
+      "hasGame": false,
+      "name": "aaaaaaaaaaaaaaaaaaaaa",
+      "look": {
+        "skin": 4,
+        "hair": 6,
+        "clothes": 6
+      },
+      "swatches": {
+        "skin": 6,
+        "hair": 8,
+        "clothes": 8
+      },
+      "problem": "too-long",
+      "problemText": "That name is too long: use 20 characters or fewer.",
+      "previewLook": "4-6-6"
+    },
+    "control": {
+      "shown": true,
+      "hasGame": false,
+      "name": "Ada\tLovelace",
+      "look": {
+        "skin": 4,
+        "hair": 6,
+        "clothes": 6
+      },
+      "swatches": {
+        "skin": 6,
+        "hair": 8,
+        "clothes": 8
+      },
+      "problem": "forbidden-character",
+      "problemText": "That name has characters that cannot be shown. Use letters, numbers, spaces and emoji.",
+      "previewLook": "4-6-6"
+    }
+  },
+  "entered": {
+    "localSlot": 0,
+    "isReplica": false,
+    "status": null,
+    "seats": [
+      {
+        "slot": 0,
+        "eid": 45,
+        "name": "Ada Lovelace",
+        "look": {
+          "skin": 4,
+          "hair": 6,
+          "clothes": 1
+        },
+        "expectedColors": {
+          "skin": "8d5524",
+          "hair": "ec4899",
+          "clothes": "e11d48"
+        },
+        "position": {
+          "x": -216,
+          "y": -8
+        },
+        "label": {
+          "name": "Ada Lovelace",
+          "x": -216,
+          "y": -28,
+          "textureKey": "player/look/4-6-1"
+        },
+        "textureColors": [
+          "14121a",
+          "1f1a17",
+          "1f2937",
+          "262d3a",
+          "374151",
+          "8d5524",
+          "a91636",
+          "e11d48",
+          "ec4899"
+        ]
+      }
+    ],
+    "hud": "WASD / arrows to move   tick 1\nyou: Ada Lovelace   players: 1\nJ: seat another player (dev)",
+    "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
+    "hash": "",
+    "creatorShown": false,
+    "changeButton": true
+  },
+  "changed": {
+    "localSlot": 0,
+    "isReplica": false,
+    "status": null,
+    "seats": [
+      {
+        "slot": 0,
+        "eid": 45,
+        "name": "José 🚀",
+        "look": {
+          "skin": 1,
+          "hair": 0,
+          "clothes": 6
+        },
+        "expectedColors": {
+          "skin": "f1c27d",
+          "hair": "2a2523",
+          "clothes": "0d9488"
+        },
+        "position": {
+          "x": -216,
+          "y": -8
+        },
+        "label": {
+          "name": "José 🚀",
+          "x": -216,
+          "y": -28,
+          "textureKey": "player/look/1-0-6"
+        },
+        "textureColors": [
+          "0a6f66",
+          "0d9488",
+          "14121a",
+          "1f1a17",
+          "1f2937",
+          "262d3a",
+          "2a2523",
+          "374151",
+          "f1c27d"
+        ]
+      }
+    ],
+    "hud": "WASD / arrows to move   tick 1\nyou: José 🚀   players: 1\nJ: seat another player (dev)",
+    "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":1,\"hair\":0,\"clothes\":6}}",
+    "hash": "",
+    "creatorShown": false,
+    "changeButton": true
+  },
+  "twoSeats": {
+    "localSlot": 0,
+    "isReplica": false,
+    "status": null,
+    "seats": [
+      {
+        "slot": 0,
+        "eid": 45,
+        "name": "José 🚀",
+        "look": {
+          "skin": 1,
+          "hair": 0,
+          "clothes": 6
+        },
+        "expectedColors": {
+          "skin": "f1c27d",
+          "hair": "2a2523",
+          "clothes": "0d9488"
+        },
+        "position": {
+          "x": -216,
+          "y": -8
+        },
+        "label": {
+          "name": "José 🚀",
+          "x": -216,
+          "y": -28,
+          "textureKey": "player/look/1-0-6"
+        },
+        "textureColors": [
+          "0a6f66",
+          "0d9488",
+          "14121a",
+          "1f1a17",
+          "1f2937",
+          "262d3a",
+          "2a2523",
+          "374151",
+          "f1c27d"
+        ]
+      },
+      {
+        "slot": 1,
+        "eid": 46,
+        "name": "Guest 2",
+        "look": {
+          "skin": 1,
+          "hair": 4,
+          "clothes": 1
+        },
+        "expectedColors": {
+          "skin": "f1c27d",
+          "hair": "f3e5ab",
+          "clothes": "e11d48"
+        },
+        "position": {
+          "x": -232,
+          "y": -24
+        },
+        "label": {
+          "name": "Guest 2",
+          "x": -232,
+          "y": -44,
+          "textureKey": "player/look/1-4-1"
+        },
+        "textureColors": [
+          "14121a",
+          "1f1a17",
+          "1f2937",
+          "262d3a",
+          "374151",
+          "a91636",
+          "e11d48",
+          "f1c27d",
+          "f3e5ab"
+        ]
+      }
+    ],
+    "hud": "WASD / arrows to move   tick 10\nyou: José 🚀   players: 2\nJ: seat another player (dev)",
+    "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":1,\"hair\":0,\"clothes\":6}}",
+    "hash": "",
+    "creatorShown": false,
+    "changeButton": true
+  },
+  "errors": []
+}

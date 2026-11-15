@@ -1,4 +1,4 @@
-import { createSim, diffWorldState, findPlayerEntity, getRenderables, WIRE, worldState, type SimHandle, type WorldState } from '@novaland/sim';
+import { createSim, diffWorldState, findPlayerEntity, getRenderables, WIRE, worldState, type SimHandle, type WorldState, guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import type { ConnectionStatus } from './connection';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
@@ -83,11 +83,11 @@ describe('OnlineWorld', () => {
 
   it('asks for a full state once online when the welcome carried a state the replica refused, and is whole after it', async () => {
     const sim = await createSim({ seed: 3 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const server = new FakeServer(sim);
     const { join, rooms } = scriptedJoin(['room']);
     const statuses: ConnectionStatus[] = [];
-    const { seated } = OnlineWorld.join({ endpoint: 'ws://world.test', join, onStatus: (status) => statuses.push(status) });
+    const { seated } = OnlineWorld.join({ endpoint: 'ws://world.test', character: guestCharacter(0), join, onStatus: (status) => statuses.push(status) });
     const room = await nextRoom({ rooms }, 0);
     room.receive(WIRE.welcome, { slot: 0, level: sim.level.name, capacity: sim.capacity, state: { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] } });
     const world = await seated;
@@ -112,13 +112,13 @@ describe('OnlineWorld', () => {
 
   it('sends the move of a player/move command without its slot, and nothing for other commands', async () => {
     const { world, room } = await seated(3);
-    world.nextFrame([{ type: 'player/move', slot: 3, x: 0, y: -1 }, { type: 'player/join', slot: 3 }], FRAME);
+    world.nextFrame([{ type: 'player/move', slot: 3, x: 0, y: -1 }, { type: 'player/join', slot: 3, character: guestCharacter(3) }], FRAME);
     expect(room.sent).toEqual([{ type: WIRE.move, payload: { x: 0, y: -1 } }]);
   });
 
   it('sends a queued player/move at once, drops a queued join, and offers no seat picking (the server seats players)', async () => {
     const { world, room } = await seated(3);
-    world.queueCommand({ type: 'player/join', slot: 4 });
+    world.queueCommand({ type: 'player/join', slot: 4, character: guestCharacter(4) });
     world.queueCommand({ type: 'player/move', slot: 3, x: 1, y: 0 });
     expect(room.sent).toEqual([{ type: WIRE.move, payload: { x: 1, y: 0 } }]);
     const playable: PlayableWorld = world;
@@ -133,7 +133,7 @@ describe('OnlineWorld', () => {
     expect(world.localSlot).toBe(0);
     world.nextFrame([], FRAME); // still draws while disconnected
     const secondRoom = await nextRoom(join, 1);
-    server.sim.step([{ type: 'player/leave', slot: 0 }, { type: 'player/join', slot: 4 }]);
+    server.sim.step([{ type: 'player/leave', slot: 0 }, { type: 'player/join', slot: 4, character: guestCharacter(4) }]);
     server.welcome(secondRoom, 4);
     expect(statuses.at(-1)).toEqual({ kind: 'online', slot: 4 });
     expect(world.localSlot).toBe(4);
@@ -167,7 +167,7 @@ describe('OnlineWorld', () => {
     ] as const) {
       const statuses: ConnectionStatus[] = [];
       const { join, rooms } = scriptedJoin(['room']);
-      void OnlineWorld.join({ endpoint: 'ws://world.test', join, onStatus: (status) => statuses.push(status) });
+      void OnlineWorld.join({ endpoint: 'ws://world.test', character: guestCharacter(0), join, onStatus: (status) => statuses.push(status) });
       const room = await nextRoom({ rooms }, 0);
       room.receive(WIRE.welcome, welcome);
       const last = statuses.at(-1);
@@ -241,11 +241,11 @@ class FakeServer {
 async function seated(slot: number) {
   const sim = await createSim({ seed: 7 });
   const otherSlot = slot === 0 ? 1 : 0;
-  sim.step([{ type: 'player/join', slot: otherSlot }, { type: 'player/join', slot }]);
+  sim.step([{ type: 'player/join', slot: otherSlot, character: guestCharacter(otherSlot) }, { type: 'player/join', slot, character: guestCharacter(slot) }]);
   const server = new FakeServer(sim);
   const statuses: ConnectionStatus[] = [];
   const join = scriptedJoin(['room', 'room', 'room']);
-  const { connection, seated } = OnlineWorld.join({ endpoint: 'ws://world.test', join: join.join, onStatus: (status) => statuses.push(status) });
+  const { connection, seated } = OnlineWorld.join({ endpoint: 'ws://world.test', character: guestCharacter(slot), join: join.join, onStatus: (status) => statuses.push(status) });
   expect(connection.status.kind).toBe('connecting');
   const room = await nextRoom(join, 0);
   server.welcome(room, slot);

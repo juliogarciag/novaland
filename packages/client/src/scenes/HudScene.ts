@@ -1,4 +1,4 @@
-import { findPlayerEntity, getDef, getRenderables, isAvatarDefId } from '@novaland/sim';
+import { findPlayerEntity, getCharacter, getRenderables, isPlayerDefId } from '@novaland/sim';
 import Phaser from 'phaser';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
 
@@ -41,10 +41,10 @@ export class HudScene extends Phaser.Scene {
 function hudLines(world: PlayableWorld): string[] {
   const occupancy = world.occupancy;
   const online = occupancy ? `   ${occupancy.online}/${occupancy.seats} online` : '';
-  const players = getRenderables(world.sim).filter((renderable) => isAvatarDefId(renderable.defId));
+  const players = getRenderables(world.sim).filter((renderable) => isPlayerDefId(renderable.defId));
   const localEid = findPlayerEntity(world.sim, world.localSlot);
-  const local = players.find((player) => player.eid === localEid);
-  const lines = [`WASD / arrows to move   tick ${world.sim.tick}${online}`, `you: ${local ? getDef(local.defId).name : 'joining...'}   players: ${players.length}`];
+  const localName = localEid === undefined ? undefined : getCharacter(world.sim, localEid)?.name;
+  const lines = [`WASD / arrows to move   tick ${world.sim.tick}${online}`, `you: ${localName ?? 'joining...'}   players: ${players.length}`];
   if (import.meta.env.DEV && world.joinAnotherSeat) lines.push('J: seat another player (dev)');
   return lines;
 }

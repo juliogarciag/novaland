@@ -15,6 +15,8 @@ export interface ConnectionScreenActions {
   readonly onRetry: () => void;
   /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
   readonly onReload: () => void;
+  /** The same button when the server refused the player's character: it reads "Make a new character" and leads back to the creator. */
+  readonly onNewCharacter: () => void;
 }
 
 /**
@@ -35,7 +37,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   const reloadButton = document.createElement('button');
   reloadButton.type = 'button';
   reloadButton.textContent = 'Reload page';
-  reloadButton.addEventListener('click', actions.onReload);
+  reloadButton.addEventListener('click', () => (shown?.kind === 'incompatible' && shown.characterRefused ? actions.onNewCharacter() : actions.onReload()));
   screen.append(message, retryButton, reloadButton);
   parent.append(screen);
   let countdown: ReturnType<typeof setInterval> | undefined;
@@ -52,6 +54,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
     retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && shown.kind !== 'away';
     retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : 'Retry now';
     reloadButton.hidden = shown.kind !== 'incompatible';
+    reloadButton.textContent = shown.kind === 'incompatible' && shown.characterRefused ? 'Make a new character' : 'Reload page';
   };
 
   return {

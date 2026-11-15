@@ -10,6 +10,7 @@ import { getRenderables } from '../../core/view';
 import { findPlayerEntity } from '../player/queries';
 import { getTileDef, TerrainDefId, TILE_SIZE } from './defs';
 import { solidRectangles } from './rectangles';
+import { guestCharacter } from '../player/character';
 
 describe('tile grids', () => {
   it('reads ASCII rows through the legend into tile def ids, centred on the origin', () => {
@@ -29,7 +30,7 @@ describe('tile grids', () => {
   it('rejects ragged rows, unknown characters, non-tile defs and spawns off the grid or on a solid tile', () => {
     expect(() => readTileGrid(level(['TTT', 'TT']))).toThrow(/row 1 has 2 tiles, expected 3/);
     expect(() => readTileGrid(level(['T?T']))).toThrow(/no legend entry for "\?"/);
-    expect(() => readTileGrid({ ...level(['T']), legend: { T: DefId.PlayerSky } })).toThrow(/not a tile/);
+    expect(() => readTileGrid({ ...level(['T']), legend: { T: DefId.Player } })).toThrow(/not a tile/);
     expect(() => readTileGrid({ ...level(['T']), legend: { TT: DefId.Tree } })).toThrow(/one character/);
     expect(() => readTileGrid(level([]))).toThrow(/no rows/);
     expect(() => readTileGrid({ ...level(['T.']), spawn: { column: 2, row: 0 } })).toThrow(/outside/);
@@ -200,7 +201,7 @@ describe('terrain feature (headless)', () => {
 
 const { createSimInternal } = __testing__;
 
-const playerDef = getDef(DefId.PlayerSky);
+const playerDef = getDef(DefId.Player);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
 
@@ -228,7 +229,7 @@ function tileNameUnder(grid: TileGrid, point: { x: number; y: number }): string 
   return tile && getTileDef((grid.defIds[tile.row] as number[])[tile.column] as number).name;
 }
 
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const join = (slot = 0): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
 const xy = ({ x, y }: { x: number; y: number }): [number, number] => [x, y];
 

@@ -33,7 +33,7 @@ export interface PlayableWorld {
   queueCommand(command: Command): void;
   /**
    * Dev only: queues a join for the lowest empty seat so one browser can see
-   * several avatars. Only a world that picks its own seats has it: solo yes,
+   * several characters (each a guest: `guestCharacter`). Only a world that picks its own seats has it: solo yes,
    * online no, because the server assigns seats. Nothing happens when every
    * seat is taken.
    */
