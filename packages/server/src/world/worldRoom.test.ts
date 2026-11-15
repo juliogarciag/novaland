@@ -192,13 +192,13 @@ describe('WorldRoom over a real connection', () => {
     const flooder = players[0] as Player;
     const flood = 20;
     for (let round = 0; round < flood; round += 1) flooder.room.send(WIRE.changeCharacter, { character: { name: `Name ${round}`, look: guestCharacter(0).look } });
-    await waitUntil(() => server!.room.dropped.overBudget >= flood - CHARACTER_CHANGE_BURST - 1);
+    await waitUntil(() => server!.room.dropped.overBudget >= flood - CHARACTER_CHANGE_BURST);
     await waitUntil(() => characterInSeat(flooder.replica, 0)?.name.startsWith('Name ') === true);
     await waitForUpdates([flooder], 3);
     // Only the first few got through: the name is one of theirs, never a later one.
     const applied = Number(characterInSeat(flooder.replica, 0)?.name.slice('Name '.length));
-    expect(applied).toBeLessThanOrEqual(CHARACTER_CHANGE_BURST);
-    expect(server.room.dropped.overBudget).toBeLessThanOrEqual(flood - CHARACTER_CHANGE_BURST);
+    expect(applied).toBeLessThan(CHARACTER_CHANGE_BURST);
+    expect(server.room.dropped.overBudget).toBe(flood - CHARACTER_CHANGE_BURST);
   });
 
   it('refuses a join without a legal character before it takes a seat, and keeps serving the players it has', async () => {

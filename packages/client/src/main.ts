@@ -53,7 +53,7 @@ async function boot(): Promise<void> {
       // Phaser swallows the keys the game listens to, so the name could not be typed; and a key held when the creator opens must not keep walking.
       if (game.input.keyboard) game.input.keyboard.enabled = !held;
       // Letting go of every key makes the keyboard send its own stop on the next frame.
-      if (held) game.scene.getScene('world').input.keyboard?.resetKeys();
+      if (held) game.scene.getScene('world')?.input.keyboard?.resetKeys();
     },
   });
   if (import.meta.env.DEV) exposeDebugApi({ world, game, online });

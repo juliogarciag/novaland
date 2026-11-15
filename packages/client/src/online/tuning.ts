@@ -25,6 +25,10 @@ export const JOIN_TIMEOUT_MS = 10000;
 export const LATENCY_INTERVAL_MS = 1000;
 /** Out-of-sequence updates the client lets pass after asking for a full state before it asks again (the server may have dropped the request). At the default send rate this is half a second. */
 export const RESYNC_RETRY_AFTER_UPDATES = 10;
+/** Seconds the client waits for the world to show a character it asked for before it asks again: the server may have dropped the request (a session may change only a few times at once). */
+export const CHARACTER_CHANGE_RETRY_SECONDS = 3;
+/** Times it asks again before it gives up: a server that keeps saying no (it judges names with its own Unicode tables) is not asked forever. */
+export const CHARACTER_CHANGE_RETRIES = 5;
 /** Longest map checksum a welcome may carry. The sim's is 8 characters; this only keeps a nonsense welcome from being read at all. */
 export const MAX_MAP_CHECKSUM_LENGTH = 64;
 /** Largest seat number a welcome may carry. The sim refuses slots past its own limit; this keeps a nonsense welcome from being seated at all. */

@@ -147,7 +147,8 @@ export class WorldConnection {
   /**
    * The player is `character` from now on: every later join carries it, and
    * when seated the server is asked to change the player in the world. Not
-   * seated (a drop, a retry in flight), the next join brings it.
+   * seated, the next join brings it; a join already on its way carries the
+   * old one, so the change is sent as soon as that join is welcomed.
    */
   changeCharacter(character: Character): void {
     this.joinOptions = { ...this.joinOptions, character };
@@ -180,6 +181,8 @@ export class WorldConnection {
     this.setStatus({ kind: 'connecting', attempt: this.attempt });
     // The join and then the welcome share one clock: a server that accepts the socket and says nothing is abandoned, not waited for.
     this.joinTimer = setTimeout(() => this.abandon(generation), JOIN_TIMEOUT_MS);
+    // The player may change character while this join is on its way: what it carried is compared with what they are by the welcome.
+    const joinedAs = this.joinOptions.character;
     let room: JoinedRoom;
     try {
       room = await this.join(this.endpoint, this.joinOptions);
@@ -231,6 +234,8 @@ export class WorldConnection {
         this.attempt = 0;
         this.failedConnections = 0;
         this.setStatus({ kind: 'online', slot: readSlot(payload) });
+        // Seated as the character this join carried; the player has become another one since.
+        if (this.joinOptions.character !== joinedAs) room.send(WIRE.changeCharacter, { character: this.joinOptions.character });
         return;
       }
       this.close();

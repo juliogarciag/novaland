@@ -1,6 +1,6 @@
-import { MAX_NAME_CHARACTERS, type Character, type CharacterNameProblem } from '@novaland/sim';
+import { MAX_NAME_CHARACTERS, type CharacterNameProblem } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { __testing__, sameCharacter } from './creatorScreen';
+import { __testing__ } from './creatorScreen';
 
 describe('what the creator says about a name the sim refuses', () => {
   it('has a sentence for every problem, and the limit in the one about length', () => {
@@ -13,22 +13,6 @@ describe('what the creator says about a name the sim refuses', () => {
   });
 });
 
-describe('telling whether the creator changed anything', () => {
-  it('calls two characters the same when the name and every colour match', () => {
-    expect(sameCharacter(ADA, { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } })).toBe(true);
-  });
-
-  it('calls them different when the name or any one colour differs', () => {
-    expect(sameCharacter(ADA, { ...ADA, name: 'ada' })).toBe(false);
-    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, skin: 0 } })).toBe(false);
-    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hair: 0 } })).toBe(false);
-    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, clothes: 0 } })).toBe(false);
-  });
-});
-
 // ---- Helpers ----
-
-const ADA: Character = { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } };
-
 
 const { describeNameProblem } = __testing__;

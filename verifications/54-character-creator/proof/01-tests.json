@@ -670,16 +670,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/creator/creatorScreen.test.ts",
-    "name": "telling whether the creator changed anything calls two characters the same when the name and every colour match",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/creator/creatorScreen.test.ts",
-    "name": "telling whether the creator changed anything calls them different when the name or any one colour differs",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/creator/rememberedCharacter.test.ts",
     "name": "the remembered character comes back as it was remembered",
     "status": "passed"
@@ -700,28 +690,58 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines says joining... until the local player is in the world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate follows a rate that changes, one second later",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
     "status": "passed"
   },
   {
@@ -795,58 +815,28 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines says joining... until the local player is in the world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate follows a rate that changes, one second later",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
     "status": "passed"
   },
   {
@@ -1021,6 +1011,16 @@
   },
   {
     "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "changing character online asks the server once and stops asking when the world shows the new character",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
+    "name": "changing character online asks again every few seconds while the world still shows the old character, then gives up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/OnlineWorld.test.ts",
     "name": "readWelcome accepts the wire shape and refuses anything else",
     "status": "passed"
   },
@@ -1107,6 +1107,11 @@
   {
     "file": "packages/client/src/online/connection.test.ts",
     "name": "WorldConnection sends no character change while not seated: the next join brings the new character",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection sends a change made while a join was on its way as soon as that join is welcomed",
     "status": "passed"
   },
   {
@@ -1242,6 +1247,31 @@
   {
     "file": "packages/client/src/online/serverUrl.test.ts",
     "name": "worldServerUrl is undefined in dev when nothing is configured: plain `pnpm dev` is the solo game",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "createLocalWorld plays the world unless a generated map is asked for by size",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/worlds/LocalWorld.test.ts",
+    "name": "createLocalWorld refuses a size it cannot read instead of quietly playing the world",
     "status": "passed"
   },
   {
@@ -1567,31 +1597,6 @@
   {
     "file": "packages/client/src/render/zoom.test.ts",
     "name": "wholeZoomFor is 1 for a width that makes no sense",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats the local player on the first tick and steps only whole ticks of real time",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld runs queued commands on the next earned tick, like keyboard commands",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "LocalWorld seats another player in each lowest empty seat, even several in one frame, and stops when every seat is taken",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "createLocalWorld plays the world unless a generated map is asked for by size",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/worlds/LocalWorld.test.ts",
-    "name": "createLocalWorld refuses a size it cannot read instead of quietly playing the world",
     "status": "passed"
   },
   {
@@ -2035,6 +2040,106 @@
     "status": "passed"
   },
   {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass, dirt and tiles no area drew out",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging gives rectangles in world tiles, wherever the chunk is",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging never merges across a chunk edge: a wall through two chunks is one rectangle in each",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "solid tile merging covers every solid tile of the world exactly once, and nothing else",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) builds one static box per merged rectangle, chunk by chunk, and no entity at all",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) places each box over its tiles in metres, measured from the fixed origin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) builds the same boxes in the same order every time, and the same physics bytes",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) names the map in the snapshot by its checksum, so a snapshot says which terrain its physics bytes hold",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) the world spawns the player on the grass inside the forest",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the room",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/terrain/terrain.test.ts",
+    "name": "terrain feature (headless) a wall that crosses a chunk edge is as solid at the seam as anywhere else",
+    "status": "passed"
+  },
+  {
     "file": "packages/sim/src/features/player/character.test.ts",
     "name": "readCharacterName accepts a plain name and gives it back unchanged",
     "status": "passed"
@@ -2117,6 +2222,16 @@
   {
     "file": "packages/sim/src/features/player/character.test.ts",
     "name": "readCharacter seats guests as legal characters that differ from seat to seat",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "sameCharacter calls two characters the same when the name and every colour match",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "sameCharacter calls them different when the name or any one colour differs",
     "status": "passed"
   },
   {
@@ -2337,106 +2452,6 @@
   {
     "file": "packages/sim/src/features/player/spawn.test.ts",
     "name": "spread spawns (headless) falls back to the spawn tile, without throwing, when no tile is free",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a standing sprite has at least one variant and stands on a flat tile def",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a ground sprite has at least one variant and belongs to a tile that does not stand up",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs no tile sprite shares its key with another sprite: they are one folder and one texture namespace",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a tree is still one solid tile to the sim, whatever it looks like",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "tile defs a rock is still one solid tile and grass still walkable ground, under the ids they always had",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging merges horizontal runs so a whole row of trees is one rectangle",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging stacks identical runs vertically and keeps different ones apart",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging treats rocks and trees alike (solid) and leaves grass, dirt and tiles no area drew out",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging gives rectangles in world tiles, wherever the chunk is",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging never merges across a chunk edge: a wall through two chunks is one rectangle in each",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "solid tile merging covers every solid tile of the world exactly once, and nothing else",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) builds one static box per merged rectangle, chunk by chunk, and no entity at all",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) places each box over its tiles in metres, measured from the fixed origin",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) builds the same boxes in the same order every time, and the same physics bytes",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) names the map in the snapshot by its checksum, so a snapshot says which terrain its physics bytes hold",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) the world spawns the player on the grass inside the forest",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a player walks freely over the grass, east and then south",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) trees block the player: walking into the forest border stops at the first tree face",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a rock blocks the player too, and nothing escapes the room",
-    "status": "passed"
-  },
-  {
-    "file": "packages/sim/src/features/terrain/terrain.test.ts",
-    "name": "terrain feature (headless) a wall that crosses a chunk edge is as solid at the seam as anywhere else",
     "status": "passed"
   }
 ]

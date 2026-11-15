@@ -181,6 +181,11 @@ export function readCharacter(value: unknown): Character | undefined {
   }
 }
 
+/** True when two characters are the same name in the same look: nothing a player or the world could tell apart. */
+export function sameCharacter(one: Character, other: Character): boolean {
+  return one.name === other.name && CHARACTER_PARTS.every((part) => one.look[part] === other.look[part]);
+}
+
 /**
  * A legal character for a seat nobody made one for: "Guest 1" for slot 0 and
  * so on, in colours that differ from seat to seat. Scripts, tests and the dev

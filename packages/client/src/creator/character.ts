@@ -1,6 +1,6 @@
-import { characterPalettes, DefId, getDef, type Character, type CharacterLook } from '@novaland/sim';
+import { characterPalettes, DefId, getDef, sameCharacter, type Character, type CharacterLook } from '@novaland/sim';
 import { spriteSheetUrl } from '../render/spriteUrl';
-import { changeCharacter, chooseCharacter, sameCharacter, type PreviewSheet } from './creatorScreen';
+import { changeCharacter, chooseCharacter, type PreviewSheet } from './creatorScreen';
 import { browserCharacterStorage, readRememberedCharacter, rememberCharacter } from './rememberedCharacter';
 
 /** The address that opens the creator even when the browser remembers a character: `…/#creator`. */
@@ -24,15 +24,16 @@ export async function characterForThisVisit(): Promise<Character> {
 }
 
 /**
- * What `#creator` in the address does once the player is in the world; until
- * then the page loads again and the creator shows before the join.
+ * What `#creator` in the address does once the game exists; until then the
+ * page loads again and the creator shows before the join.
  */
 let openCreatorOverGame: (() => void) | undefined;
 
 /**
  * Opens the creator when `#creator` is added to the address of a page that
- * already has its character: over the game when the player is in the world,
- * else (a connection screen is up) by loading the page again. Call once, when
+ * already has its character: over the game once there is one (a change saved
+ * while a connection screen is up reaches the world with the next join), and
+ * before that, while the first join is still on its way, by loading the page again. Call once, when
  * this visit's character is known (the creator has cleaned its own address up by then).
  */
 export function openCreatorWhenAddressAsks(): void {
@@ -76,10 +77,15 @@ export function addChangeCharacterButton(parent: HTMLElement, { playing, changeT
   const open = async (): Promise<void> => {
     if (creatorIsOpen) return;
     creatorIsOpen = true;
-    holdGameKeys(true);
-    const chosen = await changeCharacter(parent, { initial: current, previewSheet: playerPreviewSheet() });
-    holdGameKeys(false);
-    creatorIsOpen = false;
+    let chosen: Character | undefined;
+    try {
+      holdGameKeys(true);
+      chosen = await changeCharacter(parent, { initial: current, previewSheet: playerPreviewSheet() });
+    } finally {
+      // Whatever went wrong, the game gets its keys back and the button works again.
+      creatorIsOpen = false;
+      holdGameKeys(false);
+    }
     if (!chosen || sameCharacter(chosen, current)) return;
     current = chosen;
     rememberCharacter(browserCharacterStorage(), chosen);

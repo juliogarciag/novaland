@@ -248,6 +248,21 @@ describe('WorldConnection', () => {
     expect(rooms[1]!.sent).toEqual([]);
   });
 
+  it('sends a change made while a join was on its way as soon as that join is welcomed', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    // The second join left with the old character and has not been welcomed yet.
+    expect(joinOptions[1]).toEqual(JOIN_OPTIONS);
+    connection.changeCharacter(changed);
+    expect(rooms[1]!.sent).toEqual([]);
+    rooms[1]!.receive(WIRE.welcome, WELCOME);
+    expect(rooms[1]!.sent).toEqual([{ type: WIRE.changeCharacter, payload: { character: changed } }]);
+  });
+
   it('stops for good when the server refuses the character, and says so, instead of asking again with the same one', async () => {
     const { connection, statuses, endpoints } = connect(['character-refused', 'room']);
     await settle();

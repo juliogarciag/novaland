@@ -9,7 +9,7 @@ import { hashSnapshot } from '../../core/snapshot';
 import { Position } from '../../core/transform';
 import { getRenderables } from '../../core/view';
 import { diffWorldState, worldState, type WorldState } from '../../core/worldState';
-import { codePointsOf, guestCharacter, readCharacter, readCharacterName, type Character } from './character';
+import { codePointsOf, guestCharacter, readCharacter, readCharacterName, sameCharacter, type Character } from './character';
 import { characterPalettes, isPlayerDefId, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS } from './defs';
 import { findPlayerEntity, getCharacter } from './queries';
 
@@ -175,6 +175,19 @@ describe('readCharacter', () => {
     expect(new Set(guests.map((guest) => guest.look.clothes)).size).toBe(5);
     expect(readCharacter(guestCharacter(-1))).toBeDefined();
     expect(readCharacter(guestCharacter(Number.NaN))).toBeDefined();
+  });
+});
+
+describe('sameCharacter', () => {
+  it('calls two characters the same when the name and every colour match', () => {
+    expect(sameCharacter(ADA, { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } })).toBe(true);
+  });
+
+  it('calls them different when the name or any one colour differs', () => {
+    expect(sameCharacter(ADA, { ...ADA, name: 'ada' })).toBe(false);
+    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, skin: 0 } })).toBe(false);
+    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hair: 0 } })).toBe(false);
+    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, clothes: 0 } })).toBe(false);
   });
 });
 
@@ -464,6 +477,8 @@ describe('fuzzing player/join', () => {
 // ---- Helpers ----
 
 const { createSimInternal } = __testing__;
+
+const ADA: Character = { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } };
 
 function join(slot: number, character: Character): Command {
   return { type: 'player/join', slot, character };

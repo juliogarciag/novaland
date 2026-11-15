@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ConnectionStatus } from './connection';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
 import { __testing__, OnlineWorld } from './OnlineWorld';
-import { INTERPOLATION_BUFFER_TICKS, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
+import { CHARACTER_CHANGE_RETRIES, CHARACTER_CHANGE_RETRY_SECONDS, INTERPOLATION_BUFFER_TICKS, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 const { readWelcome } = __testing__;
@@ -211,6 +211,32 @@ describe('OnlineWorld', () => {
   });
 });
 
+describe('changing character online', () => {
+  it('asks the server once and stops asking when the world shows the new character', async () => {
+    const { world, server, room } = await seated(0);
+    const changed = guestCharacter(3);
+    world.changeCharacter(changed);
+    expect(changesSent(room)).toEqual([{ character: changed }]);
+    server.sim.step([{ type: 'player/change-character', slot: 0, character: changed }]);
+    server.sendDelta();
+    for (let second = 0; second < CHARACTER_CHANGE_RETRY_SECONDS * 3; second += 1) world.nextFrame([], 1);
+    expect(changesSent(room)).toHaveLength(1);
+  });
+
+  it('asks again every few seconds while the world still shows the old character, then gives up', async () => {
+    const { world, room } = await seated(0);
+    const changed = guestCharacter(3);
+    world.changeCharacter(changed);
+    world.nextFrame([], CHARACTER_CHANGE_RETRY_SECONDS - 0.5);
+    expect(changesSent(room)).toHaveLength(1);
+    world.nextFrame([], 0.5);
+    expect(changesSent(room)).toEqual([{ character: changed }, { character: changed }]);
+    for (let round = 0; round < CHARACTER_CHANGE_RETRIES * 3; round += 1) world.nextFrame([], CHARACTER_CHANGE_RETRY_SECONDS);
+    // The first ask and every retry, and then no more.
+    expect(changesSent(room)).toHaveLength(1 + CHARACTER_CHANGE_RETRIES);
+  });
+});
+
 describe('readWelcome', () => {
   it('accepts the wire shape and refuses anything else', () => {
     const welcome = { protocol: WIRE_PROTOCOL, slot: 0, map: MAP, capacity: 1024, state: emptyState() };
@@ -232,6 +258,11 @@ describe('readWelcome', () => {
 });
 
 // ---- Helpers ----
+
+/** The payloads of the character changes the client sent to `room`, in order. */
+function changesSent(room: FakeRoom): unknown[] {
+  return room.sent.filter((message) => message.type === WIRE.changeCharacter).map((message) => message.payload);
+}
 
 /** The authoritative side of the tests: a real sim and the messages a room would send about it. */
 class FakeServer {

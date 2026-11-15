@@ -57,11 +57,6 @@ export function changeCharacter(parent: HTMLElement, options: CreatorScreenOptio
   });
 }
 
-/** True when two characters are the same name in the same look: nothing a player or the world could tell apart. */
-export function sameCharacter(one: Character, other: Character): boolean {
-  return one.name === other.name && CHARACTER_PARTS.every((part) => one.look[part] === other.look[part]);
-}
-
 interface CreatorScreenUse {
   readonly title: string;
   readonly submitLabel: string;

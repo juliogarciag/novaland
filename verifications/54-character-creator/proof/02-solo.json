@@ -5,8 +5,8 @@
     "name": "",
     "look": {
       "skin": 2,
-      "hair": 2,
-      "clothes": 6
+      "hair": 0,
+      "clothes": 2
     },
     "swatches": {
       "skin": 6,
@@ -15,7 +15,7 @@
     },
     "problem": null,
     "problemText": "",
-    "previewLook": "2-2-6"
+    "previewLook": "2-0-2"
   },
   "nameProblems": {
     "empty": {
@@ -24,8 +24,8 @@
       "name": "",
       "look": {
         "skin": 2,
-        "hair": 2,
-        "clothes": 6
+        "hair": 0,
+        "clothes": 2
       },
       "swatches": {
         "skin": 6,
@@ -34,7 +34,7 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "2-2-6"
+      "previewLook": "2-0-2"
     },
     "blank": {
       "shown": true,
@@ -42,8 +42,8 @@
       "name": "   ",
       "look": {
         "skin": 2,
-        "hair": 2,
-        "clothes": 6
+        "hair": 0,
+        "clothes": 2
       },
       "swatches": {
         "skin": 6,
@@ -52,7 +52,7 @@
       },
       "problem": "empty",
       "problemText": "Your character needs a name.",
-      "previewLook": "2-2-6"
+      "previewLook": "2-0-2"
     },
     "tooLong": {
       "shown": true,
@@ -60,8 +60,8 @@
       "name": "aaaaaaaaaaaaaaaaaaaaa",
       "look": {
         "skin": 2,
-        "hair": 2,
-        "clothes": 6
+        "hair": 0,
+        "clothes": 2
       },
       "swatches": {
         "skin": 6,
@@ -70,7 +70,7 @@
       },
       "problem": "too-long",
       "problemText": "That name is too long: use 20 characters or fewer. Emoji made of several parts count for more.",
-      "previewLook": "2-2-6"
+      "previewLook": "2-0-2"
     },
     "control": {
       "shown": true,
@@ -78,8 +78,8 @@
       "name": "Ada\tLovelace",
       "look": {
         "skin": 2,
-        "hair": 2,
-        "clothes": 6
+        "hair": 0,
+        "clothes": 2
       },
       "swatches": {
         "skin": 6,
@@ -88,7 +88,7 @@
       },
       "problem": "forbidden-character",
       "problemText": "That name has characters that cannot be shown, or marks piled on one letter. Use letters, numbers, spaces and emoji.",
-      "previewLook": "2-2-6"
+      "previewLook": "2-0-2"
     }
   },
   "entered": {
@@ -203,12 +203,12 @@
           "475569"
         ],
         "position": {
-          "x": 117.33343505859375,
+          "x": 114.666748046875,
           "y": 232
         },
         "label": {
           "name": "José 🚀",
-          "x": 117.33343505859375,
+          "x": 114.666748046875,
           "y": 213,
           "textureKey": "player/look/2-0-6"
         },
@@ -352,7 +352,7 @@
         ]
       }
     ],
-    "hud": "fps  --\nyou: José 🚀   players: 1\nJ: seat another player (dev)",
+    "hud": "fps  --\nyou: José 🚀   players: 2\nJ: seat another player (dev)",
     "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":6}}",
     "hash": "",
     "creatorShown": false,

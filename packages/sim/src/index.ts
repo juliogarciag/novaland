@@ -24,5 +24,5 @@ export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, r
 export { getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { ChangeCharacterCommand, JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getCharacter, getHeading, type Heading } from './features/player/queries';
-export { guestCharacter, readCharacter, readCharacterName, type Character, type CharacterLook, type CharacterNameProblem } from './features/player/character';
+export { guestCharacter, readCharacter, readCharacterName, sameCharacter, type Character, type CharacterLook, type CharacterNameProblem } from './features/player/character';
 export { CHARACTER_PARTS, characterPalettes, isPlayerDefId, MAX_NAME_CHARACTERS, type CharacterPart, type PaletteSwatch } from './features/player/defs';
