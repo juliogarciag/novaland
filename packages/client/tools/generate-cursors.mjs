@@ -16,7 +16,7 @@
  * Plain Node, no dependencies; the pixel canvas and the PNG encoder are shared with the sprite sheets.
  *
  *   node tools/generate-cursors.mjs                # writes public/cursors/<name>.png and <name>@2x.png
- *   node tools/generate-cursors.mjs --out <dir>    # writes them somewhere else (used by verifications)
+ *   node tools/generate-cursors.mjs --out <dir>    # writes them somewhere else
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -40,11 +40,10 @@ export const CURSOR_SCREENS = [
 ];
 
 /**
- * One entry per cursor; the first is the one index.html shows. `rows` go top to bottom; a row shorter than the
- * design is transparent to its right, and so is `.`. `palette` gives each
- * other character its colour as [red, green, blue] or, for a see-through
- * pixel such as a shadow, [red, green, blue, alpha]. `hotspot` is the design
- * pixel that clicks.
+ * One entry per cursor. There is one for now: the arrow index.html shows.
+ * `rows` go top to bottom; a row shorter than the design is transparent to
+ * its right, and so is `.`. `palette` gives each other character its colour
+ * as [red, green, blue]. `hotspot` is the design pixel that clicks.
  */
 export const CURSOR_DESIGNS = [
   {
@@ -91,9 +90,8 @@ export function paintCursor(design, blockSize) {
       if (character === TRANSPARENT) return;
       const color = design.palette[character];
       if (!color) throw new Error(`row ${y} of ${design.name} has '${character}', which its palette does not name`);
-      const [red, green, blue, alpha = OPAQUE] = color;
       for (let blockY = 0; blockY < blockSize; blockY += 1) {
-        for (let blockX = 0; blockX < blockSize; blockX += 1) pixel(canvas, x * blockSize + blockX, y * blockSize + blockY, [red, green, blue], alpha);
+        for (let blockX = 0; blockX < blockSize; blockX += 1) pixel(canvas, x * blockSize + blockX, y * blockSize + blockY, color, OPAQUE);
       }
     });
   });
@@ -106,7 +104,7 @@ export function cursorFileName(name, screen) {
 }
 
 /** Writes every cursor's files into `directory` and returns their paths. */
-export function writeCursors(directory) {
+function writeCursors(directory) {
   mkdirSync(directory, { recursive: true });
   return CURSOR_DESIGNS.flatMap((design) =>
     CURSOR_SCREENS.map((screen) => {

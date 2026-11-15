@@ -43,7 +43,7 @@ describe('cursor generator', () => {
 });
 
 describe('the cursor index.html shows', () => {
-  it('is the first design of the generator: its file for each screen, clicking at its hotspot in CSS pixels, with auto as the fallback', () => {
+  it('is the arrow of the generator: its file for each screen, clicking at its hotspot in CSS pixels, with auto as the fallback', () => {
     const rule = /\n\s*html \{([^}]*)\}/.exec(readFileSync(path.join(CLIENT, 'index.html'), 'utf8'));
     expect(rule, 'the html rule of index.html, where the cursor is set').not.toBeNull();
     const declarations = [...rule[1].matchAll(/cursor:\s*([^;]+);/g)].map((match) => match[1].trim());
@@ -68,8 +68,7 @@ function rgbaAt(canvas, x, y) {
 function designRgbaAt(design, x, y) {
   const color = design.palette[design.rows[y]?.[x]];
   if (!color) return [0, 0, 0, 0];
-  const [red, green, blue, alpha = 255] = color;
-  return [red, green, blue, alpha];
+  return [...color, 255];
 }
 
 /** The size and RGBA bytes of a PNG as the generators write them: 8-bit RGBA, no row filter, not interlaced. */

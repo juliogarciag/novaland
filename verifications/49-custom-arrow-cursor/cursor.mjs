@@ -25,7 +25,7 @@ const VIEWPORT = { width: 960, height: 720 };
 const MOUSE = { x: 480, y: 300 };
 const results = [];
 const report = { screens: {} };
-/** The cursor the page shows: the first design of the generator. */
+/** The cursor the page shows: the one design of the generator. */
 const [design] = CURSOR_DESIGNS;
 const pageErrors = [];
 
@@ -133,12 +133,10 @@ function pixelsOffTheDesign(image, design, blockSize) {
   for (let y = 0; y < image.height; y += 1) {
     for (let x = 0; x < image.width; x += 1) {
       const color = design.palette[design.rows[Math.floor(y / blockSize)]?.[Math.floor(x / blockSize)]];
-      const expected = color ? [color[0], color[1], color[2], color[3] ?? 255] : [0, 0, 0, 0];
+      const expected = color ? [...color, 255] : [0, 0, 0, 0];
       const offset = (y * image.width + x) * 4;
       const actual = image.rgba.slice(offset, offset + 4);
-      // A see-through pixel comes back from a canvas with its colour rounded by the alpha; an opaque or empty one comes back exact.
-      const tolerance = expected[3] > 0 && expected[3] < 255 ? 3 : 0;
-      if (actual.some((value, channel) => Math.abs(value - expected[channel]) > tolerance)) wrong.push(`(${x}, ${y}) is ${actual.join()} not ${expected.join()}`);
+      if (actual.some((value, channel) => value !== expected[channel])) wrong.push(`(${x}, ${y}) is ${actual.join()} not ${expected.join()}`);
     }
   }
   return wrong;
