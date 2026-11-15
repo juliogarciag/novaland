@@ -1,5 +1,5 @@
 PASS  client dev server up, started by this run (solo: no VITE_SERVER_URL)
-PASS  a first visit shows the creator before the world: no game yet, an empty name, a small palette per part  ({"shown":true,"hasGame":false,"name":"","look":{"skin":1,"hair":2,"clothes":1},"swatches":{"skin":6,"hair":8,"clothes":8},"problem":null,"problemText":"","previewLook":"1-2-1"})
+PASS  a first visit shows the creator before the world: no game yet, an empty name, a small palette per part  ({"shown":true,"hasGame":false,"name":"","look":{"skin":3,"hair":4,"clothes":7},"swatches":{"skin":6,"hair":8,"clothes":8},"problem":null,"problemText":"","previewLook":"3-4-7"})
 PASS  an empty or blank name, 21 characters or a control character keep the player on the creator with the reason  ({"empty":"empty","blank":"empty","tooLong":"That name is too long: use 20 characters or fewer. Emoji made of several parts count for more.","control":"forbidden-character"})
 PASS  typing clears the reason
 PASS  picking swatches repaints the preview in that look  ({"shown":true,"hasGame":false,"name":"Ada Lovelace","look":{"skin":4,"hair":6,"clothes":1},"swatches":{"skin":6,"hair":8,"clothes":8},"problem":null,"problemText":"","previewLook":"4-6-1"})

@@ -30,7 +30,7 @@ export async function characterForThisVisit(): Promise<Character> {
 /**
  * Opens the creator when `#creator` is added to the address of a page that is
  * already playing: the page loads again, as it does for the Change character
- * button. Call once, when the game has started.
+ * button. Call once, when this visit's character is known (the creator has cleaned its own address up by then).
  */
 export function openCreatorWhenAddressAsks(): void {
   window.addEventListener('hashchange', () => {

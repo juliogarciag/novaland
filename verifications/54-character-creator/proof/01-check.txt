@@ -2,7 +2,7 @@ PASS  pnpm install exits 0
 PASS  pnpm typecheck exits 0
 PASS  pnpm lint exits 0
 PASS  pnpm test exits 0
-PASS  every test passed, none skipped  (465 of 465)
+PASS  every test passed, none skipped  (468 of 468)
 PASS  the name rule: normalised, counted in visible characters, refused when not text, empty, too long or holding control characters
 PASS  the character rule: every palette index and nothing outside, exactly a name and a look, never throws
 PASS  a join spawns the character it carried, with the normalised name

@@ -81,6 +81,41 @@ describe('readCharacterName', () => {
     expect(readCharacterName(`\u0e01${'\u0e49'.repeat(7)}`)).toEqual({ problem: 'forbidden-character' });
     expect(readCharacterName('a\u0307\u0308\u030a\u030b')).toEqual({ problem: 'forbidden-character' });
   });
+
+  it('refuses the inputs the second review drew pixel-identical to another name, or blank', () => {
+    // The object replacement character draws nothing; a joiner between Latin letters and a selector that selects nothing change no pixel.
+    const blankOrTwin = [
+      '\ufffc',
+      'Julio\ufffc',
+      'Jul\ufffcio',
+      'Jul\u200dio',
+      'Ju\u200clio',
+      'J\u200du\u200dl\u200di\u200do',
+      'a\u200d\u{1f525}',
+      'Guest 1\ufe0e',
+      'Guest 1\ufe0f',
+      'Julio\u{1f600}\ufe0e',
+      'Julio \u2764\ufe0e',
+    ];
+    for (const value of blankOrTwin) expect(readCharacterName(value), JSON.stringify(value)).toEqual({ problem: 'forbidden-character' });
+    // Unassigned code points and noncharacters: nobody can say what they draw.
+    for (const value of ['\u0e00', '\u0378', '\uffff', '\ufdd0', 'Ada\u181a']) expect('name' in readCharacterName(value), JSON.stringify(value)).toBe(false);
+  });
+
+  it('drops an emoji selector that selects nothing instead of storing a second spelling of the same name', () => {
+    expect(readCharacterName('Julio\u{1f600}\ufe0f')).toEqual({ name: 'Julio\u{1f600}' });
+    // After a symbol that would draw as text it does select something, and stays.
+    expect(readCharacterName('Julio \u2764\ufe0f')).toEqual({ name: 'Julio \u2764\ufe0f' });
+  });
+
+  it('keeps the flags spelled with tag characters, Bengali ya-phala and a Persian word that ends in a digit', () => {
+    // England's flag; "RAB" in Bengali (ra, joiner, virama, ya); a Persian name, a non-joiner, a Persian digit.
+    const spellings = ['\u{1f3f4}\u{e0067}\u{e0062}\u{e0065}\u{e006e}\u{e0067}\u{e007f}', '\u09b0\u200d\u09cd\u09af\u09be\u09ac', '\u0639\u0644\u06cc\u200c\u06f2'];
+    for (const value of spellings) expect(readCharacterName(value), JSON.stringify(value)).toEqual({ name: value });
+    // Tag characters anywhere else stay refused, and so does a flag that never ends.
+    expect(readCharacterName('Ada\u{e0067}')).toEqual({ problem: 'forbidden-character' });
+    expect(readCharacterName('\u{1f3f4}\u{e0067}\u{e0062}')).toEqual({ problem: 'forbidden-character' });
+  });
 });
 
 describe('readCharacter', () => {

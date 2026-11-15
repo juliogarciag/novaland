@@ -27,6 +27,8 @@ async function boot(): Promise<void> {
   // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
   if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
   const character = await characterForThisVisit();
+  // From here on, also while a connection screen is up, adding #creator to the address opens the creator.
+  openCreatorWhenAddressAsks();
   const { world, online } = serverUrl
     ? await joinSharedWorld(serverUrl, character)
     : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
@@ -41,7 +43,6 @@ async function boot(): Promise<void> {
   });
   keepCanvasAtWindowSize(game);
   addChangeCharacterButton(document.body);
-  openCreatorWhenAddressAsks();
   if (import.meta.env.DEV) exposeDebugApi({ world, game, online });
 }
 

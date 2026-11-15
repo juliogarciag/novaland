@@ -11,8 +11,8 @@ Already up to date
 │                                                                              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
-Done in 701ms using pnpm v10.9.0
-(node:5675) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Done in 521ms using pnpm v10.9.0
+(node:13818) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -28,7 +28,7 @@ packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
-(node:5703) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:13845) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
 
@@ -43,91 +43,87 @@ $ pnpm exec vitest run --reporter=default --reporter=json (exit 0)
 
  RUN  v5.1.0 <repo>
 
- ✓ |client| tools/generate-cursors.test.mjs (5 tests) 64ms
- ✓ |client| tools/generate-grass-sheet.test.mjs (4 tests) 86ms
- ✓ |client| src/seats.test.ts (3 tests) 227ms
- ✓ |client| src/render/viewFrame.test.ts (8 tests) 250ms
- ✓ |client| src/online/connection.test.ts (31 tests) 111ms
- ✓ |client| src/hud/hudLines.test.ts (7 tests) 321ms
- ✓ |client| src/render/standingTiles.test.ts (7 tests) 87ms
- ✓ |client| src/worlds/LocalWorld.test.ts (5 tests) 454ms
- ✓ |client| tools/generate-rock-sheet.test.mjs (5 tests) 17ms
- ✓ |client| src/render/zoom.test.ts (4 tests) 79ms
- ✓ |client| src/render/groundTiles.test.ts (11 tests) 62ms
- ✓ |client| tools/generate-tree-sheet.test.mjs (2 tests) 53ms
- ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 30ms
- ✓ |client| src/render/chunkRange.test.ts (11 tests) 30ms
- ✓ |client| src/hud/renderedFrameRate.test.ts (4 tests) 6ms
- ✓ |client| src/render/characterSheet.test.ts (5 tests) 16ms
- ✓ |client| src/render/tileVariant.test.ts (4 tests) 7ms
- ✓ |client| src/input/keyboard.test.ts (9 tests) 8ms
- ✓ |client| src/creator/rememberedCharacter.test.ts (4 tests) 36ms
- ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 12ms
- ✓ |client| src/input/direction.test.ts (5 tests) 4ms
- ✓ |client| src/render/camera.test.ts (6 tests) 10ms
- ✓ |client| src/online/frameBuffer.test.ts (7 tests) 12ms
- ✓ |client| src/render/pose.test.ts (3 tests) 6ms
+ ✓ |client| tools/generate-cursors.test.mjs (5 tests) 78ms
+ ✓ |client| tools/generate-grass-sheet.test.mjs (4 tests) 126ms
+ ✓ |client| src/seats.test.ts (3 tests) 246ms
+ ✓ |client| src/online/connection.test.ts (31 tests) 90ms
+ ✓ |client| src/render/viewFrame.test.ts (8 tests) 255ms
+ ✓ |client| src/hud/hudLines.test.ts (7 tests) 269ms
+ ✓ |client| src/render/groundTiles.test.ts (11 tests) 88ms
+ ✓ |client| src/render/tileVariant.test.ts (4 tests) 13ms
+ ✓ |client| src/worlds/LocalWorld.test.ts (5 tests) 478ms
+ ✓ |client| src/render/zoom.test.ts (4 tests) 64ms
+ ✓ |client| tools/generate-rock-sheet.test.mjs (5 tests) 54ms
+ ✓ |client| tools/generate-tree-sheet.test.mjs (2 tests) 15ms
+ ✓ |client| src/render/standingTiles.test.ts (7 tests) 24ms
+ ✓ |client| src/online/frameBuffer.test.ts (7 tests) 11ms
+ ✓ |client| src/render/camera.test.ts (6 tests) 9ms
+ ✓ |client| src/creator/rememberedCharacter.test.ts (4 tests) 8ms
+ ✓ |client| tools/generate-player-sheet.test.mjs (3 tests) 25ms
+ ✓ |client| src/input/keyboard.test.ts (9 tests) 7ms
+ ✓ |client| src/loop/takeWholeTicks.test.ts (5 tests) 6ms
+ ✓ |client| src/online/screens.test.ts (1 test) 7ms
+ ✓ |client| src/input/direction.test.ts (5 tests) 8ms
+ ✓ |client| src/hud/renderedFrameRate.test.ts (4 tests) 10ms
+ ✓ |client| src/render/chunkRange.test.ts (11 tests) 10ms
  ✓ |client| src/online/serverUrl.test.ts (3 tests) 5ms
- ✓ |client| src/render/nameLabel.test.ts (2 tests) 6ms
+ ✓ |client| src/render/pose.test.ts (3 tests) 8ms
+ ✓ |client| src/render/nameLabel.test.ts (2 tests) 5ms
+ ✓ |client| src/render/characterSheet.test.ts (5 tests) 8ms
  ✓ |client| src/creator/creatorScreen.test.ts (1 test) 3ms
- ✓ |client| src/online/screens.test.ts (1 test) 8ms
- ✓ |server| src/world/inbound.test.ts (14 tests) 279ms
- ✓ |server| src/headless.test.ts (3 tests) 248ms
- ✓ |server| src/front/guardRequests.test.ts (13 tests) 547ms
+ ✓ |server| src/front/mountFrontRoutes.test.ts (3 tests) 83ms
+ ✓ |server| src/headless.test.ts (3 tests) 265ms
+ ✓ |server| src/front/guardRequests.test.ts (13 tests) 566ms
    ✓ guardRequests (13)
-     ✓ closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing 408ms
- ✓ |server| src/front/origins.test.ts (14 tests) 10ms
- ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 7ms
- ✓ |server| src/world/startWorldServer.test.ts (1 test) 134ms
- ✓ |server| src/world/roomSeats.test.ts (3 tests) 6ms
- ✓ |server| src/front/mountFrontRoutes.test.ts (3 tests) 121ms
- ✓ |server| src/front/createFront.test.ts (2 tests) 1640ms
+     ✓ closes an upgrade it handed on when no byte moves on it: one that stalls in the handshake holds nothing 403ms
+ ✓ |server| src/world/inbound.test.ts (14 tests) 307ms
+ ✓ |server| src/front/origins.test.ts (14 tests) 12ms
+ ✓ |server| src/world/takeWholeTicks.test.ts (5 tests) 4ms
+ ✓ |server| src/world/roomSeats.test.ts (3 tests) 12ms
+ ✓ |server| src/world/startWorldServer.test.ts (1 test) 110ms
+ ✓ |sim| src/core/prediction.test.ts (10 tests) 703ms
+ ✓ |server| src/front/createFront.test.ts (2 tests) 1692ms
    ✓ createFront (2)
-     ✓ closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open 1635ms
- ✓ |sim| src/features/terrain/terrain.test.ts (20 tests) 774ms
- ✓ |client| src/online/OnlineWorld.prediction.test.ts (19 tests) 3532ms
-   ✓ OnlineWorld predicting the local player (18)
-     ✓ moves the local player on the frame of the key press, before the server has heard of it, and shows it walking 348ms
-     ✓ stops at a wall where the server stops, without being pulled back 375ms
-     ✓ starts over on the new seat after a drop, and predicts the held move there 1039ms
-     ✓ fuzzed with acknowledgements that are garbage, wrong or far from the truth, never throws and ends on the server position 308ms
- ✓ |sim| src/core/prediction.test.ts (10 tests) 844ms
-   ✓ a prediction (10)
-     ✓ takes no entity id for terrain, however big the map: the first id a server hands a player is free to adopt 339ms
- ✓ |sim| src/core/replica.test.ts (23 tests) 1219ms
+     ✓ closes a connection on which no byte moves: a client that asks for a large file and never reads it does not hold it open 1688ms
+ ✓ |sim| src/content/world/world.test.ts (17 tests) 710ms
+ ✓ |sim| src/core/replica.test.ts (23 tests) 1103ms
    ✓ a replica fed full world states every tick (1)
-     ✓ draws exactly what the sim draws, tick after tick, through JSON 793ms
- ✓ |sim| src/core/worldState.test.ts (10 tests) 465ms
- ✓ |sim| src/features/player/movement.test.ts (10 tests) 468ms
- ✓ |sim| src/core/determinism.test.ts (4 tests) 496ms
+     ✓ draws exactly what the sim draws, tick after tick, through JSON 654ms
+ ✓ |client| src/online/OnlineWorld.prediction.test.ts (19 tests) 3412ms
+   ✓ OnlineWorld predicting the local player (18)
+     ✓ moves the local player on the frame of the key press, before the server has heard of it, and shows it walking 365ms
+     ✓ stops at a wall where the server stops, without being pulled back 368ms
+     ✓ starts over on the new seat after a drop, and predicts the held move there 1070ms
+     ✓ stops guessing a second past the last server state when states stop coming, and picks up without a yank when they come back 308ms
+ ✓ |sim| src/core/worldState.test.ts (10 tests) 308ms
+ ✓ |sim| src/core/determinism.test.ts (4 tests) 422ms
    ✓ determinism (4)
-     ✓ same seed + same commands = identical state, including physics bytes 420ms
- ✓ |sim| src/features/player/character.test.ts (24 tests) 1667ms
+     ✓ same seed + same commands = identical state, including physics bytes 391ms
+ ✓ |sim| src/features/player/character.test.ts (27 tests) 1505ms
    ✓ fuzzing player/join (2)
-     ✓ never throws and never seats an illegal character, for thousands of hostile joins 792ms
-     ✓ reads back any name it accepted as the same name 577ms
- ✓ |sim| src/content/world/world.test.ts (17 tests) 813ms
-   ✓ a world that grows (4)
-     ✓ keeps every existing tile, tile coordinate and position in metres when an area is added on any side 468ms
- ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 232ms
- ✓ |server| src/startServer.test.ts (27 tests) 2736ms
+     ✓ never throws and never seats an illegal character, for thousands of hostile joins 786ms
+     ✓ reads back any name it accepted as the same name 449ms
+ ✓ |sim| src/features/terrain/terrain.test.ts (20 tests) 569ms
+ ✓ |sim| src/features/player/spawn.test.ts (8 tests) 216ms
+ ✓ |sim| src/features/player/movement.test.ts (10 tests) 257ms
+ ✓ |sim| src/features/player/facing.test.ts (7 tests) 227ms
+ ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 132ms
+ ✓ |sim| src/core/snapshot.test.ts (5 tests) 161ms
+ ✓ |sim| src/features/player/passThrough.test.ts (3 tests) 180ms
+ ✓ |sim| src/core/physics.test.ts (3 tests) 81ms
+ ✓ |sim| src/content/defs.test.ts (3 tests) 89ms
+ ✓ |sim| src/core/restore.test.ts (11 tests) 31ms
+ ✓ |server| src/startServer.test.ts (27 tests) 2832ms
    ✓ one process with a short idle timeout (2)
-     ✓ never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room 1528ms
-     ✓ closes a plain connection that says nothing 302ms
- ✓ |sim| src/features/player/spawn.test.ts (8 tests) 241ms
- ✓ |sim| src/core/restore.allocation.test.ts (2 tests) 198ms
- ✓ |sim| src/features/player/facing.test.ts (7 tests) 276ms
- ✓ |sim| src/core/snapshot.test.ts (5 tests) 237ms
- ✓ |sim| src/content/defs.test.ts (3 tests) 173ms
- ✓ |sim| src/core/restore.test.ts (11 tests) 32ms
- ✓ |sim| src/core/physics.test.ts (3 tests) 69ms
- ✓ |client| src/online/OnlineWorld.test.ts (16 tests) 5392ms
+     ✓ never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room 1624ms
+     ✓ closes a plain connection that says nothing 304ms
+ ✓ |client| src/online/OnlineWorld.test.ts (16 tests) 5369ms
    ✓ OnlineWorld (15)
-     ✓ joins as the character it was given, and again as the same one after a drop 1013ms
-     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1006ms
-     ✓ stops walking when the page loses focus, once, and does not walk again after a reconnect 1004ms
-     ✓ after a drop refuses a welcome for another world, so the page can reload 1006ms
-     ✓ after a drop refuses a welcome for another map: a server redeployed with new terrain 1006ms
+     ✓ joins as the character it was given, and again as the same one after a drop 1020ms
+     ✓ after a drop takes the new seat and the new state from the next welcome, and repeats the move still held 1009ms
+     ✓ stops walking when the page loses focus, once, and does not walk again after a reconnect 1008ms
+     ✓ after a drop refuses a welcome for another world, so the page can reload 1009ms
+     ✓ after a drop refuses a welcome for another map: a server redeployed with new terrain 1010ms
 stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts
 {"event":"world-room-idle-kick","slot":0,"idleSeconds":601}
 
@@ -140,25 +136,24 @@ stdout | src/world/worldRoom.test.ts > WorldRoom over a real connection > frees 
 stdout | src/world/worldRoom.test.ts > WorldRoom driven directly > frees the seat of an idle session the moment it is kicked, before its socket closes, and refuses a timeout that is not positive
 {"event":"world-room-idle-kick","slot":0,"idleSeconds":2}
 
- ✓ |server| src/world/worldRoom.test.ts (20 tests) 10585ms
+ ✓ |server| src/world/worldRoom.test.ts (20 tests) 10509ms
    ✓ WorldRoom over a real connection (16)
-     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 421ms
-     ✓ shows every player the others moving, through deltas that chain without a gap 341ms
-     ✓ refuses a join without a legal character before it takes a seat, and keeps serving the players it has 342ms
-     ✓ tells a player which of its moves the sim applied and in which tick, just before the first update that includes it, and tells nobody else 420ms
-     ✓ frees the seat of a player who leaves, removes their avatar for the others, and seats the next joiner there 331ms
-     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 428ms
-     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1237ms
-     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5107ms
-     ✓ frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts 691ms
+     ✓ seats 5 players by room id, each welcomed with its own seat and already in the world 397ms
+     ✓ shows every player the others moving, through deltas that chain without a gap 328ms
+     ✓ refuses a join without a legal character before it takes a seat, and keeps serving the players it has 427ms
+     ✓ tells a player which of its moves the sim applied and in which tick, just before the first update that includes it, and tells nobody else 427ms
+     ✓ drops oversized, unknown, slot-carrying and malformed messages while the world keeps running 417ms
+     ✓ answers world/resync with a full state the replica applies, and gives a resync flood only its own small budget 1240ms
+     ✓ closes a connection that never acknowledges its join after 5000 ms and frees the seat 5111ms
+     ✓ frees the seat of a session with no accepted input for 10 minutes, closing it with 4100 "idle", and keeps one that plays, also while it holds one direction for several timeouts 682ms
 
  Test Files  57 passed (57)
-      Tests  465 passed (465)
-   Start at  14:15:12
-   Duration  13.15s (tests 74%, import 20%, transform 5%, worker 1%)
+      Tests  468 passed (468)
+   Start at  14:28:47
+   Duration  12.70s (tests 77%, import 18%, transform 4%, worker 1%)
 
-    Isolate  57 workers spawned · ~164ms startup each (spawn + environment, per file)
-             at least ~874ms faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  57 workers spawned · ~140ms startup each (spawn + environment, per file)
+             at least ~748ms faster with isolate: false — reuses workers across files instead of one per file
 
 JSON report written to <repo>/verifications/54-character-creator/proof/01-tests-report.json
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > refuses a join without a legal character before it takes a seat, and keeps serving the players it has
@@ -218,6 +213,18 @@ stderr | src/startServer.test.ts > one process with a short idle timeout > never
 stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
 @colyseus/sdk: onMessage() not registered for type 'world/delta'.
 
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
+
 stderr | src/online/OnlineWorld.prediction.test.ts > OnlineWorld predicting the local player > draws the local player from server states while there is no prediction: before it has loaded, when it cannot load, when it is switched off
 Novaland: no prediction, the local player follows the server Error: offline
     at createPrediction (<repo>/packages/client/src/online/OnlineWorld.prediction.test.ts:319:98)
@@ -251,21 +258,6 @@ stderr | src/startServer.test.ts > one process with a short idle timeout > never
 stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
 @colyseus/sdk: onMessage() not registered for type 'world/delta'.
 
-stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
-@colyseus/sdk: onMessage() not registered for type 'world/delta'.
-
-stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
-@colyseus/sdk: onMessage() not registered for type 'world/delta'.
-
-stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
-@colyseus/sdk: onMessage() not registered for type 'world/delta'.
-
-stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
-@colyseus/sdk: onMessage() not registered for type 'world/delta'.
-
-stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
-@colyseus/sdk: onMessage() not registered for type 'world/delta'.
-
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > welcomes with protocol 4 and refuses a join that names another protocol or none, without giving it a seat
 Room connection was closed unexpectedly (4002): 
 
@@ -280,6 +272,9 @@ Room connection was closed unexpectedly (4002):
 
 stderr | src/world/worldRoom.test.ts > WorldRoom over a real connection > welcomes with protocol 4 and refuses a join that names another protocol or none, without giving it a seat
 Room connection was closed unexpectedly (4002): 
+
+stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
+@colyseus/sdk: onMessage() not registered for type 'world/delta'.
 
 stderr | src/startServer.test.ts > one process with a short idle timeout > never cuts a seated player for being quiet: the idle timeout is for connections that are not in the room
 @colyseus/sdk: onMessage() not registered for type 'world/delta'.
@@ -340,5 +335,5 @@ $ pnpm sim:headless (exit 0)
 > tsx src/headlessRun.ts
 
 {"simulatedSeconds":5,"ticks":300,"hash":"b8e39540","player":{"x":16.416568756103516,"y":19.500083923339844}}
-(node:5917) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:14055) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)

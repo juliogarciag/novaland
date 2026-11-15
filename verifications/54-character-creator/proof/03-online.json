@@ -102,13 +102,13 @@
             "475569"
           ],
           "position": {
-            "x": 120,
-            "y": 248
+            "x": 88,
+            "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": 120,
-            "y": 228,
+            "x": 88,
+            "y": 196,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -124,7 +124,7 @@
           ]
         }
       ],
-      "hud": "fps  33   latency   1 ms   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  32   latency   1 ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
@@ -232,13 +232,13 @@
             "475569"
           ],
           "position": {
-            "x": 120,
-            "y": 248
+            "x": 88,
+            "y": 216
           },
           "label": {
             "name": "José 🚀",
-            "x": 120,
-            "y": 228,
+            "x": 88,
+            "y": 196,
             "textureKey": "player/look/0-3-6"
           },
           "textureColors": [
@@ -470,7 +470,7 @@
           ]
         }
       ],
-      "hud": "fps  45   latency  -- ms   2/5 online\nyou: Ada Lovelace   players: 2",
+      "hud": "fps  58   latency  -- ms   2/5 online\nyou: Ada Lovelace   players: 2",
       "remembered": "{\"name\":\"Ada Lovelace\",\"look\":{\"skin\":4,\"hair\":6,\"clothes\":1}}",
       "hash": "",
       "creatorShown": false,
@@ -600,7 +600,7 @@
           ]
         }
       ],
-      "hud": "fps  44   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
+      "hud": "fps  59   latency  -- ms   2/5 online\nyou: José 🚀   players: 2",
       "remembered": "{\"name\":\"José 🚀\",\"look\":{\"skin\":0,\"hair\":3,\"clothes\":6}}",
       "hash": "",
       "creatorShown": false,

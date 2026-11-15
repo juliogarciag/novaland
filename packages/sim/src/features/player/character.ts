@@ -28,23 +28,50 @@ const MAX_RAW_NAME_LENGTH = 8 * MAX_NAME_CODE_POINTS;
  * surrogates, private-use characters, line and paragraph separators, the
  * braille blank, and every invisible character: formatting characters such as
  * text-direction overrides, and the letters that draw as nothing (the Hangul
- * fillers, the combining grapheme joiner). Four invisible characters stay
- * legal because real spellings need them, each only where `MISPLACED_INVISIBLE`
- * allows: the zero-width joiner and non-joiner, and the two variation selectors
- * that pick an emoji's or a symbol's form.
+ * fillers, the combining grapheme joiner, the object replacement character).
+ * Unassigned code points are refused as well, since nobody can say what they
+ * draw, except in the ranges reserved for emoji, so an emoji newer than this
+ * engine's tables still passes. Three invisible characters stay legal because
+ * real spellings need them, each only where `invisibleIsMisplaced` allows:
+ * the zero-width joiner and non-joiner, and the emoji variation selector.
  */
-const FORBIDDEN_IN_NAME = /[\p{Cc}\p{Cs}\p{Co}\p{Zl}\p{Zp}\u2800]|(?!\u200c|\u200d|\ufe0e|\ufe0f)[\p{Cf}\p{Default_Ignorable_Code_Point}]/u;
+const FORBIDDEN_IN_NAME = /[\p{Cc}\p{Cs}\p{Co}\p{Zl}\p{Zp}\u2800\ufffc]|(?!\u200c|\u200d|\ufe0f)[\p{Cf}\p{Default_Ignorable_Code_Point}]|(?!\p{Extended_Pictographic})\p{Cn}/u;
+
+/** A combining mark with no letter to sit on: at the start, or after a space. */
+const BARE_MARK = /(?:^|\p{Z})\p{M}/u;
 
 /**
- * One of the four legal invisible characters where it spells nothing: a
- * joiner that is not inside an emoji sequence or between two letters of a
- * word, a variation selector that does not follow the emoji, symbol or keycap
- * digit it selects a form of, or a combining mark with no letter to sit on.
- * Placed like this they would only make a name that looks blank, or one that
- * looks exactly like another player's.
+ * The flags of England, Scotland and Wales: a black flag, tag characters
+ * spelling the region, and the tag that ends them. Tag characters are
+ * invisible and refused everywhere else; inside one of these they are the
+ * spelling of a flag, so the rule looks at the flag as its first character.
  */
-const MISPLACED_INVISIBLE =
-  /(?<![\p{L}\p{M}\p{Extended_Pictographic}\p{Emoji_Modifier}\ufe0f])[\u200c\u200d]|[\u200c\u200d](?![\p{L}\p{Extended_Pictographic}])|(?<![\p{Extended_Pictographic}0-9#*])[\ufe0e\ufe0f]|(?:^|\p{Z})\p{M}/u;
+const TAGGED_FLAG = /\u{1f3f4}[\u{e0020}-\u{e007e}]+\u{e007f}/gu;
+
+/** The emoji variation selector after an emoji that already draws as one: it selects nothing, so it is dropped when a name is read. */
+const REDUNDANT_SELECTOR = /(?<=\p{Emoji_Presentation})\ufe0f/gu;
+
+const ZERO_WIDTH_NON_JOINER = 0x200c;
+const ZERO_WIDTH_JOINER = 0x200d;
+const EMOJI_SELECTOR = 0xfe0f;
+const KEYCAP = 0x20e3;
+
+/** What a joiner may follow inside an emoji sequence: an emoji, its skin tone, or its selector. */
+const BEFORE_EMOJI_JOINER = /[\p{Extended_Pictographic}\p{Emoji_Modifier}\ufe0f]/u;
+const EMOJI = /\p{Extended_Pictographic}/u;
+const DRAWS_AS_EMOJI_ALREADY = /\p{Emoji_Presentation}/u;
+const KEYCAP_BASE = /[0-9#*]/u;
+
+/**
+ * Letters, marks and digits of the scripts whose spelling uses the joiners:
+ * the cursive ones, where a non-joiner breaks a connection, and the Indic
+ * ones, where a joiner picks the form of a conjunct. Between two characters
+ * of other scripts (Latin, Greek, Cyrillic, Han, kana, Hangul) a joiner
+ * changes nothing on screen, so there it could only make a name that looks
+ * exactly like another player's.
+ */
+const SPELLED_WITH_JOINERS =
+  /[\p{Script=Arabic}\p{Script=Syriac}\p{Script=Nko}\p{Script=Mongolian}\p{Script=Devanagari}\p{Script=Bengali}\p{Script=Gurmukhi}\p{Script=Gujarati}\p{Script=Oriya}\p{Script=Tamil}\p{Script=Telugu}\p{Script=Kannada}\p{Script=Malayalam}\p{Script=Sinhala}]/u;
 
 /** Something that draws: a name needs at least one. */
 const VISIBLE_IN_NAME = /[^\p{M}\p{Z}\p{Default_Ignorable_Code_Point}]/u;
@@ -68,8 +95,9 @@ const graphemes = new Intl.Segmenter('en', { granularity: 'grapheme' });
 
 /**
  * The name behind an arbitrary value, the way the sim stores it, or why it
- * cannot be one. A name is normalised, never trusted: composed (NFC), runs of
- * spaces collapsed to one, spaces around it removed. What is left must show
+ * cannot be one. A name is normalised, never trusted: composed (NFC), emoji
+ * selectors that select nothing dropped, runs of spaces collapsed to one,
+ * spaces around it removed. What is left must show
  * something, be at most MAX_NAME_CHARACTERS visible characters and
  * MAX_NAME_CODE_POINTS code points, hold only characters a name may hold
  * (`holdsOnlyNameCharacters`) and no pile of marks on one character. Reading
@@ -78,7 +106,7 @@ const graphemes = new Intl.Segmenter('en', { granularity: 'grapheme' });
 export function readCharacterName(value: unknown): { readonly name: string } | { readonly problem: CharacterNameProblem } {
   if (typeof value !== 'string') return { problem: 'not-text' };
   if (value.length > MAX_RAW_NAME_LENGTH) return { problem: 'too-long' };
-  const composed = value.normalize('NFC');
+  const composed = value.normalize('NFC').replace(REDUNDANT_SELECTOR, '');
   if (!holdsOnlyNameCharacters(composed)) return { problem: 'forbidden-character' };
   const name = composed.replace(SPACE_RUNS, ' ').trim();
   if (!VISIBLE_IN_NAME.test(name)) return { problem: 'empty' };
@@ -96,7 +124,35 @@ export function readCharacterName(value: unknown): { readonly name: string } | {
  * name that came off the network (`getCharacter`).
  */
 export function holdsOnlyNameCharacters(text: string): boolean {
-  return !FORBIDDEN_IN_NAME.test(text) && !MISPLACED_INVISIBLE.test(text);
+  const withoutFlagTags = text.replace(TAGGED_FLAG, '\u{1f3f4}');
+  return !FORBIDDEN_IN_NAME.test(withoutFlagTags) && !BARE_MARK.test(withoutFlagTags) && !invisibleIsMisplaced(withoutFlagTags);
+}
+
+/**
+ * True when one of the three legal invisible characters sits where it spells
+ * nothing, so that it could only make a name look blank or exactly like
+ * another player's. A joiner belongs inside an emoji sequence (after an
+ * emoji, a skin tone or a selector and before an emoji) or between two
+ * characters of a script that is spelled with joiners. The emoji selector
+ * belongs after a symbol that would otherwise draw as text, or in a keycap
+ * (a digit, the selector, the keycap mark).
+ */
+function invisibleIsMisplaced(text: string): boolean {
+  const characters = Array.from(text);
+  return characters.some((character, index) => {
+    const codePoint = character.codePointAt(0);
+    const before = characters[index - 1] ?? '';
+    const after = characters[index + 1] ?? '';
+    if (codePoint === ZERO_WIDTH_JOINER || codePoint === ZERO_WIDTH_NON_JOINER) {
+      const joinsEmoji = codePoint === ZERO_WIDTH_JOINER && BEFORE_EMOJI_JOINER.test(before) && EMOJI.test(after);
+      return !joinsEmoji && !(SPELLED_WITH_JOINERS.test(before) && SPELLED_WITH_JOINERS.test(after));
+    }
+    if (codePoint === EMOJI_SELECTOR) {
+      if (KEYCAP_BASE.test(before)) return after.codePointAt(0) !== KEYCAP;
+      return !EMOJI.test(before) || DRAWS_AS_EMOJI_ALREADY.test(before);
+    }
+    return false;
+  });
 }
 
 /** True when `text` holds something that draws. */
