@@ -11,3 +11,6 @@
 
 /** The seat was freed because the session sent no input for `IDLE_TIMEOUT_MS` while standing still (#22). A client that sees this shows "you were away" and rejoins only when the player asks. */
 export const IDLE_KICK = { code: 4100, reason: 'idle' } as const;
+
+/** The seat was freed because the same player joined again, from another tab or after a connection the server had not yet seen drop (#55): one player token is one player, and the newest join is the one that plays. A client that sees this shows "you are playing somewhere else" and rejoins only when the player asks, or two tabs would take the seat from each other for ever. Its copy in the client is `REPLACED_KICK_CODE`. */
+export const REPLACED_KICK = { code: 4101, reason: 'joined-elsewhere' } as const;

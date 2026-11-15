@@ -10,7 +10,7 @@ import { pickAvatarDefId } from './avatars';
 import { Facing, MoveIntent, Player } from './components';
 import { MAX_ADOPTED_COORDINATE, MAX_ADOPTED_RADIUS, MIN_MOVE_INTENT } from './defs';
 import { findPlayerEntity } from './queries';
-import { pickSpawnPoint } from './spawn';
+import { pickReturnPoint, pickSpawnPoint } from './spawn';
 
 /** Players spawn looking down the screen (y points down). */
 const SPAWN_FACING = { x: 0, y: 1 } as const;
@@ -29,7 +29,8 @@ const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 /**
  * Player-controlled bodies. A `player/join` dresses the new player in an
  * avatar the sim picks (never the client) and spawns it on a free tile near
- * the map's spawn, `player/move` sets its intended direction and every tick
+ * the map's spawn, or where the command says a returning player left
+ * (`returnTo`, set only by whoever steps the sim), `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped
@@ -46,7 +47,7 @@ export const playerFeature: Feature = {
     switch (command.type) {
       case 'player/join':
         if (isValidSlot(command.slot) && !sim.isFull && findPlayerEntity(sim, command.slot) === undefined) {
-          spawnPlayer(sim, command.slot);
+          spawnPlayer(sim, command.slot, readPoint(command.returnTo));
         }
         return;
       case 'player/leave': {
@@ -104,10 +105,10 @@ function attachPlayerBody(sim: Sim, eid: number, ball: BallBodyOptions): void {
   for (let index = 0; index < rigidBody.numColliders(); index += 1) rigidBody.collider(index).setCollisionGroups(PLAYER_COLLISION_GROUPS);
 }
 
-/** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. */
-function spawnPlayer(sim: Sim, slot: number): number {
+/** The avatar and the spawn point are both picked before the entity exists, so the new player never counts as present for its own choices. A returning player appears where it left (`returnTo`) when a free tile is there or near it. */
+function spawnPlayer(sim: Sim, slot: number, returnTo: { readonly x: number; readonly y: number } | undefined): number {
   const def = getDef(pickAvatarDefId(sim));
-  const spawn = pickSpawnPoint(sim);
+  const spawn = (returnTo && pickReturnPoint(sim, returnTo)) ?? pickSpawnPoint(sim);
   const radius = def.radius ?? DEFAULT_RADIUS;
   const eid = sim.createEntity();
   const player = sim.store(Player);
@@ -134,6 +135,14 @@ function spawnPlayer(sim: Sim, slot: number): number {
 
 function isValidSlot(slot: unknown): slot is number {
   return typeof slot === 'number' && Number.isInteger(slot) && slot >= 0 && slot < MAX_PLAYER_SLOTS;
+}
+
+/** The `{ x, y }` of a point given as two finite numbers; undefined for anything else. */
+function readPoint(value: unknown): { readonly x: number; readonly y: number } | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const { x, y } = value as { x?: unknown; y?: unknown };
+  if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return undefined;
+  return { x, y };
 }
 
 /**

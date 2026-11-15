@@ -1,4 +1,5 @@
-import type { MoveMessage } from '@novaland/sim';
+import { isPlayerToken, type MoveMessage } from '@novaland/sim';
+import { createHash } from 'node:crypto';
 
 /**
  * The trust boundary at the network edge. What a session sends is decoded by
@@ -36,6 +37,25 @@ export function speaksProtocol(options: unknown, protocol: number): boolean {
     return (options as { protocol?: unknown }).protocol === protocol;
   } catch {
     return false;
+  }
+}
+
+/**
+ * The key the server knows a player by, from the options of a join: the
+ * SHA-256 of their `playerToken`, or undefined when the options carry no
+ * token of the right shape (`isPlayerToken`), which makes the join a new
+ * player's. The token is a credential and stops here: the room, the store
+ * and the log only ever see the key, which cannot be turned back into a
+ * token or presented in a join. Nothing else in the options is read, so no
+ * field a client adds can say where its player appears.
+ */
+export function readPlayerKey(options: unknown): string | undefined {
+  if (typeof options !== 'object' || options === null) return undefined;
+  try {
+    const token = (options as { playerToken?: unknown }).playerToken;
+    return isPlayerToken(token) ? createHash('sha256').update(token).digest('base64url') : undefined;
+  } catch {
+    return undefined;
   }
 }
 

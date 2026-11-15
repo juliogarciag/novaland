@@ -13,6 +13,7 @@ describe('describeStatus', () => {
     expect(describeStatus({ kind: 'disconnected', retryAt: soon, attempt: 2 })).toBe('Disconnected from the world. Retrying in 5s…');
     expect(describeStatus({ kind: 'disconnected', retryAt: Date.now() - 100, attempt: 2 })).toBe('Disconnected from the world. Retrying in 0s…');
     expect(describeStatus({ kind: 'away' })).toBe('You were away too long, so the server freed your seat. Rejoin to play again.');
+    expect(describeStatus({ kind: 'elsewhere' })).toBe('You are playing in another tab or window. Play here to carry on in this one.');
     expect(describeStatus({ kind: 'incompatible', reason: 'this page and the server have different versions of the world' })).toBe('Cannot play on this server: this page and the server have different versions of the world.');
     expect(describeStatus({ kind: 'online', slot: 0 })).toBe('');
   });
