@@ -103,6 +103,35 @@ export const CURSOR_DESIGNS = [
     ],
   },
   {
+    // The dark dart in the browns of the world: the same shape, bark and earth instead of blue.
+    name: 'brown-dart',
+    hotspot: { x: 0, y: 0 },
+    palette: {
+      X: [0x1c, 0x0f, 0x0a], // outline
+      l: [0x8a, 0x5a, 0x3a], // lit half
+      d: [0x4a, 0x2c, 0x1c], // dark half
+      z: [0x00, 0x00, 0x00, 0x60], // shadow
+    },
+    rows: [
+      'X',
+      'XXz',
+      'XlXz',
+      'XldXz',
+      'XlddXz',
+      'XllddXz',
+      'XlldddXz',
+      'XllddddXz',
+      'XlllddddXz',
+      'XllldddddXz',
+      'XlllldddddXz',
+      'XlllXXXXXXXz',
+      'XllXzzzzzzzz',
+      'XlXz',
+      'XXz',
+      '.zz',
+    ],
+  },
+  {
     // The classic pointer in white with a grey shaded right edge: the first design of the ticket, kept to compare.
     name: 'shaded-arrow',
     hotspot: { x: 0, y: 0 },

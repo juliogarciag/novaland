@@ -10,6 +10,7 @@
 export const CURSORS = [
   { name: 'warm-arrow', hotspot: { x: 0, y: 0 } },
   { name: 'dark-dart', hotspot: { x: 0, y: 0 } },
+  { name: 'brown-dart', hotspot: { x: 0, y: 0 } },
   { name: 'shaded-arrow', hotspot: { x: 0, y: 0 } },
 ] as const;
 

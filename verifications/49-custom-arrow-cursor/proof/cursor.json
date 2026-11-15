@@ -20,6 +20,15 @@
         }
       },
       {
+        "design": "brown-dart",
+        "cursor": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto",
+        "image": {
+          "name": "brown-dart.png",
+          "width": 32,
+          "height": 32
+        }
+      },
+      {
         "design": "shaded-arrow",
         "cursor": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto",
         "image": {
@@ -44,6 +53,15 @@
         "cursor": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto",
         "image": {
           "name": "dark-dart@2x.png",
+          "width": 64,
+          "height": 64
+        }
+      },
+      {
+        "design": "brown-dart",
+        "cursor": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto",
+        "image": {
+          "name": "brown-dart@2x.png",
           "width": 64,
           "height": 64
         }
@@ -85,7 +103,17 @@
       "details": "32x32"
     },
     {
-      "name": "1x screen: after 2 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
+      "name": "1x screen: after 2 presses of C, every point of the window shows brown-dart, clicking at its hotspot, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "1x screen: brown-dart.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "pass": true,
+      "details": "32x32"
+    },
+    {
+      "name": "1x screen: after 3 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
       "details": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto"
     },
@@ -95,7 +123,7 @@
       "details": "32x32"
     },
     {
-      "name": "1x screen: after 3 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
+      "name": "1x screen: after 4 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
       "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
     },
@@ -125,7 +153,17 @@
       "details": "64x64"
     },
     {
-      "name": "2x screen: after 2 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
+      "name": "2x screen: after 2 presses of C, every point of the window shows brown-dart, clicking at its hotspot, with auto as the fallback",
+      "pass": true,
+      "details": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto"
+    },
+    {
+      "name": "2x screen: brown-dart@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "pass": true,
+      "details": "64x64"
+    },
+    {
+      "name": "2x screen: after 3 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
       "details": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto"
     },
@@ -135,7 +173,7 @@
       "details": "64x64"
     },
     {
-      "name": "2x screen: after 3 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
+      "name": "2x screen: after 4 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
       "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
     },
