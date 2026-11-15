@@ -15,7 +15,7 @@
  *   ratio of 2, and in a window too narrow to sit beside the HUD lines.
  */
 import { chromium } from 'playwright';
-import { hex, hold, openGame, overlap, pictureOf, saveProofPictures, standStill, startClient, stateOf, terrainOnMinimap, terrainSummary } from './browser.mjs';
+import { clothesColorOf, hex, hold, openGame, overlap, pictureOf, saveProofPictures, standStill, startClient, stateOf, terrainOnMinimap, terrainSummary } from './browser.mjs';
 import { check, summarize, waitFor, writeProof } from './lib.mjs';
 
 const PORT = 5961;
@@ -79,11 +79,12 @@ try {
   const near = (first, second) => Math.hypot(first.x - second.x, first.y - second.y) <= 1;
   const otherInSim = await page.evaluate((eid) => {
     const entity = window.__novaland.snapshot().entities.find((candidate) => candidate.id === eid);
-    return { ...entity.components.Position, color: window.__novaland.defs.find((def) => def.id === entity.components.DefRef.id).color };
+    return entity.components.Position;
   }, otherPlayer.eid);
+  otherInSim.color = await clothesColorOf(page, otherPlayer.eid);
   results.push(check('the local player is marked in the middle of the minimap, in white', localPlayer.isLocalPlayer && localPlayer.eid === marked.player.eid && near(localPlayer, centreOfRect) && picture.colorAt(localPlayer.x, localPlayer.y) === LOCAL_PLAYER_COLOR, `at (${localPlayer.x}, ${localPlayer.y}), pixel ${hex(picture.colorAt(localPlayer.x, localPlayer.y))}`));
   results.push(check('the starting point is marked on the world\'s spawn tile, as a diamond in its own colour', startingPoint.source === 'landmark' && startingPoint.shape === 'diamond' && !startingPoint.onEdge && near(startingPoint, onScreen(marked.spawn)) && near(startingPointAlone, startingPoint) && startingPointPixel === startingPoint.color, `at (${startingPoint.x}, ${startingPoint.y}), pixel ${hex(startingPointPixel)}, marker ${hex(startingPoint.color)}`));
-  results.push(check('the other player is marked where the sim has them, as a dot in their avatar\'s colour', otherPlayer.source === 'entity' && !otherPlayer.isLocalPlayer && otherPlayer.shape === 'dot' && otherPlayer.color === otherInSim.color && near(otherPlayer, onScreen(otherInSim)) && picture.colorAt(otherPlayer.x, otherPlayer.y) === otherInSim.color, `at (${otherPlayer.x.toFixed(1)}, ${otherPlayer.y.toFixed(1)}), pixel ${hex(picture.colorAt(otherPlayer.x, otherPlayer.y))}, avatar ${hex(otherInSim.color)}`));
+  results.push(check('the other player is marked where the sim has them, as a dot in the colour of their clothes', otherPlayer.source === 'entity' && !otherPlayer.isLocalPlayer && otherPlayer.shape === 'dot' && otherPlayer.color === otherInSim.color && near(otherPlayer, onScreen(otherInSim)) && picture.colorAt(otherPlayer.x, otherPlayer.y) === otherInSim.color, `at (${otherPlayer.x.toFixed(1)}, ${otherPlayer.y.toFixed(1)}), pixel ${hex(picture.colorAt(otherPlayer.x, otherPlayer.y))}, clothes ${hex(otherInSim.color)}`));
   const looks = [LOCAL_PLAYER_COLOR, startingPoint.color, otherPlayer.color];
   results.push(check('the three are told apart: three colours, and the starting point is another shape', new Set(looks).size === 3 && startingPoint.shape !== otherPlayer.shape, looks.map(hex).join(', ')));
   await saveProofPictures(page, '02-solo-walked-with-another-player');

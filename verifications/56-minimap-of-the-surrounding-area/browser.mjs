@@ -25,9 +25,24 @@ export async function startRoomServer({ port }) {
   return roomServer;
 }
 
+/** Where the client keeps the character a player made (`CHARACTER_STORAGE_KEY` in packages/client/src/creator/rememberedCharacter.ts). */
+const CHARACTER_STORAGE_KEY = 'novaland.character';
+/** The character a page plays as unless a check gives it another: clothes are palette indexes, and the minimap's dot takes their colour. */
+export const CHARACTER = { name: 'Mapper', look: { skin: 1, hair: 2, clothes: 5 } };
+
+/** The colour of the clothes the character of entity `eid` wears, read from the sim and the palettes: what its dot on the minimap must be. */
+export function clothesColorOf(page, eid) {
+  return page.evaluate((id) => {
+    const character = window.__novaland.characters().find((candidate) => candidate.eid === id);
+    return window.__novaland.characterPalettes.clothes[character.look.clothes].color;
+  }, eid);
+}
+
 /** A page of its own browser context (its own player online), open on the game with the local player drawn and the minimap showing. */
-export async function openGame(browser, { port, viewport, pixelRatio = 1, online = false, errors = [], name = '' }) {
+export async function openGame(browser, { port, viewport, pixelRatio = 1, online = false, errors = [], name = '', character = CHARACTER }) {
   const context = await browser.newContext({ viewport, deviceScaleFactor: pixelRatio });
+  // A returning player: the page goes straight into the world instead of stopping at the creator screen.
+  await context.addInitScript(([key, value]) => window.localStorage.setItem(key, value), [CHARACTER_STORAGE_KEY, JSON.stringify(character)]);
   const page = await context.newPage();
   page.on('pageerror', (error) => errors.push(`${name}${error}`));
   page.on('console', (message) => message.type() === 'error' && errors.push(`${name}${message.text()}`));

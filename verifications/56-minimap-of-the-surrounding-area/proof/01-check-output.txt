@@ -1,5 +1,5 @@
 $ pnpm install
-(node:80986) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:89145) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: all 4 workspace projects
 Lockfile is up to date, resolution step is skipped
@@ -13,7 +13,7 @@ Already up to date
 │                                                                              │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
-Done in 547ms using pnpm v10.9.0
+Done in 517ms using pnpm v10.9.0
 
 
 $ pnpm typecheck
@@ -21,13 +21,13 @@ $ pnpm typecheck
 > novaland@0.0.0 typecheck <repo>
 > tsc -p tsconfig.json && pnpm -r typecheck
 
-(node:81016) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:89181) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
 
@@ -44,46 +44,54 @@ $ pnpm build
 > novaland@0.0.0 build <repo>
 > pnpm -r build
 
-(node:81315) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:89331) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
 packages/client build$ vite build
 packages/server build$ vite build
-packages/server build: vite v8.3.6 building ssr environment for production...
 packages/client build: vite v8.3.6 building client environment for production...
-packages/server build: transforming...
+packages/server build: vite v8.3.6 building ssr environment for production...
 packages/client build: transforming...
+packages/server build: transforming...
 packages/server build: ✓ 156 modules transformed.
 packages/server build: rendering chunks...
 packages/server build: computing gzip size...
-packages/server build: dist/index.mjs                    318.72 kB │ gzip:    81.48 kB │ map:   787.14 kB
+packages/server build: dist/index.mjs                    333.57 kB │ gzip:    86.41 kB │ map:   816.81 kB
 packages/server build: dist/assets/rapier-CIsgl35y.js  3,488.08 kB │ gzip: 1,316.44 kB │ map: 3,650.85 kB
-packages/server build: ✓ built in 158ms
+packages/server build: ✓ built in 131ms
 packages/server build: Done
-packages/client build: ✓ 228 modules transformed.
+packages/client build: ✓ 235 modules transformed.
 packages/client build: rendering chunks...
 packages/client build: computing gzip size...
-packages/client build: dist/index.html                     1.03 kB │ gzip:     0.60 kB
-packages/client build: dist/assets/index-DZURI51h.js   1,717.97 kB │ gzip:   463.63 kB
-packages/client build: dist/assets/rapier-C1NO8tr2.js  3,446.04 kB │ gzip: 1,313.58 kB
-packages/client build: ✓ built in 558ms
+packages/client build: dist/index.html                                               3.27 kB │ gzip:     1.15 kB
+packages/client build: dist/assets/tiny5-latin-400-normal-DyAV0xrX.woff              5.23 kB
+packages/client build: dist/assets/tiny5-greek-400-normal-Cw3cUjAn.woff2             5.68 kB
+packages/client build: dist/assets/tiny5-cyrillic-ext-400-normal-C1DjGVvv.woff2      6.25 kB
+packages/client build: dist/assets/tiny5-cyrillic-400-normal-CzHgMhVb.woff2          6.65 kB
+packages/client build: dist/assets/tiny5-latin-400-normal-BsIaeAHC.woff2             9.03 kB
+packages/client build: dist/assets/tiny5-latin-ext-400-normal-BksQzalU.woff         11.52 kB
+packages/client build: dist/assets/tiny5-latin-ext-400-normal-_SHQDGOK.woff2        16.67 kB
+packages/client build: dist/assets/index-LmXvi7Tb.css                               14.96 kB │ gzip:    10.00 kB
+packages/client build: dist/assets/index-_Edyupqn.js                             1,731.84 kB │ gzip:   468.96 kB
+packages/client build: dist/assets/rapier-C1NO8tr2.js                            3,446.04 kB │ gzip: 1,313.58 kB
 packages/client build: [plugin builtin:vite-reporter] 
 packages/client build: (!) Some chunks are larger than 500 kB after minification. Consider:
 packages/client build: - Using dynamic import() to code-split the application
 packages/client build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 packages/client build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+packages/client build: ✓ built in 507ms
 packages/client build: Done
 
 
 $ pnpm exec vitest run --reporter=json
-(node:81416) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:89500) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:81417) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:89501) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:81418) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:89502) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:81423) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:89512) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:81425) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:89521) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 JSON report written to <repo>/verifications/56-minimap-of-the-surrounding-area/proof/01-tests.json

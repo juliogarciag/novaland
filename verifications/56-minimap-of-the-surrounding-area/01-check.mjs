@@ -35,12 +35,12 @@ results.push(check('pnpm test passes', tests.code === 0 && report?.success === t
 const passedTitles = new Set((report?.testResults ?? []).flatMap((file) => file.assertionResults.filter((test) => test.status === 'passed').map((test) => `${path.basename(file.name)} > ${test.title}`)));
 const promised = [
   ['landmarks.test.ts', 'lists the starting point of a map as a landmark on its spawn tile, kept on the edge when out of range'],
-  ['minimap.test.ts', 'marks every avatar as a dot in its own colour, kept on the edge when far, and no tile: tiles are painted, not marked'],
-  ['landmarks.test.ts', 'tells the starting point apart from every avatar by shape and by colour'],
+  ['minimap.test.ts', 'marks every player as a dot in the colour of their clothes, kept on the edge when far, and no tile: tiles are painted, not marked'],
+  ['landmarks.test.ts', 'tells the starting point apart from every player by shape and by colour, whatever clothes the player wears'],
   ['minimapMarks.test.ts', 'marks the starting point, the other players and the local player, in that drawing order, each where it is'],
   ['minimapMarks.test.ts', 'puts a thing that is out of range on the edge, on the straight line toward it'],
   ['minimapMarks.test.ts', 'leaves out a far thing whose marker says hidden, and shows it again once in range'],
-  ['minimapMarks.test.ts', 'marks a far player on the edge too, in the colour of its avatar'],
+  ['minimapMarks.test.ts', 'marks a far player on the edge too, in the colour of the clothes its character wears'],
   ['minimapMarks.test.ts', 'never jumps: a thing walking out of range slides to the edge distance, stays there, and only gains its arrow past the range'],
   ['minimapMarks.test.ts', 'leaves out a position that is not finite instead of drawing it somewhere: positions come from the server'],
   ['minimapMarks.test.ts', 'leaves out a def id that is no def or has no marker instead of throwing'],

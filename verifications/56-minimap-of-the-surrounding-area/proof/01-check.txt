@@ -2,14 +2,14 @@ PASS  pnpm install passes
 PASS  pnpm typecheck passes
 PASS  pnpm lint passes
 PASS  pnpm build passes
-PASS  pnpm test passes  (493 of 493 tests in 163 suites)
+PASS  pnpm test passes  (562 of 562 tests in 183 suites)
 PASS  landmarks.test.ts: lists the starting point of a map as a landmark on its spawn tile, kept on the edge when out of range
-PASS  minimap.test.ts: marks every avatar as a dot in its own colour, kept on the edge when far, and no tile: tiles are painted, not marked
-PASS  landmarks.test.ts: tells the starting point apart from every avatar by shape and by colour
+PASS  minimap.test.ts: marks every player as a dot in the colour of their clothes, kept on the edge when far, and no tile: tiles are painted, not marked
+PASS  landmarks.test.ts: tells the starting point apart from every player by shape and by colour, whatever clothes the player wears
 PASS  minimapMarks.test.ts: marks the starting point, the other players and the local player, in that drawing order, each where it is
 PASS  minimapMarks.test.ts: puts a thing that is out of range on the edge, on the straight line toward it
 PASS  minimapMarks.test.ts: leaves out a far thing whose marker says hidden, and shows it again once in range
-PASS  minimapMarks.test.ts: marks a far player on the edge too, in the colour of its avatar
+PASS  minimapMarks.test.ts: marks a far player on the edge too, in the colour of the clothes its character wears
 PASS  minimapMarks.test.ts: never jumps: a thing walking out of range slides to the edge distance, stays there, and only gains its arrow past the range
 PASS  minimapMarks.test.ts: leaves out a position that is not finite instead of drawing it somewhere: positions come from the server
 PASS  minimapMarks.test.ts: leaves out a def id that is no def or has no marker instead of throwing

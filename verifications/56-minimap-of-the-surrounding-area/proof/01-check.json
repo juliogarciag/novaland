@@ -19,18 +19,18 @@
     {
       "name": "pnpm test passes",
       "pass": true,
-      "details": "493 of 493 tests in 163 suites"
+      "details": "562 of 562 tests in 183 suites"
     },
     {
       "name": "landmarks.test.ts: lists the starting point of a map as a landmark on its spawn tile, kept on the edge when out of range",
       "pass": true
     },
     {
-      "name": "minimap.test.ts: marks every avatar as a dot in its own colour, kept on the edge when far, and no tile: tiles are painted, not marked",
+      "name": "minimap.test.ts: marks every player as a dot in the colour of their clothes, kept on the edge when far, and no tile: tiles are painted, not marked",
       "pass": true
     },
     {
-      "name": "landmarks.test.ts: tells the starting point apart from every avatar by shape and by colour",
+      "name": "landmarks.test.ts: tells the starting point apart from every player by shape and by colour, whatever clothes the player wears",
       "pass": true
     },
     {
@@ -46,7 +46,7 @@
       "pass": true
     },
     {
-      "name": "minimapMarks.test.ts: marks a far player on the edge too, in the colour of its avatar",
+      "name": "minimapMarks.test.ts: marks a far player on the edge too, in the colour of the clothes its character wears",
       "pass": true
     },
     {
