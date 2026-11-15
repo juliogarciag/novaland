@@ -23,13 +23,15 @@ async function boot(): Promise<void> {
   // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
   if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
   const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld({ generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
+  const worldScene = new WorldScene(world);
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
     backgroundColor: '#0b0f14',
     // Nearest-neighbour textures and whole-pixel positions: pixel art stays crisp at any zoom.
     pixelArt: true,
-    scene: [new WorldScene(world), new HudScene(world)],
+    // In this order: the HUD's minimap shows the frame the world scene drew in the same tick of the game loop.
+    scene: [worldScene, new HudScene(world, () => worldScene.drawnFrame)],
     scale: windowViewportConfig(),
   });
   keepCanvasAtWindowSize(game);

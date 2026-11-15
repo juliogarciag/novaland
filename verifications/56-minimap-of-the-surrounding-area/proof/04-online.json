@@ -1,0 +1,540 @@
+{
+  "apart": {
+    "stateA": {
+      "minimap": {
+        "rect": {
+          "x": 788,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 14.166584014892578,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 840,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "0,0",
+          "1,0"
+        ],
+        "chunksInMap": 2,
+        "chunksPainted": 2,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 853,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player-sky",
+            "eid": 2,
+            "isLocalPlayer": false,
+            "shape": "dot",
+            "color": 3900150,
+            "onEdge": false,
+            "x": 851,
+            "y": 102.00013732910156
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 868.3331680297852,
+            "y": 92
+          }
+        ]
+      },
+      "player": {
+        "eid": 1,
+        "defId": 2,
+        "x": 14.166584014892578,
+        "y": 14.5
+      },
+      "drawnAt": {
+        "x": 14.166584014892578,
+        "y": 14.5
+      },
+      "camera": {
+        "zoom": 3,
+        "scrollX": -253.33333333333331,
+        "scrollY": -128,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": 66.66666666666669,
+          "y": 112,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "window": {
+        "width": 960,
+        "height": 720,
+        "pixelRatio": 1
+      },
+      "hudLines": {
+        "x": 12,
+        "y": 12,
+        "width": 331,
+        "height": 44.751953125
+      },
+      "spawn": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      }
+    },
+    "stateB": {
+      "minimap": {
+        "rect": {
+          "x": 788,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 5.5,
+          "y": 19.50006866455078
+        },
+        "worldOriginOnScreen": {
+          "x": 857,
+          "y": 53
+        },
+        "chunksDrawn": [
+          "0,0",
+          "1,0"
+        ],
+        "chunksInMap": 2,
+        "chunksPainted": 2,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 870,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 1,
+            "isLocalPlayer": false,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 885.3331680297852,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-sky",
+            "eid": 2,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 3900150,
+            "onEdge": false,
+            "x": 868,
+            "y": 92.00013732910156
+          }
+        ]
+      },
+      "player": {
+        "eid": 2,
+        "defId": 1,
+        "x": 5.5,
+        "y": 19.50006866455078
+      },
+      "drawnAt": {
+        "x": 5.5,
+        "y": 19.50006866455078
+      },
+      "camera": {
+        "zoom": 3,
+        "scrollX": -320,
+        "scrollY": -48,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": 0,
+          "y": 192,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "window": {
+        "width": 960,
+        "height": 720,
+        "pixelRatio": 1
+      },
+      "hudLines": {
+        "x": 12,
+        "y": 12,
+        "width": 331,
+        "height": 44.751953125
+      },
+      "spawn": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      }
+    }
+  },
+  "walked": {
+    "walkedA": {
+      "minimap": {
+        "rect": {
+          "x": 788,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 14.166584014892578,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 840,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "0,0",
+          "1,0"
+        ],
+        "chunksInMap": 2,
+        "chunksPainted": 2,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 853,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player-sky",
+            "eid": 2,
+            "isLocalPlayer": false,
+            "shape": "dot",
+            "color": 3900150,
+            "onEdge": false,
+            "x": 867.1665344238281,
+            "y": 102.00013732910156
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 868.3331680297852,
+            "y": 92
+          }
+        ]
+      },
+      "player": {
+        "eid": 1,
+        "defId": 2,
+        "x": 14.166584014892578,
+        "y": 14.5
+      },
+      "drawnAt": {
+        "x": 14.166584014892578,
+        "y": 14.5
+      },
+      "camera": {
+        "zoom": 3,
+        "scrollX": -253.33333333333331,
+        "scrollY": -128,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": 66.66666666666669,
+          "y": 112,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "window": {
+        "width": 960,
+        "height": 720,
+        "pixelRatio": 1
+      },
+      "hudLines": {
+        "x": 12,
+        "y": 12,
+        "width": 331,
+        "height": 44.751953125
+      },
+      "spawn": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      }
+    },
+    "walkedB": {
+      "minimap": {
+        "rect": {
+          "x": 788,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 13.583267211914062,
+          "y": 19.50006866455078
+        },
+        "worldOriginOnScreen": {
+          "x": 841,
+          "y": 53
+        },
+        "chunksDrawn": [
+          "0,0",
+          "1,0"
+        ],
+        "chunksInMap": 2,
+        "chunksPainted": 2,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 854,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-rose",
+            "eid": 1,
+            "isLocalPlayer": false,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 869.3331680297852,
+            "y": 82
+          },
+          {
+            "source": "entity",
+            "name": "player-sky",
+            "eid": 2,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 3900150,
+            "onEdge": false,
+            "x": 868.1665344238281,
+            "y": 92.00013732910156
+          }
+        ]
+      },
+      "player": {
+        "eid": 2,
+        "defId": 1,
+        "x": 13.583267211914062,
+        "y": 19.50006866455078
+      },
+      "drawnAt": {
+        "x": 13.583267211914062,
+        "y": 19.50006866455078
+      },
+      "camera": {
+        "zoom": 3,
+        "scrollX": -262.6666666666667,
+        "scrollY": -48,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 480
+        },
+        "worldView": {
+          "x": 57.333333333333314,
+          "y": 192,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "window": {
+        "width": 960,
+        "height": 720,
+        "pixelRatio": 1
+      },
+      "hudLines": {
+        "x": 12,
+        "y": 12,
+        "width": 331,
+        "height": 44.751953125
+      },
+      "spawn": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      }
+    },
+    "before": {
+      "source": "entity",
+      "name": "player-sky",
+      "eid": 2,
+      "isLocalPlayer": false,
+      "shape": "dot",
+      "color": 3900150,
+      "onEdge": false,
+      "x": 851,
+      "y": 102.00013732910156
+    },
+    "during": [
+      853.3949849161991,
+      857.5112918424626,
+      861.6567691299458,
+      865.5070725779902
+    ],
+    "after": {
+      "source": "entity",
+      "name": "player-sky",
+      "eid": 2,
+      "isLocalPlayer": false,
+      "shape": "dot",
+      "color": 3900150,
+      "onEdge": false,
+      "x": 867.1665344238281,
+      "y": 102.00013732910156
+    }
+  },
+  "results": [
+    {
+      "name": "A is in the middle of its own minimap, in white, centred on where its last frame drew it",
+      "pass": true,
+      "details": "centre {\"x\":14.166584014892578,\"y\":14.5}, drawn at {\"x\":14.166584014892578,\"y\":14.5}"
+    },
+    {
+      "name": "A sees the other player as a dot in the other's avatar colour, where the other is",
+      "pass": true,
+      "details": "dot at (851.0, 102.0), the other stands at (851.0, 102.0) on this minimap; pixel #3b82f6, avatar #3b82f6"
+    },
+    {
+      "name": "A sees the starting point marked on the spawn tile",
+      "pass": true
+    },
+    {
+      "name": "B is in the middle of its own minimap, in white, centred on where its last frame drew it",
+      "pass": true,
+      "details": "centre {\"x\":5.5,\"y\":19.50006866455078}, drawn at {\"x\":5.5,\"y\":19.50006866455078}"
+    },
+    {
+      "name": "B sees the other player as a dot in the other's avatar colour, where the other is",
+      "pass": true,
+      "details": "dot at (885.3, 82.0), the other stands at (885.3, 82.0) on this minimap; pixel #e11d48, avatar #e11d48"
+    },
+    {
+      "name": "B sees the starting point marked on the spawn tile",
+      "pass": true
+    },
+    {
+      "name": "while B walks east its dot moves east on A's minimap, sample after sample",
+      "pass": true,
+      "details": "851.0 -> 853.4 -> 857.5 -> 861.7 -> 865.5"
+    },
+    {
+      "name": "and it ends as many pixels east as the tiles B walked, while A's minimap stayed put",
+      "pass": true,
+      "details": "B walked 8.08 m; its dot moved 16.2 px at 2 px a tile"
+    },
+    {
+      "name": "on B's own minimap the terrain moved instead, and A's dot is still where A stands",
+      "pass": true,
+      "details": "A's dot at (869.3, 82.0), expected (869.3, 82.0)"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

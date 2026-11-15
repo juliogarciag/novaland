@@ -1,0 +1,175 @@
+{
+  "rounds": [
+    {
+      "round": 0,
+      "map": "world",
+      "frames": 523,
+      "frameMs": {
+        "median": 7.299999999999727,
+        "mean": 7.692734225621415,
+        "p95": 9.700000000000273
+      },
+      "minimapMsPerFrame": 0.01851145104142546,
+      "chunksDrawn": 2,
+      "chunksInMap": 2,
+      "chunksPainted": 2
+    },
+    {
+      "round": 0,
+      "map": "big",
+      "frames": 552,
+      "frameMs": {
+        "median": 7.100000000000364,
+        "mean": 7.297463768115942,
+        "p95": 9.5
+      },
+      "minimapMsPerFrame": 0.017179022430295756,
+      "chunksDrawn": 9,
+      "chunksInMap": 130,
+      "chunksPainted": 9
+    },
+    {
+      "round": 1,
+      "map": "world",
+      "frames": 556,
+      "frameMs": {
+        "median": 7,
+        "mean": 7.255755395683453,
+        "p95": 9.699999999999818
+      },
+      "minimapMsPerFrame": 0.017235187910617573,
+      "chunksDrawn": 2,
+      "chunksInMap": 2,
+      "chunksPainted": 2
+    },
+    {
+      "round": 1,
+      "map": "big",
+      "frames": 520,
+      "frameMs": {
+        "median": 7.199999999999818,
+        "mean": 7.741923076923076,
+        "p95": 11
+      },
+      "minimapMsPerFrame": 0.018426103921403356,
+      "chunksDrawn": 9,
+      "chunksInMap": 130,
+      "chunksPainted": 9
+    },
+    {
+      "round": 2,
+      "map": "world",
+      "frames": 520,
+      "frameMs": {
+        "median": 7.100000000000364,
+        "mean": 7.778269230769229,
+        "p95": 11.400000000000091
+      },
+      "minimapMsPerFrame": 0.019385796819675907,
+      "chunksDrawn": 2,
+      "chunksInMap": 2,
+      "chunksPainted": 2
+    },
+    {
+      "round": 2,
+      "map": "big",
+      "frames": 503,
+      "frameMs": {
+        "median": 7.300000000000182,
+        "mean": 8.010337972167,
+        "p95": 11.5
+      },
+      "minimapMsPerFrame": 0.020833333215070148,
+      "chunksDrawn": 9,
+      "chunksInMap": 130,
+      "chunksPainted": 9
+    },
+    {
+      "round": 3,
+      "map": "world",
+      "frames": 500,
+      "frameMs": {
+        "median": 7.200000000000273,
+        "mean": 8.057400000000001,
+        "p95": 11
+      },
+      "minimapMsPerFrame": 0.01956087838627859,
+      "chunksDrawn": 2,
+      "chunksInMap": 2,
+      "chunksPainted": 2
+    },
+    {
+      "round": 3,
+      "map": "big",
+      "frames": 573,
+      "frameMs": {
+        "median": 6.799999999999727,
+        "mean": 7.019022687609072,
+        "p95": 9
+      },
+      "minimapMsPerFrame": 0.015679441677984046,
+      "chunksDrawn": 9,
+      "chunksInMap": 130,
+      "chunksPainted": 9
+    },
+    {
+      "round": 4,
+      "map": "world",
+      "frames": 558,
+      "frameMs": {
+        "median": 7,
+        "mean": 7.221863799283152,
+        "p95": 9.399999999999864
+      },
+      "minimapMsPerFrame": 0.016636851648525176,
+      "chunksDrawn": 2,
+      "chunksInMap": 2,
+      "chunksPainted": 2
+    },
+    {
+      "round": 4,
+      "map": "big",
+      "frames": 421,
+      "frameMs": {
+        "median": 8.5,
+        "mean": 9.605700712589073,
+        "p95": 16.199999999999818
+      },
+      "minimapMsPerFrame": 0.01848341164430736,
+      "chunksDrawn": 9,
+      "chunksInMap": 130,
+      "chunksPainted": 9
+    }
+  ],
+  "summary": {
+    "worldFrameMs": 7.100000000000364,
+    "bigFrameMs": 7.199999999999818,
+    "difference": 0.0999999999994543,
+    "noise": 0.29999999999972715,
+    "allowance": 0.3550000000000182,
+    "worldMinimapMs": 0.01851145104142546,
+    "bigMinimapMs": 0.018426103921403356
+  },
+  "results": [
+    {
+      "name": "the big map is 130 chunks against the world's 2, and the minimap keeps a handful of them",
+      "pass": true,
+      "details": "kept 9, 9, 9, 9, 9"
+    },
+    {
+      "name": "frame time on the 400x300 map is within noise of the world's",
+      "pass": true,
+      "details": "world 7.100 ms (rounds 7.300, 7.000, 7.100, 7.200, 7.000); big 7.200 ms (rounds 7.100, 7.200, 7.300, 6.800, 8.500); difference 0.100 ms, allowed 0.355 ms"
+    },
+    {
+      "name": "the minimap's own share of a frame is under a twentieth of a millisecond on both maps",
+      "pass": true,
+      "details": "world 18.5 µs a frame, big 18.4 µs a frame"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

@@ -19,6 +19,7 @@
  */
 import { PlayerDefId, playerDefs } from '../features/player/defs';
 import { TerrainDefId, terrainDefs } from '../features/terrain/defs';
+import type { MinimapMarker } from './minimap';
 import type { SpriteDef } from './sprites';
 
 export type DefShape = 'circle' | 'box';
@@ -36,6 +37,8 @@ export interface EntityDef {
   readonly speed?: number;
   /** Sprite sheet to draw instead of the flat shape. Views fall back to `shape` and `color` when absent. */
   readonly sprite?: SpriteDef;
+  /** How the minimap marks an entity of this kind. Absent: it is not on the minimap. Tiles need none, they are painted in `color`. */
+  readonly minimap?: MinimapMarker;
 }
 
 export const DefId = { ...PlayerDefId, ...TerrainDefId } as const;
