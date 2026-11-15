@@ -1,4 +1,4 @@
-import { avatarDefIds, createSim, DefId, findPlayerEntity, getDef, getRenderables, mapLandmarks, tileCentre, TILE_SIZE, WORLD_LIMIT_TILES, worldMap, type Landmark, type Renderable } from '@novaland/sim';
+import { characterPalettes, createSim, DefId, findPlayerEntity, getCharacter, getDef, guestCharacter, getRenderables, mapLandmarks, tileCentre, TILE_SIZE, WORLD_LIMIT_TILES, worldMap, type Character, type Landmark, type Renderable } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { minimapCentre, minimapMarks, MOST_ENTITY_MARKS, type MinimapMarksOptions } from './minimapMarks';
 
@@ -6,19 +6,20 @@ describe('minimapMarks', () => {
   it('marks the starting point, the other players and the local player, in that drawing order, each where it is', async () => {
     const sim = await createSim({ seed: 1 });
     sim.step([
-      { type: 'player/join', slot: 0 },
-      { type: 'player/join', slot: 1 },
+      { type: 'player/join', slot: 0, character: guestCharacter(0) },
+      { type: 'player/join', slot: 1, character: guestCharacter(1) },
     ]);
     const renderables = getRenderables(sim);
     const localEid = findPlayerEntity(sim, 0) as number;
     const local = renderables.find((renderable) => renderable.eid === localEid) as Renderable;
     const other = renderables.find((renderable) => renderable.eid !== localEid) as Renderable;
-    const marks = minimapMarks({ ...NEARBY, renderables, localEid, landmarks: mapLandmarks(worldMap), centre: local });
+    const characters = new Map(renderables.flatMap((renderable) => { const character = getCharacter(sim, renderable.eid); return character ? [[renderable.eid, character] as const] : []; }));
+    const marks = minimapMarks({ ...NEARBY, renderables, characters, localEid, landmarks: mapLandmarks(worldMap), centre: local });
     const spawn = tileCentre(worldMap.spawn);
     expect(marks).toEqual([
       { source: 'landmark', name: 'starting point', eid: undefined, isLocalPlayer: false, shape: 'diamond', color: mapLandmarks(worldMap)[0]?.minimap.color, offset: { x: (spawn.x - local.x) / TILE_SIZE, y: (spawn.y - local.y) / TILE_SIZE }, onEdge: false },
-      { source: 'entity', name: getDef(other.defId).name, eid: other.eid, isLocalPlayer: false, shape: 'dot', color: getDef(other.defId).color, offset: { x: (other.x - local.x) / TILE_SIZE, y: (other.y - local.y) / TILE_SIZE }, onEdge: false },
-      { source: 'entity', name: getDef(local.defId).name, eid: localEid, isLocalPlayer: true, shape: 'dot', color: getDef(local.defId).color, offset: { x: 0, y: 0 }, onEdge: false },
+      { source: 'entity', name: getDef(other.defId).name, eid: other.eid, isLocalPlayer: false, shape: 'dot', color: clothesColor(guestCharacter(1)), offset: { x: (other.x - local.x) / TILE_SIZE, y: (other.y - local.y) / TILE_SIZE }, onEdge: false },
+      { source: 'entity', name: getDef(local.defId).name, eid: localEid, isLocalPlayer: true, shape: 'dot', color: clothesColor(guestCharacter(0)), offset: { x: 0, y: 0 }, onEdge: false },
     ]);
   });
 
@@ -50,14 +51,25 @@ describe('minimapMarks', () => {
     expect(minimapMarks({ ...NEARBY, landmarks: [coin], centre: tileCentre({ column: 90, row: 0 }) })).toMatchObject([{ onEdge: false, offset: { x: 10, y: 0 } }]);
   });
 
-  it('marks a far player on the edge too, in the colour of its avatar', () => {
-    const defId = avatarDefIds[3] as number;
-    const marks = minimapMarks({ ...NEARBY, renderables: [{ eid: 7, defId, x: 0.5, y: 300.5, halfWidth: 0.4, halfHeight: 0.4 }], localEid: 2, centre: { x: 0.5, y: 0.5 } });
-    expect(marks).toEqual([{ source: 'entity', name: getDef(defId).name, eid: 7, isLocalPlayer: false, shape: 'dot', color: getDef(defId).color, offset: { x: 0, y: EDGE_TILES }, onEdge: true }]);
+  it('marks a far player on the edge too, in the colour of the clothes its character wears', () => {
+    const defId = DefId.Player;
+    const character = guestCharacter(3);
+    const marks = minimapMarks({ ...NEARBY, renderables: [{ eid: 7, defId, x: 0.5, y: 300.5, halfWidth: 0.4, halfHeight: 0.4 }], characters: new Map([[7, character]]), localEid: 2, centre: { x: 0.5, y: 0.5 } });
+    expect(marks).toEqual([{ source: 'entity', name: getDef(defId).name, eid: 7, isLocalPlayer: false, shape: 'dot', color: clothesColor(character), offset: { x: 0, y: EDGE_TILES }, onEdge: true }]);
+    expect(new Set([0, 1, 2, 3].map((slot) => clothesColor(guestCharacter(slot)))).size).toBe(4);
+  });
+
+  it('marks a player whose character is not in the frame, or wears a swatch that is none, in its marker\'s own colour', () => {
+    const renderables = [{ eid: 7, defId: DefId.Player, x: 3.5, y: 0.5, halfWidth: 0.4, halfHeight: 0.4 }];
+    const ownColor = getDef(DefId.Player).minimap?.color;
+    expect(minimapMarks({ ...NEARBY, renderables })[0]).toMatchObject({ color: ownColor });
+    for (const clothes of [-1, 99, 1.5, Number.NaN]) {
+      expect(minimapMarks({ ...NEARBY, renderables, characters: new Map([[7, { name: 'x', look: { skin: 0, hair: 0, clothes } }]]) })[0], String(clothes)).toMatchObject({ color: ownColor });
+    }
   });
 
   it('leaves out a position that is not finite instead of drawing it somewhere: positions come from the server', () => {
-    const defId = avatarDefIds[0] as number;
+    const defId = DefId.Player;
     for (const x of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
       expect(minimapMarks({ ...NEARBY, renderables: [{ eid: 1, defId, x, y: 0, halfWidth: 0.4, halfHeight: 0.4 }], centre: { x: 0, y: 0 } }), String(x)).toEqual([]);
     }
@@ -70,7 +82,7 @@ describe('minimapMarks', () => {
   });
 
   it('stops at MOST_ENTITY_MARKS entities however many a frame holds, and still marks the local player', () => {
-    const defId = avatarDefIds[0] as number;
+    const defId = DefId.Player;
     const renderables = Array.from({ length: 5000 }, (_, index) => ({ eid: index + 1, defId, x: index % 50, y: 0, halfWidth: 0.4, halfHeight: 0.4 }));
     const marks = minimapMarks({ ...NEARBY, renderables, localEid: 5000 });
     expect(marks).toHaveLength(MOST_ENTITY_MARKS + 1);
@@ -106,12 +118,16 @@ describe('minimapCentre', () => {
 const RANGE_TILES = 40;
 const EDGE_TILES = 34;
 /** A minimap with nothing on it: each test adds what it is about. */
-const NEARBY: MinimapMarksOptions = { renderables: [], localEid: undefined, landmarks: [], centre: { x: 0, y: 0 }, rangeTiles: RANGE_TILES, edgeTiles: EDGE_TILES };
+const NEARBY: MinimapMarksOptions = { renderables: [], characters: new Map(), localEid: undefined, landmarks: [], centre: { x: 0, y: 0 }, rangeTiles: RANGE_TILES, edgeTiles: EDGE_TILES };
+
+function clothesColor(character: Character): number {
+  return characterPalettes.clothes[character.look.clothes]?.color as number;
+}
 
 function landmarkAt(tile: { column: number; row: number }, beyondRange: 'edge' | 'hidden' = 'edge'): Landmark {
   return { name: 'somewhere', tile, minimap: { shape: 'diamond', color: 0x123456, beyondRange } };
 }
 
 function player(eid: number, x: number, y: number): Renderable {
-  return { eid, defId: avatarDefIds[0] as number, x, y, halfWidth: 0.4, halfHeight: 0.4 };
+  return { eid, defId: DefId.Player, x, y, halfWidth: 0.4, halfHeight: 0.4 };
 }

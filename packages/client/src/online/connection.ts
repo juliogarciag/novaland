@@ -1,5 +1,5 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
-import { JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveMessage } from '@novaland/sim';
+import { JOIN_REFUSAL, WIRE, type Character, type JoinOptions, type MoveMessage } from '@novaland/sim';
 import { readOrCreatePlayerToken } from './playerToken';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, REPLACED_KICK_CODE, REPLACED_REFUSAL, WORLD_ROOM_ID } from './tuning';
 
@@ -21,7 +21,9 @@ export type ConnectionStatus =
   /** The server gave this player's seat to a newer join with the same player token: another tab or window of this browser (close code `REPLACED_KICK_CODE`). Nothing is retried until the player asks to play here with `retryNow`, which takes the player back from the other one. */
   | { readonly kind: 'elsewhere' }
   /** The server runs a world this client cannot show. Nothing is retried. */
-  | { readonly kind: 'incompatible'; readonly reason: string };
+  | { readonly kind: 'incompatible'; readonly reason: string }
+  /** The server refused the character this client asked to be (`JOIN_REFUSAL.invalidCharacter`). Nothing is retried: the same character would be refused again, so the way on is the creator. */
+  | { readonly kind: 'character-refused' };
 
 /** What the incompatible screen says when the page and the server were built against different wire protocols; the screen offers the reload that fetches the server's build. */
 export const PROTOCOL_MISMATCH_REASON = 'this page and the server are different versions of the game';
@@ -53,9 +55,11 @@ export interface JoinedRoom {
 export interface WorldConnectionOptions {
   /** `ws://host:port` or `http://host:port` of the world server. */
   readonly endpoint: string;
+  /** What every join carries: the character the player made. A rejoin after a drop sends the same, or the one the player changed to since (`changeCharacter`). */
+  readonly joinOptions: JoinOptions;
   readonly handlers: WorldConnectionHandlers;
   /** How to join the room at an endpoint. Default: the Colyseus SDK. Tests pass a fake. */
-  readonly join?: (endpoint: string) => Promise<JoinedRoom>;
+  readonly join?: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
 }
 
 /**
@@ -83,8 +87,9 @@ export interface WorldConnectionOptions {
 export class WorldConnection {
   private currentStatus: ConnectionStatus = { kind: 'connecting', attempt: 0 };
   private readonly endpoint: string;
+  private joinOptions: JoinOptions;
   private readonly handlers: WorldConnectionHandlers;
-  private readonly join: (endpoint: string) => Promise<JoinedRoom>;
+  private readonly join: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
   /** Bumped on every attempt, on every abandoned room and on close, so callbacks of an earlier room are ignored. */
   private generation = 0;
   /** Joins started since the client was last seated. */
@@ -103,6 +108,7 @@ export class WorldConnection {
 
   constructor(options: WorldConnectionOptions) {
     this.endpoint = options.endpoint;
+    this.joinOptions = options.joinOptions;
     this.handlers = options.handlers;
     this.join = options.join ?? joinWorldRoom;
   }
@@ -133,7 +139,7 @@ export class WorldConnection {
 
   /** Tries again now instead of at the scheduled time, or rejoins after an idle kick or after another tab took the player (the screens' button). Does nothing while a join is in flight or once seated. */
   retryNow(): void {
-    if (this.closed || this.status.kind === 'connecting' || this.status.kind === 'online' || this.status.kind === 'incompatible') return;
+    if (this.closed || this.status.kind === 'connecting' || this.status.kind === 'online' || this.status.kind === 'incompatible' || this.status.kind === 'character-refused') return;
     this.clearRetry();
     void this.tryToJoin();
   }
@@ -143,6 +149,17 @@ export class WorldConnection {
     if (this.status.kind !== 'online' || !this.room) return false;
     this.room.send(WIRE.move, { x: move.x, y: move.y, sequence: move.sequence });
     return true;
+  }
+
+  /**
+   * The player is `character` from now on: every later join carries it, and
+   * when seated the server is asked to change the player in the world. Not
+   * seated, the next join brings it; a join already on its way carries the
+   * old one, so the change is sent as soon as that join is welcomed.
+   */
+  changeCharacter(character: Character): void {
+    this.joinOptions = { ...this.joinOptions, character };
+    if (this.status.kind === 'online' && this.room) this.room.send(WIRE.changeCharacter, { character });
   }
 
   /** Asks the server for a full world state, after a delta that did not chain. */
@@ -171,13 +188,19 @@ export class WorldConnection {
     this.setStatus({ kind: 'connecting', attempt: this.attempt });
     // The join and then the welcome share one clock: a server that accepts the socket and says nothing is abandoned, not waited for.
     this.joinTimer = setTimeout(() => this.abandon(generation), JOIN_TIMEOUT_MS);
+    // The player may change character while this join is on its way: what it carried is compared with what they are by the welcome.
+    const joinedAs = this.joinOptions.character;
     let room: JoinedRoom;
     try {
-      room = await this.join(this.endpoint);
+      room = await this.join(this.endpoint, this.joinOptions);
     } catch (error) {
       if (generation !== this.generation) return;
       this.clearJoinTimer();
-      if (isWorldFullRefusal(error)) {
+      if (isCharacterRefusal(error)) {
+        // Asking again with the same character would be refused again: stop, and let the player make another.
+        this.close();
+        this.setStatus({ kind: 'character-refused' });
+      } else if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);
       } else if (isReplacedRefusal(error)) {
@@ -230,6 +253,8 @@ export class WorldConnection {
         this.attempt = 0;
         this.failedConnections = 0;
         this.setStatus({ kind: 'online', slot: readSlot(payload) });
+        // Seated as the character this join carried; the player has become another one since.
+        if (this.joinOptions.character !== joinedAs) room.send(WIRE.changeCharacter, { character: this.joinOptions.character });
         return;
       }
       this.close();
@@ -321,14 +346,15 @@ export class WorldConnection {
 }
 
 /**
- * Joins the world room at `endpoint` with the Colyseus SDK and wraps the room
- * in the small interface the connection uses. The SDK's automatic
+ * Joins the world room at `endpoint` with the Colyseus SDK, as the character
+ * in `joinOptions`, and wraps the room in the small interface the connection
+ * uses. The SDK's automatic
  * reconnection is switched off before anything can drop (see the class).
  * The join carries this browser's player token, read again for every join so
  * a tab that lost its storage still joins as someone.
  */
-export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
-  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, joinOptions());
+export async function joinWorldRoom(endpoint: string, joinOptions: JoinOptions): Promise<JoinedRoom> {
+  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, withPlayerToken(joinOptions));
   room.reconnection.enabled = false;
   return {
     onMessage: (type, callback) => {
@@ -348,9 +374,9 @@ export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
   };
 }
 
-/** What this browser presents when it joins: the wire protocol it was built against and its player token. */
-function joinOptions(): JoinOptions {
-  return { protocol: WIRE_PROTOCOL, playerToken: readOrCreatePlayerToken() };
+/** What this browser presents when it joins: what the connection asked to join with (the wire protocol and the character) and this browser's player token. */
+function withPlayerToken(joinOptions: JoinOptions): JoinOptions {
+  return { ...joinOptions, playerToken: readOrCreatePlayerToken() };
 }
 
 /**
@@ -366,6 +392,13 @@ function isWorldFullRefusal(error: unknown): boolean {
   const { code, message } = error as { code?: unknown; message?: unknown };
   if (code !== ErrorCode.MATCHMAKE_INVALID_ROOM_ID || typeof message !== 'string') return false;
   return /locked/i.test(message) || message.includes(JOIN_REFUSAL.worldFull);
+}
+
+/** True when a refused join means the server found no legal character in the join's options (`JOIN_REFUSAL.invalidCharacter`). */
+function isCharacterRefusal(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  return code === ErrorCode.APPLICATION_ERROR && message === JOIN_REFUSAL.invalidCharacter;
 }
 
 /** True when the server refused the join because this page was built against another wire protocol (`JOIN_REFUSAL.protocolMismatch`). */
@@ -387,4 +420,4 @@ function readSlot(payload: unknown): number {
   return (payload as { slot: number }).slot;
 }
 
-export const __testing__ = { isWorldFullRefusal, isProtocolRefusal, isReplacedRefusal, joinOptions };
+export const __testing__ = { isCharacterRefusal, isProtocolRefusal, isReplacedRefusal, isWorldFullRefusal, withPlayerToken };

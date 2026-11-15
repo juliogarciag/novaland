@@ -3,6 +3,7 @@ import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { findPlayerEntity, getHeading } from './queries';
+import { guestCharacter } from './character';
 
 describe('player facing (headless)', () => {
   it('spawns facing down with no move intent', async () => {
@@ -91,7 +92,7 @@ describe('player facing (headless)', () => {
 
 const { createSimInternal } = __testing__;
 
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const join = (slot = 0): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
 
 function heading(sim: Sim, slot = 0) {

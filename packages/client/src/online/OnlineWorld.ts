@@ -3,11 +3,15 @@ import {
   createPrediction,
   createReplica,
   findPlayerEntity,
+  getCharacter,
   readMapTiles,
+  sameCharacter,
   TICK_RATE,
   WIRE_PROTOCOL,
   worldMap,
+  type Character,
   type Command,
+  type JoinOptions,
   type PredictionHandle,
   type PredictionOptions,
   type ReplicaHandle,
@@ -19,14 +23,16 @@ import type { Occupancy, PlayableWorld } from '../worlds/PlayableWorld';
 import { MAP_MISMATCH_REASON, PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type JoinedRoom } from './connection';
 import { ViewFrameBuffer } from './frameBuffer';
 import { LocalPlayerPrediction, type PredictionReport } from './prediction';
-import { INTERPOLATION_BUFFER_TICKS, MAX_MAP_CHECKSUM_LENGTH, MAX_SLOT, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
+import { CHARACTER_CHANGE_RETRIES, CHARACTER_CHANGE_RETRY_SECONDS, INTERPOLATION_BUFFER_TICKS, MAX_MAP_CHECKSUM_LENGTH, MAX_SLOT, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
 
 export interface OnlineWorldOptions {
   readonly endpoint: string;
+  /** The character this player joins as, on the first join and on every rejoin after a drop. */
+  readonly character: Character;
   /** Every change of the connection's status, screens included. */
   readonly onStatus?: (status: ConnectionStatus) => void;
   /** How to join; tests pass a fake room. */
-  readonly join?: (endpoint: string) => Promise<JoinedRoom>;
+  readonly join?: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
   /** False draws the local player from server states like everyone else (ADR 0012's comparison switch). Default true. */
   readonly predictsLocalPlayer?: boolean;
   /** How the prediction sim is made; it loads the physics engine. Default: the sim's `createPrediction`. */
@@ -57,8 +63,8 @@ interface OnlineWorldParts {
 
 /**
  * Online play: the server owns the sim and this client holds a replica of
- * it. The welcome gives the seat, the checksum of the server's map and a
- * full state; deltas keep the replica in step. Terrain never travels: the
+ * it. The join carries the player's character; the welcome gives the seat,
+ * the checksum of the server's map and a full state; deltas keep the replica in step. Terrain never travels: the
  * replica is built on this page's own map (`worldMap`), and a server whose
  * map has another checksum is one this page cannot play on. `player/move`
  * goes over the wire without a slot and the server stamps the seat. The replica is never stepped (it throws), and
@@ -98,6 +104,8 @@ export class OnlineWorld implements PlayableWorld {
   private predictionStartedAt = 0;
   /** Where the last frame drew the local player, in metres; undefined when it drew none. */
   private drawnLocalPlayer: Position | undefined;
+  /** A character the player changed to that the world does not show yet, with how long it has been asked for and how many more times it will be. */
+  private characterAskedFor: { readonly character: Character; secondsWaited: number; retriesLeft: number } | undefined;
   /** Out-of-sequence updates seen since the last full state; a resync is asked for at 1 and again every `RESYNC_RETRY_AFTER_UPDATES`. */
   private outOfSequenceUpdates = 0;
   /** The welcome's own state was refused: ask for a full state as soon as the connection is online. */
@@ -128,6 +136,7 @@ export class OnlineWorld implements PlayableWorld {
     });
     const connection = new WorldConnection({
       endpoint: options.endpoint,
+      joinOptions: { protocol: WIRE_PROTOCOL, character: options.character },
       join: options.join,
       handlers: {
         onWelcome: (payload) => {
@@ -194,6 +203,7 @@ export class OnlineWorld implements PlayableWorld {
 
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame {
     for (const command of commands) this.queueCommand(command);
+    this.askAgainForCharacter(deltaSeconds);
     this.withPrediction((prediction) => prediction.advanceTo(this.predictionClientTicks(), this.sim));
     const fromServer = this.frames.nextFrame(deltaSeconds) ?? readViewFrame(this.sim);
     const frame = this.withPrediction((prediction) => prediction.withLocalPlayer(fromServer)) ?? fromServer;
@@ -209,6 +219,33 @@ export class OnlineWorld implements PlayableWorld {
     if (command.type !== 'player/move') return;
     this.lastMove = { x: command.x, y: command.y };
     this.sendMove(this.lastMove);
+  }
+
+  /** Asks the server to make the local player `character`; a rejoin after a drop joins as it too. The change shows when the server's next state brings it. */
+  changeCharacter(character: Character): void {
+    this.characterAskedFor = { character, secondsWaited: 0, retriesLeft: CHARACTER_CHANGE_RETRIES };
+    this.connection.changeCharacter(character);
+  }
+
+  /** The server may drop a change (a session may make only a few at once): while the world does not show the character asked for, ask again every few seconds, a few times. */
+  private askAgainForCharacter(deltaSeconds: number): void {
+    const asked = this.characterAskedFor;
+    if (!asked) return;
+    const eid = findPlayerEntity(this.sim, this.slot);
+    const shown = eid === undefined ? undefined : getCharacter(this.sim, eid);
+    if (shown && sameCharacter(shown, asked.character)) {
+      this.characterAskedFor = undefined;
+      return;
+    }
+    asked.secondsWaited += deltaSeconds;
+    if (asked.secondsWaited < CHARACTER_CHANGE_RETRY_SECONDS) return;
+    if (asked.retriesLeft === 0) {
+      this.characterAskedFor = undefined;
+      return;
+    }
+    asked.secondsWaited = 0;
+    asked.retriesLeft -= 1;
+    this.connection.changeCharacter(asked.character);
   }
 
   /** Sends a move under the next sequence and, once it is on its way, applies it to the prediction too. Nothing happens unless seated. */

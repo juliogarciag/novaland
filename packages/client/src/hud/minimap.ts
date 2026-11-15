@@ -1,4 +1,4 @@
-import { CHUNK_SIZE, findChunk, mapLandmarks, readMapTiles, spawnPoint, TILE_SIZE, type Landmark, type MapChunk, type MapTiles, type MinimapMarkerShape, type TileCoordinate, type WorldMap } from '@novaland/sim';
+import { CHUNK_SIZE, findChunk, mapLandmarks, readMapTiles, spawnPoint, TILE_SIZE, type Landmark, type MapChunk, type MapTiles, type MinimapMarkerShape, type TileCoordinate, type WorldMap, type Character } from '@novaland/sim';
 import Phaser from 'phaser';
 import { chunkKey, chunkRangeOfTiles, chunksToDropAndBuild, sameChunkRange, type ChunkRange } from '../render/chunkRange';
 import type { ViewFrame } from '../render/viewFrame';
@@ -31,6 +31,8 @@ const ARROW_RIM = 2;
 /** How far inside the minimap's edge the furthest mark sits, so the largest mark and its arrow are drawn whole. */
 const EDGE_INSET = DIAMOND_RADIUS + ARROW_GAP + ARROW_LENGTH + ARROW_RIM;
 
+/** What a frame that is not there yet has. */
+const NO_CHARACTERS: ReadonlyMap<number, Character> = new Map();
 const TERRAIN_DEPTH = 0;
 const MARKER_DEPTH = 1;
 
@@ -154,6 +156,7 @@ export class Minimap {
     this.camera.setScroll(Math.round((this.centre.x / TILE_SIZE) * pixelsPerTile - size / 2), Math.round((this.centre.y / TILE_SIZE) * pixelsPerTile - size / 2));
     this.marks = minimapMarks({
       renderables,
+      characters: frame?.characters ?? NO_CHARACTERS,
       localEid,
       landmarks: this.landmarks,
       centre: this.centre,

@@ -8,8 +8,9 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { getRenderables } from '../../core/view';
 import { getTileDef } from '../terrain/defs';
-import { isAvatarDefId } from './defs';
+import { isPlayerDefId } from './defs';
 import { findPlayerEntity } from './queries';
+import { guestCharacter } from './character';
 
 describe('player movement (headless)', () => {
   it('spawns a player at the spawn point of the map on join', async () => {
@@ -94,7 +95,7 @@ describe('player movement (headless)', () => {
     sim.step([join(0), join(0)]);
     sim.step([join(-1), join(1.5), join(Number.NaN), join(MAX_PLAYER_SLOTS)]);
     sim.step([{ type: 'player/leave', slot: 7 }, { type: 'player/leave', slot: -3 }]);
-    const players = getRenderables(sim).filter((r) => isAvatarDefId(r.defId));
+    const players = getRenderables(sim).filter((r) => isPlayerDefId(r.defId));
     expect(players).toHaveLength(1);
     sim.step([move(Number.NaN, Number.POSITIVE_INFINITY)]);
     for (let i = 0; i < 10; i += 1) sim.step();
@@ -106,7 +107,7 @@ describe('player movement (headless)', () => {
     const sim = await createSimInternal({ seed: 1 });
     const garbage = [null, undefined, 42, 'player/join', { type: 7 }, { type: 'nope' }, { type: 'player/move' }, JSON.parse('{"type":"player/join","__proto__":{"slot":0}}')] as unknown as Command[];
     expect(() => sim.step(garbage)).not.toThrow();
-    expect(getRenderables(sim).filter((r) => isAvatarDefId(r.defId))).toHaveLength(0);
+    expect(getRenderables(sim).filter((r) => isPlayerDefId(r.defId))).toHaveLength(0);
     expect(sim.tick).toBe(1);
     expect(() => sim.step(null as unknown as Command[])).toThrow(TypeError);
     expect(sim.tick).toBe(1);
@@ -123,7 +124,7 @@ describe('player movement (headless)', () => {
     sim.step([{ type: 'player/leave', slot: 0 }]);
     expect(findPlayerEntity(sim, 0)).toBeUndefined();
     expect(sim.physics.bodies.len()).toBe(bodiesBefore - 1);
-    expect(getRenderables(sim).filter((r) => isAvatarDefId(r.defId))).toHaveLength(0);
+    expect(getRenderables(sim).filter((r) => isPlayerDefId(r.defId))).toHaveLength(0);
 
     sim.step([join()]);
     const second = findPlayerEntity(sim, 0);
@@ -153,7 +154,7 @@ describe('player movement (headless)', () => {
 
 const { createSimInternal } = __testing__;
 
-const playerDef = getDef(DefId.PlayerSky);
+const playerDef = getDef(DefId.Player);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
 const SPAWN = spawnPoint(worldMap);
@@ -162,7 +163,7 @@ beforeAll(() => {
   if (!(SPEED > 0) || !(RADIUS > 0)) throw new Error('the player def must define a positive speed and radius');
 });
 
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const join = (slot = 0): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
 
 /** West edge, in metres, of the first solid tile east of the spawn on its row. */

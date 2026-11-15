@@ -6,6 +6,7 @@ import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
 import { hashSnapshot } from '../../core/snapshot';
 import { getTileDef, TerrainDefId } from '../terrain/defs';
+import { guestCharacter } from './character';
 import { getPlayerPosition } from './queries';
 
 describe('a join that returns a player to where they left (headless)', () => {
@@ -80,12 +81,12 @@ describe('a join that returns a player to where they left (headless)', () => {
 
   it('treats a malformed returnTo as none at all: the world ends up exactly as after a plain join', async () => {
     const plain = await createSimInternal({ seed: 7, map: field });
-    plain.step([{ type: 'player/join', slot: 0 }]);
+    plain.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const expected = hashSnapshot(plain.snapshot());
     plain.destroy();
     for (const returnTo of MALFORMED_POINTS) {
       const sim = await createSimInternal({ seed: 7, map: field });
-      expect(() => sim.step([{ type: 'player/join', slot: 0, returnTo } as unknown as Command])).not.toThrow();
+      expect(() => sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0), returnTo } as unknown as Command])).not.toThrow();
       expect(hashSnapshot(sim.snapshot()), JSON.stringify(returnTo) ?? String(returnTo)).toBe(expected);
       sim.destroy();
     }
@@ -110,7 +111,7 @@ describe('a join that returns a player to where they left (headless)', () => {
     let returnedExactly = 0;
     for (let round = 0; round < 2000; round += 1) {
       const returnTo = randomPoint(random);
-      expect(() => sim.step([{ type: 'player/join', slot: 0, returnTo } as unknown as Command])).not.toThrow();
+      expect(() => sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0), returnTo } as unknown as Command])).not.toThrow();
       const tile = playerTile(sim, 0);
       const defId = tileDefIdAt(tiles, tile);
       expect(defId !== undefined && !getTileDef(defId).solid, `${JSON.stringify(returnTo)} left the player on ${JSON.stringify(tile)}`).toBe(true);
@@ -158,7 +159,7 @@ const field = mapOf(['............', '............', '.....o......', '..........
 const MALFORMED_POINTS: readonly unknown[] = [null, 'here', 7, true, [], [1, 2], {}, { x: 1 }, { y: 1 }, { x: '1', y: 1 }, { x: NaN, y: 1 }, { x: 1, y: Infinity }, { x: null, y: null }];
 
 function join(slot: number, returnTo?: { x: number; y: number }): Command {
-  return returnTo ? { type: 'player/join', slot, returnTo } : { type: 'player/join', slot };
+  return returnTo ? { type: 'player/join', slot, character: guestCharacter(slot), returnTo } : { type: 'player/join', slot, character: guestCharacter(slot) };
 }
 
 /** The point as a body holds it: physics keeps positions as 32-bit floats, so a point comes back rounded to one. */

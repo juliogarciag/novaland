@@ -27,6 +27,10 @@ export const JOIN_ACK_TIMEOUT_MS = 5000;
 export const MAX_FRAME_BYTES = 1024;
 /** Largest decoded payload the room reads; a bigger one is dropped. A `player/move` is under 60 bytes as JSON. */
 export const MAX_INBOUND_BYTES = 128;
+/** Largest join options the room reads, as JSON, all fields together; bigger ones refuse the join before any field is read. A character is under 300 bytes (40 code points of name and three palette indexes), which leaves room for the small fields other features add. */
+export const MAX_JOIN_OPTIONS_BYTES = 1024;
+/** Largest `player/change-character` payload the room reads, as JSON: a character is under 300 bytes, and a name is read only up to that many again before it is normalised. */
+export const MAX_CHARACTER_MESSAGE_BYTES = 512;
 /** Sustained inbound messages per second a session may send; anything over its budget is dropped. */
 export const INBOUND_MESSAGES_PER_SECOND = 20;
 /** Messages a quiet session may send at once before the sustained rate applies. */
@@ -34,6 +38,9 @@ export const INBOUND_BURST = 40;
 /** Full states per second a session may ask for with `world/resync`, and how many at once. A full state is a hundred times a delta. */
 export const RESYNCS_PER_SECOND = 1;
 export const RESYNC_BURST = 2;
+/** Character changes per second a session may make, and how many at once. A change is sent to every player as some forty changed fields, where a move is two. */
+export const CHARACTER_CHANGES_PER_SECOND = 0.5;
+export const CHARACTER_CHANGE_BURST = 3;
 /** Hard ceiling Colyseus enforces by disconnecting the session; a flood that ignores the budget above ends here. */
 export const DISCONNECT_MESSAGES_PER_SECOND = 60;
 

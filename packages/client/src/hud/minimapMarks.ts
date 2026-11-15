@@ -1,4 +1,4 @@
-import { entityDefs, tileCentre, TILE_SIZE, WORLD_LIMIT_TILES, type EntityDef, type Landmark, type MinimapMarkerShape, type Renderable } from '@novaland/sim';
+import { characterPalettes, entityDefs, tileCentre, TILE_SIZE, WORLD_LIMIT_TILES, type Character, type EntityDef, type Landmark, type MinimapMarker, type MinimapMarkerShape, type Renderable } from '@novaland/sim';
 
 /** One marker to draw on the minimap. */
 export interface MinimapMark {
@@ -22,6 +22,8 @@ export interface MinimapMark {
 export interface MinimapMarksOptions {
   /** What the frame draws, at the positions it draws them (online, the local player's is predicted). */
   readonly renderables: readonly Renderable[];
+  /** The characters of the things in the frame that have one, by entity id: a marker may take its colour from one. */
+  readonly characters: ReadonlyMap<number, Character>;
   /** The entity of the player at this keyboard, when it has one. */
   readonly localEid: number | undefined;
   readonly landmarks: readonly Landmark[];
@@ -52,7 +54,7 @@ export const MOST_ENTITY_MARKS = 256;
  * trusted: a position that is not finite and a def id that is no def are
  * left out, and entity marks stop at `MOST_ENTITY_MARKS`.
  */
-export function minimapMarks({ renderables, localEid, landmarks, centre, rangeTiles, edgeTiles }: MinimapMarksOptions): MinimapMark[] {
+export function minimapMarks({ renderables, characters, localEid, landmarks, centre, rangeTiles, edgeTiles }: MinimapMarksOptions): MinimapMark[] {
   const offsetOf = (position: { readonly x: number; readonly y: number }, beyondRange: 'edge' | 'hidden'): Pick<MinimapMark, 'offset' | 'onEdge'> | undefined => {
     const x = (position.x - centre.x) / TILE_SIZE;
     const y = (position.y - centre.y) / TILE_SIZE;
@@ -77,7 +79,7 @@ export function minimapMarks({ renderables, localEid, landmarks, centre, rangeTi
     if (!isLocalPlayer && otherMarks.length >= MOST_ENTITY_MARKS) continue;
     const placed = offsetOf(renderable, def.minimap.beyondRange);
     if (!placed) continue;
-    (isLocalPlayer ? localMarks : otherMarks).push({ source: 'entity', name: def.name, eid: renderable.eid, isLocalPlayer, shape: def.minimap.shape, color: def.minimap.color, ...placed });
+    (isLocalPlayer ? localMarks : otherMarks).push({ source: 'entity', name: def.name, eid: renderable.eid, isLocalPlayer, shape: def.minimap.shape, color: markerColor(def.minimap, characters.get(renderable.eid)), ...placed });
   }
   return [...landmarkMarks, ...otherMarks, ...localMarks];
 }
@@ -94,6 +96,12 @@ export function minimapCentre({ renderables, localEid, previous }: { renderables
   // NaN fails both comparisons.
   if (!(Math.abs(localPlayer.x) <= limit) || !(Math.abs(localPlayer.y) <= limit)) return previous;
   return { x: localPlayer.x, y: localPlayer.y };
+}
+
+/** The marker's own colour, or the colour its thing's character wears on the part the marker names. `getCharacter` only hands out legal looks, on a replica too. */
+function markerColor(marker: MinimapMarker, character: Character | undefined): number {
+  if (!marker.colorFromCharacter || !character) return marker.color;
+  return characterPalettes[marker.colorFromCharacter][character.look[marker.colorFromCharacter]]?.color ?? marker.color;
 }
 
 /** `getDef` throws for an id that is no def; a frame is not allowed to stop the HUD. */

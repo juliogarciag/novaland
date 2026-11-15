@@ -7,11 +7,12 @@ import { initPhysics } from './physics';
 import { Sim } from './sim';
 import { hashSnapshot, toBase64, type SimSnapshot } from './snapshot';
 import { DefRef, Extents } from './transform';
+import { guestCharacter } from '../features/player/character';
 
 describe('snapshot', () => {
   it('is plain JSON that survives a round trip', async () => {
     const sim = await createSimInternal({ seed: 3 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
     const snapshot = sim.snapshot();
     const roundTripped = JSON.parse(JSON.stringify(snapshot));
@@ -22,7 +23,7 @@ describe('snapshot', () => {
 
   it('records every component field of every entity plus the map, capacity, tick and rng', async () => {
     const sim = await createSimInternal({ seed: 3 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const snapshot = sim.snapshot();
     expect(snapshot.map).toBe(readMapTiles(sim.map).checksum);
     expect(snapshot.capacity).toBe(sim.capacity);
@@ -35,6 +36,9 @@ describe('snapshot', () => {
       Facing: { x: 0, y: 1 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
+      // The look as palette indexes and the name as code points: "Guest 1" is 7 of them, the rest of the fields are zero.
+      PlayerLook: guestCharacter(0).look,
+      PlayerName: expect.objectContaining({ length: 7, codePoint00: 'G'.codePointAt(0), codePoint06: '1'.codePointAt(0), codePoint07: 0, codePoint39: 0 }),
       Position: spawnPoint(sim.map),
     });
     // Terrain is no entity: the player is the only one, and the colliders are in the physics bytes.

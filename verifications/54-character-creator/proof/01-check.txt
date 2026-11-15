@@ -1,0 +1,21 @@
+PASS  pnpm install exits 0
+PASS  pnpm typecheck exits 0
+PASS  pnpm lint exits 0
+PASS  pnpm test exits 0
+PASS  every test passed, none skipped  (539 of 539)
+PASS  the name rule: normalised, counted in visible characters, refused when not text, empty, too long or holding control characters
+PASS  the character rule: every palette index and nothing outside, exactly a name and a look, never throws
+PASS  a join spawns the character it carried, with the normalised name
+PASS  a malformed join (bad palette index, 21 characters, non-string name, no character) seats nobody and never throws
+PASS  the sim is fuzzed with thousands of hostile joins: never a throw, never an illegal character
+PASS  the name is in the snapshot as numbers and nothing of an earlier name is left behind
+PASS  a character replicates in full states and deltas, and a replica shows a legal character whatever a server sends
+PASS  determinism still holds: same seed and commands give the same state
+PASS  the server's gate reads the character of the join options, refuses what is not legal and is fuzzed
+PASS  over a real connection: two players are two different characters for both; a join without a legal character is refused before it takes a seat
+PASS  the client joins and rejoins as its character, and stops when the server refuses it
+PASS  the browser remembers the character and forgets one that is no longer legal
+PASS  a look repaints the template sheet's colours and nothing else; the generator paints in those colours
+PASS  pnpm sim:headless still runs five simulated seconds and prints a hash  (71a2ad53)
+
+ALL 19 CHECKS PASSED

@@ -1,4 +1,4 @@
-import { createSim, MAX_PLAYER_SLOTS, type Command } from '@novaland/sim';
+import { createSim, MAX_PLAYER_SLOTS, type Command, guestCharacter } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { firstEmptySeat, LOCAL_SLOT } from './seats';
 
@@ -29,5 +29,5 @@ describe('seats', () => {
 
 // ---- Helpers ----
 
-const join = (slot: number): Command => ({ type: 'player/join', slot });
+const join = (slot: number): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (slot: number): Command => ({ type: 'player/move', slot, x: 1, y: 0 });

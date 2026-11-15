@@ -1,3 +1,5 @@
+import type { CharacterPart } from '../features/player/defs';
+
 /**
  * How a thing says it appears on the minimap. This is data for views: the
  * sim never reads it. An entity def carries one in `minimap` and a landmark
@@ -10,6 +12,12 @@ export interface MinimapMarker {
   readonly shape: MinimapMarkerShape;
   /** 0xRRGGBB. */
   readonly color: number;
+  /**
+   * For a thing that has a character (a player): the part of the character
+   * whose colour the marker takes instead, so every player's marker is their
+   * own. `color` stays the marker of a thing whose character cannot be read.
+   */
+  readonly colorFromCharacter?: CharacterPart;
   /**
    * What happens when the thing is further away than the minimap reaches:
    * `edge` keeps the marker on the minimap's edge, on the side the thing is

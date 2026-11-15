@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { entityDefs } from '../defs';
-import { avatarDefIds } from '../../features/player/defs';
+import { characterPalettes, playerDefs } from '../../features/player/defs';
 import { generatedWorldMap } from './generated';
 import { worldMap } from './index';
 import { mapLandmarks } from './landmarks';
@@ -12,12 +11,13 @@ describe('what the minimap is told to mark', () => {
     }
   });
 
-  it('tells the starting point apart from every avatar by shape and by colour', () => {
+  it('tells the starting point apart from every player by shape and by colour, whatever clothes the player wears', () => {
     const [startingPoint] = mapLandmarks(worldMap);
-    for (const def of entityDefs.filter((candidate) => avatarDefIds.includes(candidate.id))) {
+    for (const def of playerDefs) {
       if (!def.minimap) throw new Error(`${def.name} has no minimap marker`);
       expect(def.minimap.shape, def.name).not.toBe(startingPoint?.minimap.shape);
       expect(def.minimap.color, def.name).not.toBe(startingPoint?.minimap.color);
     }
+    for (const swatch of characterPalettes.clothes) expect(swatch.color, swatch.name).not.toBe(startingPoint?.minimap.color);
   });
 });
