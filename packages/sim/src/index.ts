@@ -16,8 +16,10 @@ export { applyWorldState, type ReplicaHandle, type WorldStateApplyResult } from 
 export { DEFAULT_SEND_RATE, isPlayerToken, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveAppliedMessage, type ChangeCharacterMessage, type MoveMessage, type WelcomeMessage } from './core/wire';
 export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
+export type { MinimapMarker, MinimapMarkerShape } from './content/minimap';
 export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from './content/sprites';
 export { worldMap } from './content/world';
+export { mapLandmarks, type Landmark } from './content/world/landmarks';
 export { generatedWorldMap, type GeneratedMapOptions } from './content/world/generated';
 export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './content/world/types';
 export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';

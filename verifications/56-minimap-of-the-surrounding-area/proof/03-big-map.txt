@@ -1,0 +1,14 @@
+PASS  the map is the generated 400x300 one  (130 chunks; a minimap shows at most 16 and keeps at most 25)
+PASS  at the start only the chunks under the minimap are painted  (9 of 130: 5,3 6,3 7,3 5,4 6,4 7,4 5,5 6,5 7,5)
+PASS  at the start every tile on the minimap is the colour of the def the map has there  (6048 tiles compared around (200.5, 150.5): 5863 grass, 119 tree, 66 rock; 193 under markers skipped; 0 wrong)
+PASS  21.4 tiles from the start, within reach: the starting point is marked where it is  (marker at (825.0, 92.0), the spawn tile is drawn at (825.0, 92.0))
+PASS  walked east past the reach, 61.6 tiles from the start: its marker is on the minimap's edge and points home  (home is at -179.0 degrees, the marker at -179.1; 66.9 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a)
+PASS  then south, round a corner, 61.9 tiles from the start: its marker is on the minimap's edge and points home  (home is at -153.3 degrees, the marker at -153.6; 67.2 px from the middle of a minimap 80 px to its edge, 13 px inside it; pixel #ffd84a, arrow #ffd84a, marker #ffd84a)
+PASS  the marker moved along the edge as the direction home changed  (-179.1 degrees, then -153.6 degrees)
+PASS  far from the start every tile on the minimap is still the map's  (5853 tiles compared around (262.4, 181.7): 5681 grass, 127 tree, 45 rock; 388 under markers skipped; 0 wrong)
+PASS  walking changed which chunks are painted, and never to more than the minimap can keep  (9, 12, 12, 16 chunks kept at the four stops; 19 painted in all, of 130; now 6,3 7,3 6,4 7,4 6,5 7,5 8,3 8,4 8,5 9,3 9,4 9,5 6,6 7,6 8,6 9,6)
+PASS  Phaser holds one texture per kept chunk: the dropped ones are gone  (16 textures for 16 chunks)
+PASS  standing still for a second and a half painted nothing  (19 before and after)
+PASS  no page errors
+
+ALL 12 CHECKS PASSED

@@ -36,13 +36,15 @@ async function boot(): Promise<void> {
     : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
   // Labels are measured when they are made: the font they are drawn in has to be there first.
   await loadNameFont();
+  const worldScene = new WorldScene(world);
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
     backgroundColor: '#0b0f14',
     // Nearest-neighbour textures and whole-pixel positions: pixel art stays crisp at any zoom.
     pixelArt: true,
-    scene: [new WorldScene(world), new HudScene(world)],
+    // In this order: the HUD's minimap shows the frame the world scene drew in the same tick of the game loop.
+    scene: [worldScene, new HudScene(world, () => worldScene.drawnFrame)],
     scale: windowViewportConfig(),
   });
   keepCanvasAtWindowSize(game);

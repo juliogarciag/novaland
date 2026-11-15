@@ -5,6 +5,7 @@ import { MapCamera } from '../render/camera';
 import { EntityRenderer } from '../render/entities';
 import { createSpriteAnimations, loadSpriteSheets } from '../render/sprites';
 import { loadTerrainSprites, TerrainRenderer, type TerrainReport } from '../render/terrain';
+import type { ViewFrame } from '../render/viewFrame';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 /**
@@ -18,6 +19,7 @@ export class WorldScene extends Phaser.Scene {
   private entityRenderer!: EntityRenderer;
   private mapCamera!: MapCamera;
   private terrainRenderer!: TerrainRenderer;
+  private lastDrawnFrame: ViewFrame | undefined;
 
   constructor(private readonly world: PlayableWorld) {
     super('world');
@@ -48,8 +50,14 @@ export class WorldScene extends Phaser.Scene {
     return this.terrainRenderer.report();
   }
 
+  /** The frame drawn last, for the HUD to show the same positions; undefined before the first. */
+  get drawnFrame(): ViewFrame | undefined {
+    return this.lastDrawnFrame;
+  }
+
   override update(_time: number, deltaMs: number): void {
     const frame = this.world.nextFrame(this.keyboard.drain(), deltaMs / 1000);
+    this.lastDrawnFrame = frame;
     this.entityRenderer.draw(frame);
     this.followLocalPlayer();
   }

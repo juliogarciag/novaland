@@ -116,6 +116,9 @@ export const playerDefs: readonly EntityDef[] = [
     speed: PLAYER_SPEED,
     color: 0x3b82f6,
     sprite: playerSprite('player'),
+    // Each player's dot is the colour of their clothes; `color` is for a player whose character cannot be read. A far player stays on the
+    // minimap's edge: in a big world, where the others are is what a player most wants to know, and there are never more than `MAX_PLAYER_SLOTS` of them.
+    minimap: { shape: 'dot', color: 0x3b82f6, colorFromCharacter: 'clothes', beyondRange: 'edge' },
   },
 ];
 
