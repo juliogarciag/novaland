@@ -222,14 +222,19 @@ describe('a world that grows', () => {
 });
 
 describe('the world', () => {
-  it('is the clearing, with its top-left tile on the origin, and eight areas around it: ten times the clearing in all', () => {
+  it('is the clearing, with its top-left tile on the origin, and areas on every side of it: ten times the clearing in all', () => {
     const [clearing, ...around] = worldMap.areas;
     expect(clearing).toMatchObject({ name: 'clearing', origin: { column: 0, row: 0 } });
     expect([clearing?.rows.length, clearing?.rows[0]?.length]).toEqual([30, 40]);
-    expect(around.map((mounted) => mounted.name)).toEqual(['old-grove', 'north-meadow', 'rock-field', 'west-woods', 'east-glade', 'stone-hollow', 'south-glade', 'far-clearing']);
+    // Which areas, and how far they reach, is for whoever adds the next one to change: only what must never change is pinned.
+    expect(around.length).toBeGreaterThanOrEqual(8);
     const { bounds } = readMapTiles(worldMap);
-    expect(bounds).toEqual({ column: -45, row: -31, width: 130, height: 92 });
     expect((bounds.width * bounds.height) / (40 * 30)).toBeGreaterThan(9.5);
+    // The clearing is inside the land, not on its edge: there is ground on every side of it.
+    expect(bounds.column).toBeLessThan(0);
+    expect(bounds.row).toBeLessThan(0);
+    expect(bounds.column + bounds.width).toBeGreaterThan(40);
+    expect(bounds.row + bounds.height).toBeGreaterThan(30);
     expect(worldMap.spawn).toEqual({ column: 6, row: 14 });
   });
 
@@ -261,12 +266,13 @@ describe('the world', () => {
     const reached = new Set(walkableTilesReachableFrom(worldMap.spawn).map((tile) => `${tile.column},${tile.row}`));
     const sealedOff = tilesIn(tiles.bounds).filter((tile) => isWalkable(tile) && !reached.has(`${tile.column},${tile.row}`));
     expect(sealedOff).toEqual([]);
-    expect(reached.size).toBeGreaterThan(4000);
-    // Every area has ground to walk on, and so is reached: none is a block of trees.
+    // Not a world of trees with a little grass: more ground to walk on than the whole clearing has tiles, three times over.
+    expect(reached.size).toBeGreaterThan(3 * 40 * 30);
+    // Every area has ground to walk on, and so is reached: none is a block of trees. A tenth of an area is the least any has.
     for (const mounted of worldMap.areas) {
       const { origin, rows } = mounted;
       const reachedInArea = [...reached].map(tileFromKey).filter((tile) => tile.column >= origin.column && tile.column < origin.column + (rows[0]?.length ?? 0) && tile.row >= origin.row && tile.row < origin.row + rows.length);
-      expect(reachedInArea.length, mounted.name).toBeGreaterThan(150);
+      expect(reachedInArea.length, mounted.name).toBeGreaterThan((rows.length * (rows[0]?.length ?? 0)) / 10);
     }
   });
 

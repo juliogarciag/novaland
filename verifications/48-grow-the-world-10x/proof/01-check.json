@@ -15,7 +15,42 @@
     "packages/sim/src/content/world/areas/westWoods.ts",
     "packages/sim/src/content/world/index.ts",
     "packages/sim/src/content/world/world.test.ts",
-    "packages/sim/tools/generate-world-areas.mjs"
+    "packages/sim/tools/generate-world-areas.mjs",
+    "verifications/48-grow-the-world-10x/01-check.mjs",
+    "verifications/48-grow-the-world-10x/02-measure.mjs",
+    "verifications/48-grow-the-world-10x/03-walk.mjs",
+    "verifications/48-grow-the-world-10x/README.md",
+    "verifications/48-grow-the-world-10x/baseline/world-before.json",
+    "verifications/48-grow-the-world-10x/browser.mjs",
+    "verifications/48-grow-the-world-10x/lib.mjs",
+    "verifications/48-grow-the-world-10x/measure.mts",
+    "verifications/48-grow-the-world-10x/package.json",
+    "verifications/48-grow-the-world-10x/pnpm-lock.yaml",
+    "verifications/48-grow-the-world-10x/proof/01-check-output.txt",
+    "verifications/48-grow-the-world-10x/proof/01-check.json",
+    "verifications/48-grow-the-world-10x/proof/01-check.txt",
+    "verifications/48-grow-the-world-10x/proof/01-tests.json",
+    "verifications/48-grow-the-world-10x/proof/02-measure.json",
+    "verifications/48-grow-the-world-10x/proof/02-measure.txt",
+    "verifications/48-grow-the-world-10x/proof/03-online-00-clearing.png",
+    "verifications/48-grow-the-world-10x/proof/03-online-01-east-glade.png",
+    "verifications/48-grow-the-world-10x/proof/03-online-02-far-clearing.png",
+    "verifications/48-grow-the-world-10x/proof/03-online-03-far-corner.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-00-clearing.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-01-north-meadow.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-02-old-grove.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-03-west-woods.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-04-stone-hollow.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-05-south-glade.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-06-far-clearing.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-07-far-corner.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-08-east-glade.png",
+    "verifications/48-grow-the-world-10x/proof/03-solo-09-rock-field.png",
+    "verifications/48-grow-the-world-10x/proof/03-walk.json",
+    "verifications/48-grow-the-world-10x/proof/03-walk.txt",
+    "verifications/48-grow-the-world-10x/proof/03-whole-world.png",
+    "verifications/48-grow-the-world-10x/run.sh",
+    "verifications/48-grow-the-world-10x/walker.mjs"
   ],
   "results": [
     {
@@ -48,7 +83,7 @@
       "pass": true
     },
     {
-      "name": "world.test.ts: is the clearing, with its top-left tile on the origin, and eight areas around it: ten times the clearing in all",
+      "name": "world.test.ts: is the clearing, with its top-left tile on the origin, and areas on every side of it: ten times the clearing in all",
       "pass": true
     },
     {
@@ -72,9 +107,14 @@
       "pass": true
     },
     {
+      "name": "git names the files changed since the branch this one is stacked on",
+      "pass": true,
+      "details": "51 files since 81ffa8b"
+    },
+    {
       "name": "no file under packages/sim/src/core changed",
       "pass": true,
-      "details": "16 files changed since 81ffa8b"
+      "details": ""
     },
     {
       "name": "the area format (types.ts, tiles.ts) did not change",

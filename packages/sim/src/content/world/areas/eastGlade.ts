@@ -6,8 +6,8 @@ import type { AreaData } from '../types';
  * one north-east of it on the trail down from the rock field. A trail
  * leaves south to the far clearing, past a glade at its side.
  *
- * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs
- * and edited by hand since: change the rows here, not the script. Every
+ * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
+ * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
  */
 export const eastGlade: AreaData = {

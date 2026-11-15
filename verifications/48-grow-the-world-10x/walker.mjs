@@ -6,31 +6,71 @@
  * reads what the debug API shows and never touches sim state, so the walk
  * is one a player could do by hand.
  *
- * `installWalker` is passed to `page.evaluate`: it must not use anything
- * from outside its own body.
+ * Both functions are passed to the page (`page.addInitScript`,
+ * `page.evaluate`): neither may use anything from outside its own body.
  */
+
+/**
+ * Before the page loads: times every WebSocket message handler, so the work
+ * the game does when a server state arrives (writing the replica,
+ * reconciling the prediction) is counted in the frame it delayed. The total
+ * so far is `window.__messageHandlerMs`.
+ */
+export function timeMessageHandlers() {
+  window.__messageHandlerMs = 0;
+  const timed = (handler) =>
+    typeof handler !== 'function'
+      ? handler
+      : function timedHandler(event) {
+          const startedAt = window.performance.now();
+          try {
+            return handler.call(this, event);
+          } finally {
+            window.__messageHandlerMs += window.performance.now() - startedAt;
+          }
+        };
+  const { addEventListener } = window.WebSocket.prototype;
+  window.WebSocket.prototype.addEventListener = function addTimedListener(type, handler, options) {
+    return addEventListener.call(this, type, type === 'message' ? timed(handler) : handler, options);
+  };
+  const onMessage = Object.getOwnPropertyDescriptor(window.WebSocket.prototype, 'onmessage');
+  Object.defineProperty(window.WebSocket.prototype, 'onmessage', {
+    configurable: true,
+    get() {
+      return onMessage.get.call(this);
+    },
+    set(handler) {
+      onMessage.set.call(this, timed(handler));
+    },
+  });
+}
+
+/** Once the game plays: puts the walker on `window.__walk`. */
 export function installWalker() {
-  const api = window.__novaland;
-  const { bounds } = api.tiles;
-  const solidDefIds = new Set(api.defs.filter((def) => def.solid === true).map((def) => def.id));
+  const game = window.__novaland;
+  const solidDefIds = new Set(game.defs.filter((def) => def.solid === true).map((def) => def.id));
   const isWalkable = (tile) => {
-    const defId = api.tileDefIdAt(tile);
+    const defId = game.tileDefIdAt(tile);
     return defId !== undefined && !solidDefIds.has(defId);
   };
   const keyOf = (tile) => `${tile.column},${tile.row}`;
   const NEIGHBOURS = [{ column: 1, row: 0 }, { column: -1, row: 0 }, { column: 0, row: 1 }, { column: 0, row: -1 }];
+  /** Milliseconds this walker spent reading snapshots since the last frame: its own load on the page, kept out of the game's. */
+  let walkerMsThisFrame = 0;
 
   /** Where the sim (solo) or the replica (online: the last state the server sent) has the local player, in metres. */
-  const position = () => {
-    const slot = api.localSlot();
-    const player = api.snapshot().entities.find((entity) => entity.components.Player?.slot === slot);
+  const simPosition = () => {
+    const startedAt = window.performance.now();
+    const slot = game.localSlot();
+    const player = game.snapshot().entities.find((entity) => entity.components.Player?.slot === slot);
+    walkerMsThisFrame += window.performance.now() - startedAt;
     return player ? { x: player.components.Position.x, y: player.components.Position.y } : undefined;
   };
   /** Where the player is on screen, which is what a person steers by: online that is the predicted position, ahead of the server's. */
-  const drawnPosition = () => api.online?.localPlayerDrawnAt() ?? position();
+  const drawnPosition = () => game.online?.localPlayerDrawnAt() ?? simPosition();
 
   /** The walkable tile nearest to `tile`, itself if it is walkable. */
-  const nearestWalkable = (tile) => {
+  const nearestWalkableTile = (tile) => {
     for (let ring = 0; ring < 12; ring += 1) {
       for (let row = tile.row - ring; row <= tile.row + ring; row += 1) {
         for (let column = tile.column - ring; column <= tile.column + ring; column += 1) {
@@ -47,78 +87,82 @@ export function installWalker() {
    * around them, so the walk keeps to the middle of trails. Undefined when
    * there is no way.
    */
-  const route = (from, to) => {
-    const costOf = (tile) => {
+  const routeBetween = (from, to) => {
+    const costOfEntering = (tile) => {
       let solidAround = 0;
       for (let row = tile.row - 1; row <= tile.row + 1; row += 1) {
         for (let column = tile.column - 1; column <= tile.column + 1; column += 1) if (!isWalkable({ column, row })) solidAround += 1;
       }
       return 1 + solidAround;
     };
-    const best = new Map([[keyOf(from), 0]]);
-    const cameFrom = new Map();
-    const open = [{ tile: from, cost: 0 }];
-    while (open.length > 0) {
+    const cheapestCostTo = new Map([[keyOf(from), 0]]);
+    const tileBefore = new Map();
+    const tilesToExpand = [{ tile: from, cost: 0 }];
+    while (tilesToExpand.length > 0) {
       let cheapest = 0;
-      for (let index = 1; index < open.length; index += 1) if (open[index].cost < open[cheapest].cost) cheapest = index;
-      const [{ tile, cost }] = open.splice(cheapest, 1);
+      for (let index = 1; index < tilesToExpand.length; index += 1) if (tilesToExpand[index].cost < tilesToExpand[cheapest].cost) cheapest = index;
+      const [{ tile, cost }] = tilesToExpand.splice(cheapest, 1);
       if (tile.column === to.column && tile.row === to.row) break;
-      if (cost > best.get(keyOf(tile))) continue;
+      if (cost > cheapestCostTo.get(keyOf(tile))) continue;
       for (const step of NEIGHBOURS) {
-        const next = { column: tile.column + step.column, row: tile.row + step.row };
-        if (!isWalkable(next)) continue;
-        const nextCost = cost + costOf(next);
-        if (nextCost >= (best.get(keyOf(next)) ?? Infinity)) continue;
-        best.set(keyOf(next), nextCost);
-        cameFrom.set(keyOf(next), tile);
-        open.push({ tile: next, cost: nextCost });
+        const neighbour = { column: tile.column + step.column, row: tile.row + step.row };
+        if (!isWalkable(neighbour)) continue;
+        const costToNeighbour = cost + costOfEntering(neighbour);
+        if (costToNeighbour >= (cheapestCostTo.get(keyOf(neighbour)) ?? Infinity)) continue;
+        cheapestCostTo.set(keyOf(neighbour), costToNeighbour);
+        tileBefore.set(keyOf(neighbour), tile);
+        tilesToExpand.push({ tile: neighbour, cost: costToNeighbour });
       }
     }
-    if (!best.has(keyOf(to))) return undefined;
+    if (!cheapestCostTo.has(keyOf(to))) return undefined;
     const tiles = [to];
-    while (keyOf(tiles[0]) !== keyOf(from)) tiles.unshift(cameFrom.get(keyOf(tiles[0])));
+    while (keyOf(tiles[0]) !== keyOf(from)) tiles.unshift(tileBefore.get(keyOf(tiles[0])));
     return tiles;
   };
 
   const walk = {
+    /** 'standing', 'walking', 'arrived', 'stuck' or 'no-route'. */
     state: 'standing',
     /**
-     * One entry per frame drawn while walking: `ms` after the frame before
-     * it, `gameMs` of that spent in the game's own update and render (the
-     * rest is the browser's), and whether a chunk was built or dropped in it.
+     * One entry per frame drawn while walking: `ms` since the frame before;
+     * `gameMs` of that spent in the game (the scene's update, the render
+     * call, and the WebSocket message handlers that ran since the frame
+     * before); `walkerMs` this walker spent reading snapshots;
+     * `framesSinceChunkChange`, 0 for a frame whose update built or dropped
+     * a chunk; and the tile the player was on.
      */
     frames: [],
-    /** Most chunks drawn at once, and chunks the camera showed that were not drawn, over every frame of the walk. */
+    /** Most chunks drawn at once, and frames in which a chunk the camera showed was not drawn. */
     mostChunksDrawn: 0,
-    missingChunkFrames: 0,
+    framesMissingAChunk: 0,
+    /** One entry per finished leg: its route, how long it took, and the least way the player made in any thirty ticks of it. */
     legs: [],
-    position,
-    nearestWalkable,
-    route,
-    bounds,
+    simPosition,
+    nearestWalkableTile,
   };
   let leg;
   let lastFrameAt;
-  let lastSent;
-  let lastSentAt = 0;
+  let headingSent;
+  let headingSentAt = 0;
 
-  const send = (direction, now) => {
-    api.queueCommand({ type: 'player/move', slot: api.localSlot(), x: direction.x, y: direction.y });
-    lastSent = direction;
-    lastSentAt = now;
+  const sendHeading = (heading, now) => {
+    game.queueCommand({ type: 'player/move', slot: game.localSlot(), x: heading.x, y: heading.y });
+    headingSent = heading;
+    headingSentAt = now;
   };
 
-  /** Starts walking to `tile`. `walk.state` becomes 'arrived' or 'stuck'. */
+  /** Starts walking to `tile`. `walk.state` becomes 'arrived' or 'stuck' when the walk ends, or 'no-route' at once. */
   walk.walkTo = (tile) => {
-    const at = drawnPosition();
-    const from = api.tileAt(at.x, at.y);
-    const tiles = route(from, tile);
+    const startsAt = drawnPosition();
+    const from = game.tileAt(startsAt.x, startsAt.y);
+    const tiles = routeBetween(from, tile);
     if (!tiles) {
       walk.state = 'no-route';
       return;
     }
-    leg = { from, to: tile, tiles, next: 0, startedAt: window.performance.now(), progressAt: window.performance.now(), metres: (tiles.length - 1) * api.tiles.tileSize };
-    lastSent = undefined;
+    const now = window.performance.now();
+    leg = { from, to: tile, tiles, nextTileIndex: 0, startedAt: now, lastProgressAt: now, metres: (tiles.length - 1) * game.tiles.tileSize, thirtyTicksStartedAt: game.sim.tick, lastSampledAt: simPosition(), metresTheseThirtyTicks: 0, metresPerThirtyTicks: [] };
+    headingSent = undefined;
     // Planning the route took a while, in this script, not in the game: the frame it fell in is not counted.
     lastFrameAt = undefined;
     walk.state = 'walking';
@@ -128,62 +172,90 @@ export function installWalker() {
   window.setInterval(() => {
     if (walk.state !== 'walking') return;
     const now = window.performance.now();
-    const at = drawnPosition();
-    let target = api.tileCentre(leg.tiles[leg.next]);
-    while (Math.hypot(target.x - at.x, target.y - at.y) < 0.3) {
-      leg.next += 1;
-      leg.progressAt = now;
-      if (leg.next === leg.tiles.length) {
-        send({ x: 0, y: 0 }, now);
-        walk.legs.push({ from: leg.from, to: leg.to, tiles: leg.tiles.length, metres: leg.metres, seconds: (now - leg.startedAt) / 1000 });
+    const steersFrom = drawnPosition();
+    // Way made in every thirty ticks of the leg, half a second of the game's own time: the length of the path the sim
+    // (solo) or the server (online) moved the player along, sampled here, so a turn counts as much as a straight line
+    // and only a player the world held up counts as less. Ticks, not the clock: a page the machine starves of frames
+    // runs fewer ticks, and that is not the world's doing.
+    const sampledAt = simPosition();
+    leg.metresTheseThirtyTicks += Math.hypot(sampledAt.x - leg.lastSampledAt.x, sampledAt.y - leg.lastSampledAt.y);
+    leg.lastSampledAt = sampledAt;
+    const ticksSince = game.sim.tick - leg.thirtyTicksStartedAt;
+    if (ticksSince >= 30) {
+      leg.metresPerThirtyTicks.push((leg.metresTheseThirtyTicks * 30) / ticksSince);
+      leg.thirtyTicksStartedAt = game.sim.tick;
+      leg.metresTheseThirtyTicks = 0;
+    }
+    let target = game.tileCentre(leg.tiles[leg.nextTileIndex]);
+    while (Math.hypot(target.x - steersFrom.x, target.y - steersFrom.y) < 0.3) {
+      leg.nextTileIndex += 1;
+      leg.lastProgressAt = now;
+      if (leg.nextTileIndex === leg.tiles.length) {
+        sendHeading({ x: 0, y: 0 }, now);
+        // The first thirty ticks start from standing: that is not walking yet.
+        const walkingSpans = leg.metresPerThirtyTicks.slice(1);
+        walk.legs.push({ from: leg.from, to: leg.to, tiles: leg.tiles.length, metres: leg.metres, seconds: (now - leg.startedAt) / 1000, spansOfThirtyTicks: walkingSpans.length, leastMetresInThirtyTicks: Math.min(...walkingSpans) });
         walk.state = 'arrived';
         return;
       }
-      target = api.tileCentre(leg.tiles[leg.next]);
+      target = game.tileCentre(leg.tiles[leg.nextTileIndex]);
     }
-    if (now - leg.progressAt > 4000) {
-      send({ x: 0, y: 0 }, now);
-      walk.stuckAt = { position: at, next: leg.tiles[leg.next] };
+    if (now - leg.lastProgressAt > 4000) {
+      sendHeading({ x: 0, y: 0 }, now);
+      walk.stuckAt = { position: steersFrom, nextTile: leg.tiles[leg.nextTileIndex] };
       walk.state = 'stuck';
       return;
     }
-    const length = Math.hypot(target.x - at.x, target.y - at.y);
-    const heading = { x: (target.x - at.x) / length, y: (target.y - at.y) / length };
+    const metresToTarget = Math.hypot(target.x - steersFrom.x, target.y - steersFrom.y);
+    const heading = { x: (target.x - steersFrom.x) / metresToTarget, y: (target.y - steersFrom.y) / metresToTarget };
     // The room takes 20 messages a second from a seat: stay well under it.
-    const turned = !lastSent || lastSent.x * heading.x + lastSent.y * heading.y < 0.995;
-    if (turned && now - lastSentAt > 120) send(heading, now);
+    const turned = !headingSent || headingSent.x * heading.x + headingSent.y * heading.y < 0.995;
+    if (turned && now - headingSentAt > 120) sendHeading(heading, now);
   }, 40);
 
-  // Every frame the game renders while walking: its length, and what terrain was drawn in it.
-  let lastChunks = '';
+  // Every frame the game renders while walking: how long it took, how much of that was the game's, and what terrain was drawn.
+  let chunksDrawnLastFrame = '';
+  let framesSinceChunkChange = Infinity;
   let updateMs = 0;
   let renderStartedAt;
-  const scene = api.game.scene.getScene('world');
+  let messageHandlerMsAtLastFrame = window.__messageHandlerMs ?? 0;
+  const scene = game.game.scene.getScene('world');
   const sceneUpdate = scene.update.bind(scene);
   scene.update = (time, deltaMs) => {
     const startedAt = window.performance.now();
     sceneUpdate(time, deltaMs);
     updateMs = window.performance.now() - startedAt;
   };
-  api.game.events.on('prerender', () => {
+  game.game.events.on('prerender', () => {
     renderStartedAt = window.performance.now();
   });
-  api.game.events.on('postrender', () => {
+  game.game.events.on('postrender', () => {
     const now = window.performance.now();
-    const terrain = api.terrain();
-    const chunks = terrain ? [...terrain.chunksDrawn].sort().join(' ') : '';
+    const terrain = game.terrain();
+    const chunksDrawn = terrain ? [...terrain.chunksDrawn].sort().join(' ') : '';
+    framesSinceChunkChange = chunksDrawn === chunksDrawnLastFrame ? framesSinceChunkChange + 1 : 0;
+    const messageHandlerMs = window.__messageHandlerMs ?? 0;
     if (walk.state === 'walking' && lastFrameAt !== undefined && terrain) {
-      walk.frames.push({ ms: now - lastFrameAt, gameMs: updateMs + (now - renderStartedAt), chunksChanged: chunks !== lastChunks });
+      const drawnAt = game.online?.localPlayerDrawnAt();
+      walk.frames.push({
+        ms: now - lastFrameAt,
+        gameMs: updateMs + (now - renderStartedAt) + (messageHandlerMs - messageHandlerMsAtLastFrame),
+        walkerMs: walkerMsThisFrame,
+        framesSinceChunkChange: Number.isFinite(framesSinceChunkChange) ? framesSinceChunkChange : null,
+        tile: drawnAt ? game.tileAt(drawnAt.x, drawnAt.y) : leg.tiles[Math.min(leg.nextTileIndex, leg.tiles.length - 1)],
+      });
       walk.mostChunksDrawn = Math.max(walk.mostChunksDrawn, terrain.chunksDrawn.length);
-      const view = api.game.scene.getScene('world').cameras.main.worldView;
-      const chunkPixels = api.chunkSize * api.tiles.tileSize * api.pixelsPerMetre;
-      const missing = api.tiles.chunks.some(
+      const view = scene.cameras.main.worldView;
+      const chunkPixels = game.chunkSize * game.tiles.tileSize * game.pixelsPerMetre;
+      const isMissingAChunk = game.tiles.chunks.some(
         (chunk) => chunk.column * chunkPixels < view.x + view.width && (chunk.column + 1) * chunkPixels > view.x && chunk.row * chunkPixels < view.y + view.height && (chunk.row + 1) * chunkPixels > view.y && !terrain.chunksDrawn.includes(`${chunk.column},${chunk.row}`),
       );
-      if (missing) walk.missingChunkFrames += 1;
+      if (isMissingAChunk) walk.framesMissingAChunk += 1;
     }
+    walkerMsThisFrame = 0;
+    messageHandlerMsAtLastFrame = messageHandlerMs;
     lastFrameAt = now;
-    lastChunks = chunks;
+    chunksDrawnLastFrame = chunksDrawn;
   });
 
   window.__walk = walk;

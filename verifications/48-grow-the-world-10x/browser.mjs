@@ -25,11 +25,13 @@ export async function startRoomServer({ port, env = {} }) {
 }
 
 /** A page of its own browser context, open on the game and playing: the sim has ticked (solo) or the seat is taken (online). */
-export async function openGame(browser, { port, viewport, online = false, errors = [] }) {
+export async function openGame(browser, { port, viewport, online = false, errors = [], beforeLoad }) {
   const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
   const page = await context.newPage();
   page.on('pageerror', (error) => errors.push(String(error)));
   page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
+  // A function to run in the page before any of its own scripts, such as one that wraps WebSocket.
+  if (beforeLoad) await page.addInitScript(beforeLoad);
   await page.goto(`http://localhost:${port}/`);
   if (online) await page.waitForFunction(() => window.__novaland?.online?.status().kind === 'online' && window.__novaland.sim.tick > 0, null, { timeout: 20000 });
   else await page.waitForFunction(() => window.__novaland && window.__novaland.sim.tick > 10, null, { timeout: 20000 });

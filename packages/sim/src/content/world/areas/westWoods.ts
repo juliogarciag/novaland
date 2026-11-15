@@ -6,8 +6,8 @@ import type { AreaData } from '../types';
  * apart with grass between them. Trails leave north to the old grove and
  * south to the stone hollow.
  *
- * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs
- * and edited by hand since: change the rows here, not the script. Every
+ * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
+ * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
  */
 export const westWoods: AreaData = {

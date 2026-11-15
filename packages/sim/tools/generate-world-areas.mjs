@@ -37,6 +37,8 @@ const LAND = { column: -45, row: -31, width: 130, height: 92 };
 /** Trees this thick close the land on every side. */
 const BORDER_TILES = 2;
 const SPAWN = { column: 6, row: 14 };
+/** How many tiles apart the random values lie that the ragged edge of a place is drawn between. */
+const TILES_PER_LATTICE_STEP = 4;
 
 /**
  * The eight areas, each the size of the clearing or a little larger. Together
@@ -151,7 +153,7 @@ function main() {
 
   for (const place of PLACES) clearPlace(land, place);
   for (const trail of TRAILS) cutTrail(land, keptClear, trail);
-  for (const place of PLACES) scatterInPlace(land, keptClear, place, random);
+  for (const place of PLACES) scatterInPlace(land, { place, keptClear, random });
   standStoneRing(land);
   closeBorder(land);
   layClearing(land, clearingRows);
@@ -160,16 +162,17 @@ function main() {
   checkLand(land);
   for (const area of AREAS) writeFileSync(path.join(AREAS_FOLDER, `${area.file}.ts`), areaFileText(area, rowsOf(land, area.rectangle)));
 
-  const tiles = land.flat();
-  console.log(`land ${LAND.width}x${LAND.height} = ${tiles.length} tiles (${(tiles.length / (CLEARING.width * CLEARING.height)).toFixed(2)} times the clearing)`);
-  console.log(`grass ${tiles.filter((tile) => tile === GRASS).length}, trees ${tiles.filter((tile) => tile === TREE).length}, rocks ${tiles.filter((tile) => tile === ROCK).length}, grass grown over because it could not be reached: ${overgrown}`);
+  const kinds = land.flat();
+  const countOf = (wanted) => kinds.filter((kind) => kind === wanted).length;
+  console.log(`land ${LAND.width}x${LAND.height} = ${kinds.length} tiles (${(kinds.length / (CLEARING.width * CLEARING.height)).toFixed(2)} times the clearing)`);
+  console.log(`grass ${countOf(GRASS)}, trees ${countOf(TREE)}, rocks ${countOf(ROCK)}, grass grown over because it could not be reached: ${overgrown}`);
   console.log(`wrote ${AREAS.map((area) => `${area.file}.ts`).join(', ')}`);
 }
 
 // ---- Laying out the land ----
 
-function filledGrid(tile) {
-  return Array.from({ length: LAND.height }, () => Array.from({ length: LAND.width }, () => tile));
+function filledGrid(kind) {
+  return Array.from({ length: LAND.height }, () => Array.from({ length: LAND.width }, () => kind));
 }
 
 function isInLand({ column, row }) {
@@ -218,10 +221,10 @@ function cutTrail(land, keptClear, waypoints) {
     const bend = (index % 2 === 0 ? 1 : -1) * Math.min(3, length / 4);
     const steps = Math.ceil(length * 3);
     for (let step = 0; step <= steps; step += 1) {
-      const along = step / steps;
-      const aside = bend * Math.sin(Math.PI * along);
-      const column = Math.round(from.column + (to.column - from.column) * along - ((to.row - from.row) / length) * aside);
-      const row = Math.round(from.row + (to.row - from.row) * along + ((to.column - from.column) / length) * aside);
+      const shareOfTheWay = step / steps;
+      const tilesToTheSide = bend * Math.sin(Math.PI * shareOfTheWay);
+      const column = Math.round(from.column + (to.column - from.column) * shareOfTheWay - ((to.row - from.row) / length) * tilesToTheSide);
+      const row = Math.round(from.row + (to.row - from.row) * shareOfTheWay + ((to.column - from.column) / length) * tilesToTheSide);
       for (const tile of [{ column, row }, { column: column + 1, row }, { column, row: row + 1 }, { column: column + 1, row: row + 1 }]) {
         putTile(land, tile, GRASS);
         keptClear.add(keyOf(tile));
@@ -231,13 +234,13 @@ function cutTrail(land, keptClear, waypoints) {
 }
 
 /** Leaves trees standing and strews rocks over a place's grass, never on a trail. */
-function scatterInPlace(land, keptClear, place, random) {
+function scatterInPlace(land, { place, keptClear, random }) {
   for (const tile of tilesOfLand()) {
-    // One draw per tile whatever is on it, so changing one place does not reshuffle the others.
-    const draw = random();
+    // One random number per tile whatever is on it, so changing one place does not reshuffle the others.
+    const randomShare = random();
     if (!isInPlace(place, tile) || isInClearing(tile) || keptClear.has(keyOf(tile)) || tileOf(land, tile) !== GRASS) continue;
-    if (draw < place.trees) putTile(land, tile, TREE);
-    else if (draw < place.trees + place.rocks) putTile(land, tile, ROCK);
+    if (randomShare < place.trees) putTile(land, tile, TREE);
+    else if (randomShare < place.trees + place.rocks) putTile(land, tile, ROCK);
   }
 }
 
@@ -291,9 +294,19 @@ function tilesReachableFrom(land, start) {
   return reached;
 }
 
-/** Refuses a land that lost a place: one whose centre cannot be walked to, or whose areas do not cover it exactly. */
+/**
+ * Refuses a land that lost a place (one whose centre cannot be walked to),
+ * whose areas do not cover it exactly, or where an exit of the clearing
+ * opens onto a tree instead of a trail.
+ */
 function checkLand(land) {
   const reached = tilesReachableFrom(land, SPAWN);
+  for (const tile of tilesOfLand()) {
+    if (!isInClearing(tile) || tileOf(land, tile) !== GRASS) continue;
+    for (const outside of [{ column: tile.column + 1, row: tile.row }, { column: tile.column - 1, row: tile.row }, { column: tile.column, row: tile.row + 1 }, { column: tile.column, row: tile.row - 1 }]) {
+      if (isInLand(outside) && !isInClearing(outside) && tileOf(land, outside) !== GRASS) throw new Error(`The clearing's exit at (${tile.column}, ${tile.row}) meets no trail: (${outside.column}, ${outside.row}) is not grass`);
+    }
+  }
   for (const place of PLACES) {
     const nearCentre = tilesOfLand().filter((tile) => Math.abs(tile.column - place.centre.column) <= 1 && Math.abs(tile.row - place.centre.row) <= 1);
     if (!nearCentre.some((tile) => reached.has(keyOf(tile)))) throw new Error(`The ${place.name} cannot be reached from the spawn`);
@@ -335,14 +348,13 @@ function latticeValue(column, row) {
 
 /** A number from -1 to 1 that changes smoothly from tile to tile, over about four tiles: what makes the edge of a place ragged. */
 function raggedness(column, row) {
-  const SCALE = 4;
-  const latticeColumn = Math.floor(column / SCALE);
-  const latticeRow = Math.floor(row / SCALE);
-  const acrossColumn = smooth(column / SCALE - latticeColumn);
-  const acrossRow = smooth(row / SCALE - latticeRow);
-  const top = mix(latticeValue(latticeColumn, latticeRow), latticeValue(latticeColumn + 1, latticeRow), acrossColumn);
-  const bottom = mix(latticeValue(latticeColumn, latticeRow + 1), latticeValue(latticeColumn + 1, latticeRow + 1), acrossColumn);
-  return mix(top, bottom, acrossRow);
+  const latticeColumn = Math.floor(column / TILES_PER_LATTICE_STEP);
+  const latticeRow = Math.floor(row / TILES_PER_LATTICE_STEP);
+  const acrossColumn = smooth(column / TILES_PER_LATTICE_STEP - latticeColumn);
+  const acrossRow = smooth(row / TILES_PER_LATTICE_STEP - latticeRow);
+  const alongTopEdge = mix(latticeValue(latticeColumn, latticeRow), latticeValue(latticeColumn + 1, latticeRow), acrossColumn);
+  const alongBottomEdge = mix(latticeValue(latticeColumn, latticeRow + 1), latticeValue(latticeColumn + 1, latticeRow + 1), acrossColumn);
+  return mix(alongTopEdge, alongBottomEdge, acrossRow);
 }
 
 function smooth(share) {
@@ -386,8 +398,8 @@ function areaFileText(area, rows) {
     '/**',
     ...area.about.map((line) => ` * ${line}`),
     ' *',
-    ` * ${area.rectangle.width}x${area.rectangle.height} tiles, first laid out by packages/sim/tools/generate-world-areas.mjs`,
-    ' * and edited by hand since: change the rows here, not the script. Every',
+    ` * ${area.rectangle.width}x${area.rectangle.height} tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.`,
+    ' * To change the land, edit the rows here by hand, not the script. Every',
     ' * grass tile must stay within reach of the spawn (a test checks it).',
     ' */',
     `export const ${area.file}: AreaData = {`,

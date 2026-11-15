@@ -6,8 +6,8 @@ import type { AreaData } from '../types';
  * exit ends here, with a hidden glade off it on the way; others leave west
  * to the old grove and east to the rock field.
  *
- * 40x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs
- * and edited by hand since: change the rows here, not the script. Every
+ * 40x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
+ * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
  */
 export const northMeadow: AreaData = {
