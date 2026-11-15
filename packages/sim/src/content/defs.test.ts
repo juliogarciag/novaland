@@ -39,7 +39,8 @@ describe('entity definitions', () => {
     const [clearing] = worldMap.areas;
     if (!clearing) throw new Error('the world has no area');
     const rockRow = worldMap.spawn.row + 2;
-    const withRock = { ...worldMap, areas: [{ ...clearing, rows: clearing.rows.map((row, index) => (index === rockRow ? `${row.slice(0, 20)}o${row.slice(21)}` : row)) }] };
+    const clearingWithRock = { ...clearing, rows: clearing.rows.map((row, index) => (index === rockRow ? `${row.slice(0, 20)}o${row.slice(21)}` : row)) };
+    const withRock = { ...worldMap, areas: worldMap.areas.map((mounted) => (mounted === clearing ? clearingWithRock : mounted)) };
     const simWithRock = await createSimInternal({ seed: 1, map: withRock });
     expect(simWithRock.physics.colliders.len()).toBe(sim.physics.colliders.len() + 1);
     expect(simWithRock.entityCount).toBe(0);

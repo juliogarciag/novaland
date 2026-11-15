@@ -12,7 +12,8 @@
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "world:areas": "node tools/generate-world-areas.mjs"
   },
   "dependencies": {
     "@dimforge/rapier2d-deterministic-compat": "catalog:",

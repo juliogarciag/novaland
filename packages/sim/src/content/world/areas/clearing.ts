@@ -7,6 +7,10 @@ import type { AreaData } from '../types';
  * (one metre). Its top-left tile is world tile (0, 0): the origin of the
  * world is this area's top-left corner, and stays there whatever is built
  * around it.
+ *
+ * The ring of trees has four exits, each onto a trail of the area beside
+ * it: west in rows 9 to 11, east in rows 20 to 22, north in columns 34 and
+ * 35, south in columns 20 and 21. None is in line with the spawn.
  */
 export const clearing: AreaData = {
   name: 'clearing',
@@ -17,18 +21,18 @@ export const clearing: AreaData = {
     o: TerrainDefId.Rock,
   },
   rows: [
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT.TTTTT',
+    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTT',
+    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTT',
+    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTT',
     'TTT.......TT.................T.......TTT',
     'TT.........T.........................TTT',
     'TT....................................TT',
     'TT..o.......................o.........TT',
     'TTT...................................TT',
     'TTT...........................o.......TT',
-    'TT....................................TT',
-    'TT............TT..........oo..........TT',
-    'TT............TT......................TT',
+    '......................................TT',
+    '..............TT..........oo..........TT',
+    '..............TT......................TT',
     'TT..o.................................TT',
     'TTT............................o......TT',
     'TT....................................TT',
@@ -37,15 +41,15 @@ export const clearing: AreaData = {
     'TTT...........o.......................TT',
     'TT........................TT..........TT',
     'TT........................TT.........TTT',
-    'TT....................................TT',
-    'TT......................o.............TT',
-    'TTT...................................TT',
+    'TT......................................',
+    'TT......................o...............',
+    'TTT.....................................',
     'TT....................................TT',
     'TT.o...........................o......TT',
     'TTT..................................TTT',
     'TTTT......TT.................TT.....TTTT',
     'TTTTTT...TTTTT.............TTTTT...TTTTT',
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
-    'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
+    'TTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTT',
+    'TTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTT',
   ],
 };
