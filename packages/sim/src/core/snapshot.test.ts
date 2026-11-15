@@ -1,8 +1,7 @@
 import { addComponent } from 'bitecs';
 import { describe, expect, it } from 'vitest';
-import { readTileGrid, spawnPoint } from '../content/levels/grid';
+import { readMapTiles, spawnPoint } from '../content/world/tiles';
 import { TerrainDefId } from '../features/terrain/defs';
-import { solidRectangles } from '../features/terrain/rectangles';
 import { __testing__ } from './create';
 import { initPhysics } from './physics';
 import { Sim } from './sim';
@@ -21,11 +20,11 @@ describe('snapshot', () => {
     sim.destroy();
   });
 
-  it('records every component field of every entity plus level, capacity, tick and rng', async () => {
+  it('records every component field of every entity plus the map, capacity, tick and rng', async () => {
     const sim = await createSimInternal({ seed: 3 });
     sim.step([{ type: 'player/join', slot: 0 }]);
     const snapshot = sim.snapshot();
-    expect(snapshot.level).toBe(sim.level.name);
+    expect(snapshot.map).toBe(readMapTiles(sim.map).checksum);
     expect(snapshot.capacity).toBe(sim.capacity);
     expect(snapshot.tick).toBe(1);
     const player = snapshot.entities.find((e) => e.components['Player'] !== undefined);
@@ -36,20 +35,19 @@ describe('snapshot', () => {
       Facing: { x: 0, y: 1 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
-      Position: spawnPoint(sim.level),
+      Position: spawnPoint(sim.map),
     });
-    expect(snapshot.entities.filter((e) => e.components['TerrainCollider'])).toHaveLength(
-      solidRectangles(readTileGrid(sim.level)).length,
-    );
+    // Terrain is no entity: the player is the only one, and the colliders are in the physics bytes.
+    expect(snapshot.entities).toHaveLength(1);
     expect(snapshot.physics.length).toBeGreaterThan(100);
     sim.destroy();
   });
 
   it('hashes the same regardless of the order components were attached in', async () => {
     await initPhysics();
-    const level = { name: 'empty', legend: { '.': TerrainDefId.Grass }, rows: ['....', '....'], spawn: { column: 0, row: 0 } };
-    const a = new Sim({ seed: 0, level, capacity: 8 }, []);
-    const b = new Sim({ seed: 0, level, capacity: 8 }, []);
+    const map = { areas: [{ name: 'empty', origin: { column: 0, row: 0 }, legend: { '.': TerrainDefId.Grass }, rows: ['....', '....'] }], spawn: { column: 0, row: 0 } };
+    const a = new Sim({ seed: 0, map, capacity: 8 }, []);
+    const b = new Sim({ seed: 0, map, capacity: 8 }, []);
     const ea = a.createEntity();
     addComponent(a.world, ea, a.store(Extents));
     addComponent(a.world, ea, a.store(DefRef));
@@ -63,10 +61,10 @@ describe('snapshot', () => {
   });
 
   it('has a stable hash (known answer)', () => {
-    const fixed: SimSnapshot = { version: 1, seed: 7, level: 'x', capacity: 2, tick: 3, rng: 9, entities: [{ id: 1, components: { A: { v: 1.5 } } }], physics: 'AAAA' };
+    const fixed: SimSnapshot = { version: 2, seed: 7, map: 'x', capacity: 2, tick: 3, rng: 9, entities: [{ id: 1, components: { A: { v: 1.5 } } }], physics: 'AAAA' };
     expect(hashSnapshot(fixed)).toBe(hashSnapshot(JSON.parse(JSON.stringify(fixed))));
     expect(hashSnapshot(fixed)).toMatch(/^[0-9a-f]{8}$/);
-    expect(hashSnapshot(fixed)).toBe('e146e1b7');
+    expect(hashSnapshot(fixed)).toBe('da3bbd42');
   });
 
   it('encodes base64 like the standard', () => {

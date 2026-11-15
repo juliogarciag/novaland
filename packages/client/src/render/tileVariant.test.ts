@@ -16,7 +16,7 @@ describe("variantOfTile", () => {
     expect(variants).toEqual(PINNED_VARIANTS);
   });
 
-  it("uses every variant about as often across a level, however many there are", () => {
+  it("uses every variant about as often across a map, however many there are", () => {
     for (const variantCount of [3, 4, 24]) {
       const counts = Array.from({ length: variantCount }, () => 0);
       for (let row = 0; row < 30; row += 1) {

@@ -1,0 +1,13 @@
+ ✓ verifications/47-world-as-chunks/same-ground.test.ts > the world is the same ground as before > every tile is the same tile at the same coordinate, and there are no others 8ms
+ ✓ verifications/47-world-as-chunks/same-ground.test.ts > the world is the same ground as before > the spawn is the same tile and the same point 0ms
+ ✓ verifications/47-world-as-chunks/same-ground.test.ts > the world is the same ground as before > the colliders in the physics world cover exactly the ground the old collider entities covered: every solid tile once, nothing else 54ms
+ ✓ verifications/47-world-as-chunks/same-ground.test.ts > the world is the same ground as before > the same commands walk five players to the same places, trees and rocks included 172ms
+ ✓ verifications/47-world-as-chunks/same-ground.test.ts > the world is the same ground as before > writes the report 1ms
+      Tests  5 passed (5)
+PASS  the same-ground tests pass
+PASS  every tile is the same tile at the same coordinate  (1200 tiles compared, stored in 2 chunks of 32x32)
+PASS  the spawn is the same tile and point  ({"tile":{"column":6,"row":14},"metres":{"x":6.5,"y":14.5}})
+PASS  the colliders cover the same ground: every solid tile once, nothing else, and none is an entity  (45 boxes now (cut at the chunk edge), 43 entities before, both covering 358 solid tiles)
+PASS  a 40-second walk of five players ends in the same places  (largest difference 3.1 mm over 240 samples, 194 of them pressed against trees or rocks)
+
+ALL 5 CHECKS PASSED

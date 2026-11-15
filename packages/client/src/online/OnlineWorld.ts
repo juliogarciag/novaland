@@ -2,10 +2,11 @@ import {
   applyWorldState,
   createPrediction,
   createReplica,
-  findLevel,
   findPlayerEntity,
+  readMapTiles,
   TICK_RATE,
   WIRE_PROTOCOL,
+  worldMap,
   type Command,
   type PredictionHandle,
   type PredictionOptions,
@@ -15,10 +16,10 @@ import {
 } from '@novaland/sim';
 import { readViewFrame, type ViewFrame } from '../render/viewFrame';
 import type { Occupancy, PlayableWorld } from '../worlds/PlayableWorld';
-import { PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type JoinedRoom } from './connection';
+import { MAP_MISMATCH_REASON, PROTOCOL_MISMATCH_REASON, WorldConnection, type ConnectionStatus, type JoinedRoom } from './connection';
 import { ViewFrameBuffer } from './frameBuffer';
 import { LocalPlayerPrediction, type PredictionReport } from './prediction';
-import { INTERPOLATION_BUFFER_TICKS, MAX_LEVEL_NAME_LENGTH, MAX_SLOT, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
+import { INTERPOLATION_BUFFER_TICKS, MAX_MAP_CHECKSUM_LENGTH, MAX_SLOT, RESYNC_RETRY_AFTER_UPDATES, WORLD_SEATS } from './tuning';
 
 export interface OnlineWorldOptions {
   readonly endpoint: string;
@@ -56,9 +57,11 @@ interface OnlineWorldParts {
 
 /**
  * Online play: the server owns the sim and this client holds a replica of
- * it. The welcome gives the seat, the level and a full state; deltas keep
- * the replica in step; `player/move` goes over the wire without a slot and
- * the server stamps the seat. The replica is never stepped (it throws), and
+ * it. The welcome gives the seat, the checksum of the server's map and a
+ * full state; deltas keep the replica in step. Terrain never travels: the
+ * replica is built on this page's own map (`worldMap`), and a server whose
+ * map has another checksum is one this page cannot play on. `player/move`
+ * goes over the wire without a slot and the server stamps the seat. The replica is never stepped (it throws), and
  * the drawn frame comes from a buffer of the last server states, two send
  * intervals behind, interpolated to the display rate.
  *
@@ -73,7 +76,7 @@ interface OnlineWorldParts {
  * The replica is created from the first welcome and kept for the life of the
  * page: a later welcome (after a drop) replaces its contents with the new
  * full state, which `applyWorldState` does whatever the tick. A later welcome
- * for a different level or capacity cannot be shown in the scene that was
+ * for a different map or capacity cannot be shown in the scene that was
  * built for the first one, so it is reported as incompatible: the connection
  * stops and the screen offers a reload (a hostile server must not be able
  * to make the page reload itself in a loop).
@@ -132,11 +135,10 @@ export class OnlineWorld implements PlayableWorld {
           const welcome = readWelcome(payload);
           if (!welcome) return { incompatible: 'the server sent a welcome this client does not understand' };
           if (world) return world.welcomeAgain(welcome);
-          const level = findLevel(welcome.level);
-          if (!level) return { incompatible: `this client has no level named "${welcome.level}"` };
+          if (welcome.map !== readMapTiles(worldMap).checksum) return { incompatible: MAP_MISMATCH_REASON };
           let replica: ReplicaHandle;
           try {
-            replica = createReplica({ level, capacity: welcome.capacity });
+            replica = createReplica({ map: worldMap, capacity: welcome.capacity });
           } catch {
             return { incompatible: `the server's capacity (${String(welcome.capacity)}) is out of this client's range` };
           }
@@ -224,7 +226,7 @@ export class OnlineWorld implements PlayableWorld {
    */
   private async startPredicting(create: (options: PredictionOptions) => Promise<PredictionHandle>): Promise<void> {
     try {
-      const prediction = new LocalPlayerPrediction(await create({ level: this.sim.level, capacity: this.sim.capacity }));
+      const prediction = new LocalPlayerPrediction(await create({ map: this.sim.map, capacity: this.sim.capacity }));
       this.predictionStartedAt = this.now();
       this.prediction = prediction;
       if (this.connection.status.kind !== 'online') return;
@@ -276,7 +278,7 @@ export class OnlineWorld implements PlayableWorld {
 
   /** A welcome after a drop: the same world, a new seat, a fresh full state. */
   private welcomeAgain(welcome: WelcomeMessage): 'seated' | { readonly incompatible: string } {
-    if (welcome.level !== this.sim.level.name || welcome.capacity !== this.sim.capacity) {
+    if (welcome.map !== readMapTiles(this.sim.map).checksum || welcome.capacity !== this.sim.capacity) {
       return { incompatible: 'the server changed its world' };
     }
     this.slot = welcome.slot;
@@ -331,19 +333,20 @@ export class OnlineWorld implements PlayableWorld {
 
 /**
  * The welcome behind an untrusted payload, or undefined when it has not the
- * shape the wire promises: this client's `WIRE_PROTOCOL`, a seat number in `0..MAX_SLOT`, a level name of
- * at most `MAX_LEVEL_NAME_LENGTH` characters, a capacity and a state object.
+ * shape the wire promises: this client's `WIRE_PROTOCOL`, a seat number in `0..MAX_SLOT`, a map checksum of
+ * at most `MAX_MAP_CHECKSUM_LENGTH` characters, a capacity and a state object. Whether the checksum is
+ * this page's map is the caller's question.
  * The capacity's range is checked by `createReplica`, the state by
  * `applyWorldState`.
  */
 function readWelcome(payload: unknown): WelcomeMessage | undefined {
   if (typeof payload !== 'object' || payload === null) return undefined;
-  const { protocol, slot, level, capacity, state } = payload as Record<string, unknown>;
+  const { protocol, slot, map, capacity, state } = payload as Record<string, unknown>;
   if (protocol !== WIRE_PROTOCOL) return undefined;
   if (!Number.isSafeInteger(slot) || (slot as number) < 0 || (slot as number) > MAX_SLOT) return undefined;
-  if (typeof level !== 'string' || level.length > MAX_LEVEL_NAME_LENGTH || typeof capacity !== 'number') return undefined;
+  if (typeof map !== 'string' || map.length > MAX_MAP_CHECKSUM_LENGTH || typeof capacity !== 'number') return undefined;
   if (typeof state !== 'object' || state === null) return undefined;
-  return { protocol, slot: slot as number, level, capacity, state: state as WelcomeMessage['state'] };
+  return { protocol, slot: slot as number, map, capacity, state: state as WelcomeMessage['state'] };
 }
 
 /** True when a welcome names a wire protocol other than this client's, or none (a server from before the protocol had a version). */

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getDef } from '../../content/defs';
-import { readTileGrid, spawnPoint, tileAt } from '../../content/levels/grid';
-import { starterLevel } from '../../content/levels/starter';
-import type { LevelData, TileCoordinate } from '../../content/levels/types';
+import { readMapTiles, spawnPoint, tileAt, tileDefIdAt } from '../../content/world/tiles';
+import { worldMap } from '../../content/world';
+import type { TileCoordinate, WorldMap } from '../../content/world/types';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import type { Sim } from '../../core/sim';
@@ -15,19 +15,19 @@ describe('spread spawns (headless)', () => {
   it('puts the first player on the spawn tile itself', async () => {
     const sim = await createSimInternal({ seed: 1 });
     sim.step([join(0)]);
-    expect(playerPosition(sim, 0)).toEqual(spawnPoint(starterLevel));
+    expect(playerPosition(sim, 0)).toEqual(spawnPoint(worldMap));
     sim.destroy();
   });
 
   it('lands five joins on five distinct, walkable tiles, all next to the spawn tile', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    const grid = readTileGrid(starterLevel);
+    const tiles = readMapTiles(worldMap);
     sim.step([join(0), join(1), join(2), join(3), join(4)]);
-    const tiles = [0, 1, 2, 3, 4].map((slot) => playerTile(sim, slot));
-    expect(new Set(tiles.map((tile) => `${tile.column},${tile.row}`)).size).toBe(5);
-    for (const tile of tiles) {
-      expect(getTileDef((grid.defIds[tile.row] as number[])[tile.column] as number).solid).toBe(false);
-      expect(Math.max(Math.abs(tile.column - starterLevel.spawn.column), Math.abs(tile.row - starterLevel.spawn.row))).toBeLessThanOrEqual(1);
+    const playerTiles = [0, 1, 2, 3, 4].map((slot) => playerTile(sim, slot));
+    expect(new Set(playerTiles.map((tile) => `${tile.column},${tile.row}`)).size).toBe(5);
+    for (const tile of playerTiles) {
+      expect(getTileDef(tileDefIdAt(tiles, tile) as number).solid).toBe(false);
+      expect(Math.max(Math.abs(tile.column - worldMap.spawn.column), Math.abs(tile.row - worldMap.spawn.row))).toBeLessThanOrEqual(1);
     }
     // Bodies are smaller than half a tile, so neighbouring tiles never overlap.
     const positions = [0, 1, 2, 3, 4].map((slot) => playerPosition(sim, slot));
@@ -63,8 +63,8 @@ describe('spread spawns (headless)', () => {
   });
 
   it('skips solid tiles and tiles a player stands on, reaching further out when the first ring is full', async () => {
-    const corridor: LevelData = { ...level(['TTTTTTTTTTT', 'T.........T', 'TTTTTTTTTTT']), spawn: { column: 5, row: 1 } };
-    const sim = await createSimInternal({ seed: 1, level: corridor });
+    const corridor = mapOf(['TTTTTTTTTTT', 'T.........T', 'TTTTTTTTTTT'], { column: 5, row: 1 });
+    const sim = await createSimInternal({ seed: 1, map: corridor });
     sim.step([join(0), join(1), join(2), join(3), join(4)]);
     const tiles = [0, 1, 2, 3, 4].map((slot) => playerTile(sim, slot));
     expect(tiles.every((tile) => tile.row === 1)).toBe(true);
@@ -75,13 +75,13 @@ describe('spread spawns (headless)', () => {
   });
 
   it('treats a tile a player walked onto as taken and a tile a player left as free again', async () => {
-    const corridor: LevelData = { ...level(['TTTTTTTTTTT', 'T.........T', 'TTTTTTTTTTT']), spawn: { column: 5, row: 1 } };
-    const sim = await createSimInternal({ seed: 1, level: corridor });
-    const grid = readTileGrid(corridor);
+    const corridor = mapOf(['TTTTTTTTTTT', 'T.........T', 'TTTTTTTTTTT'], { column: 5, row: 1 });
+    const sim = await createSimInternal({ seed: 1, map: corridor });
+    const { tileSize } = readMapTiles(corridor);
     sim.step([join(0)]);
     // The first player walks one tile east and stops there. The spawn tile is free again, so the second join takes it...
     sim.step([move(1, 0, 0)]);
-    for (let tick = 0; tick < Math.ceil(grid.tileSize / (SPEED * sim.dt)); tick += 1) sim.step();
+    for (let tick = 0; tick < Math.ceil(tileSize / (SPEED * sim.dt)); tick += 1) sim.step();
     sim.step([move(0, 0, 0)]);
     expect(playerTile(sim, 0)).toEqual({ column: 6, row: 1 });
     sim.step([join(1)]);
@@ -96,9 +96,22 @@ describe('spread spawns (headless)', () => {
     sim.destroy();
   });
 
+  it('looks for a free tile no further than 32 tiles from the spawn: one 32 tiles out is used, one 33 tiles out is not', async () => {
+    // The spawn tile, a row of trees, then the only other walkable tile.
+    const withFreeTileAt = (distance: number): WorldMap => mapOf([`.${'T'.repeat(distance - 1)}.`], { column: 0, row: 0 });
+    const near = await createSimInternal({ seed: 1, map: withFreeTileAt(32) });
+    near.step([join(0), join(1)]);
+    expect([playerTile(near, 0), playerTile(near, 1)]).toEqual([{ column: 0, row: 0 }, { column: 32, row: 0 }]);
+    const far = await createSimInternal({ seed: 1, map: withFreeTileAt(33) });
+    far.step([join(0), join(1)]);
+    expect([playerTile(far, 0), playerTile(far, 1)]).toEqual([{ column: 0, row: 0 }, { column: 0, row: 0 }]);
+    near.destroy();
+    far.destroy();
+  });
+
   it('falls back to the spawn tile, without throwing, when no tile is free', async () => {
-    const closet: LevelData = { ...level(['TTT', 'T.T', 'TTT']), spawn: { column: 1, row: 1 } };
-    const sim = await createSimInternal({ seed: 1, level: closet });
+    const closet = mapOf(['TTT', 'T.T', 'TTT'], { column: 1, row: 1 });
+    const sim = await createSimInternal({ seed: 1, map: closet });
     expect(() => sim.step([join(0), join(1), join(2)])).not.toThrow();
     for (const slot of [0, 1, 2]) expect(playerTile(sim, slot)).toEqual(closet.spawn);
     sim.destroy();
@@ -113,8 +126,9 @@ const SPEED = getDef(avatarDefIds[0] as number).speed ?? 0;
 
 const legend = { T: TerrainDefId.Tree, '.': TerrainDefId.Grass, '=': TerrainDefId.Dirt, o: TerrainDefId.Rock };
 
-function level(rows: readonly string[]): LevelData {
-  return { name: 'test', legend, rows, spawn: { column: 0, row: 0 } };
+/** A map of one area whose top-left tile is world tile (0, 0). */
+function mapOf(rows: readonly string[], spawn: TileCoordinate): WorldMap {
+  return { areas: [{ name: 'test', origin: { column: 0, row: 0 }, legend, rows }], spawn };
 }
 
 const join = (slot: number): Command => ({ type: 'player/join', slot });
@@ -129,7 +143,7 @@ function playerPosition(sim: Sim, slot: number): { x: number; y: number } {
 
 function playerTile(sim: Sim, slot: number): TileCoordinate {
   const { x, y } = playerPosition(sim, slot);
-  const tile = tileAt(readTileGrid(sim.level), x, y);
-  if (!tile) throw new Error(`player in slot ${slot} is outside the level`);
+  const tile = tileAt(x, y);
+  if (!tile) throw new Error(`player in slot ${slot} has no position`);
   return tile;
 }

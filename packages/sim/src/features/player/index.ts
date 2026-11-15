@@ -29,7 +29,7 @@ const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 /**
  * Player-controlled bodies. A `player/join` dresses the new player in an
  * avatar the sim picks (never the client) and spawns it on a free tile near
- * the level spawn, `player/move` sets its intended direction and every tick
+ * the map's spawn, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped

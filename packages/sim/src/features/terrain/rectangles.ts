@@ -1,28 +1,23 @@
-import type { TileGrid } from '../../content/levels/types';
+import { CHUNK_SIZE, NO_TILE } from '../../content/world/tiles';
+import type { MapChunk, TileRectangle } from '../../content/world/types';
 import { getTileDef } from './defs';
 
-/** A rectangle of solid tiles, in tile units. */
-export interface TileRectangle {
-  readonly column: number;
-  readonly row: number;
-  readonly width: number;
-  readonly height: number;
-}
-
 /**
- * The solid tiles of a grid covered by as few rectangles as a two-pass merge
- * gives: horizontal runs first, so a 40-tile row of trees is one box, then
- * runs stacked on identical runs below them, so a 3-tile-thick border is one
- * box per side. Rectangles never overlap. The order is by row, then column,
- * so the same grid always produces the same entities in the same order.
+ * The solid tiles of a chunk covered by as few rectangles as a two-pass merge
+ * gives: horizontal runs first, so a row of trees is one box, then runs
+ * stacked on identical runs below them, so a thick border is one box per
+ * side. Rectangles never overlap and never leave the chunk: a wall that
+ * crosses into the next chunk is one rectangle in each. They are in world
+ * tiles, ordered by row, then column, so the same chunk always produces the
+ * same colliders in the same order.
  */
-export function solidRectangles(grid: TileGrid): TileRectangle[] {
+export function solidRectangles(chunk: MapChunk): TileRectangle[] {
   const rectangles: TileRectangle[] = [];
   /** Rectangles whose bottom edge is the row above the one being scanned, by start column. */
   let openAbove = new Map<number, number>();
-  for (let row = 0; row < grid.rows; row += 1) {
+  for (let localRow = 0; localRow < CHUNK_SIZE; localRow += 1) {
     const openHere = new Map<number, number>();
-    for (const run of solidRuns(grid, row)) {
+    for (const run of solidRuns(chunk, localRow)) {
       const indexAbove = openAbove.get(run.column);
       const above = indexAbove === undefined ? undefined : rectangles[indexAbove];
       if (above && above.width === run.width) {
@@ -30,7 +25,7 @@ export function solidRectangles(grid: TileGrid): TileRectangle[] {
         openHere.set(run.column, indexAbove as number);
       } else {
         openHere.set(run.column, rectangles.length);
-        rectangles.push({ column: run.column, row, width: run.width, height: 1 });
+        rectangles.push({ column: run.column, row: chunk.firstTile.row + localRow, width: run.width, height: 1 });
       }
     }
     openAbove = openHere;
@@ -38,16 +33,16 @@ export function solidRectangles(grid: TileGrid): TileRectangle[] {
   return rectangles.sort((a, b) => a.row - b.row || a.column - b.column);
 }
 
-/** Maximal horizontal runs of solid tiles in one row. */
-function solidRuns(grid: TileGrid, row: number): Array<{ column: number; width: number }> {
+/** Maximal horizontal runs of solid tiles in one row of a chunk, in world columns. */
+function solidRuns(chunk: MapChunk, localRow: number): Array<{ column: number; width: number }> {
   const runs: Array<{ column: number; width: number }> = [];
-  const cells = grid.defIds[row] as readonly number[];
   let start = -1;
-  for (let column = 0; column <= grid.columns; column += 1) {
-    const solid = column < grid.columns && getTileDef(cells[column] as number).solid;
-    if (solid && start < 0) start = column;
+  for (let localColumn = 0; localColumn <= CHUNK_SIZE; localColumn += 1) {
+    const defId = localColumn < CHUNK_SIZE ? (chunk.defIds[localRow * CHUNK_SIZE + localColumn] as number) : NO_TILE;
+    const solid = defId !== NO_TILE && getTileDef(defId).solid;
+    if (solid && start < 0) start = localColumn;
     if (!solid && start >= 0) {
-      runs.push({ column: start, width: column - start });
+      runs.push({ column: chunk.firstTile.column + start, width: localColumn - start });
       start = -1;
     }
   }

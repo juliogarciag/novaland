@@ -1,0 +1,14 @@
+PASS  the dev server, the room server and the online client are up, started by this run
+PASS  solo: the whole map is drawn exactly as before the change, pixel for pixel  (0 of 307200 pixels differ)
+PASS  solo: the player appears on the spawn tile the map names, (6, 14)  ({"column":6,"row":14})
+PASS  solo: walking north, the tree at row 2 stops the player at its face  (stopped at y 3.398, the face plus the radius is 3.4)
+PASS  solo: the terrain is drawn as chunks of 32x32 tiles  (whole map: chunks 0,0 1,0; playing: 0,0 1,0)
+PASS  online: the whole map is drawn exactly as before the change, pixel for pixel  (0 of 307200 pixels differ)
+PASS  online: the player appears on the spawn tile the map names, (6, 14) or beside it  ({"column":6,"row":14})
+PASS  online: walking north, the tree at row 2 stops the player at its face  (stopped at y 3.398, the face plus the radius is 3.4)
+PASS  online: the terrain is drawn as chunks of 32x32 tiles  (whole map: chunks 0,0 1,0; playing: 0,0)
+PASS  1920x1080: from the first frame rendered, every chunk on screen is drawn  (first frame at tick 0: view x 320 to 640, chunks 0,0 1,0)
+PASS  1728x1000 at 2x: from the first frame rendered, every chunk on screen is drawn  (first frame at tick 0: view x 294.3999999999998 to 639.9999999999998, chunks 0,0 1,0)
+PASS  no page errors
+
+ALL 12 CHECKS PASSED

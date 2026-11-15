@@ -97,7 +97,7 @@ export const terrainDefs: readonly TileDef[] = [
 
 const tileDefsById: ReadonlyMap<number, TileDef> = new Map(terrainDefs.map((def) => [def.id, def]));
 
-/** The tile def with this id. Throws for ids that are not tiles: a level legend pointing at one is a content bug. */
+/** The tile def with this id. Throws for ids that are not tiles: an area's legend pointing at one is a content bug. */
 export function getTileDef(defId: number): TileDef {
   const def = tileDefsById.get(defId);
   if (!def) throw new Error(`Def id ${defId} is not a tile`);

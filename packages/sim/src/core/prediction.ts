@@ -19,14 +19,16 @@ export interface PredictionHandle extends SimHandle {
 }
 
 /**
- * A live sim with the level's terrain and every feature, plus the entities
- * adopted from the authoritative state. Internal to packages/sim.
+ * A live sim with the map's terrain and every feature, plus the entities
+ * adopted from the authoritative state. Terrain is colliders only, never
+ * entities (features/terrain), so a fresh prediction holds no entity and
+ * every id the server hands out is free here. Internal to packages/sim.
  */
 export class Prediction extends Sim implements PredictionHandle {
   readonly isPrediction = true;
   /**
-   * Ids of the entities copied in with `adoptEntity`; everything else the
-   * prediction made itself. Kept outside components on purpose (rule 3 is
+   * Ids of the entities copied in with `adoptEntity`; anything else a
+   * feature spawned here by itself. Kept outside components on purpose (rule 3 is
    * about sims whose state is saved or replicated): a prediction is never
    * snapshotted or restored, only thrown away and rebuilt.
    */
@@ -42,7 +44,8 @@ export class Prediction extends Sim implements PredictionHandle {
  * True when the prediction now holds the entity, with a body. False, and the
  * prediction holds no adopted entity `eid`, when `source` has no such entity,
  * when it points at no def, when the prediction already uses the id for
- * something it made itself (terrain), or when no feature gave it a body.
+ * something a feature spawned here by itself (nothing does today: terrain
+ * takes no ids), or when no feature gave it a body.
  * `source` is filled from the network, so none of that throws.
  */
 export function adoptEntity(handle: PredictionHandle, source: SimHandle, eid: number): boolean {
@@ -71,7 +74,7 @@ export function adoptEntity(handle: PredictionHandle, source: SimHandle, eid: nu
   return true;
 }
 
-/** Removes every entity the prediction adopted, bodies included. What it made itself (terrain) stays. */
+/** Removes every entity the prediction adopted, bodies included. Terrain stays: it is not made of entities. */
 export function releaseAdoptedEntities(handle: PredictionHandle): void {
   const prediction = asPrediction(handle);
   for (const eid of [...prediction.adoptedEntityIds]) releaseAdoptedEntity(prediction, eid);

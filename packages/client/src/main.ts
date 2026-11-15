@@ -14,13 +14,15 @@ import type { PlayableWorld } from './worlds/PlayableWorld';
  * Boots the game around a playable world. With a world server to reach
  * (`VITE_SERVER_URL`, or the page's own origin in a production build, which
  * the world server serves itself) the world is the shared one on that server,
- * joined before the game exists (the level comes with the welcome); otherwise
+ * joined before the game exists (the seat comes with the welcome); otherwise
  * this client runs its own sim, as it always did. The Phaser side is the same
  * in both modes.
  */
 async function boot(): Promise<void> {
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
-  const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld(), online: undefined };
+  // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
+  if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
+  const { world, online } = serverUrl ? await joinSharedWorld(serverUrl) : { world: await createLocalWorld({ generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',

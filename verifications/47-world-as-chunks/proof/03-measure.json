@@ -1,0 +1,117 @@
+{
+  "before": [
+    {
+      "columns": 40,
+      "rows": 30,
+      "simEntities": 38,
+      "worldStateEntities": 38,
+      "perSendMs": 0.088,
+      "deltaBytesPerSend": 466,
+      "fullStateBytes": 7574,
+      "snapshotAndHashMs": 0.56
+    },
+    {
+      "columns": 400,
+      "rows": 300,
+      "simEntities": 3314,
+      "worldStateEntities": 3314,
+      "perSendMs": 5.959,
+      "deltaBytesPerSend": 472,
+      "fullStateBytes": 650849,
+      "snapshotAndHashMs": 84.53
+    }
+  ],
+  "now": [
+    {
+      "columns": 40,
+      "rows": 30,
+      "sameGroundAsBaseline": true,
+      "chunks": 2,
+      "capacity": 1024,
+      "bootMs": 0.8,
+      "simEntities": 5,
+      "worldStateEntities": 5,
+      "predictionEntitiesBeforeAdopting": 0,
+      "perSendMs": 0.0217,
+      "stepMs": 0.0343,
+      "deltaBytesPerSend": 459,
+      "fullStateBytes": 1453,
+      "snapshotAndHashMs": 0.94
+    },
+    {
+      "columns": 400,
+      "rows": 300,
+      "sameGroundAsBaseline": true,
+      "chunks": 130,
+      "capacity": 1024,
+      "bootMs": 22.5,
+      "simEntities": 5,
+      "worldStateEntities": 5,
+      "predictionEntitiesBeforeAdopting": 0,
+      "perSendMs": 0.0158,
+      "stepMs": 0.4165,
+      "deltaBytesPerSend": 457,
+      "fullStateBytes": 1459,
+      "snapshotAndHashMs": 25.19
+    }
+  ],
+  "table": [
+    "                                                  40x30 before    40x30 now       400x300 before  400x300 now     ",
+    "entities in the sim                               38              5               3314            5               ",
+    "entities in world state                           38              5               3314            5               ",
+    "build + diff world state, ms per send             0.088           0.0217          5.959           0.0158          ",
+    "delta, bytes per send                             466             459             472             457             ",
+    "full state on join or resync, bytes               7574            1453            650849          1459            ",
+    "snapshot + hash, ms                               0.56            0.94            84.53           25.19           ",
+    "creating the sim (read map, build colliders), ms  -               0.8             -               22.5            "
+  ],
+  "results": [
+    {
+      "name": "the measurement ran",
+      "pass": true
+    },
+    {
+      "name": "both maps are the ground the baseline was measured on",
+      "pass": true
+    },
+    {
+      "name": "the 400x300 map boots at the default capacity, which the old code could not: it needed 3314 entities",
+      "pass": true,
+      "details": "capacity 1024, 130 chunks"
+    },
+    {
+      "name": "world-state entities do not grow with the map: the five players on both",
+      "pass": true,
+      "details": "5 and 5; before 38 and 3314"
+    },
+    {
+      "name": "the sim holds no entity for terrain on either map",
+      "pass": true,
+      "details": "5 and 5"
+    },
+    {
+      "name": "a prediction of either map holds no entity until it adopts one",
+      "pass": true
+    },
+    {
+      "name": "the full state a joiner gets is the five players, on both maps",
+      "pass": true,
+      "details": "1453 and 1459 bytes; before 7574 and 650849"
+    },
+    {
+      "name": "the delta per send is the players moving, on both maps",
+      "pass": true,
+      "details": "459 and 457 bytes"
+    },
+    {
+      "name": "the per-send cost does not grow with the map",
+      "pass": true,
+      "details": "0.0217 ms and 0.0158 ms; before 0.088 ms and 5.959 ms"
+    },
+    {
+      "name": "the per-send cost on the big map is at least 20 times lower than before",
+      "pass": true,
+      "details": "5.959 ms before, 0.0158 ms now"
+    }
+  ]
+}

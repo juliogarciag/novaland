@@ -19,7 +19,7 @@ export interface ConnectionScreenActions {
 
 /**
  * Plain DOM over the canvas, not a Phaser scene: it has to show before the
- * game exists (nothing to draw until a welcome brings the level) and it must
+ * game exists (nothing to draw until a welcome brings the seat) and it must
  * not depend on a render loop that stops with the connection. `data-screen`
  * names the screen for end-to-end checks.
  */

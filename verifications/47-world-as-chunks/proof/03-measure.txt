@@ -1,0 +1,22 @@
+PASS  the measurement ran
+
+                                                  40x30 before    40x30 now       400x300 before  400x300 now     
+entities in the sim                               38              5               3314            5               
+entities in world state                           38              5               3314            5               
+build + diff world state, ms per send             0.088           0.0217          5.959           0.0158          
+delta, bytes per send                             466             459             472             457             
+full state on join or resync, bytes               7574            1453            650849          1459            
+snapshot + hash, ms                               0.56            0.94            84.53           25.19           
+creating the sim (read map, build colliders), ms  -               0.8             -               22.5            
+
+PASS  both maps are the ground the baseline was measured on
+PASS  the 400x300 map boots at the default capacity, which the old code could not: it needed 3314 entities  (capacity 1024, 130 chunks)
+PASS  world-state entities do not grow with the map: the five players on both  (5 and 5; before 38 and 3314)
+PASS  the sim holds no entity for terrain on either map  (5 and 5)
+PASS  a prediction of either map holds no entity until it adopts one
+PASS  the full state a joiner gets is the five players, on both maps  (1453 and 1459 bytes; before 7574 and 650849)
+PASS  the delta per send is the players moving, on both maps  (459 and 457 bytes)
+PASS  the per-send cost does not grow with the map  (0.0217 ms and 0.0158 ms; before 0.088 ms and 5.959 ms)
+PASS  the per-send cost on the big map is at least 20 times lower than before  (5.959 ms before, 0.0158 ms now)
+
+ALL 10 CHECKS PASSED

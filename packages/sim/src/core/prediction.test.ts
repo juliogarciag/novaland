@@ -1,27 +1,64 @@
 import { describe, expect, it } from 'vitest';
-import { starterLevel } from '../content/levels/starter';
+import { worldMap } from '../content/world';
+import { generatedWorldMap } from '../content/world/generated';
+import { features } from '../features';
 import { findPlayerEntity } from '../features/player/queries';
 import { __testing__, createPrediction, createReplica, createSim } from './create';
-import { adoptEntity, releaseAdoptedEntities, type PredictionHandle } from './prediction';
+import type { Feature } from './feature';
+import { __testing__ as physicsTesting, initPhysics } from './physics';
+import { adoptEntity, Prediction, releaseAdoptedEntities, type PredictionHandle } from './prediction';
 import { applyWorldState, type ReplicaHandle } from './replica';
-import type { SimHandle } from './sim';
+import type { Sim, SimHandle } from './sim';
 import { getRenderables, type Renderable } from './view';
 import { worldState, type WorldState } from './worldState';
 
 describe('a prediction', () => {
-  it('starts with the terrain of the level and no players, and steps like a sim', async () => {
-    const prediction = await createPrediction({ level: starterLevel });
-    const sim = await createSim({ seed: 3, level: starterLevel });
+  it('starts with the same terrain colliders as a sim of the map and no entity at all, and steps like a sim', async () => {
+    const prediction = await createPrediction({ map: worldMap });
+    const sim = await __testing__.createSimInternal({ seed: 3, map: worldMap });
     expect(prediction.isPrediction).toBe(true);
-    expect(prediction.entityCount).toBe(sim.entityCount);
+    expect(prediction.entityCount).toBe(0);
+    expect(staticBoxes(prediction as unknown as Sim).length).toBeGreaterThan(10);
+    expect(staticBoxes(prediction as unknown as Sim)).toEqual(staticBoxes(sim));
     expect(getRenderables(prediction)).toEqual([]);
     prediction.step();
     expect(prediction.tick).toBe(1);
   });
 
+  it('takes no entity id for terrain, however big the map: the first id a server hands a player is free to adopt', async () => {
+    for (const map of [worldMap, generatedWorldMap({ columns: 400, rows: 300 })]) {
+      const server = await createSim({ seed: 5, map });
+      server.step([{ type: 'player/join', slot: 0 }]);
+      const replica = createReplica({ map, capacity: server.capacity });
+      applyWorldState(replica, worldState(server));
+      const prediction = await createPrediction({ map, capacity: server.capacity });
+      expect(prediction.entityCount).toBe(0);
+      const eid = findPlayerEntity(replica, 0) as number;
+      // The lowest id there is: before terrain left the entities, a prediction used it for a tree and refused the player.
+      expect(eid).toBe(1);
+      expect(adoptEntity(prediction, replica, eid)).toBe(true);
+      expect(prediction.entityCount).toBe(1);
+      for (const handle of [server, replica, prediction]) handle.destroy();
+    }
+  });
+
+  it('refuses an id a feature of the prediction spawned by itself, and leaves that entity alone', async () => {
+    const { replica } = await serverReplicaAndPrediction();
+    await initPhysics();
+    const spawnsOneEntity: Feature = { name: 'spawner', init: (sim) => void sim.createEntity() };
+    const prediction = new Prediction({ seed: 0, map: worldMap, capacity: replica.capacity }, [spawnsOneEntity, ...features]);
+    const ownId = 1;
+    expect(findPlayerEntity(replica, 0)).toBe(ownId);
+    expect(adoptEntity(prediction, replica, ownId)).toBe(false);
+    expect(prediction.entityCount).toBe(1);
+    expect(findPlayerEntity(prediction, 0)).toBeUndefined();
+    releaseAdoptedEntities(prediction);
+    expect(prediction.entityCount).toBe(1);
+  });
+
   it('refuses a capacity out of range before loading anything', async () => {
-    await expect(createPrediction({ level: starterLevel, capacity: 0 })).rejects.toThrow(RangeError);
-    await expect(createPrediction({ level: starterLevel, capacity: 1e9 })).rejects.toThrow(RangeError);
+    await expect(createPrediction({ map: worldMap, capacity: 0 })).rejects.toThrow(RangeError);
+    await expect(createPrediction({ map: worldMap, capacity: 1e9 })).rejects.toThrow(RangeError);
   });
 
   it('adopts a player from a replica under the same id and walks it exactly as the server does, walls included', async () => {
@@ -30,7 +67,7 @@ describe('a prediction', () => {
     expect(adoptEntity(prediction, replica, eid)).toBe(true);
     expect(findPlayerEntity(prediction, 0)).toBe(eid);
     expect(renderableOf(prediction, eid)).toEqual(renderableOf(server, eid));
-    // Far enough west to run into the trees at the edge of the level: the prediction must stop where the server stops.
+    // Far enough west to run into the trees at the edge of the clearing: the prediction must stop where the server stops.
     const move = { type: 'player/move', slot: 0, x: -1, y: 0.3 } as const;
     server.step([move]);
     prediction.step([move]);
@@ -63,12 +100,11 @@ describe('a prediction', () => {
   it('holds only what was adopted: other players stay out, and releasing removes the adopted one', async () => {
     const { replica, prediction } = await serverReplicaAndPrediction();
     const eid = findPlayerEntity(replica, 0) as number;
-    const terrainOnly = prediction.entityCount;
     adoptEntity(prediction, replica, eid);
-    expect(prediction.entityCount).toBe(terrainOnly + 1);
+    expect(prediction.entityCount).toBe(1);
     expect(findPlayerEntity(prediction, 1)).toBeUndefined();
     releaseAdoptedEntities(prediction);
-    expect(prediction.entityCount).toBe(terrainOnly);
+    expect(prediction.entityCount).toBe(0);
     expect(findPlayerEntity(prediction, 0)).toBeUndefined();
     prediction.step();
   });
@@ -76,15 +112,12 @@ describe('a prediction', () => {
   it('refuses, without throwing and without keeping anything, an entity it cannot give a body to', async () => {
     const { server, replica, prediction } = await serverReplicaAndPrediction();
     const eid = findPlayerEntity(replica, 0) as number;
-    const terrainOnly = prediction.entityCount;
-    const terrainId = 1;
     const refused: Array<[string, (state: WorldState) => number]> = [
       ['an id the source does not have', () => 999],
       ['an id that is not one', () => -1],
-      ['an id the prediction uses for terrain', () => terrainId],
       ['a def that does not exist', (state) => edit(state, eid, 'DefRef', { id: 987654 })],
       ['no def at all', (state) => remove(state, eid, 'DefRef')],
-      ['a position no level reaches', (state) => edit(state, eid, 'Position', { x: 1e300, y: 0 })],
+      ['a position no area reaches', (state) => edit(state, eid, 'Position', { x: 1e300, y: 0 })],
       ['a radius that is not positive', (state) => edit(state, eid, 'Extents', { halfWidth: 0, halfHeight: 0 })],
       ['a radius far too large', (state) => edit(state, eid, 'Extents', { halfWidth: 1e9, halfHeight: 1e9 })],
       ['no position', (state) => remove(state, eid, 'Position')],
@@ -98,10 +131,10 @@ describe('a prediction', () => {
       const id = prepare(state);
       applyWorldState(replica, state);
       expect(adoptEntity(prediction, replica, id), what).toBe(false);
-      if (id === eid) expect(prediction.entityCount, what).toBe(terrainOnly);
+      if (id === eid) expect(prediction.entityCount, what).toBe(0);
       prediction.step();
       releaseAdoptedEntities(prediction);
-      expect(prediction.entityCount, what).toBe(terrainOnly);
+      expect(prediction.entityCount, what).toBe(0);
     }
   });
 
@@ -116,8 +149,8 @@ describe('a prediction', () => {
   it('leaves a sim the server steps untouched: the same seed and commands give the same hash with a prediction running beside it', async () => {
     const alone = await __testing__.createSimInternal({ seed: 9 });
     const beside = await __testing__.createSimInternal({ seed: 9 });
-    const prediction = await createPrediction({ level: starterLevel });
-    const replica = createReplica({ level: starterLevel });
+    const prediction = await createPrediction({ map: worldMap });
+    const replica = createReplica({ map: worldMap });
     for (const sim of [alone, beside]) sim.step([{ type: 'player/join', slot: 0 }]);
     for (let tick = 0; tick < 120; tick += 1) {
       const commands = tick % 40 === 0 ? [{ type: 'player/move', slot: 0, x: Math.cos(tick), y: Math.sin(tick) } as const] : [];
@@ -133,16 +166,18 @@ describe('a prediction', () => {
 
 // ---- Helpers ----
 
-/** A server sim with two players, a replica holding its state and an empty prediction of the same level. */
+const { staticBoxes } = physicsTesting;
+
+/** A server sim with two players, a replica holding its state and an empty prediction of the same map. */
 async function serverReplicaAndPrediction(): Promise<{ server: SimHandle; replica: ReplicaHandle; prediction: PredictionHandle }> {
-  const server = await createSim({ seed: 5, level: starterLevel });
+  const server = await createSim({ seed: 5, map: worldMap });
   server.step([
     { type: 'player/join', slot: 0 },
     { type: 'player/join', slot: 1 },
   ]);
-  const replica = createReplica({ level: starterLevel, capacity: server.capacity });
+  const replica = createReplica({ map: worldMap, capacity: server.capacity });
   applyWorldState(replica, worldState(server));
-  const prediction = await createPrediction({ level: starterLevel, capacity: server.capacity });
+  const prediction = await createPrediction({ map: worldMap, capacity: server.capacity });
   return { server, replica, prediction };
 }
 

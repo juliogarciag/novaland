@@ -3,6 +3,7 @@ import {
   diffWorldState,
   FIXED_DT,
   JOIN_REFUSAL,
+  readMapTiles,
   WIRE,
   WIRE_PROTOCOL,
   worldState,
@@ -179,7 +180,7 @@ export class WorldRoom extends Room {
     const state = worldState(this.sim);
     session.lastSent = state;
     session.welcomedAt = this.time.now();
-    const welcome: WelcomeMessage = { protocol: WIRE_PROTOCOL, slot, level: this.sim.level.name, capacity: this.sim.capacity, state };
+    const welcome: WelcomeMessage = { protocol: WIRE_PROTOCOL, slot, map: readMapTiles(this.sim.map).checksum, capacity: this.sim.capacity, state };
     client.send(WIRE.welcome, welcome);
   }
 
