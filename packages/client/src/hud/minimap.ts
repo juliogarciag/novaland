@@ -73,7 +73,7 @@ interface PaintedChunk {
  * of it (the terrain renderer's pattern, ADR 0013). A frame in which the
  * player stays in the same chunks paints nothing: following the player is
  * moving a camera. The markers are drawn again every frame; `minimapMarks`
- * walks the frame's entities for them and stops at a fixed number.
+ * marks at most a fixed number of the frame's entities.
  *
  * That camera belongs to the minimap alone: its viewport is the minimap's
  * square, which clips the chunk textures and the markers, and it scrolls
@@ -257,6 +257,8 @@ function radiusOfShape(shape: MinimapMarkerShape): number {
       return DOT_RADIUS;
     case 'diamond':
       return DIAMOND_RADIUS;
+    default:
+      return shape satisfies never;
   }
 }
 
@@ -277,6 +279,8 @@ function drawShape(graphics: Phaser.GameObjects.Graphics, shape: MinimapMarkerSh
       graphics.fillPath();
       graphics.strokePath();
       return;
+    default:
+      shape satisfies never;
   }
 }
 

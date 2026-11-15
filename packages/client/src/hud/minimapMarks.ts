@@ -13,9 +13,9 @@ export interface MinimapMark {
   readonly shape: MinimapMarkerShape;
   /** 0xRRGGBB. */
   readonly color: number;
-  /** Where to draw it: tiles east and south of the minimap's centre. Never further than `edgeTiles` on either axis. */
+  /** Where to draw it: tiles east and south of the minimap's centre. Never further than `edgeTiles` on either axis: a thing in the last few tiles of the range is drawn that little bit nearer than it is, so that its mark is whole and does not jump when it leaves the range. */
   readonly offset: { readonly x: number; readonly y: number };
-  /** True when the thing is out of range: the mark sits on the minimap's edge, on the straight line toward the thing, and the view adds an arrow. */
+  /** True when the thing is out of range: the mark is held at `edgeTiles`, on the straight line toward the thing, and the view adds an arrow. */
   readonly onEdge: boolean;
 }
 
