@@ -1,4 +1,4 @@
-import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type WorldMap } from '@novaland/sim';
+import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, tileDefIdAt, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
 import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, DRAW_MARGIN_TILES, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
 import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
@@ -53,8 +53,9 @@ interface DrawnChunk {
  * Each drawn chunk is two things. The ground is a Phaser tilemap of
  * `CHUNK_SIZE` by `CHUNK_SIZE` tiles below everything; all chunks share one
  * tileset, put together here once (render/groundTiles.ts says which tile is
- * where): a def with a `groundSprite` (grass, water) brings the variants of its
- * sheet and each tile shows the one its world column and row pick; any
+ * where): a def with a `groundSprite` (grass, water, the shallows) brings the
+ * tiles of its sheet and each tile shows the variant its world column and
+ * row pick, or, where a lake ends, the tile with that edge drawn on it; any
  * other def is one flat tile in its colour. Where no area put a tile,
  * nothing is drawn.
  *
@@ -123,7 +124,7 @@ export class TerrainRenderer {
   }
 
   private drawChunk(chunk: MapChunk): DrawnChunk {
-    const tileIndexRows = groundTileIndexRows({ chunk, slots: this.slots, isStandingImageDrawn: (sprite) => this.isTextureLoaded(sprite.key) });
+    const tileIndexRows = groundTileIndexRows({ chunk, slots: this.slots, isStandingImageDrawn: (sprite) => this.isTextureLoaded(sprite.key), defIdAt: (tile) => tileDefIdAt(this.tiles, tile) });
     const tilemap = this.scene.make.tilemap({ data: tileIndexRows, tileWidth: GROUND_TILE_PIXELS, tileHeight: GROUND_TILE_PIXELS });
     const tileset = tilemap.addTilesetImage(TILESET_NAME, TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS, 0, 0);
     if (!tileset) throw new Error('The terrain tileset texture is missing');
@@ -176,7 +177,7 @@ function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSl
   for (const slot of slots) {
     const slotLeft = slot.firstTileIndex * GROUND_TILE_PIXELS;
     if (slot.groundSprite) {
-      for (let variant = 0; variant < slot.tileCount; variant += 1) tileset.drawFrame(slot.groundSprite.key, variant, slotLeft + variant * GROUND_TILE_PIXELS, 0, false);
+      for (let sheetTile = 0; sheetTile < slot.tileCount; sheetTile += 1) tileset.drawFrame(slot.groundSprite.key, sheetTile, slotLeft + sheetTile * GROUND_TILE_PIXELS, 0, false);
       continue;
     }
     context.fillStyle = cssColor(slot.def.color);
