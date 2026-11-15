@@ -1,13 +1,11 @@
 /* global window, document, getComputedStyle, Image */
 /**
- * Ticket 49: the mouse cursor over the running game is a pixel-art arrow, and
- * the C key switches between the designs.
+ * Ticket 49: the mouse cursor over the running game is a pixel-art arrow.
  *
  * Starts `PORT=<n> pnpm dev`, opens the game in Chromium on an ordinary screen
  * and on a 2x one, and checks what a browser uses to draw the cursor: the
  * computed `cursor` of whatever is under the mouse, and the images it names,
- * pixel by pixel against the designs in the generator. It presses C once per
- * design and checks each in turn, then reloads to see the last one kept.
+ * pixel by pixel against the design in the generator.
  *
  * A browser screenshot never contains the mouse cursor, so the pictures in
  * ./proof are drawn from the same served images, placed where the mouse is
@@ -25,10 +23,10 @@ const ORIGIN = `http://localhost:${PORT}`;
 const VIEWPORT = { width: 960, height: 720 };
 /** Where the mouse is put for the checks and for the pictures, in CSS pixels. */
 const MOUSE = { x: 480, y: 300 };
-/** The key that switches cursors, as the player presses it. */
-const NEXT_CURSOR_KEY = 'KeyC';
 const results = [];
 const report = { screens: {} };
+/** The cursor the page shows: the first design of the generator. */
+const [design] = CURSOR_DESIGNS;
 const pageErrors = [];
 
 const devServer = start('pnpm', ['dev'], { env: { PORT: String(PORT) } });
@@ -41,55 +39,37 @@ try {
   browser = await chromium.launch();
   for (const screen of CURSOR_SCREENS) {
     const label = `${screen.devicePixelsPerCssPixel}x screen`;
-    // A context of its own: nothing remembered from the other screen.
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: screen.devicePixelsPerCssPixel });
     const page = await context.newPage();
     page.on('pageerror', (error) => pageErrors.push(String(error)));
     page.on('console', (message) => message.type() === 'error' && pageErrors.push(message.text()));
     await openGame(page);
-    report.screens[label] = [];
 
-    // The first design shows on its own; each press of the key shows the next, and one more comes back to the first.
-    for (const [index, design] of [...CURSOR_DESIGNS, CURSOR_DESIGNS[0]].entries()) {
-      if (index > 0) await page.keyboard.press(NEXT_CURSOR_KEY);
-      const cursors = await cursorsAcrossThePage(page);
-      const when = index === 0 ? 'on opening the game' : index === CURSOR_DESIGNS.length ? `after ${index} presses of C, back at the start` : `after ${index} ${index === 1 ? 'press' : 'presses'} of C`;
-      const shown = cursors.underMouseTag === 'CANVAS' && cursors.distinct.length === 1 && cursors.distinct[0] === expectedCursor(design);
-      results.push(check(`${label}: ${when}, every point of the window shows ${design.name}, clicking at its hotspot, with auto as the fallback`, shown, cursors.distinct.join(' ; ')));
-      if (index === CURSOR_DESIGNS.length) break;
+    const cursors = await cursorsAcrossThePage(page);
+    const shown = cursors.underMouseTag === 'CANVAS' && cursors.distinct.length === 1 && cursors.distinct[0] === expectedCursor(design);
+    results.push(check(`${label}: over the game, every point of the window shows ${design.name}, clicking at its hotspot, with auto as the fallback`, shown, cursors.distinct.join(' ; ')));
 
-      // The image this screen picks for the design: served, the right size, and the design pixel for pixel.
-      const name = cursorFileName(design.name, screen);
-      const image = await servedImage(page, `${ORIGIN}/cursors/${name}`);
-      const devicePixels = CURSOR_CSS_SIZE * screen.devicePixelsPerCssPixel;
-      const wrongPixels = pixelsOffTheDesign(image, design, CURSOR_SCALE * screen.devicePixelsPerCssPixel);
-      const asDesigned = image.width === devicePixels && image.height === devicePixels && wrongPixels.length === 0;
-      results.push(check(`${label}: ${name} is ${devicePixels}x${devicePixels} (${CURSOR_CSS_SIZE} CSS pixels) and every pixel is its design pixel as one flat block`, asDesigned, `${image.width}x${image.height}${wrongPixels.length ? `, ${wrongPixels.slice(0, 3).join(' | ')}` : ''}`));
+    // The image this screen picks: served, the right size, and the design pixel for pixel.
+    const name = cursorFileName(design.name, screen);
+    const image = await servedImage(page, `${ORIGIN}/cursors/${name}`);
+    const devicePixels = CURSOR_CSS_SIZE * screen.devicePixelsPerCssPixel;
+    const wrongPixels = pixelsOffTheDesign(image, design, CURSOR_SCALE * screen.devicePixelsPerCssPixel);
+    const asDesigned = image.width === devicePixels && image.height === devicePixels && wrongPixels.length === 0;
+    results.push(check(`${label}: ${name} is ${devicePixels}x${devicePixels} (${CURSOR_CSS_SIZE} CSS pixels) and every pixel is its design pixel as one flat block`, asDesigned, `${image.width}x${image.height}${wrongPixels.length ? `, ${wrongPixels.slice(0, 3).join(' | ')}` : ''}`));
 
-      // A picture of it: the served image, placed with its hotspot on the mouse. The real cursor is never in a screenshot.
-      await page.evaluate(
-        ({ url, x, y, size }) => {
-          const picture = document.createElement('img');
-          picture.id = 'cursor-picture';
-          picture.src = url;
-          picture.style.cssText = `position: fixed; left: ${x}px; top: ${y}px; width: ${size}px; height: ${size}px; pointer-events: none; z-index: 100;`;
-          document.body.append(picture);
-          return picture.decode();
-        },
-        { url: `${ORIGIN}/cursors/${name}`, x: MOUSE.x - design.hotspot.x * CURSOR_SCALE, y: MOUSE.y - design.hotspot.y * CURSOR_SCALE, size: CURSOR_CSS_SIZE },
-      );
-      await page.screenshot({ path: path.join(PROOF, `${design.name}-over-the-game-${screen.devicePixelsPerCssPixel}x.png`), clip: { x: MOUSE.x - 160, y: MOUSE.y - 100, width: 320, height: 240 } });
-      await page.evaluate(() => document.getElementById('cursor-picture')?.remove());
-      report.screens[label].push({ design: design.name, cursor: cursors.distinct[0], image: { name, width: image.width, height: image.height } });
-    }
-
-    // What the player picked is still there after a reload; a shortcut that includes the key picks nothing.
-    await page.keyboard.press(NEXT_CURSOR_KEY);
-    await page.keyboard.press(`Control+${NEXT_CURSOR_KEY}`);
-    await openGame(page);
-    const afterReload = await cursorsAcrossThePage(page);
-    const kept = afterReload.distinct.length === 1 && afterReload.distinct[0] === expectedCursor(CURSOR_DESIGNS[1]);
-    results.push(check(`${label}: the picked cursor (${CURSOR_DESIGNS[1].name}) survives a reload, and Ctrl+C did not switch it`, kept, afterReload.distinct.join(' ; ')));
+    // A picture of it: the served image, placed with its hotspot on the mouse. The real cursor is never in a screenshot.
+    await page.evaluate(
+      ({ url, x, y, size }) => {
+        const picture = document.createElement('img');
+        picture.src = url;
+        picture.style.cssText = `position: fixed; left: ${x}px; top: ${y}px; width: ${size}px; height: ${size}px; pointer-events: none; z-index: 100;`;
+        document.body.append(picture);
+        return picture.decode();
+      },
+      { url: `${ORIGIN}/cursors/${name}`, x: MOUSE.x - design.hotspot.x * CURSOR_SCALE, y: MOUSE.y - design.hotspot.y * CURSOR_SCALE, size: CURSOR_CSS_SIZE },
+    );
+    await page.screenshot({ path: path.join(PROOF, `${design.name}-over-the-game-${screen.devicePixelsPerCssPixel}x.png`), clip: { x: MOUSE.x - 160, y: MOUSE.y - 100, width: 320, height: 240 } });
+    report.screens[label] = { cursor: cursors.distinct[0], image: { name, width: image.width, height: image.height } };
     await context.close();
   }
 

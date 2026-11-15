@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { CURSORS, DEFAULT_CURSOR_NAME, cursorDeclarations } from '../src/render/cursors.ts';
 import { CURSOR_CSS_SIZE, CURSOR_DESIGNS, CURSOR_DESIGN_SIZE, CURSOR_SCALE, CURSOR_SCREENS, cursorFileName, paintCursor } from './generate-cursors.mjs';
 
 describe('cursor generator', () => {
@@ -43,18 +42,16 @@ describe('cursor generator', () => {
   });
 });
 
-describe('the cursors the page switches between', () => {
-  it('are the designs of the generator, by name, with the hotspot in CSS pixels', () => {
-    expect(CURSORS.map((cursor) => ({ ...cursor }))).toEqual(
-      CURSOR_DESIGNS.map((design) => ({ name: design.name, hotspot: { x: design.hotspot.x * CURSOR_SCALE, y: design.hotspot.y * CURSOR_SCALE } })),
-    );
-  });
-
-  it('start at the cursor index.html shows before any script runs', () => {
+describe('the cursor index.html shows', () => {
+  it('is the first design of the generator: its file for each screen, clicking at its hotspot in CSS pixels, with auto as the fallback', () => {
     const rule = /\n\s*html \{([^}]*)\}/.exec(readFileSync(path.join(CLIENT, 'index.html'), 'utf8'));
     expect(rule, 'the html rule of index.html, where the cursor is set').not.toBeNull();
     const declarations = [...rule[1].matchAll(/cursor:\s*([^;]+);/g)].map((match) => match[1].trim());
-    expect(declarations).toEqual([...cursorDeclarations(DEFAULT_CURSOR_NAME)]);
+    const [design] = CURSOR_DESIGNS;
+    const [ordinaryScreen] = CURSOR_SCREENS;
+    const click = `${design.hotspot.x * CURSOR_SCALE} ${design.hotspot.y * CURSOR_SCALE}`;
+    const perScreen = CURSOR_SCREENS.map((screen) => `url('/cursors/${cursorFileName(design.name, screen)}') ${screen.devicePixelsPerCssPixel}x`).join(', ');
+    expect(declarations).toEqual([`url('/cursors/${cursorFileName(design.name, ordinaryScreen)}') ${click}, auto`, `image-set(${perScreen}) ${click}, auto`]);
   });
 });
 

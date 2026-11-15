@@ -9,8 +9,8 @@
  *   public/cursors/<name>.png     32x32, every design pixel 2x2: what an ordinary screen shows
  *   public/cursors/<name>@2x.png  64x64, every design pixel 4x4: the same 32 CSS pixels on a 2x (Retina) screen
  *
- * The page picks between them in src/render/cursors.ts, which lists the same
- * names and hotspots; a test holds the two lists together. Crisp means pixel
+ * The page names them in the html rule of index.html, with the hotspot in CSS
+ * pixels; a test holds that rule and this file together. Crisp means pixel
  * ratios 1 and 2: at 1.25 or 1.5 the browser resamples one of the files.
  *
  * Plain Node, no dependencies; the pixel canvas and the PNG encoder are shared with the sprite sheets.
@@ -40,7 +40,7 @@ export const CURSOR_SCREENS = [
 ];
 
 /**
- * One entry per cursor. `rows` go top to bottom; a row shorter than the
+ * One entry per cursor; the first is the one index.html shows. `rows` go top to bottom; a row shorter than the
  * design is transparent to its right, and so is `.`. `palette` gives each
  * other character its colour as [red, green, blue] or, for a see-through
  * pixel such as a shadow, [red, green, blue, alpha]. `hotspot` is the design
@@ -48,92 +48,8 @@ export const CURSOR_SCREENS = [
  */
 export const CURSOR_DESIGNS = [
   {
-    // A short, fat arrow in the warm colours of the world: flat top, flat left side, thick stem.
-    name: 'warm-arrow',
-    hotspot: { x: 0, y: 0 },
-    palette: {
-      X: [0x3b, 0x1f, 0x16], // outline
-      h: [0xff, 0xd9, 0x8a], // lit edge
-      o: [0xf0, 0x9a, 0x4a], // fill
-      s: [0xc0, 0x62, 0x30], // shaded edge
-    },
-    rows: [
-      'XXXXXXXXXXX',
-      'XhhhhhhhhsX',
-      'XhoooooosX',
-      'XhooooosX',
-      'XhoooosX',
-      'XhooooooX',
-      'XhoooooooX',
-      'XhosXsooooX',
-      'XhsX.XsooooX',
-      'XsX...XsooooX',
-      'XX.....XsoosX',
-      '........XsssX',
-      '.........XXX',
-    ],
-  },
-  {
-    // An arrow with no tail: a dark dart in two tones split from the tip to the notch at its back, over a soft shadow.
-    name: 'dark-dart',
-    hotspot: { x: 0, y: 0 },
-    palette: {
-      X: [0x0e, 0x10, 0x20], // outline
-      l: [0x5a, 0x6a, 0xa0], // lit half
-      d: [0x2c, 0x35, 0x58], // dark half
-      z: [0x00, 0x00, 0x00, 0x60], // shadow
-    },
-    rows: [
-      'X',
-      'XXz',
-      'XlXz',
-      'XldXz',
-      'XlddXz',
-      'XllddXz',
-      'XlldddXz',
-      'XllddddXz',
-      'XlllddddXz',
-      'XllldddddXz',
-      'XlllldddddXz',
-      'XlllXXXXXXXz',
-      'XllXzzzzzzzz',
-      'XlXz',
-      'XXz',
-      '.zz',
-    ],
-  },
-  {
-    // The dark dart in the browns of the world: the same shape, bark and earth instead of blue.
-    name: 'brown-dart',
-    hotspot: { x: 0, y: 0 },
-    palette: {
-      X: [0x1c, 0x0f, 0x0a], // outline
-      l: [0x8a, 0x5a, 0x3a], // lit half
-      d: [0x4a, 0x2c, 0x1c], // dark half
-      z: [0x00, 0x00, 0x00, 0x60], // shadow
-    },
-    rows: [
-      'X',
-      'XXz',
-      'XlXz',
-      'XldXz',
-      'XlddXz',
-      'XllddXz',
-      'XlldddXz',
-      'XllddddXz',
-      'XlllddddXz',
-      'XllldddddXz',
-      'XlllldddddXz',
-      'XlllXXXXXXXz',
-      'XllXzzzzzzzz',
-      'XlXz',
-      'XXz',
-      '.zz',
-    ],
-  },
-  {
-    // The classic pointer in white with a grey shaded right edge: the first design of the ticket, kept to compare.
-    name: 'shaded-arrow',
+    // The classic pointer in white with a grey shaded right edge and a dark outline, so it shows on grass and on the dark screens alike.
+    name: 'arrow',
     hotspot: { x: 0, y: 0 },
     palette: {
       X: [0x1b, 0x1b, 0x2a], // outline

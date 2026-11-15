@@ -1,81 +1,21 @@
 {
   "screens": {
-    "1x screen": [
-      {
-        "design": "warm-arrow",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "warm-arrow.png",
-          "width": 32,
-          "height": 32
-        }
-      },
-      {
-        "design": "dark-dart",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "dark-dart.png",
-          "width": 32,
-          "height": 32
-        }
-      },
-      {
-        "design": "brown-dart",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "brown-dart.png",
-          "width": 32,
-          "height": 32
-        }
-      },
-      {
-        "design": "shaded-arrow",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "shaded-arrow.png",
-          "width": 32,
-          "height": 32
-        }
+    "1x screen": {
+      "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto",
+      "image": {
+        "name": "arrow.png",
+        "width": 32,
+        "height": 32
       }
-    ],
-    "2x screen": [
-      {
-        "design": "warm-arrow",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "warm-arrow@2x.png",
-          "width": 64,
-          "height": 64
-        }
-      },
-      {
-        "design": "dark-dart",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "dark-dart@2x.png",
-          "width": 64,
-          "height": 64
-        }
-      },
-      {
-        "design": "brown-dart",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "brown-dart@2x.png",
-          "width": 64,
-          "height": 64
-        }
-      },
-      {
-        "design": "shaded-arrow",
-        "cursor": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto",
-        "image": {
-          "name": "shaded-arrow@2x.png",
-          "width": 64,
-          "height": 64
-        }
+    },
+    "2x screen": {
+      "cursor": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto",
+      "image": {
+        "name": "arrow@2x.png",
+        "width": 64,
+        "height": 64
       }
-    ]
+    }
   },
   "results": [
     {
@@ -83,104 +23,24 @@
       "pass": true
     },
     {
-      "name": "1x screen: on opening the game, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
+      "name": "1x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
     },
     {
-      "name": "1x screen: warm-arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "name": "1x screen: arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
       "pass": true,
       "details": "32x32"
     },
     {
-      "name": "1x screen: after 1 press of C, every point of the window shows dark-dart, clicking at its hotspot, with auto as the fallback",
+      "name": "2x screen: over the game, every point of the window shows arrow, clicking at its hotspot, with auto as the fallback",
       "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto"
+      "details": "image-set(url(\"http://localhost:5950/cursors/arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/arrow@2x.png\") 2dppx) 0 0, auto"
     },
     {
-      "name": "1x screen: dark-dart.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "32x32"
-    },
-    {
-      "name": "1x screen: after 2 presses of C, every point of the window shows brown-dart, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "1x screen: brown-dart.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "32x32"
-    },
-    {
-      "name": "1x screen: after 3 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "1x screen: shaded-arrow.png is 32x32 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "32x32"
-    },
-    {
-      "name": "1x screen: after 4 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "1x screen: the picked cursor (dark-dart) survives a reload, and Ctrl+C did not switch it",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: on opening the game, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: warm-arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
+      "name": "2x screen: arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
       "pass": true,
       "details": "64x64"
-    },
-    {
-      "name": "2x screen: after 1 press of C, every point of the window shows dark-dart, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: dark-dart@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "64x64"
-    },
-    {
-      "name": "2x screen: after 2 presses of C, every point of the window shows brown-dart, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/brown-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/brown-dart@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: brown-dart@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "64x64"
-    },
-    {
-      "name": "2x screen: after 3 presses of C, every point of the window shows shaded-arrow, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/shaded-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/shaded-arrow@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: shaded-arrow@2x.png is 64x64 (32 CSS pixels) and every pixel is its design pixel as one flat block",
-      "pass": true,
-      "details": "64x64"
-    },
-    {
-      "name": "2x screen: after 4 presses of C, back at the start, every point of the window shows warm-arrow, clicking at its hotspot, with auto as the fallback",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/warm-arrow.png\") 1dppx, url(\"http://localhost:5950/cursors/warm-arrow@2x.png\") 2dppx) 0 0, auto"
-    },
-    {
-      "name": "2x screen: the picked cursor (dark-dart) survives a reload, and Ctrl+C did not switch it",
-      "pass": true,
-      "details": "image-set(url(\"http://localhost:5950/cursors/dark-dart.png\") 1dppx, url(\"http://localhost:5950/cursors/dark-dart@2x.png\") 2dppx) 0 0, auto"
     },
     {
       "name": "no page errors",
