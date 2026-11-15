@@ -1,5 +1,5 @@
 import type { Character } from '../features/player/character';
-import type { MoveCommand } from '../features/player/commands';
+import type { ChangeCharacterCommand, MoveCommand } from '../features/player/commands';
 import type { WorldState } from './worldState';
 
 /**
@@ -11,7 +11,8 @@ import type { WorldState } from './worldState';
  * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
  * names the map by its checksum instead of a level name, and world states no
  * longer hold terrain (ADR 0013). 4: a join carries the player's character
- * and is refused without a legal one (ADR 0015).
+ * and is refused without a legal one, and `player/change-character` changes
+ * it afterwards (ADR 0015).
  */
 export const WIRE_PROTOCOL = 4;
 
@@ -33,6 +34,8 @@ export const WIRE = {
   resync: 'world/resync',
   /** Client → server: the player's move intent. Payload: MoveMessage. The server stamps the slot. */
   move: 'player/move',
+  /** Client → server: the player becomes another character where it stands. Payload: ChangeCharacterMessage. The server stamps the slot. */
+  changeCharacter: 'player/change-character',
   /** Server → client, just before the first world update that includes a move of this client. Payload: MoveAppliedMessage. */
   moveApplied: 'player/move-applied',
 } as const;
@@ -82,6 +85,13 @@ export interface WelcomeMessage {
  * already includes. The sequence stays in the room: the sim's command has none.
  */
 export type MoveMessage = Omit<MoveCommand, 'type' | 'slot'> & { readonly sequence: number };
+
+/**
+ * A `player/change-character` as the client sends it: no type (the message
+ * name is the type) and no slot (the server adds the client's). There is no
+ * answer: the change arrives with the next world update, like anyone's.
+ */
+export type ChangeCharacterMessage = Omit<ChangeCharacterCommand, 'type' | 'slot'>;
 
 /**
  * The sim applied this client's move `sequence`, and every move it sent

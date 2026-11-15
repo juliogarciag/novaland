@@ -216,6 +216,11 @@ export class OnlineWorld implements PlayableWorld {
     this.sendMove(this.lastMove);
   }
 
+  /** Asks the server to make the local player `character`; a rejoin after a drop joins as it too. The change shows when the server's next state brings it. */
+  changeCharacter(character: Character): void {
+    this.connection.changeCharacter(character);
+  }
+
   /** Sends a move under the next sequence and, once it is on its way, applies it to the prediction too. Nothing happens unless seated. */
   private sendMove(move: Direction): void {
     const sequence = this.nextMoveSequence;

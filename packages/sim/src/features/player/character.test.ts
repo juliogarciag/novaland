@@ -304,6 +304,123 @@ describe('a character on a replica', () => {
   });
 });
 
+describe('player/change-character', () => {
+  it('gives the same entity another look and name where it stands, and touches nobody else', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1 } };
+    const grace: Character = { name: 'Grace Hopper', look: { skin: 0, hair: 3, clothes: 2 } };
+    sim.step([join(0, ada), join(1, jose)]);
+    // Walk away from the spawn first: a change that respawned the player would show.
+    sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
+    for (let tick = 0; tick < 30; tick += 1) sim.step([]);
+    sim.step([{ type: 'player/move', slot: 0, x: 0, y: 0 }]);
+    sim.step([]);
+    const before = playerInSlot(sim, 0);
+    sim.step([change(0, grace)]);
+    const after = playerInSlot(sim, 0);
+    expect(characterInSlot(sim, 0)).toEqual(grace);
+    expect(after).toEqual(before);
+    expect(characterInSlot(sim, 1)).toEqual(jose);
+    expect(players(sim)).toHaveLength(2);
+    sim.destroy();
+  });
+
+  it('stores the normalised name and leaves nothing of a longer one behind', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    sim.step([join(0, { name: 'Bartholomew the Long', look: guestCharacter(0).look })]);
+    sim.step([change(0, { name: '  Al ', look: guestCharacter(1).look })]);
+    expect(characterInSlot(sim, 0)).toEqual({ name: 'Al', look: guestCharacter(1).look });
+    const stored = sim.snapshot().entities.find((entity) => entity.id === findPlayerEntity(sim, 0))?.components['PlayerName'] ?? {};
+    expect(stored['length']).toBe(2);
+    expect(Object.entries(stored).filter(([field, value]) => field !== 'length' && value !== 0)).toHaveLength(2);
+    sim.destroy();
+  });
+
+  it('ignores a change that is not legal, or for a seat nobody sits in: the world is exactly as it was', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    sim.step([join(0, ada)]);
+    const ignored: unknown[] = [
+      { type: 'player/change-character', slot: 0 },
+      { type: 'player/change-character', slot: 0, character: null },
+      change(0, { name: '', look: ada.look }),
+      change(0, { name: 'a'.repeat(21), look: ada.look }),
+      change(0, { name: 'Bea', look: { ...ada.look, hair: 99 } }),
+      change(0, withLook({ hat: 1 }) as Character),
+      change(1, guestCharacter(1)),
+      change(-1, guestCharacter(1)),
+      change(0.5, guestCharacter(1)),
+      { type: 'player/change-character', slot: '0', character: guestCharacter(1) },
+      { type: 'player/change-character', character: guestCharacter(1) },
+    ];
+    for (const command of ignored) {
+      expect(() => sim.step([command as Command]), JSON.stringify(command)).not.toThrow();
+      expect(characterInSlot(sim, 0), JSON.stringify(command)).toEqual(ada);
+      expect(players(sim)).toHaveLength(1);
+    }
+    sim.destroy();
+  });
+
+  it('reaches a replica as a delta of the same entity', async () => {
+    const sim = await createSimInternal({ seed: 1 });
+    const replica = createReplica({ capacity: sim.capacity });
+    sim.step([join(0, { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } })]);
+    const joined = worldState(sim);
+    applyWorldState(replica, overTheWire(joined));
+    const grace: Character = { name: 'Grace 🚀', look: { skin: 0, hair: 3, clothes: 2 } };
+    sim.step([change(0, grace)]);
+    expect(applyWorldState(replica, overTheWire(diffWorldState(joined, worldState(sim))))).toBe('applied');
+    expect(findPlayerEntity(replica, 0)).toBe(findPlayerEntity(sim, 0));
+    expect(characterInSlot(replica, 0)).toEqual(grace);
+    sim.destroy();
+    replica.destroy();
+  });
+
+  it('keeps the same seed and commands deterministic', async () => {
+    const run = async (): Promise<string> => {
+      const sim = await createSimInternal({ seed: 9 });
+      sim.step([join(0, guestCharacter(0))]);
+      for (let tick = 0; tick < 10; tick += 1) sim.step([]);
+      sim.step([change(0, { name: 'Bea', look: { skin: 1, hair: 1, clothes: 1 } })]);
+      for (let tick = 0; tick < 10; tick += 1) sim.step([]);
+      const hash = hashSnapshot(sim.snapshot());
+      sim.destroy();
+      return hash;
+    };
+    expect(await run()).toBe(await run());
+  });
+});
+
+describe('fuzzing player/change-character', () => {
+  it('never throws and never leaves an illegal character in the world, for thousands of hostile changes', async () => {
+    const sim = await createSimInternal({ seed: 4 });
+    const random = createRng(56);
+    sim.step([join(0, guestCharacter(0))]);
+    const eid = findPlayerEntity(sim, 0) as number;
+    let current = guestCharacter(0);
+    let changed = 0;
+    for (let round = 0; round < 4000; round += 1) {
+      const command = { type: 'player/change-character', slot: random.nextInt(8) === 0 ? pick(random, [-1, 1, 5, 0.5, '0', null, undefined]) : 0, character: hostileCharacter(random) };
+      expect(() => sim.step([command as unknown as Command])).not.toThrow();
+      const character = getCharacter(sim, eid) as Character;
+      const asked = command.slot === 0 ? readCharacter(command.character) : undefined;
+      // Either the change was legal and is what the rule made of it, or nothing changed at all.
+      expect(character).toEqual(asked ?? current);
+      expect(readCharacter(character)).toEqual(character);
+      expectLegalByTheTicket(character);
+      if (asked) changed += 1;
+      current = character;
+    }
+    // The generator must reach both sides of the rule, or the loop above proves nothing.
+    expect(changed).toBeGreaterThan(200);
+    expect(changed).toBeLessThan(3800);
+    expect(findPlayerEntity(sim, 0)).toBe(eid);
+    expect(players(sim)).toHaveLength(1);
+    sim.destroy();
+  });
+});
+
 describe('fuzzing player/join', () => {
   it('never throws and never seats an illegal character, for thousands of hostile joins', async () => {
     const sim = await createSimInternal({ seed: 4 });
@@ -350,6 +467,16 @@ const { createSimInternal } = __testing__;
 
 function join(slot: number, character: Character): Command {
   return { type: 'player/join', slot, character };
+}
+
+function change(slot: number, character: Character): Command {
+  return { type: 'player/change-character', slot, character };
+}
+
+/** Everything drawn of the player in `slot` but its character: which entity it is and where it stands. */
+function playerInSlot(sim: Sim, slot: number): unknown {
+  const eid = findPlayerEntity(sim, slot);
+  return getRenderables(sim).find((renderable) => renderable.eid === eid);
 }
 
 function withLook(overrides: Record<string, unknown>): unknown {

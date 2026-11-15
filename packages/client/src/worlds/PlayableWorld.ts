@@ -1,4 +1,4 @@
-import type { Command, SimHandle } from '@novaland/sim';
+import type { Character, Command, SimHandle } from '@novaland/sim';
 import type { ViewFrame } from '../render/viewFrame';
 
 /** How many of the world's seats are taken. Only an online world knows. */
@@ -33,6 +33,12 @@ export interface PlayableWorld {
   nextFrame(commands: readonly Command[], deltaSeconds: number): ViewFrame;
   /** Hands over one command outside the keyboard (dev hooks), the same way the keyboard's commands go. */
   queueCommand(command: Command): void;
+  /**
+   * The local player becomes `character` where it stands, and stays that
+   * character for the rest of the visit (online: also on a rejoin after a
+   * drop). The sim, here or on the server, has the last word on whether it is legal.
+   */
+  changeCharacter(character: Character): void;
   /**
    * Dev only: queues a join for the lowest empty seat so one browser can see
    * several characters (each a guest: `guestCharacter`). Only a world that picks its own seats has it: solo yes,

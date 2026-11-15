@@ -54,8 +54,10 @@ export function openCreator(): void {
 }
 
 export interface ChangeCharacterOptions {
-  /** The character the player is in the world as. */
+  /** The character the player entered the world as. */
   readonly playing: Character;
+  /** Makes the player in the world `character`, where it stands. */
+  changeTo(character: Character): void;
   /** Takes the keyboard away from the game while the creator is open (true) and gives it back (false): the name is typed with the keys that walk. */
   holdGameKeys(held: boolean): void;
 }
@@ -63,24 +65,25 @@ export interface ChangeCharacterOptions {
 /**
  * The button that opens the creator for a player who is in the world, over
  * the running game. Leaving it (close, Escape) or saving the same character
- * changes nothing: the player stays where they are. A different character is
- * remembered and the page loads again, because a character is chosen at the
- * join: the player leaves and joins as the new one.
+ * changes nothing. A different character is remembered for the next visit
+ * and handed to the world, which changes the player where it stands.
  * Plain DOM in a corner, like the screens. The button never keeps the
  * keyboard: the game's keys must go to the game.
  */
-export function addChangeCharacterButton(parent: HTMLElement, { playing, holdGameKeys }: ChangeCharacterOptions): void {
+export function addChangeCharacterButton(parent: HTMLElement, { playing, changeTo, holdGameKeys }: ChangeCharacterOptions): void {
+  let current = playing;
   let creatorIsOpen = false;
   const open = async (): Promise<void> => {
     if (creatorIsOpen) return;
     creatorIsOpen = true;
     holdGameKeys(true);
-    const chosen = await changeCharacter(parent, { initial: playing, previewSheet: playerPreviewSheet() });
+    const chosen = await changeCharacter(parent, { initial: current, previewSheet: playerPreviewSheet() });
     holdGameKeys(false);
     creatorIsOpen = false;
-    if (!chosen || sameCharacter(chosen, playing)) return;
+    if (!chosen || sameCharacter(chosen, current)) return;
+    current = chosen;
     rememberCharacter(browserCharacterStorage(), chosen);
-    window.location.reload();
+    changeTo(chosen);
   };
   openCreatorOverGame = () => void open();
   const button = document.createElement('button');

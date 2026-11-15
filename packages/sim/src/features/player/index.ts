@@ -29,7 +29,8 @@ const PLAYER_COLLISION_GROUPS = (PLAYER_LAYER << 16) | (0xffff & ~PLAYER_LAYER);
 /**
  * Player-controlled bodies. A `player/join` spawns the character the player
  * made (its look and name, once `readCharacter` accepts them) on a free tile
- * near the map's spawn, `player/move` sets its intended direction and every tick
+ * near the map's spawn, `player/change-character` gives the same entity another
+ * look and name where it stands, `player/move` sets its intended direction and every tick
  * the intent becomes a velocity. A non-zero intent also turns the player to
  * face that way (the clamped intent, so an oversized command faces its
  * clamped direction), and the facing outlives the movement so a stopped
@@ -69,6 +70,14 @@ export const playerFeature: Feature = {
           facing.x[eid] = x / length;
           facing.y[eid] = y / length;
         }
+        return;
+      }
+      case 'player/change-character': {
+        const eid = isValidSlot(command.slot) ? findPlayerEntity(sim, command.slot) : undefined;
+        if (eid === undefined) return;
+        // As in a join: only what `readCharacter` made of the command's character is stored.
+        const character = readCharacter(command.character);
+        if (character) writeCharacter(sim, eid, character);
         return;
       }
     }
@@ -117,18 +126,13 @@ function spawnPlayer(sim: Sim, slot: number, character: Character): number {
   const facing = sim.store(Facing);
   const defRef = sim.store(DefRef);
   const extents = sim.store(Extents);
-  const look = sim.store(PlayerLook);
   addComponent(sim.world, eid, player);
   addComponent(sim.world, eid, intent);
   addComponent(sim.world, eid, facing);
   addComponent(sim.world, eid, defRef);
   addComponent(sim.world, eid, extents);
-  addComponent(sim.world, eid, look);
   player.slot[eid] = slot;
-  look.skin[eid] = character.look.skin;
-  look.hair[eid] = character.look.hair;
-  look.clothes[eid] = character.look.clothes;
-  writePlayerName(sim, eid, character.name);
+  writeCharacter(sim, eid, character);
   intent.x[eid] = 0;
   intent.y[eid] = 0;
   facing.x[eid] = SPAWN_FACING.x;
@@ -138,6 +142,16 @@ function spawnPlayer(sim: Sim, slot: number, character: Character): number {
   extents.halfHeight[eid] = radius;
   attachPlayerBody(sim, eid, { x: spawn.x, y: spawn.y, radius });
   return eid;
+}
+
+/** Makes the entity this character, at its spawn and whenever its player changes it: the look and the whole name are written over what was there. */
+function writeCharacter(sim: Sim, eid: number, character: Character): void {
+  const look = sim.store(PlayerLook);
+  addComponent(sim.world, eid, look);
+  look.skin[eid] = character.look.skin;
+  look.hair[eid] = character.look.hair;
+  look.clothes[eid] = character.look.clothes;
+  writePlayerName(sim, eid, character.name);
 }
 
 /** Gives the entity its name: every field is written, so nothing of the name an earlier holder of the id had is left behind. */

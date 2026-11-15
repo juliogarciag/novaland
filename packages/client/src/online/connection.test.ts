@@ -223,6 +223,31 @@ describe('WorldConnection', () => {
     expect(joinOptions).toEqual([JOIN_OPTIONS, JOIN_OPTIONS]);
   });
 
+  it('changes character by asking the server while online, and joins as the new one after a drop', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    connection.changeCharacter(changed);
+    expect(rooms[0]!.sent).toEqual([{ type: WIRE.changeCharacter, payload: { character: changed } }]);
+    rooms[0]!.drop();
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions).toEqual([JOIN_OPTIONS, { ...JOIN_OPTIONS, character: changed }]);
+  });
+
+  it('sends no character change while not seated: the next join brings the new character', async () => {
+    const { connection, rooms, joinOptions } = connect(['room', 'room']);
+    const changed = guestCharacter(4);
+    await settle();
+    rooms[0]!.receive(WIRE.welcome, WELCOME);
+    rooms[0]!.drop();
+    connection.changeCharacter(changed);
+    expect(rooms[0]!.sent).toEqual([]);
+    await vi.advanceTimersByTimeAsync(RECONNECT_DELAYS_MS[0]!);
+    expect(joinOptions[1]).toEqual({ ...JOIN_OPTIONS, character: changed });
+    expect(rooms[1]!.sent).toEqual([]);
+  });
+
   it('stops for good when the server refuses the character, and says so, instead of asking again with the same one', async () => {
     const { connection, statuses, endpoints } = connect(['character-refused', 'room']);
     await settle();

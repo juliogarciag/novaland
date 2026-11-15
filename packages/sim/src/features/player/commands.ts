@@ -30,4 +30,15 @@ export interface MoveCommand {
   readonly y: number;
 }
 
-export type PlayerCommand = JoinCommand | LeaveCommand | MoveCommand;
+/**
+ * The player in the given slot becomes another character: a new look, a new
+ * name, the same entity where it stands. Ignored if nobody sits in the slot
+ * or the character is not a legal one (`readCharacter`), exactly as a join's.
+ */
+export interface ChangeCharacterCommand {
+  readonly type: 'player/change-character';
+  readonly slot: number;
+  readonly character: Character;
+}
+
+export type PlayerCommand = JoinCommand | LeaveCommand | MoveCommand | ChangeCharacterCommand;

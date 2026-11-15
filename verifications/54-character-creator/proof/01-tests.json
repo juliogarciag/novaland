@@ -326,6 +326,21 @@
   },
   {
     "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readChangeCharacterMessage accepts exactly { character } with a legal character, and returns it normalised",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readChangeCharacterMessage drops a payload that carries a slot or any other field, and one with no legal character",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/inbound.test.ts",
+    "name": "readChangeCharacterMessage never throws and only ever returns what the sim calls a legal character, for thousands of hostile payloads",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/inbound.test.ts",
     "name": "readMoveMessage accepts exactly { x, y, sequence } with finite numbers and a positive whole sequence",
     "status": "passed"
   },
@@ -442,6 +457,21 @@
   {
     "file": "packages/server/src/world/worldRoom.test.ts",
     "name": "WorldRoom over a real connection normalises the name at the gate: the world holds what the rule made of it, not what the client sent",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection changes a seated player into another character where it stands, for every player, on the same entity",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection drops a character change that is malformed, oversized or names another seat, and changes nobody",
+    "status": "passed"
+  },
+  {
+    "file": "packages/server/src/world/worldRoom.test.ts",
+    "name": "WorldRoom over a real connection lets a session change character only a few times at once: a flood is dropped and the room goes on",
     "status": "passed"
   },
   {
@@ -635,61 +665,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/hudLines.test.ts",
-    "name": "hudLines says joining... until the local player is in the world",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate follows a rate that changes, one second later",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
-    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/creator/creatorScreen.test.ts",
     "name": "what the creator says about a name the sim refuses has a sentence for every problem, and the limit in the one about length",
     "status": "passed"
@@ -817,6 +792,61 @@
   {
     "file": "packages/client/src/input/keyboard.test.ts",
     "name": "createKeyboardInput produces no commands when the scene has no keyboard plugin",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines solo shows the frame rate and no latency, seats, tick or movement help",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online shows the frame rate, the round trip to the server and the seats taken",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines shows -- for what has not been measured yet, never a made-up number",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps who you are, the player count and the dev J hint where the world offers it",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines keeps the first line the same length whatever the digits, so the backdrop does not jitter",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines online and not seated yet says joining... next to an unmeasured latency",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/hudLines.test.ts",
+    "name": "hudLines says joining... until the local player is in the world",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate has no rate until a first second of frames has been counted",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate counts the frames that were drawn, whatever the display rate",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate follows a rate that changes, one second later",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/hud/renderedFrameRate.test.ts",
+    "name": "RenderedFrameRate reports the gap honestly when nothing was drawn for a long while, then recovers",
     "status": "passed"
   },
   {
@@ -1067,6 +1097,16 @@
   {
     "file": "packages/client/src/online/connection.test.ts",
     "name": "WorldConnection joins as the character it was given, on the first join and on every rejoin after a drop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection changes character by asking the server while online, and joins as the new one after a drop",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/online/connection.test.ts",
+    "name": "WorldConnection sends no character change while not seated: the next join brings the new character",
     "status": "passed"
   },
   {
@@ -2117,6 +2157,36 @@
   {
     "file": "packages/sim/src/features/player/character.test.ts",
     "name": "a character on a replica shows a legal character whatever a server sends: an unreadable name is \"?\", a palette index out of range the first swatch",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "player/change-character gives the same entity another look and name where it stands, and touches nobody else",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "player/change-character stores the normalised name and leaves nothing of a longer one behind",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "player/change-character ignores a change that is not legal, or for a seat nobody sits in: the world is exactly as it was",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "player/change-character reaches a replica as a delta of the same entity",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "player/change-character keeps the same seed and commands deterministic",
+    "status": "passed"
+  },
+  {
+    "file": "packages/sim/src/features/player/character.test.ts",
+    "name": "fuzzing player/change-character never throws and never leaves an illegal character in the world, for thousands of hostile changes",
     "status": "passed"
   },
   {

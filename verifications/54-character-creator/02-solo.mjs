@@ -137,14 +137,20 @@ try {
   const fromAddress = await creatorState(page);
   results.push(check('#creator in the address of a playing page opens the creator over the game and the address is the plain one again', fromAddress.shown && fromAddress.hasGame && pageLoads.count === 0 && (await page.evaluate(() => window.location.hash)) === '', JSON.stringify({ fromAddress, pageLoads })));
 
-  // A different character replaces the old one.
+  // A different character replaces the old one where the player stands: no page load, the same entity, the same place.
+  const standing = await waitFor('the player to stand still again', { read: async () => [await worldState(page), await page.waitForTimeout(300), await worldState(page)], until: ([before, , after]) => before.seats[0].position.x === after.seats[0].position.x, timeoutMs: 10000 }).then(([, , after]) => after);
   await fillCreator(page, JOSE);
   await screenshot(page, '02-solo-5-creator-changing.png');
   await submitCreator(page);
-  await waitFor('the new character in the world', { read: () => worldState(page).catch(() => undefined), until: (state) => Boolean(state) && state.seats.length === 1 && state.seats[0].name === JOSE.name && Boolean(state.seats[0].label), timeoutMs: 20000 });
-  const changed = await worldState(page);
+  await page.waitForSelector('#creator', { state: 'detached' });
+  const changed = await waitFor('the new character in the world', { read: () => worldState(page), until: (state) => state.seats.length === 1 && state.seats[0].label?.name === JOSE.name && state.seats[0].name === JOSE.name, timeoutMs: 15000 }).catch(() => worldState(page));
   await screenshot(page, '02-solo-6-changed-character.png');
   results.push(check('a different character replaces the old one in the world and in the browser, and the address is the plain one', changed.seats.length === 1 && drawnAsItsCharacter(changed.seats[0], JOSE) && changed.remembered === JSON.stringify(JOSE) && changed.hash === '', JSON.stringify({ seat: changed.seats[0], remembered: changed.remembered, hash: changed.hash })));
+  results.push(check('the change happens where the player stands: the same entity, the same place, no page load', changed.seats[0].eid === standing.seats[0].eid && changed.seats[0].position.x === standing.seats[0].position.x && changed.seats[0].position.y === standing.seats[0].position.y && pageLoads.count === 0 && changed.hud.includes(`you: ${JOSE.name}`), JSON.stringify({ before: standing.seats[0].position, after: changed.seats[0].position, pageLoads })));
+  await page.reload();
+  await waitInWorld(page);
+  const afterChangeReload = await worldState(page);
+  results.push(check('after a reload the player comes back as the changed character', afterChangeReload.seats.length === 1 && drawnAsItsCharacter(afterChangeReload.seats[0], JOSE), JSON.stringify(afterChangeReload.seats[0])));
   report.changed = changed;
 
   // 6. A second seat is a second character with its own name.

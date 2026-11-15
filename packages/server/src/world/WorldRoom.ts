@@ -15,11 +15,13 @@ import {
   type WorldStateDelta,
 } from '@novaland/sim';
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
-import { MessageBudget, payloadLength, readJoinCharacter, readMoveMessage, speaksProtocol } from './inbound';
+import { MessageBudget, payloadLength, readChangeCharacterMessage, readJoinCharacter, readMoveMessage, speaksProtocol } from './inbound';
 import { IDLE_KICK } from './kicks';
 import { RoomSeats } from './roomSeats';
 import { takeWholeTicks } from './takeWholeTicks';
 import {
+  CHARACTER_CHANGE_BURST,
+  CHARACTER_CHANGES_PER_SECOND,
   DISCONNECT_MESSAGES_PER_SECOND,
   IDLE_TIMEOUT_MS,
   INBOUND_BURST,
@@ -27,6 +29,7 @@ import {
   JOIN_ACK_TIMEOUT_MS,
   LOOP_INTERVAL_MS,
   MAX_CATCH_UP_SECONDS,
+  MAX_CHARACTER_MESSAGE_BYTES,
   MAX_INBOUND_BYTES,
   MAX_JOIN_OPTIONS_BYTES,
   MAX_SEATS,
@@ -71,6 +74,7 @@ interface Session {
   moveToAcknowledge: MoveAppliedMessage | undefined;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
+  readonly characterChangeBudget: MessageBudget;
 }
 
 /** Messages the room dropped at the edge, by reason. Printed when the server stops; never logged per message. */
@@ -150,6 +154,7 @@ export class WorldRoom extends Room {
     }
     this.sim = await createSim({ seed: options.seed });
     this.onMessage(WIRE.move, (client, payload: unknown) => this.onMove(client, payload));
+    this.onMessage(WIRE.changeCharacter, (client, payload: unknown) => this.onChangeCharacter(client, payload));
     this.onMessage(WIRE.resync, (client) => this.onResync(client));
     this.onMessage('*', (client) => this.onUnknownMessage(client));
     this.wokeAt = this.time.now();
@@ -192,6 +197,7 @@ export class WorldRoom extends Room {
       moveToAcknowledge: undefined,
       budget: new MessageBudget(INBOUND_MESSAGES_PER_SECOND, INBOUND_BURST, now),
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
+      characterChangeBudget: new MessageBudget(CHARACTER_CHANGES_PER_SECOND, CHARACTER_CHANGE_BURST, now),
     };
     this.sessions.set(client.sessionId, session);
     this.pendingCommands.push({ type: 'player/join', slot, character });
@@ -366,6 +372,39 @@ export class WorldRoom extends Room {
     session.walking = move.x !== 0 || move.y !== 0;
     session.queuedMoveSequence = move.sequence;
     this.pendingCommands.push({ type: 'player/move', slot: session.slot, x: move.x, y: move.y });
+  }
+
+  /**
+   * The edge gate for `player/change-character`: the session's budget, size,
+   * exact shape and a legal character, then a small budget of its own (a
+   * change costs every player some forty fields, so only well-formed ones
+   * spend it). The command carries the session's slot and the character as
+   * `readCharacter` returned it, never the payload's. An accepted change is
+   * the player doing something: it keeps the seat.
+   */
+  private onChangeCharacter(client: Client, payload: unknown): void {
+    const session = this.sessions.get(client.sessionId);
+    if (!session) return;
+    const now = this.time.now();
+    if (!session.budget.allows(now)) {
+      this.dropped.overBudget += 1;
+      return;
+    }
+    if (payloadLength(payload) > MAX_CHARACTER_MESSAGE_BYTES) {
+      this.dropped.oversized += 1;
+      return;
+    }
+    const change = readChangeCharacterMessage(payload);
+    if (!change) {
+      this.dropped.malformed += 1;
+      return;
+    }
+    if (!session.characterChangeBudget.allows(now)) {
+      this.dropped.overBudget += 1;
+      return;
+    }
+    session.lastInputAt = now;
+    this.pendingCommands.push({ type: 'player/change-character', slot: session.slot, character: change.character });
   }
 
   /** The next send carries a full state. Its own small budget: a full state is a hundred times a delta, and a flood of requests still costs one state per send. */

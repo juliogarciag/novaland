@@ -48,6 +48,7 @@ async function boot(): Promise<void> {
   keepCanvasAtWindowSize(game);
   addChangeCharacterButton(document.body, {
     playing: character,
+    changeTo: (chosen) => world.changeCharacter(chosen),
     holdGameKeys: (held) => {
       // Phaser swallows the keys the game listens to, so the name could not be typed; and a key held when the creator opens must not keep walking.
       if (game.input.keyboard) game.input.keyboard.enabled = !held;

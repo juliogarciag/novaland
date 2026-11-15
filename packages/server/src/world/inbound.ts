@@ -1,4 +1,4 @@
-import { readCharacter, type Character, type MoveMessage } from '@novaland/sim';
+import { readCharacter, type ChangeCharacterMessage, type Character, type MoveMessage } from '@novaland/sim';
 
 /**
  * The trust boundary at the network edge. What a session sends is decoded by
@@ -51,6 +51,24 @@ export function readJoinCharacter(options: unknown): Character | undefined {
   try {
     if (!Object.hasOwn(options, 'character')) return undefined;
     return readCharacter((options as Record<string, unknown>)['character']);
+  } catch {
+    // A decoded message is plain data, but a throwing accessor must still not reach the room.
+    return undefined;
+  }
+}
+
+/**
+ * The `{ character }` of a `player/change-character` payload, with the
+ * character as the sim would store it (`readCharacter`), or undefined when
+ * the payload is anything else: not an object, carrying another field (a
+ * `slot`, say) or holding no legal character.
+ */
+export function readChangeCharacterMessage(payload: unknown): ChangeCharacterMessage | undefined {
+  if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) return undefined;
+  try {
+    if (Object.keys(payload).length !== 1 || !Object.hasOwn(payload, 'character')) return undefined;
+    const character = readCharacter((payload as Record<string, unknown>)['character']);
+    return character ? { character } : undefined;
   } catch {
     // A decoded message is plain data, but a throwing accessor must still not reach the room.
     return undefined;

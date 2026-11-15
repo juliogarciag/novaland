@@ -28,11 +28,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { IDLE_KICK } from './kicks';
 import { __testing__, type WorldServer } from './startWorldServer';
 import {
+  CHARACTER_CHANGE_BURST,
   DISCONNECT_MESSAGES_PER_SECOND,
   IDLE_TIMEOUT_MS,
   INBOUND_BURST,
   INBOUND_MESSAGES_PER_SECOND,
   JOIN_ACK_TIMEOUT_MS,
+  MAX_CHARACTER_MESSAGE_BYTES,
   MAX_JOIN_OPTIONS_BYTES,
   MAX_FRAME_BYTES,
   MAX_INBOUND_BYTES,
@@ -122,6 +124,81 @@ describe('WorldRoom over a real connection', () => {
     server = await startWorldServer({ port: 0, seed: 54 });
     players.push(await join(server.port, { name: '  Ada   Lovelace ', look: { skin: 1, hair: 1, clothes: 1 } }));
     expect(characterInSeat((players[0] as Player).replica, 0)?.name).toBe('Ada Lovelace');
+  });
+
+  it('changes a seated player into another character where it stands, for every player, on the same entity', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1 } };
+    const grace: Character = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4 } };
+    players.push(await join(server.port, ada));
+    players.push(await join(server.port, guestCharacter(1)));
+    const [changer, watcher] = players as [Player, Player];
+    await waitUntil(() => findPlayerEntity(changer.replica, 1) !== undefined);
+    // Walk away from the spawn and stop, so a change that respawned the player would show.
+    changer.room.send(WIRE.move, { x: 1, y: 0, sequence: 1 });
+    await waitUntil(() => positionOf(watcher.replica, 0).x > positionOf(watcher.replica, 1).x + 1);
+    changer.room.send(WIRE.move, { x: 0, y: 0, sequence: 2 });
+    await waitUntil(() => headingOf(watcher.replica, 0).moveIntent.x === 0);
+    await waitForUpdates([watcher], 3);
+    const eidBefore = findPlayerEntity(watcher.replica, 0);
+    const positionBefore = positionOf(watcher.replica, 0);
+
+    // The name is normalised at the gate, as a join's is.
+    changer.room.send(WIRE.changeCharacter, { character: { ...grace, name: '  Grace   Hopper ' } });
+    await waitUntil(() => players.every((player) => characterInSeat(player.replica, 0)?.name === grace.name));
+    for (const player of players) {
+      expect(characterInSeat(player.replica, 0)).toEqual(grace);
+      expect(characterInSeat(player.replica, 1)).toEqual(guestCharacter(1));
+      expect(findPlayerEntity(player.replica, 0)).toBe(eidBefore);
+      expect(positionOf(player.replica, 0)).toEqual(positionBefore);
+    }
+    expect(players.every((player) => player.applyResults.every((result) => result === 'applied'))).toBe(true);
+  });
+
+  it('drops a character change that is malformed, oversized or names another seat, and changes nobody', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1 } };
+    players.push(await join(server.port, ada));
+    players.push(await join(server.port, guestCharacter(1)));
+    const [sender, other] = players as [Player, Player];
+    await waitUntil(() => findPlayerEntity(sender.replica, 1) !== undefined);
+    const legal = guestCharacter(3);
+    const malformed: unknown[] = [
+      undefined,
+      null,
+      'Ada',
+      legal,
+      { character: legal, slot: 1 },
+      { character: { ...legal, name: '' } },
+      { character: { ...legal, name: 'a'.repeat(21) } },
+      { character: { ...legal, name: 21 } },
+      { character: { ...legal, look: { ...legal.look, hair: 99 } } },
+      { character: { ...legal, slot: 1 } },
+    ];
+    for (const payload of malformed) sender.room.send(WIRE.changeCharacter, payload);
+    await waitUntil(() => server!.room.dropped.malformed === malformed.length);
+    sender.room.send(WIRE.changeCharacter, { character: { ...legal, name: 'x'.repeat(MAX_CHARACTER_MESSAGE_BYTES) } });
+    await waitUntil(() => server!.room.dropped.oversized === 1);
+    await waitForUpdates([sender, other], 3);
+    for (const player of players) {
+      expect(characterInSeat(player.replica, 0)).toEqual(ada);
+      expect(characterInSeat(player.replica, 1)).toEqual(guestCharacter(1));
+    }
+  });
+
+  it('lets a session change character only a few times at once: a flood is dropped and the room goes on', async () => {
+    server = await startWorldServer({ port: 0, seed: 54 });
+    players.push(await join(server.port));
+    const flooder = players[0] as Player;
+    const flood = 20;
+    for (let round = 0; round < flood; round += 1) flooder.room.send(WIRE.changeCharacter, { character: { name: `Name ${round}`, look: guestCharacter(0).look } });
+    await waitUntil(() => server!.room.dropped.overBudget >= flood - CHARACTER_CHANGE_BURST - 1);
+    await waitUntil(() => characterInSeat(flooder.replica, 0)?.name.startsWith('Name ') === true);
+    await waitForUpdates([flooder], 3);
+    // Only the first few got through: the name is one of theirs, never a later one.
+    const applied = Number(characterInSeat(flooder.replica, 0)?.name.slice('Name '.length));
+    expect(applied).toBeLessThanOrEqual(CHARACTER_CHANGE_BURST);
+    expect(server.room.dropped.overBudget).toBeLessThanOrEqual(flood - CHARACTER_CHANGE_BURST);
   });
 
   it('refuses a join without a legal character before it takes a seat, and keeps serving the players it has', async () => {

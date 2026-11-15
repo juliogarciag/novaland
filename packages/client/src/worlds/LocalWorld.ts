@@ -48,6 +48,10 @@ export class LocalWorld implements PlayableWorld {
     this.pendingCommands.push(command);
   }
 
+  changeCharacter(character: Character): void {
+    this.queueCommand({ type: 'player/change-character', slot: this.localSlot, character });
+  }
+
   joinAnotherSeat(): void {
     const slot = firstEmptySeat(this.sim, this.pendingCommands);
     if (slot !== undefined) this.queueCommand({ type: 'player/join', slot, character: guestCharacter(slot) });

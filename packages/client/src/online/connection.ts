@@ -1,5 +1,5 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
-import { JOIN_REFUSAL, WIRE, type JoinOptions, type MoveMessage } from '@novaland/sim';
+import { JOIN_REFUSAL, WIRE, type Character, type JoinOptions, type MoveMessage } from '@novaland/sim';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
@@ -52,7 +52,7 @@ export interface JoinedRoom {
 export interface WorldConnectionOptions {
   /** `ws://host:port` or `http://host:port` of the world server. */
   readonly endpoint: string;
-  /** What every join carries: the character the player made. A rejoin after a drop sends the same. */
+  /** What every join carries: the character the player made. A rejoin after a drop sends the same, or the one the player changed to since (`changeCharacter`). */
   readonly joinOptions: JoinOptions;
   readonly handlers: WorldConnectionHandlers;
   /** How to join the room at an endpoint. Default: the Colyseus SDK. Tests pass a fake. */
@@ -80,7 +80,7 @@ export interface WorldConnectionOptions {
 export class WorldConnection {
   private currentStatus: ConnectionStatus = { kind: 'connecting', attempt: 0 };
   private readonly endpoint: string;
-  private readonly joinOptions: JoinOptions;
+  private joinOptions: JoinOptions;
   private readonly handlers: WorldConnectionHandlers;
   private readonly join: (endpoint: string, joinOptions: JoinOptions) => Promise<JoinedRoom>;
   /** Bumped on every attempt, on every abandoned room and on close, so callbacks of an earlier room are ignored. */
@@ -142,6 +142,16 @@ export class WorldConnection {
     if (this.status.kind !== 'online' || !this.room) return false;
     this.room.send(WIRE.move, { x: move.x, y: move.y, sequence: move.sequence });
     return true;
+  }
+
+  /**
+   * The player is `character` from now on: every later join carries it, and
+   * when seated the server is asked to change the player in the world. Not
+   * seated (a drop, a retry in flight), the next join brings it.
+   */
+  changeCharacter(character: Character): void {
+    this.joinOptions = { ...this.joinOptions, character };
+    if (this.status.kind === 'online' && this.room) this.room.send(WIRE.changeCharacter, { character });
   }
 
   /** Asks the server for a full world state, after a delta that did not chain. */

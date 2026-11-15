@@ -66,5 +66,6 @@ function asOnlineWorld(world: LocalWorld, { latencyMs }: { latencyMs: number | u
     latencyMs,
     nextFrame: (commands, deltaSeconds) => world.nextFrame(commands, deltaSeconds),
     queueCommand: (command) => world.queueCommand(command),
+    changeCharacter: (character) => world.changeCharacter(character),
   };
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { guestCharacter, readCharacter } from '@novaland/sim';
-import { MessageBudget, payloadLength, readJoinCharacter, readMoveMessage, speaksProtocol } from './inbound';
+import { MessageBudget, payloadLength, readChangeCharacterMessage, readJoinCharacter, readMoveMessage, speaksProtocol } from './inbound';
 
 describe('readJoinCharacter', () => {
   it('reads the character of the join options, normalised, and ignores the other fields', () => {
@@ -55,6 +55,71 @@ describe('readJoinCharacter', () => {
       if (!read) continue;
       accepted += 1;
       expect(readCharacter(read)).toEqual(read);
+    }
+    // The generator reaches both sides of the gate.
+    expect(accepted).toBeGreaterThan(500);
+    expect(accepted).toBeLessThan(19_500);
+  });
+});
+
+describe('readChangeCharacterMessage', () => {
+  it('accepts exactly { character } with a legal character, and returns it normalised', () => {
+    const character = guestCharacter(2);
+    expect(readChangeCharacterMessage({ character })).toEqual({ character });
+    expect(readChangeCharacterMessage({ character: { ...character, name: `  ${character.name} ` } })).toEqual({ character });
+  });
+
+  it('drops a payload that carries a slot or any other field, and one with no legal character', () => {
+    const character = guestCharacter(0);
+    const payloads: unknown[] = [
+      undefined,
+      null,
+      'character',
+      7,
+      [],
+      [{ character }],
+      {},
+      character,
+      { character, slot: 1 },
+      { character, type: 'player/change-character' },
+      { Character: character },
+      Object.create({ character }),
+      { character: undefined },
+      { character: { ...character, name: 21 } },
+      { character: { ...character, name: 'a'.repeat(21) } },
+      { character: { ...character, look: { ...character.look, skin: 6 } } },
+      { character: { ...character, slot: 1 } },
+    ];
+    for (const payload of payloads) expect(readChangeCharacterMessage(payload), JSON.stringify(payload)).toBeUndefined();
+  });
+
+  it('never throws and only ever returns what the sim calls a legal character, for thousands of hostile payloads', () => {
+    const hostile = [new Proxy({}, { ownKeys: () => { throw new Error('boom'); } }), { get character() { throw new Error('boom'); } }, Symbol('character'), () => ({ character: guestCharacter(0) })];
+    for (const payload of hostile) expect(readChangeCharacterMessage(payload)).toBeUndefined();
+    let random = 56;
+    const next = (bound: number): number => {
+      random = (Math.imul(random, 1664525) + 1013904223) >>> 0;
+      return random % bound;
+    };
+    const pieces = ['a', 'Ada', ' ', '  ', '\u00e9', '😀', '\n', '\u0000', '\u202e', 'x'.repeat(30)];
+    const values: unknown[] = [0, 1, 5, 6, 7, -1, 0.5, NaN, Infinity, '0', null, undefined, {}, [], true];
+    let accepted = 0;
+    for (let round = 0; round < 20_000; round += 1) {
+      let name = '';
+      for (let index = next(6); index > 0; index -= 1) name += pieces[next(pieces.length)];
+      const index = (): unknown => (next(5) === 0 ? values[next(values.length)] : next(6));
+      const look: Record<string, unknown> = { skin: index(), hair: index(), clothes: index() };
+      if (next(10) === 0) look['extra'] = 1;
+      const character: Record<string, unknown> = { name: next(12) === 0 ? values[next(values.length)] : name, look };
+      const payload: Record<string, unknown> = { character };
+      const extra = next(10) === 0;
+      if (extra) payload['slot'] = 0;
+      const read = readChangeCharacterMessage(next(15) === 0 ? character : payload);
+      if (!read) continue;
+      accepted += 1;
+      expect(extra).toBe(false);
+      expect(Object.keys(read)).toEqual(['character']);
+      expect(readCharacter(read.character)).toEqual(read.character);
     }
     // The generator reaches both sides of the gate.
     expect(accepted).toBeGreaterThan(500);

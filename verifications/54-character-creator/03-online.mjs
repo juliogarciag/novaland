@@ -221,6 +221,25 @@ try {
   results.push(check('after the server restarts both pages rejoin by themselves as the same two characters, without the creator', !aBack.creatorShown && !bBack.creatorShown && seesBoth(aBack) && seesBoth(bBack)));
   report.afterRestart = { aBack, bBack };
 
+  // 8. A player changes character from inside the world: same player, same place, no page load, and everyone sees the new one.
+  const GRACE = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4 } };
+  const seesGraceAndJose = (state) => state.seats.length === 2 && drawnAsItsCharacter(seatOf(state, GRACE), GRACE) && drawnAsItsCharacter(seatOf(state, JOSE), JOSE);
+  const aBefore = seatOf(await worldState(a.page), ADA);
+  const aLoads = { count: 0 };
+  a.page.on('load', () => (aLoads.count += 1));
+  await a.page.locator('#change-character').click();
+  await a.page.waitForSelector('#creator[data-screen="creator"]');
+  await fillCreator(a.page, GRACE);
+  await submitCreator(a.page);
+  await a.page.waitForSelector('#creator', { state: 'detached' });
+  const aChanged = await waitFor('A to be drawn as the new character', { read: () => worldState(a.page), until: seesGraceAndJose, timeoutMs: 15000 }).catch(() => worldState(a.page));
+  const bSeesChange = await waitFor('B to see the new character', { read: () => worldState(b.page), until: seesGraceAndJose, timeoutMs: 15000 }).catch(() => worldState(b.page));
+  await screenshot(b.page, '03-online-8-B-sees-A-changed.png');
+  const aAfter = seatOf(aChanged, GRACE);
+  results.push(check('changing character in the world changes it for both players, on the same entity, where it stood, without loading the page', seesGraceAndJose(aChanged) && seesGraceAndJose(bSeesChange) && aAfter?.eid === aBefore?.eid && aAfter?.slot === aBefore?.slot && aAfter?.position.x === aBefore?.position.x && aAfter?.position.y === aBefore?.position.y && aLoads.count === 0, JSON.stringify({ before: aBefore && { eid: aBefore.eid, position: aBefore.position }, after: aAfter && { eid: aAfter.eid, position: aAfter.position, name: aAfter.name }, bSees: bSeesChange.seats.map((seat) => seat.name), aLoads })));
+  results.push(check('the browser remembers the new character and the HUD names it', aChanged.remembered === JSON.stringify(GRACE) && aChanged.hud.includes(`you: ${GRACE.name}`), JSON.stringify({ remembered: aChanged.remembered, hud: aChanged.hud })));
+  report.changedInPlace = { aChanged, bSeesChange };
+
   results.push(check('no page errors', errors.filter((error) => !/WebSocket|ERR_CONNECTION_REFUSED|Failed to load resource|Failed to fetch/.test(error)).length === 0, errors.join(' | ')));
   report.errors = errors;
 } catch (error) {
