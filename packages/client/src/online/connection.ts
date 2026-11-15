@@ -1,5 +1,5 @@
 import { Client, ErrorCode } from '@colyseus/sdk';
-import { JOIN_REFUSAL, WIRE, type MoveMessage } from '@novaland/sim';
+import { JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveMessage } from '@novaland/sim';
 import { FULL_WORLD_RETRY_MS, IDLE_KICK_CODE, JOIN_TIMEOUT_MS, LATENCY_INTERVAL_MS, RECONNECT_DELAYS_MS, WORLD_ROOM_ID } from './tuning';
 
 /**
@@ -20,12 +20,17 @@ export type ConnectionStatus =
   /** The server runs a world this client cannot show. Nothing is retried. */
   | { readonly kind: 'incompatible'; readonly reason: string };
 
+/** What the incompatible screen says when the page and the server were built against different wire protocols; the screen offers the reload that fetches the server's build. */
+export const PROTOCOL_MISMATCH_REASON = 'this page and the server are different versions of the game';
+
 /** What the online world does with what arrives. Payloads are untrusted: they come off the network as the server sent them. */
 export interface WorldConnectionHandlers {
   /** A welcome arrived. `'seated'` when the client can play on this server; otherwise why it cannot, and the connection stops. */
   onWelcome(payload: unknown): 'seated' | { readonly incompatible: string };
   /** A `world/delta` or `world/state` arrived while seated. */
   onUpdate(payload: unknown): void;
+  /** A `player/move-applied` arrived while seated: the update that follows includes that move. */
+  onMoveApplied(payload: unknown): void;
   onStatus(status: ConnectionStatus): void;
 }
 
@@ -123,10 +128,10 @@ export class WorldConnection {
     void this.tryToJoin();
   }
 
-  /** Sends the player's move intent. False (and nothing sent) unless seated. */
+  /** Sends the player's move intent with the sequence the server will acknowledge it by. False (and nothing sent) unless seated. */
   sendMove(move: MoveMessage): boolean {
     if (this.status.kind !== 'online' || !this.room) return false;
-    this.room.send(WIRE.move, { x: move.x, y: move.y });
+    this.room.send(WIRE.move, { x: move.x, y: move.y, sequence: move.sequence });
     return true;
   }
 
@@ -165,6 +170,10 @@ export class WorldConnection {
       if (isWorldFullRefusal(error)) {
         this.failedConnections = 0;
         this.scheduleRetry({ kind: 'full', retryAt: Date.now() + FULL_WORLD_RETRY_MS }, FULL_WORLD_RETRY_MS);
+      } else if (isProtocolRefusal(error)) {
+        // Asking again would be refused again: only another build of this page can join.
+        this.close();
+        this.setStatus({ kind: 'incompatible', reason: PROTOCOL_MISMATCH_REASON });
       } else {
         this.failedConnections += 1;
         this.scheduleReconnect();
@@ -209,6 +218,9 @@ export class WorldConnection {
     };
     room.onMessage(WIRE.delta, onUpdate);
     room.onMessage(WIRE.state, onUpdate);
+    room.onMessage(WIRE.moveApplied, (payload) => {
+      if (generation === this.generation && this.status.kind === 'online') this.handlers.onMoveApplied(payload);
+    });
   }
 
   /** Gives up on the attempt `generation` (a join that never settled, a room that never welcomed): whatever it yields later is ignored, and the next attempt is scheduled. */
@@ -292,7 +304,8 @@ export class WorldConnection {
  * reconnection is switched off before anything can drop (see the class).
  */
 export async function joinWorldRoom(endpoint: string): Promise<JoinedRoom> {
-  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID);
+  const options: JoinOptions = { protocol: WIRE_PROTOCOL };
+  const room = await new Client(endpoint).joinById(WORLD_ROOM_ID, options);
   room.reconnection.enabled = false;
   return {
     onMessage: (type, callback) => {
@@ -327,9 +340,16 @@ function isWorldFullRefusal(error: unknown): boolean {
   return /locked/i.test(message) || message.includes(JOIN_REFUSAL.worldFull);
 }
 
+/** True when the server refused the join because this page was built against another wire protocol (`JOIN_REFUSAL.protocolMismatch`). */
+function isProtocolRefusal(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const { message } = error as { message?: unknown };
+  return typeof message === 'string' && message.includes(JOIN_REFUSAL.protocolMismatch);
+}
+
 /** The slot of a welcome the handlers accepted; they checked it is a non-negative integer. */
 function readSlot(payload: unknown): number {
   return (payload as { slot: number }).slot;
 }
 
-export const __testing__ = { isWorldFullRefusal };
+export const __testing__ = { isWorldFullRefusal, isProtocolRefusal };

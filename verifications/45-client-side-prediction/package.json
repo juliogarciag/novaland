@@ -1,0 +1,14 @@
+{
+  "name": "verification-45-client-side-prediction",
+  "private": true,
+  "type": "module",
+  "description": "Verification scripts for ticket #45. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0",
+    "ws": "^8.18.0",
+    "@colyseus/sdk": "0.18.9"
+  }
+}

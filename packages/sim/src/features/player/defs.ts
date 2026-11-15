@@ -4,6 +4,11 @@ import type { SpriteDef } from '../../content/sprites';
 /** Move intents shorter than this count as a stop: too small to move the body or to define a facing. */
 export const MIN_MOVE_INTENT = 1e-3;
 
+/** Largest body radius, in metres, a prediction accepts for a player it adopts from a world state (ADR 0012). Avatars are well under it; a value beyond it is bad input, not a player. */
+export const MAX_ADOPTED_RADIUS = 8;
+/** Furthest from the level's centre, in metres on either axis, a prediction accepts a player it adopts. No level comes near it; beyond it the physics engine's 32-bit positions stop being positions. */
+export const MAX_ADOPTED_COORDINATE = 1e6;
+
 /**
  * Player feature owns def ids 1-99. Every id is an avatar: the look a player
  * gets when they join. The sim picks one through its rng (features/player/avatars.ts);

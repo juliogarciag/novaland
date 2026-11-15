@@ -3,6 +3,7 @@ import type { LevelData } from '../content/levels/types';
 import { DEFAULT_CAPACITY, MAX_CAPACITY } from '../content/tuning';
 import { features } from '../features';
 import { initPhysics } from './physics';
+import { Prediction, type PredictionHandle } from './prediction';
 import { Replica, type ReplicaHandle } from './replica';
 import { Sim, type SimHandle } from './sim';
 
@@ -45,11 +46,31 @@ export interface ReplicaOptions {
  * RangeError, before any store is allocated or any id is scanned.
  */
 export function createReplica(options: ReplicaOptions): ReplicaHandle {
-  const capacity = options.capacity ?? DEFAULT_CAPACITY;
+  return new Replica({ level: options.level, capacity: checkedCapacity('Replica', options.capacity) });
+}
+
+/** The same choices as a replica: a prediction guesses about the sim that replica copies. */
+export type PredictionOptions = ReplicaOptions;
+
+/**
+ * Creates the sim a client steps ahead of the server to guess where its own
+ * player will be (ADR 0012): the level's terrain, every feature and no
+ * players until `adoptEntity` copies one in. Loads the physics engine on
+ * first call. The capacity is checked like a replica's, for the same reason.
+ */
+export async function createPrediction(options: PredictionOptions): Promise<PredictionHandle> {
+  const capacity = checkedCapacity('Prediction', options.capacity);
+  await initPhysics();
+  return new Prediction({ seed: 0, level: options.level, capacity }, features);
+}
+
+/** The capacity asked for, or the default; a RangeError naming `handleKind` ("Replica", "Prediction") when it is not an integer in 1..MAX_CAPACITY. */
+function checkedCapacity(handleKind: string, requestedCapacity: number | undefined): number {
+  const capacity = requestedCapacity ?? DEFAULT_CAPACITY;
   if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > MAX_CAPACITY) {
-    throw new RangeError(`Replica capacity must be an integer from 1 to ${MAX_CAPACITY}, got ${String(capacity)}`);
+    throw new RangeError(`${handleKind} capacity must be an integer from 1 to ${MAX_CAPACITY}, got ${String(capacity)}`);
   }
-  return new Replica({ level: options.level, capacity });
+  return capacity;
 }
 
 /** Test-only access to the full Sim. Lint forbids importing this outside *.test.ts. */

@@ -4,15 +4,17 @@ import {
   FIXED_DT,
   JOIN_REFUSAL,
   WIRE,
+  WIRE_PROTOCOL,
   worldState,
   type Command,
+  type MoveAppliedMessage,
   type SimHandle,
   type WelcomeMessage,
   type WorldState,
   type WorldStateDelta,
 } from '@novaland/sim';
 import { ClientState, CloseCode, ErrorCode, Room, ServerError, type Client } from '@colyseus/core';
-import { MessageBudget, payloadLength, readMoveMessage } from './inbound';
+import { MessageBudget, payloadLength, readMoveMessage, speaksProtocol } from './inbound';
 import { IDLE_KICK } from './kicks';
 import { RoomSeats } from './roomSeats';
 import { takeWholeTicks } from './takeWholeTicks';
@@ -61,6 +63,10 @@ interface Session {
   lastInputAt: number;
   /** The last accepted move had a direction: the player is holding a key and the avatar is walking. A client sends a move only when the direction changes, so a held key sends nothing more; the idle clock runs only once the player stops. The browser client also sends a stop when its tab is hidden or loses focus, so an abandoned tab does not stay walking. */
   walking: boolean;
+  /** Sequence of the last accepted move still waiting in `pendingCommands` for the next tick; undefined once that tick ran. */
+  queuedMoveSequence: number | undefined;
+  /** The last move of this session the sim applied and the tick that step made, not yet told to the client; it goes out just before the next world update (ADR 0012). */
+  moveToAcknowledge: MoveAppliedMessage | undefined;
   readonly budget: MessageBudget;
   readonly resyncBudget: MessageBudget;
 }
@@ -85,7 +91,11 @@ export interface DroppedMessages {
  * every `TICKS_PER_SEND` ticks, diffed from the last state sent to it. A
  * session that stands still and sends no accepted input for `idleTimeoutMs`
  * is closed with `IDLE_KICK` so its seat goes to someone who plays (#22); a
- * session whose last move has a direction is walking, never idle.
+ * session whose last move has a direction is walking, never idle. Each move
+ * carries the client's sequence; once a tick has applied it the session is
+ * told which one and in which tick, just before the world update that first
+ * includes it, so a client that predicts its own movement knows what to
+ * replay (ADR 0012).
  */
 export class WorldRoom extends Room {
   override maxClients = MAX_SEATS;
@@ -140,9 +150,13 @@ export class WorldRoom extends Room {
    * Seats the session and welcomes it with the state after the tick that
    * spawned its player, so the client finds its own entity in it. The
    * matchmaker refuses a sixth join before this runs (`maxClients`, ADR
-   * 0005); the refusal here is the guard behind it.
+   * 0005); the refusal here is the guard behind it. A client built against
+   * another wire protocol, or one from before the protocol had a version, is
+   * refused before it takes a seat: seated, it would send moves this room
+   * drops and never learn why.
    */
-  override async onJoin(client: Client): Promise<void> {
+  override async onJoin(client: Client, options?: unknown): Promise<void> {
+    if (!speaksProtocol(options, WIRE_PROTOCOL)) throw new ServerError(ErrorCode.MATCHMAKE_UNHANDLED, JOIN_REFUSAL.protocolMismatch);
     const slot = this.seats.claim(client.sessionId);
     if (slot === undefined) throw new ServerError(ErrorCode.MATCHMAKE_INVALID_ROOM_ID, JOIN_REFUSAL.worldFull);
     const now = this.time.now();
@@ -153,6 +167,8 @@ export class WorldRoom extends Room {
       wantsFullState: false,
       lastInputAt: now,
       walking: false,
+      queuedMoveSequence: undefined,
+      moveToAcknowledge: undefined,
       budget: new MessageBudget(INBOUND_MESSAGES_PER_SECOND, INBOUND_BURST, now),
       resyncBudget: new MessageBudget(RESYNCS_PER_SECOND, RESYNC_BURST, now),
     };
@@ -163,7 +179,7 @@ export class WorldRoom extends Room {
     const state = worldState(this.sim);
     session.lastSent = state;
     session.welcomedAt = this.time.now();
-    const welcome: WelcomeMessage = { slot, level: this.sim.level.name, capacity: this.sim.capacity, state };
+    const welcome: WelcomeMessage = { protocol: WIRE_PROTOCOL, slot, level: this.sim.level.name, capacity: this.sim.capacity, state };
     client.send(WIRE.welcome, welcome);
   }
 
@@ -212,6 +228,7 @@ export class WorldRoom extends Room {
         const commands = this.pendingCommands;
         this.pendingCommands = [];
         sim.step(commands);
+        if (commands.length > 0) this.queueMoveAcknowledgements(sim.tick);
         this.settleTickWaiters(true);
       }
       if (sim.tick - this.lastSendTick >= TICKS_PER_SEND) {
@@ -222,6 +239,15 @@ export class WorldRoom extends Room {
     } catch (error) {
       console.error(JSON.stringify({ event: 'world-room-crashed', seed: sim.seed, tick: sim.tick, error: String(error) }));
       throw error;
+    }
+  }
+
+  /** The tick that made the sim's tick `tick` applied every command that was waiting: each session's queued move becomes the one to acknowledge. */
+  private queueMoveAcknowledgements(tick: number): void {
+    for (const session of this.sessions.values()) {
+      if (session.queuedMoveSequence === undefined) continue;
+      session.moveToAcknowledge = { sequence: session.queuedMoveSequence, tick };
+      session.queuedMoveSequence = undefined;
     }
   }
 
@@ -242,7 +268,9 @@ export class WorldRoom extends Room {
    * that last saw the same tick share one diff. A session that has not yet
    * acknowledged its join cannot receive anything (Colyseus would buffer it
    * without bound), so it gets nothing until it can; one that stays
-   * unacknowledged past `JOIN_ACK_TIMEOUT_MS` is closed.
+   * unacknowledged past `JOIN_ACK_TIMEOUT_MS` is closed. A session whose
+   * move was applied since its last update is told so first, so the update
+   * that follows is the first state that includes that move.
    */
   private sendWorldUpdates(sim: SimHandle, now: number): void {
     const next = worldState(sim);
@@ -254,6 +282,10 @@ export class WorldRoom extends Room {
         // Nothing is sent, and `lastSent` stays at the welcome, so the first delta after the acknowledgement chains from it.
         if (session.welcomedAt !== undefined && now - session.welcomedAt > JOIN_ACK_TIMEOUT_MS) client.leave(CloseCode.WITH_ERROR);
         continue;
+      }
+      if (session.moveToAcknowledge) {
+        client.send(WIRE.moveApplied, session.moveToAcknowledge);
+        session.moveToAcknowledge = undefined;
       }
       if (session.wantsFullState) {
         session.wantsFullState = false;
@@ -311,6 +343,7 @@ export class WorldRoom extends Room {
     }
     session.lastInputAt = now;
     session.walking = move.x !== 0 || move.y !== 0;
+    session.queuedMoveSequence = move.sequence;
     this.pendingCommands.push({ type: 'player/move', slot: session.slot, x: move.x, y: move.y });
   }
 

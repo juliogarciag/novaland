@@ -10,7 +10,7 @@ import { applyWorldState, type ReplicaHandle } from './replica';
 import type { SimHandle } from './sim';
 import { DefRef } from './transform';
 import { getRenderables } from './view';
-import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE } from './wire';
+import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL } from './wire';
 import { diffWorldState, worldState, type WorldState, type WorldStateUpdate } from './worldState';
 
 describe('a replica fed full world states every tick', () => {
@@ -240,9 +240,11 @@ describe('createReplica', () => {
 });
 
 describe('the wire contract the server and the client are built against', () => {
-  it('pins the message names, the refusal reasons and the default send rate ADR 0004 lists', () => {
-    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move' });
-    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full' });
+  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004 and 0012 list', () => {
+    // A change to any of these is a change to the contract: count WIRE_PROTOCOL up with it.
+    expect(WIRE_PROTOCOL).toBe(2);
+    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move', moveApplied: 'player/move-applied' });
+    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full', protocolMismatch: 'protocol-mismatch' });
     expect(DEFAULT_SEND_RATE).toBe(20);
   });
 });

@@ -2,10 +2,20 @@ import type { MoveCommand } from '../features/player/commands';
 import type { WorldState } from './worldState';
 
 /**
- * The messages between a browser and the world server, as ADR 0004 fixes
- * them. The sim does no networking; the names, payload types and protocol
- * constants live here so the server room and the client online mode are
- * built against one definition. Payloads are plain JSON. A delta or full
+ * The version of this contract. A client sends it when it joins (`JoinOptions`)
+ * and a server answers with its own in the welcome; each refuses the other
+ * when the two differ, so a page loaded before a deploy is told to reload
+ * instead of talking past the server. Count it up with every change to the
+ * messages below. 2: `player/move` carries a sequence and the server
+ * acknowledges it with `player/move-applied` (ADR 0012).
+ */
+export const WIRE_PROTOCOL = 2;
+
+/**
+ * The messages between a browser and the world server, as ADR 0004 and 0012
+ * fix them. The sim does no networking; the names, payload types and
+ * protocol constants live here so the server room and the client online mode
+ * are built against one definition. Payloads are plain JSON. A delta or full
  * state payload is a `WorldStateUpdate` (worldState.ts).
  */
 export const WIRE = {
@@ -19,18 +29,30 @@ export const WIRE = {
   resync: 'world/resync',
   /** Client → server: the player's move intent. Payload: MoveMessage. The server stamps the slot. */
   move: 'player/move',
+  /** Server → client, just before the first world update that includes a move of this client. Payload: MoveAppliedMessage. */
+  moveApplied: 'player/move-applied',
 } as const;
 
 /** Reasons a server refuses a join. */
 export const JOIN_REFUSAL = {
   /** Every seat is taken. */
   worldFull: 'world-full',
+  /** The client was built against another `WIRE_PROTOCOL`, or sent none. */
+  protocolMismatch: 'protocol-mismatch',
 } as const;
+
+/** What a client passes when it joins the room. */
+export interface JoinOptions {
+  /** The `WIRE_PROTOCOL` the client was built against. */
+  readonly protocol: number;
+}
 
 /** World-state deltas per second a server sends its players. The server may be configured with another rate. */
 export const DEFAULT_SEND_RATE = 20;
 
 export interface WelcomeMessage {
+  /** The `WIRE_PROTOCOL` the server speaks. A client built against another one cannot play here. */
+  readonly protocol: number;
   /** The client's seat: the `slot` of its player entity and of the commands the server stamps for it. */
   readonly slot: number;
   /** Name of the level the server runs; the client resolves it with `findLevel` and builds its replica from it. */
@@ -41,5 +63,20 @@ export interface WelcomeMessage {
   readonly state: WorldState;
 }
 
-/** A `player/move` as the client sends it: no type (the message name is the type) and no slot (the server adds the client's). */
-export type MoveMessage = Omit<MoveCommand, 'type' | 'slot'>;
+/**
+ * A `player/move` as the client sends it: no type (the message name is the
+ * type) and no slot (the server adds the client's), plus a `sequence` the
+ * client counts up from 1 so the server can say which moves a world state
+ * already includes. The sequence stays in the room: the sim's command has none.
+ */
+export type MoveMessage = Omit<MoveCommand, 'type' | 'slot'> & { readonly sequence: number };
+
+/**
+ * The sim applied this client's move `sequence`, and every move it sent
+ * before it, in the step that made the sim's tick `tick`. The world update
+ * that follows this message is the first one that includes it.
+ */
+export interface MoveAppliedMessage {
+  readonly sequence: number;
+  readonly tick: number;
+}
