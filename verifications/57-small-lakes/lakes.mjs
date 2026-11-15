@@ -60,7 +60,7 @@ try {
   results.push(check('no lake is on the spawn or near it: none within ten tiles', lakesNearSpawn.length === 0, `nearest water is ${Math.min(...world.lakes.map((lake) => lake.tilesFromSpawn))} tiles from the spawn tile`));
   results.push(check('the water sheet loaded: lakes are drawn from it, not from the flat fallback', await page.evaluate((key) => window.__novaland.game.textures.exists(key), world.water.groundSprite?.key), world.water.groundSprite?.key));
 
-  // ---- 2. To the nearest lake and into it, on the keyboard ----
+  // ---- 2. To a lake and into it, on the keyboard ----
   const startedAt = await page.evaluate(() => window.__lakes.player());
   const route = await page.evaluate(() => window.__lakes.keyboardRouteToWater());
   report.keyboardRoute = route;
