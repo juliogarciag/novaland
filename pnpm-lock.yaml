@@ -24,6 +24,9 @@ catalogs:
     '@eslint/js':
       specifier: ^10.0.0
       version: 10.0.1
+    '@fontsource/tiny5':
+      specifier: 5.3.0
+      version: 5.3.0
     '@types/compression':
       specifier: ^1.8.1
       version: 1.8.1
@@ -113,6 +116,9 @@ importers:
       '@colyseus/sdk':
         specifier: 'catalog:'
         version: 0.18.9(@colyseus/core@0.18.27)(typescript@6.0.3)(zod@4.6.7)
+      '@fontsource/tiny5':
+        specifier: 'catalog:'
+        version: 5.3.0
       '@novaland/sim':
         specifier: workspace:*
         version: link:../sim
@@ -482,6 +488,9 @@ packages:
   '@eslint/plugin-kit@0.7.3':
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@fontsource/tiny5@5.3.0':
+    resolution: {integrity: sha512-29H01ByMRs6uiLeOoBnZLedf0dR3pF5A53cIBzhp1/Y6Bu5D0t5selTb4TWs3ENoc/OK71rOed5xAdvBywe4aQ==}
 
   '@graphql-typed-document-node/core@3.2.0':
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
@@ -1827,6 +1836,8 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@fontsource/tiny5@5.3.0': {}
 
   '@graphql-typed-document-node/core@3.2.0(graphql@16.15.0)':
     dependencies:

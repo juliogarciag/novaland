@@ -785,31 +785,6 @@
     "status": "passed"
   },
   {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks runs several ticks for a long frame",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
-    "status": "passed"
-  },
-  {
-    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
-    "name": "takeWholeTicks ignores negative deltas",
-    "status": "passed"
-  },
-  {
     "file": "packages/client/src/online/OnlineWorld.prediction.test.ts",
     "name": "OnlineWorld predicting the local player moves the local player on the frame of the key press, before the server has heard of it, and shows it walking",
     "status": "passed"
@@ -1195,6 +1170,31 @@
     "status": "passed"
   },
   {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs zero ticks and keeps the time when a frame is shorter than a tick",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks carries the remainder across frames so no time is lost",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks runs several ticks for a long frame",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks clamps huge frames (tab switch) instead of spiralling",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/loop/takeWholeTicks.test.ts",
+    "name": "takeWholeTicks ignores negative deltas",
+    "status": "passed"
+  },
+  {
     "file": "packages/client/src/render/camera.test.ts",
     "name": "MapCamera.view is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)",
     "status": "passed"
@@ -1367,6 +1367,16 @@
   {
     "file": "packages/client/src/render/nameLabel.test.ts",
     "name": "the width a name may draw shrinks a wider one to exactly the widest allowed",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "waiting for the name font loads every face of the name font and no other",
+    "status": "passed"
+  },
+  {
+    "file": "packages/client/src/render/nameLabel.test.ts",
+    "name": "waiting for the name font resolves when a face cannot be loaded: names then draw in the fallback font",
     "status": "passed"
   },
   {

@@ -2,7 +2,7 @@ import { getDef, type Character, type SimHandle, type SpriteDef } from '@novalan
 import type Phaser from 'phaser';
 import { lookKey } from './characterSheet';
 import { depthOfBottomEdge } from './depth';
-import { createNameLabel, fitNameLabel, NAME_GAP_PIXELS, type LabelScale } from './nameLabel';
+import { createNameLabel, fitNameLabel, NAME_GAP_PIXELS } from './nameLabel';
 import { IDLE_DOWN, poseFromHeading } from './pose';
 import { lookTextureKey, walkAnimationKey } from './sprites';
 import { PIXELS_PER_METRE, toPixels } from './units';
@@ -37,7 +37,7 @@ interface EntityView {
  */
 export class EntityRenderer {
   private readonly views = new Map<number, EntityView>();
-  private labelScale: LabelScale = { cameraZoom: 1, pixelRatio: 1 };
+  private labelZoom = 1;
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -73,7 +73,7 @@ export class EntityRenderer {
         // The id may have gone to another player with the same look between two frames: the label always says the current name.
         if (view.nameLabel.text !== character.name) {
           view.nameLabel.setText(character.name);
-          fitNameLabel(view.nameLabel, this.labelScale);
+          fitNameLabel(view.nameLabel, this.labelZoom);
         }
         view.nameLabel.setPosition(x, y - view.topOffset - NAME_GAP_PIXELS);
       }
@@ -105,7 +105,7 @@ export class EntityRenderer {
     const def = getDef(defId);
     const sheet = def.sprite;
     const look = character ? lookKey(character.look) : undefined;
-    const nameLabel = character ? createNameLabel(this.scene, character.name, this.labelScale) : undefined;
+    const nameLabel = character ? createNameLabel(this.scene, character.name, this.labelZoom) : undefined;
     if (sheet && this.scene.textures.exists(sheet.key)) {
       const textureKey = (character && lookTextureKey(this.scene, sheet, character.look)) ?? sheet.key;
       const sprite = this.scene.add.sprite(0, 0, textureKey, sheet.directions[IDLE_DOWN.direction].idle);
@@ -121,14 +121,13 @@ export class EntityRenderer {
     return { gameObject: shape, nameLabel, topOffset: toPixels(halfHeight), look, defId, halfWidth, halfHeight };
   }
 
-  /** Labels are rendered for one camera zoom and pixel ratio; when either changes (a resize, another screen) every label is rendered again. */
+  /** Labels are rendered for one camera zoom; when it changes (a resize, another screen) every label is rendered again. */
   private fitLabelsToCamera(): void {
     const cameraZoom = this.scene.cameras.main.zoom;
-    const pixelRatio = 1 / this.scene.scale.zoom;
-    if (cameraZoom === this.labelScale.cameraZoom && pixelRatio === this.labelScale.pixelRatio) return;
-    this.labelScale = { cameraZoom, pixelRatio };
+    if (cameraZoom === this.labelZoom) return;
+    this.labelZoom = cameraZoom;
     for (const view of this.views.values()) {
-      if (view.nameLabel) fitNameLabel(view.nameLabel, this.labelScale);
+      if (view.nameLabel) fitNameLabel(view.nameLabel, this.labelZoom);
     }
   }
 

@@ -1,4 +1,5 @@
 import type { Character } from '@novaland/sim';
+import '@fontsource/tiny5/index.css';
 import Phaser from 'phaser';
 import { addChangeCharacterButton, characterForThisVisit, openCreator, openCreatorWhenAddressAsks } from './creator/character';
 import { exposeDebugApi, type OnlineDebugApi } from './debug';
@@ -6,6 +7,7 @@ import { OnlineWorld } from './online/OnlineWorld';
 import { createConnectionScreens } from './online/screens';
 import { worldServerUrl } from './online/serverUrl';
 import { INTERPOLATION_BUFFER_TICKS } from './online/tuning';
+import { loadNameFont } from './render/nameLabel';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
 import { WorldScene } from './scenes/WorldScene';
@@ -32,6 +34,8 @@ async function boot(): Promise<void> {
   const { world, online } = serverUrl
     ? await joinSharedWorld(serverUrl, character)
     : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
+  // Labels are measured when they are made: the font they are drawn in has to be there first.
+  await loadNameFont();
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',

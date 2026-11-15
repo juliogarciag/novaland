@@ -45,7 +45,7 @@ Everyone asks that one rule: the `player/join` handler (a join whose character i
 **The client draws and remembers; it decides nothing.**
 
 - The sheet `sprites/player.png` is painted in fixed template colours. The renderer makes one texture per look by swapping those colours for the look's (`render/characterSheet.ts`), so two players with the same look share a texture.
-- The name is a text object above the character, rendered at device resolution and scaled back by the camera's whole-number zoom, so it stays sharp over zoomed pixel art. Only the client knows the font, so the client bounds what a legal name can cover: a name wider than about twenty wide letters is drawn smaller.
+- The name is a text object above the character in a pixel font (Tiny5, bundled with the client), sized so one pixel of a letter is one pixel of the world: it is rendered for the camera's whole-number zoom and scaled back by it, so the letters are as blocky as the art and a glyph the pixel font lacks (an emoji, another script) falls back to the system's font and stays sharp. Only the client knows the font, so the client bounds what a legal name can cover: a name wider than about twenty wide letters is drawn smaller.
 - The creator screen is plain DOM shown before the game exists, solo and online, and before anything is sent to a server. The browser keeps the last character in `localStorage` under `novaland.character`; a returning player goes straight in. `#creator` in the address, or the Change character button, opens the creator again, and the page loads fresh so the next join is the new character.
 
 ## Consequences
