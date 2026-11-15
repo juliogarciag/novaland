@@ -1,0 +1,43 @@
+{
+  "comment": "The clearing as it was before ticket 48 opened its four exits: the whole world then, 40x30 tiles. Copied from packages/sim/src/content/world/areas/clearing.ts at commit 81ffa8b.",
+  "origin": {
+    "column": 0,
+    "row": 0
+  },
+  "spawn": {
+    "column": 6,
+    "row": 14
+  },
+  "rows": [
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT.TTTTT",
+    "TTT.......TT.................T.......TTT",
+    "TT.........T.........................TTT",
+    "TT....................................TT",
+    "TT..o.......................o.........TT",
+    "TTT...................................TT",
+    "TTT...........................o.......TT",
+    "TT....................................TT",
+    "TT............TT..........oo..........TT",
+    "TT............TT......................TT",
+    "TT..o.................................TT",
+    "TTT............................o......TT",
+    "TT....................................TT",
+    "TT....................................TT",
+    "TT....................................TT",
+    "TTT...........o.......................TT",
+    "TT........................TT..........TT",
+    "TT........................TT.........TTT",
+    "TT....................................TT",
+    "TT......................o.............TT",
+    "TTT...................................TT",
+    "TT....................................TT",
+    "TT.o...........................o......TT",
+    "TTT..................................TTT",
+    "TTTT......TT.................TT.....TTTT",
+    "TTTTTT...TTTTT.............TTTTT...TTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+    "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+  ]
+}

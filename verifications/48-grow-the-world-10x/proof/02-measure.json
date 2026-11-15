@@ -1,0 +1,121 @@
+{
+  "measured": {
+    "rounds": 9,
+    "sends": 600,
+    "ticksPerSend": 3,
+    "players": 5,
+    "before": {
+      "tiles": 1200,
+      "columns": 40,
+      "rows": 30,
+      "chunks": 2,
+      "simEntities": 5,
+      "worldStateEntities": 5,
+      "fullStateBytes": 1456,
+      "deltaBytesPerSend": 458,
+      "tickMs": {
+        "median": 0.019593816111109972,
+        "lowest": 0.018235062777778872,
+        "highest": 0.036372897777777635
+      },
+      "perSendMs": {
+        "median": 0.01012715500000392,
+        "lowest": 0.008975553333328511,
+        "highest": 0.02316853000000066
+      },
+      "bootMs": {
+        "median": 0.22795800000017152,
+        "lowest": 0.1749170000000504,
+        "highest": 0.9176249999999868
+      },
+      "snapshotAndHashMs": {
+        "median": 0.21767090000000736,
+        "lowest": 0.21047910000002049,
+        "highest": 0.7346791999999993
+      }
+    },
+    "now": {
+      "tiles": 11960,
+      "columns": 130,
+      "rows": 92,
+      "chunks": 15,
+      "simEntities": 5,
+      "worldStateEntities": 5,
+      "fullStateBytes": 1457,
+      "deltaBytesPerSend": 458,
+      "tickMs": {
+        "median": 0.08064139333333326,
+        "lowest": 0.07998601499999862,
+        "highest": 0.08966422555555545
+      },
+      "perSendMs": {
+        "median": 0.010383618333336623,
+        "lowest": 0.009702636666667104,
+        "highest": 0.011930206666667971
+      },
+      "bootMs": {
+        "median": 1.2270830000002206,
+        "lowest": 1.121791999999914,
+        "highest": 2.9738329999999564
+      },
+      "snapshotAndHashMs": {
+        "median": 2.3682750000000055,
+        "lowest": 1.8797000000000026,
+        "highest": 3.7152707999999963
+      }
+    }
+  },
+  "table": [
+    "                                        world before                  world now                     ",
+    "tiles                                   1200 (40x30)                  11960 (130x92)                ",
+    "chunks                                  2                             15                            ",
+    "entities in the sim                     5                             5                             ",
+    "entities in world state                 5                             5                             ",
+    "full state on join or resync, bytes     1456                          1457                          ",
+    "delta, bytes per send                   458                           458                           ",
+    "build + diff world state, ms per send   0.0101 (0.0090 to 0.0232)     0.0104 (0.0097 to 0.0119)     ",
+    "one tick of the sim, ms                 0.0196 (0.0182 to 0.0364)     0.0806 (0.0800 to 0.0897)     ",
+    "creating the sim, ms                    0.2280 (0.1749 to 0.9176)     1.2271 (1.1218 to 2.9738)     ",
+    "snapshot + hash, ms                     0.2177 (0.2105 to 0.7347)     2.3683 (1.8797 to 3.7153)     "
+  ],
+  "results": [
+    {
+      "name": "the measurement ran",
+      "pass": true
+    },
+    {
+      "name": "the world now is about ten times the world before",
+      "pass": true,
+      "details": "9.97 times"
+    },
+    {
+      "name": "world state holds the five players and nothing else, on both",
+      "pass": true
+    },
+    {
+      "name": "full-state size is the same: the five players, to within the digits of their positions",
+      "pass": true,
+      "details": "1456 and 1457 bytes"
+    },
+    {
+      "name": "the delta per send is the same size",
+      "pass": true,
+      "details": "458 and 458 bytes"
+    },
+    {
+      "name": "per-send cost is the same within noise",
+      "pass": true,
+      "details": "0.0101 (0.0090 to 0.0232) ms before, 0.0104 (0.0097 to 0.0119) ms now"
+    },
+    {
+      "name": "tick cost is the same within noise",
+      "pass": false,
+      "details": "0.0196 (0.0182 to 0.0364) ms before, 0.0806 (0.0800 to 0.0897) ms now: 4.1 times"
+    },
+    {
+      "name": "one tick still takes under 1% of the time a tick has",
+      "pass": true,
+      "details": "0.0897 ms of 16.67 ms: 0.48%"
+    }
+  ]
+}

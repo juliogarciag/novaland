@@ -1,0 +1,24 @@
+PASS  the measurement ran
+
+                                        world before                  world now                     
+tiles                                   1200 (40x30)                  11960 (130x92)                
+chunks                                  2                             15                            
+entities in the sim                     5                             5                             
+entities in world state                 5                             5                             
+full state on join or resync, bytes     1456                          1457                          
+delta, bytes per send                   458                           458                           
+build + diff world state, ms per send   0.0101 (0.0090 to 0.0232)     0.0104 (0.0097 to 0.0119)     
+one tick of the sim, ms                 0.0196 (0.0182 to 0.0364)     0.0806 (0.0800 to 0.0897)     
+creating the sim, ms                    0.2280 (0.1749 to 0.9176)     1.2271 (1.1218 to 2.9738)     
+snapshot + hash, ms                     0.2177 (0.2105 to 0.7347)     2.3683 (1.8797 to 3.7153)     
+(times: median of 9 rounds, lowest to highest in brackets)
+
+PASS  the world now is about ten times the world before  (9.97 times)
+PASS  world state holds the five players and nothing else, on both
+PASS  full-state size is the same: the five players, to within the digits of their positions  (1456 and 1457 bytes)
+PASS  the delta per send is the same size  (458 and 458 bytes)
+PASS  per-send cost is the same within noise  (0.0101 (0.0090 to 0.0232) ms before, 0.0104 (0.0097 to 0.0119) ms now)
+FAIL  tick cost is the same within noise  (0.0196 (0.0182 to 0.0364) ms before, 0.0806 (0.0800 to 0.0897) ms now: 4.1 times)
+PASS  one tick still takes under 1% of the time a tick has  (0.0897 ms of 16.67 ms: 0.48%)
+
+1 OF 8 CHECKS FAILED

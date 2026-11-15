@@ -1,0 +1,17 @@
+PASS  pnpm install passes
+PASS  pnpm typecheck passes
+PASS  pnpm lint passes
+PASS  pnpm build passes
+PASS  pnpm test passes  (421 of 421 tests in 136 suites)
+PASS  world.test.ts: spawns on grass, with every other walkable tile of every area within reach on foot
+PASS  world.test.ts: counts reach in whole tiles a player fits through: every avatar is narrower than one tile
+PASS  world.test.ts: is the clearing, with its top-left tile on the origin, and eight areas around it: ten times the clearing in all
+PASS  world.test.ts: is one continuous outdoors: the areas cover the rectangle that holds them, with no tile missing
+PASS  world.test.ts: keeps areas small enough to edit by hand: none is much larger than the clearing
+PASS  world.test.ts: is ringed by trees with no gap, so nothing walks off the map
+PASS  world.test.ts: has no paths: every tile is grass, a tree or a rock
+PASS  determinism.test.ts: same seed + same commands = identical state, including physics bytes
+PASS  no file under packages/sim/src/core changed  (16 files changed since 81ffa8b)
+PASS  the area format (types.ts, tiles.ts) did not change
+
+ALL 15 CHECKS PASSED

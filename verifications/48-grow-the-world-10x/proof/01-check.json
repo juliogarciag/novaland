@@ -1,0 +1,85 @@
+{
+  "changedFiles": [
+    "eslint.config.js",
+    "packages/client/src/render/camera.test.ts",
+    "packages/sim/package.json",
+    "packages/sim/src/content/defs.test.ts",
+    "packages/sim/src/content/world/areas/clearing.ts",
+    "packages/sim/src/content/world/areas/eastGlade.ts",
+    "packages/sim/src/content/world/areas/farClearing.ts",
+    "packages/sim/src/content/world/areas/northMeadow.ts",
+    "packages/sim/src/content/world/areas/oldGrove.ts",
+    "packages/sim/src/content/world/areas/rockField.ts",
+    "packages/sim/src/content/world/areas/southGlade.ts",
+    "packages/sim/src/content/world/areas/stoneHollow.ts",
+    "packages/sim/src/content/world/areas/westWoods.ts",
+    "packages/sim/src/content/world/index.ts",
+    "packages/sim/src/content/world/world.test.ts",
+    "packages/sim/tools/generate-world-areas.mjs"
+  ],
+  "results": [
+    {
+      "name": "pnpm install passes",
+      "pass": true
+    },
+    {
+      "name": "pnpm typecheck passes",
+      "pass": true
+    },
+    {
+      "name": "pnpm lint passes",
+      "pass": true
+    },
+    {
+      "name": "pnpm build passes",
+      "pass": true
+    },
+    {
+      "name": "pnpm test passes",
+      "pass": true,
+      "details": "421 of 421 tests in 136 suites"
+    },
+    {
+      "name": "world.test.ts: spawns on grass, with every other walkable tile of every area within reach on foot",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: counts reach in whole tiles a player fits through: every avatar is narrower than one tile",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: is the clearing, with its top-left tile on the origin, and eight areas around it: ten times the clearing in all",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: is one continuous outdoors: the areas cover the rectangle that holds them, with no tile missing",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: keeps areas small enough to edit by hand: none is much larger than the clearing",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: is ringed by trees with no gap, so nothing walks off the map",
+      "pass": true
+    },
+    {
+      "name": "world.test.ts: has no paths: every tile is grass, a tree or a rock",
+      "pass": true
+    },
+    {
+      "name": "determinism.test.ts: same seed + same commands = identical state, including physics bytes",
+      "pass": true
+    },
+    {
+      "name": "no file under packages/sim/src/core changed",
+      "pass": true,
+      "details": "16 files changed since 81ffa8b"
+    },
+    {
+      "name": "the area format (types.ts, tiles.ts) did not change",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
