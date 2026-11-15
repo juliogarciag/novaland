@@ -47,4 +47,4 @@ A ticket that changes any of these updates the template in the same PR, and runs
 - `window.__novaland`: `sim.tick`, `snapshot()` as `entities[].components` with `Player.slot` and `MoveIntent`, `localSlot()`, and online `online.status()` with `kind` and `slot`.
 - The connection screens are `#screen[data-screen]`, hidden while playing.
 - Holding D moves the local player east (`MoveIntent.x > 0`).
-- Online, a new browser context is a new player with a seat of its own.
+- Online, a new browser context is a new player with a seat of its own. Two tabs of one context share a player token (`localStorage`), so the second takes the player over from the first, which shows `data-screen="elsewhere"`.

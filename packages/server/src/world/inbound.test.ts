@@ -1,5 +1,6 @@
+import { randomBytes } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { MessageBudget, payloadLength, readMoveMessage, speaksProtocol } from './inbound';
+import { MessageBudget, payloadLength, readMoveMessage, readPlayerKey, speaksProtocol } from './inbound';
 
 describe('readMoveMessage', () => {
   it('accepts exactly { x, y, sequence } with finite numbers and a positive whole sequence', () => {
@@ -91,6 +92,42 @@ describe('MessageBudget', () => {
     expect(budget.allows(1050)).toBe(false); // half a token
     expect(budget.allows(1100)).toBe(true); // a whole one
     expect(budget.allows(500)).toBe(false); // backwards in time earns nothing
+  });
+});
+
+describe('readPlayerKey', () => {
+  it('turns a well-formed token into a key that is not the token, the same key every time', () => {
+    const token = randomBytes(32).toString('base64url');
+    const key = readPlayerKey({ protocol: 3, playerToken: token });
+    expect(key).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(key).not.toBe(token);
+    expect(readPlayerKey({ playerToken: token, anything: 'else' })).toBe(key);
+    expect(readPlayerKey({ playerToken: randomBytes(32).toString('base64url') })).not.toBe(key);
+  });
+
+  it('reads no key from options without a token of exactly the right shape', () => {
+    const token = randomBytes(32).toString('base64url');
+    const notTokens: unknown[] = [undefined, null, '', 'x', 42, true, [], {}, token.slice(1), `${token}A`, `${token.slice(1)}=`, `${token.slice(1)}/`, `${token.slice(1)} `, [token], { toString: () => token }, new String(token), 'A'.repeat(1_000_000)];
+    for (const playerToken of notTokens) expect(readPlayerKey({ playerToken }), String(playerToken).slice(0, 60)).toBeUndefined();
+    for (const options of [undefined, null, token, 7, [token], () => token]) expect(readPlayerKey(options)).toBeUndefined();
+    // Only an own or inherited `playerToken` field counts, never a field of another name.
+    expect(readPlayerKey({ token, key: token, player: { playerToken: token } })).toBeUndefined();
+  });
+
+  it('fuzzed with 20000 random options, never throws and gives a key exactly when the token is well formed', () => {
+    const random = seededRandom(55);
+    const pick = <T,>(items: readonly T[]): T => items[Math.floor(random() * items.length)] as T;
+    for (let round = 0; round < 20000; round += 1) {
+      const token = randomBytes(32).toString('base64url');
+      const playerToken = random() < 0.3 ? token : pick([token.slice(Math.floor(random() * 5) + 1), token + token, token.replace(/.$/, pick(['=', '+', '/', ' ', '\u0000', 'é'])), randomPayload(random, 2)]);
+      const options = random() < 0.9 ? { ...(randomPayload(random, 1) as object), playerToken } : randomPayload(random, 3);
+      let key: string | undefined;
+      expect(() => (key = readPlayerKey(options))).not.toThrow();
+      const wellFormed = typeof options === 'object' && options !== null && typeof (options as { playerToken?: unknown }).playerToken === 'string' && /^[A-Za-z0-9_-]{43}$/.test((options as { playerToken: string }).playerToken);
+      expect(key !== undefined).toBe(wellFormed);
+    }
+    const throwing = Object.defineProperty({}, 'playerToken', { get: () => { throw new Error('a throwing accessor'); } });
+    expect(readPlayerKey(throwing)).toBeUndefined();
   });
 });
 

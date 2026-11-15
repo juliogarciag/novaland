@@ -1,4 +1,4 @@
-# 0014 - Edge tiles: a ground texture may end with an edge drawn inside its own tiles
+# 0015 - Edge tiles: a ground texture may end with an edge drawn inside its own tiles
 
 Status: accepted. Date: 2026-11-15. Builds on [0011](0011-ground-tile-textures.md) and takes the decision it left open: "Transitions (edge tiles, autotiling) are a later decision." From ticket #57.
 

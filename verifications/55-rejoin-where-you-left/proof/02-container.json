@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "docker build exits 0",
+      "pass": true
+    },
+    {
+      "name": "with no volume the container starts as node, the server is PID 1 as node and keeps positions in memory",
+      "pass": true,
+      "details": "PID 1 is \"node packages/server/dist/index.mjs\" with uid 1000, gid 1000, groups 1000, health {\"ok\":true,\"roomId\":\"world\",\"seats\":5,\"seatsTaken\":0,\"tick\":1,\"savedPositions\":\"memory\"}"
+    },
+    {
+      "name": "a fresh Docker volume belongs to root and nobody else may write it",
+      "pass": true,
+      "details": "root:root 755"
+    },
+    {
+      "name": "started as node on that volume, the server refuses to boot and says the saved positions could not be opened",
+      "pass": true,
+      "details": "The saved positions could not be opened in /data: unable to open database file"
+    },
+    {
+      "name": "started as root on that volume, the server boots with its positions on disk",
+      "pass": true,
+      "details": "{\"ok\":true,\"roomId\":\"world\",\"seats\":5,\"seatsTaken\":0,\"tick\":1,\"savedPositions\":\"disk\"}"
+    },
+    {
+      "name": "the server is PID 1 and runs as node: uid, gid and groups are all node, none is root",
+      "pass": true,
+      "details": "PID 1 is \"node packages/server/dist/index.mjs\" with uid 1000, gid 1000, groups 1000"
+    },
+    {
+      "name": "no process running in the container is root",
+      "pass": true,
+      "details": "UID                 PID                 COMMAND | 1000                4376                node packages/server/dist/index.mjs"
+    },
+    {
+      "name": "the volume, the file the earlier root deploy left and the write-ahead log now belong to node",
+      "pass": true,
+      "details": "node:node /data | node:node /data/saved-positions.sqlite | node:node /data/saved-positions.sqlite-shm | node:node /data/saved-positions.sqlite-wal"
+    },
+    {
+      "name": "nothing else was handed over: a link in the volume was not followed (/etc/passwd and the link still belong to root), nor was another directory in it or the file inside",
+      "pass": true,
+      "details": "root:root /etc/passwd | root:root /data/other | root:root /data/other/file | root:root /data/link (link)"
+    },
+    {
+      "name": "Docker's own health check passes through the entrypoint",
+      "pass": true,
+      "details": "healthy"
+    },
+    {
+      "name": "a browser on the served page is seated and its player walks east",
+      "pass": true,
+      "details": "from (5.50, 15.50) to (13.17, 15.50)"
+    },
+    {
+      "name": "docker stop reaches the server: it says it is stopping, exits 0, and well inside the 10 seconds Docker allows",
+      "pass": true,
+      "details": "exit 0 after 0.2 s; {\"event\":\"world-room-stopping\",\"signal\":\"SIGTERM\",\"tick\":1068,\"seatsTaken\":0,\"dropped\":{\"unknownType\":0,\"oversized\":0,\"malformed\":0,\"overBudget\":0},\"idleSeatsFreed\":0}"
+    },
+    {
+      "name": "a new container on the same volume finds one saved player on disk in /data",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5957,\"roomId\":\"world\",\"seed\":\"<random>\",\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":\"/app/packages/client/dist\",\"savedPositions\":\"disk\",\"dataDirectory\":\"/data\",\"savedPlayers\":1,\"allowedOrigins\":[\"http://localhost:5957\"],\"loopbackOrigins\":false}"
+    },
+    {
+      "name": "the same browser opens the new container and its player stands where they were",
+      "pass": true,
+      "details": "left at (13.17, 15.50), back at (13.17, 15.50)"
+    },
+    {
+      "name": "the replacement also runs its server as node",
+      "pass": true,
+      "details": "PID 1 is \"node packages/server/dist/index.mjs\" with uid 1000, gid 1000, groups 1000"
+    }
+  ],
+  "report": {
+    "startedAsRoot": {
+      "health": {
+        "ok": true,
+        "roomId": "world",
+        "seats": 5,
+        "seatsTaken": 0,
+        "tick": 1,
+        "savedPositions": "disk"
+      },
+      "serverProcess": "PID 1 is \"node packages/server/dist/index.mjs\" with uid 1000, gid 1000, groups 1000",
+      "processes": "UID                 PID                 COMMAND\n1000                4376                node packages/server/dist/index.mjs",
+      "owners": "node:node /data\nnode:node /data/saved-positions.sqlite\nnode:node /data/saved-positions.sqlite-shm\nnode:node /data/saved-positions.sqlite-wal\nroot:root /etc/passwd\nroot:root /data/other\nroot:root /data/other/file\nroot:root /data/link (link)"
+    },
+    "player": {
+      "spawned": {
+        "x": 5.5,
+        "y": 15.5
+      },
+      "left": {
+        "x": 13.167,
+        "y": 15.5
+      },
+      "back": {
+        "x": 13.167,
+        "y": 15.5
+      }
+    }
+  }
+}
