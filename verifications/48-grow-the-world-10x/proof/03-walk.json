@@ -1,0 +1,1341 @@
+{
+  "wholeWorld": {
+    "bounds": {
+      "column": -45,
+      "row": -31,
+      "width": 130,
+      "height": 92
+    },
+    "terrain": {
+      "chunksDrawn": [
+        "0,0",
+        "1,0",
+        "0,1",
+        "1,1",
+        "-1,0",
+        "-2,-1",
+        "-1,-1",
+        "0,-1",
+        "1,-1",
+        "2,-1",
+        "-2,0",
+        "2,0",
+        "-2,1",
+        "-1,1",
+        "2,1"
+      ],
+      "chunksInMap": 15,
+      "groundTiles": 15360,
+      "standingImages": 7557,
+      "keepMarginTiles": 18
+    }
+  },
+  "solo": {
+    "content": {
+      "spawn": {
+        "column": 6,
+        "row": 14
+      },
+      "bounds": {
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
+      },
+      "speed": 5,
+      "radius": 0.4,
+      "chunksInMap": 15,
+      "areas": [
+        {
+          "name": "clearing",
+          "origin": {
+            "column": 0,
+            "row": 0
+          },
+          "columns": 40,
+          "rows": 30
+        },
+        {
+          "name": "old-grove",
+          "origin": {
+            "column": -45,
+            "row": -31
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "north-meadow",
+          "origin": {
+            "column": 0,
+            "row": -31
+          },
+          "columns": 40,
+          "rows": 31
+        },
+        {
+          "name": "rock-field",
+          "origin": {
+            "column": 40,
+            "row": -31
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "west-woods",
+          "origin": {
+            "column": -45,
+            "row": 0
+          },
+          "columns": 45,
+          "rows": 30
+        },
+        {
+          "name": "east-glade",
+          "origin": {
+            "column": 40,
+            "row": 0
+          },
+          "columns": 45,
+          "rows": 30
+        },
+        {
+          "name": "stone-hollow",
+          "origin": {
+            "column": -45,
+            "row": 30
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "south-glade",
+          "origin": {
+            "column": 0,
+            "row": 30
+          },
+          "columns": 40,
+          "rows": 31
+        },
+        {
+          "name": "far-clearing",
+          "origin": {
+            "column": 40,
+            "row": 30
+          },
+          "columns": 45,
+          "rows": 31
+        }
+      ]
+    },
+    "startTile": {
+      "column": 6,
+      "row": 14
+    },
+    "stops": [
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 30,
+          "row": 6
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 30,
+          "row": 6
+        },
+        "leg": {
+          "from": {
+            "column": 6,
+            "row": 14
+          },
+          "to": {
+            "column": 30,
+            "row": 6
+          },
+          "tiles": 33,
+          "metres": 32,
+          "seconds": 6.4525,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.4103123767867443
+        },
+        "firstFrame": 0,
+        "frames": 379
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 5,
+          "row": 24
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 5,
+          "row": 24
+        },
+        "leg": {
+          "from": {
+            "column": 30,
+            "row": 6
+          },
+          "to": {
+            "column": 5,
+            "row": 24
+          },
+          "tiles": 44,
+          "metres": 43,
+          "seconds": 8.708399999976159,
+          "spansOfThirtyTicks": 16,
+          "leastMetresInThirtyTicks": 2.4996254414028276
+        },
+        "firstFrame": 379,
+        "frames": 522
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 34,
+          "row": 24
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 34,
+          "row": 24
+        },
+        "leg": {
+          "from": {
+            "column": 5,
+            "row": 24
+          },
+          "to": {
+            "column": 34,
+            "row": 24
+          },
+          "tiles": 34,
+          "metres": 33,
+          "seconds": 6.621600000023842,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.499889605142753
+        },
+        "firstFrame": 901,
+        "frames": 397
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 5,
+          "row": 5
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 5,
+          "row": 5
+        },
+        "leg": {
+          "from": {
+            "column": 34,
+            "row": 24
+          },
+          "to": {
+            "column": 5,
+            "row": 5
+          },
+          "tiles": 49,
+          "metres": 48,
+          "seconds": 9.773699999988079,
+          "spansOfThirtyTicks": 18,
+          "leastMetresInThirtyTicks": 2.4998780598448205
+        },
+        "firstFrame": 1298,
+        "frames": 586
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 30,
+          "row": 12
+        },
+        "area": "clearing",
+        "picture": "03-solo-00-clearing.png",
+        "state": "arrived",
+        "tile": {
+          "column": 30,
+          "row": 12
+        },
+        "leg": {
+          "from": {
+            "column": 5,
+            "row": 5
+          },
+          "to": {
+            "column": 30,
+            "row": 12
+          },
+          "tiles": 33,
+          "metres": 32,
+          "seconds": 6.393899999976158,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.4999497435802214
+        },
+        "firstFrame": 1884,
+        "frames": 383
+      },
+      {
+        "name": "north-meadow",
+        "isControl": false,
+        "target": {
+          "column": 18,
+          "row": -17
+        },
+        "area": "north-meadow",
+        "picture": "03-solo-01-north-meadow.png",
+        "state": "arrived",
+        "tile": {
+          "column": 18,
+          "row": -17
+        },
+        "leg": {
+          "from": {
+            "column": 30,
+            "row": 12
+          },
+          "to": {
+            "column": 18,
+            "row": -17
+          },
+          "tiles": 52,
+          "metres": 51,
+          "seconds": 9.939100000023842,
+          "spansOfThirtyTicks": 18,
+          "leastMetresInThirtyTicks": 2.4999234899954814
+        },
+        "firstFrame": 2267,
+        "frames": 596
+      },
+      {
+        "name": "old-grove",
+        "isControl": false,
+        "target": {
+          "column": -30,
+          "row": -22
+        },
+        "area": "old-grove",
+        "picture": "03-solo-02-old-grove.png",
+        "state": "arrived",
+        "tile": {
+          "column": -30,
+          "row": -22
+        },
+        "leg": {
+          "from": {
+            "column": 18,
+            "row": -17
+          },
+          "to": {
+            "column": -30,
+            "row": -22
+          },
+          "tiles": 66,
+          "metres": 65,
+          "seconds": 12.60780000001192,
+          "spansOfThirtyTicks": 24,
+          "leastMetresInThirtyTicks": 2.4989035198238776
+        },
+        "firstFrame": 2863,
+        "frames": 756
+      },
+      {
+        "name": "west-woods",
+        "isControl": false,
+        "target": {
+          "column": -23,
+          "row": 15
+        },
+        "area": "west-woods",
+        "picture": "03-solo-03-west-woods.png",
+        "state": "arrived",
+        "tile": {
+          "column": -23,
+          "row": 15
+        },
+        "leg": {
+          "from": {
+            "column": -30,
+            "row": -22
+          },
+          "to": {
+            "column": -23,
+            "row": 15
+          },
+          "tiles": 77,
+          "metres": 76,
+          "seconds": 14.642100000023841,
+          "spansOfThirtyTicks": 27,
+          "leastMetresInThirtyTicks": 2.48919473390559
+        },
+        "firstFrame": 3619,
+        "frames": 878
+      },
+      {
+        "name": "stone-hollow",
+        "isControl": false,
+        "target": {
+          "column": -26,
+          "row": 45
+        },
+        "area": "stone-hollow",
+        "picture": "03-solo-04-stone-hollow.png",
+        "state": "arrived",
+        "tile": {
+          "column": -26,
+          "row": 45
+        },
+        "leg": {
+          "from": {
+            "column": -23,
+            "row": 15
+          },
+          "to": {
+            "column": -26,
+            "row": 45
+          },
+          "tiles": 42,
+          "metres": 41,
+          "seconds": 8.06369999998808,
+          "spansOfThirtyTicks": 15,
+          "leastMetresInThirtyTicks": 2.491073221614894
+        },
+        "firstFrame": 4497,
+        "frames": 483
+      },
+      {
+        "name": "south-glade",
+        "isControl": false,
+        "target": {
+          "column": 18,
+          "row": 44
+        },
+        "area": "south-glade",
+        "picture": "03-solo-05-south-glade.png",
+        "state": "arrived",
+        "tile": {
+          "column": 18,
+          "row": 44
+        },
+        "leg": {
+          "from": {
+            "column": -26,
+            "row": 45
+          },
+          "to": {
+            "column": 18,
+            "row": 44
+          },
+          "tiles": 56,
+          "metres": 55,
+          "seconds": 10.298899999976157,
+          "spansOfThirtyTicks": 19,
+          "leastMetresInThirtyTicks": 2.489239478979906
+        },
+        "firstFrame": 4980,
+        "frames": 616
+      },
+      {
+        "name": "far-clearing",
+        "isControl": false,
+        "target": {
+          "column": 64,
+          "row": 46
+        },
+        "area": "far-clearing",
+        "picture": "03-solo-06-far-clearing.png",
+        "state": "arrived",
+        "tile": {
+          "column": 64,
+          "row": 46
+        },
+        "leg": {
+          "from": {
+            "column": 18,
+            "row": 44
+          },
+          "to": {
+            "column": 64,
+            "row": 46
+          },
+          "tiles": 65,
+          "metres": 64,
+          "seconds": 12.179899999976158,
+          "spansOfThirtyTicks": 23,
+          "leastMetresInThirtyTicks": 2.4982067676373965
+        },
+        "firstFrame": 5596,
+        "frames": 730
+      },
+      {
+        "name": "far-corner",
+        "isControl": false,
+        "target": {
+          "column": 80,
+          "row": 57
+        },
+        "area": "far-clearing",
+        "picture": "03-solo-07-far-corner.png",
+        "state": "arrived",
+        "tile": {
+          "column": 80,
+          "row": 57
+        },
+        "leg": {
+          "from": {
+            "column": 64,
+            "row": 46
+          },
+          "to": {
+            "column": 80,
+            "row": 57
+          },
+          "tiles": 32,
+          "metres": 31,
+          "seconds": 6.045100000023842,
+          "spansOfThirtyTicks": 11,
+          "leastMetresInThirtyTicks": 2.4997519165286244
+        },
+        "firstFrame": 6326,
+        "frames": 362
+      },
+      {
+        "name": "east-glade",
+        "isControl": false,
+        "target": {
+          "column": 61,
+          "row": 13
+        },
+        "area": "east-glade",
+        "picture": "03-solo-08-east-glade.png",
+        "state": "arrived",
+        "tile": {
+          "column": 61,
+          "row": 13
+        },
+        "leg": {
+          "from": {
+            "column": 80,
+            "row": 57
+          },
+          "to": {
+            "column": 61,
+            "row": 13
+          },
+          "tiles": 66,
+          "metres": 65,
+          "seconds": 12.546099999964238,
+          "spansOfThirtyTicks": 23,
+          "leastMetresInThirtyTicks": 2.499861177700821
+        },
+        "firstFrame": 6688,
+        "frames": 751
+      },
+      {
+        "name": "rock-field",
+        "isControl": false,
+        "target": {
+          "column": 62,
+          "row": -16
+        },
+        "area": "rock-field",
+        "picture": "03-solo-09-rock-field.png",
+        "state": "arrived",
+        "tile": {
+          "column": 62,
+          "row": -16
+        },
+        "leg": {
+          "from": {
+            "column": 61,
+            "row": 13
+          },
+          "to": {
+            "column": 62,
+            "row": -16
+          },
+          "tiles": 65,
+          "metres": 64,
+          "seconds": 12.148899999976159,
+          "spansOfThirtyTicks": 23,
+          "leastMetresInThirtyTicks": 2.4998651032618047
+        },
+        "firstFrame": 7439,
+        "frames": 728
+      }
+    ],
+    "routeMetres": 512,
+    "seconds": 98.47159999996424,
+    "machine": {
+      "loadAverage": 12.71142578125,
+      "cores": 10
+    },
+    "frames": {
+      "inClearing": {
+        "count": 2267,
+        "median": 16.69999998807907,
+        "percentile99": 19.30000001192093,
+        "longest": 117.19999998807907,
+        "framesPerSecond": 59.832353282654346,
+        "game": {
+          "median": 1.2000000476837158,
+          "percentile99": 2,
+          "longest": 2.300000011920929
+        }
+      },
+      "inNewLand": {
+        "count": 5900,
+        "median": 16.69999998807907,
+        "percentile99": 19.19999998807907,
+        "longest": 33.09999996423721,
+        "framesPerSecond": 59.99208917870534,
+        "game": {
+          "median": 0.699999988079071,
+          "percentile99": 1.100000023841858,
+          "longest": 1.300000011920929
+        }
+      },
+      "chunkChangeFrames": {
+        "count": 16,
+        "median": 18.69999998807907,
+        "percentile99": 21.80000001192093,
+        "longest": 21.80000001192093,
+        "framesPerSecond": 53.70929842658788,
+        "game": {
+          "median": 0.800000011920929,
+          "percentile99": 1.199999988079071,
+          "longest": 1.199999988079071
+        }
+      },
+      "framesRightAfterChunkChange": 64,
+      "lateRightAfterChunkChange": 0,
+      "lateFrames": [
+        {
+          "index": 281,
+          "land": "clearing",
+          "leg": "clearing",
+          "ms": 117.19999998807907,
+          "gameMs": 1.5,
+          "messageHandlerMs": 0,
+          "walkerMs": 5.099999964237213,
+          "framesSinceChunkChange": 7,
+          "tile": {
+            "column": 24,
+            "row": 8
+          }
+        }
+      ],
+      "walkerMsPerFrame": {
+        "clearing": 0.869607410585507,
+        "newLand": 0.9508644066422672
+      },
+      "messageHandlerMsPerFrame": {
+        "clearing": 0,
+        "newLand": 0
+      }
+    },
+    "mostChunksDrawn": 9,
+    "framesMissingAChunk": 0
+  },
+  "online": {
+    "content": {
+      "spawn": {
+        "column": 6,
+        "row": 14
+      },
+      "bounds": {
+        "column": -45,
+        "row": -31,
+        "width": 130,
+        "height": 92
+      },
+      "speed": 5,
+      "radius": 0.4,
+      "chunksInMap": 15,
+      "areas": [
+        {
+          "name": "clearing",
+          "origin": {
+            "column": 0,
+            "row": 0
+          },
+          "columns": 40,
+          "rows": 30
+        },
+        {
+          "name": "old-grove",
+          "origin": {
+            "column": -45,
+            "row": -31
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "north-meadow",
+          "origin": {
+            "column": 0,
+            "row": -31
+          },
+          "columns": 40,
+          "rows": 31
+        },
+        {
+          "name": "rock-field",
+          "origin": {
+            "column": 40,
+            "row": -31
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "west-woods",
+          "origin": {
+            "column": -45,
+            "row": 0
+          },
+          "columns": 45,
+          "rows": 30
+        },
+        {
+          "name": "east-glade",
+          "origin": {
+            "column": 40,
+            "row": 0
+          },
+          "columns": 45,
+          "rows": 30
+        },
+        {
+          "name": "stone-hollow",
+          "origin": {
+            "column": -45,
+            "row": 30
+          },
+          "columns": 45,
+          "rows": 31
+        },
+        {
+          "name": "south-glade",
+          "origin": {
+            "column": 0,
+            "row": 30
+          },
+          "columns": 40,
+          "rows": 31
+        },
+        {
+          "name": "far-clearing",
+          "origin": {
+            "column": 40,
+            "row": 30
+          },
+          "columns": 45,
+          "rows": 31
+        }
+      ]
+    },
+    "startTile": {
+      "column": 6,
+      "row": 14
+    },
+    "stops": [
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 30,
+          "row": 6
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 30,
+          "row": 6
+        },
+        "leg": {
+          "from": {
+            "column": 6,
+            "row": 14
+          },
+          "to": {
+            "column": 30,
+            "row": 6
+          },
+          "tiles": 33,
+          "metres": 32,
+          "seconds": 6.327199999988079,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.396479410964137
+        },
+        "firstFrame": 0,
+        "frames": 379
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 5,
+          "row": 24
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 5,
+          "row": 24
+        },
+        "leg": {
+          "from": {
+            "column": 30,
+            "row": 6
+          },
+          "to": {
+            "column": 5,
+            "row": 24
+          },
+          "tiles": 44,
+          "metres": 43,
+          "seconds": 8.612599999964237,
+          "spansOfThirtyTicks": 16,
+          "leastMetresInThirtyTicks": 2.400152043461831
+        },
+        "firstFrame": 379,
+        "frames": 516
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 34,
+          "row": 24
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 34,
+          "row": 24
+        },
+        "leg": {
+          "from": {
+            "column": 5,
+            "row": 24
+          },
+          "to": {
+            "column": 34,
+            "row": 24
+          },
+          "tiles": 34,
+          "metres": 33,
+          "seconds": 6.628400000035763,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.4338095584801462
+        },
+        "firstFrame": 895,
+        "frames": 397
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 5,
+          "row": 5
+        },
+        "area": "clearing",
+        "state": "arrived",
+        "tile": {
+          "column": 5,
+          "row": 5
+        },
+        "leg": {
+          "from": {
+            "column": 34,
+            "row": 24
+          },
+          "to": {
+            "column": 5,
+            "row": 5
+          },
+          "tiles": 49,
+          "metres": 48,
+          "seconds": 9.6925,
+          "spansOfThirtyTicks": 18,
+          "leastMetresInThirtyTicks": 2.424826165038072
+        },
+        "firstFrame": 1292,
+        "frames": 581
+      },
+      {
+        "name": "clearing",
+        "isControl": true,
+        "target": {
+          "column": 30,
+          "row": 12
+        },
+        "area": "clearing",
+        "picture": "03-online-00-clearing.png",
+        "state": "arrived",
+        "tile": {
+          "column": 30,
+          "row": 12
+        },
+        "leg": {
+          "from": {
+            "column": 5,
+            "row": 5
+          },
+          "to": {
+            "column": 30,
+            "row": 12
+          },
+          "tiles": 33,
+          "metres": 32,
+          "seconds": 6.6238999999761585,
+          "spansOfThirtyTicks": 12,
+          "leastMetresInThirtyTicks": 2.3932329157522085
+        },
+        "firstFrame": 1873,
+        "frames": 397
+      },
+      {
+        "name": "east-glade",
+        "isControl": false,
+        "target": {
+          "column": 61,
+          "row": 13
+        },
+        "area": "east-glade",
+        "picture": "03-online-01-east-glade.png",
+        "state": "arrived",
+        "tile": {
+          "column": 61,
+          "row": 13
+        },
+        "leg": {
+          "from": {
+            "column": 30,
+            "row": 12
+          },
+          "to": {
+            "column": 61,
+            "row": 13
+          },
+          "tiles": 53,
+          "metres": 52,
+          "seconds": 10.492100000023841,
+          "spansOfThirtyTicks": 20,
+          "leastMetresInThirtyTicks": 2.209151734422194
+        },
+        "firstFrame": 2270,
+        "frames": 629
+      },
+      {
+        "name": "far-clearing",
+        "isControl": false,
+        "target": {
+          "column": 64,
+          "row": 46
+        },
+        "area": "far-clearing",
+        "picture": "03-online-02-far-clearing.png",
+        "state": "arrived",
+        "tile": {
+          "column": 64,
+          "row": 46
+        },
+        "leg": {
+          "from": {
+            "column": 61,
+            "row": 13
+          },
+          "to": {
+            "column": 64,
+            "row": 46
+          },
+          "tiles": 39,
+          "metres": 38,
+          "seconds": 7.285300000011921,
+          "spansOfThirtyTicks": 14,
+          "leastMetresInThirtyTicks": 2.4294629902715856
+        },
+        "firstFrame": 2899,
+        "frames": 436
+      },
+      {
+        "name": "far-corner",
+        "isControl": false,
+        "target": {
+          "column": 80,
+          "row": 57
+        },
+        "area": "far-clearing",
+        "picture": "03-online-03-far-corner.png",
+        "state": "arrived",
+        "tile": {
+          "column": 80,
+          "row": 57
+        },
+        "leg": {
+          "from": {
+            "column": 64,
+            "row": 46
+          },
+          "to": {
+            "column": 80,
+            "row": 57
+          },
+          "tiles": 32,
+          "metres": 31,
+          "seconds": 6.2345,
+          "spansOfThirtyTicks": 11,
+          "leastMetresInThirtyTicks": 2.378444851459149
+        },
+        "firstFrame": 3335,
+        "frames": 367
+      }
+    ],
+    "routeMetres": 121,
+    "seconds": 24.011900000035762,
+    "machine": {
+      "loadAverage": 10.08447265625,
+      "cores": 10
+    },
+    "frames": {
+      "inClearing": {
+        "count": 2270,
+        "median": 16.69999998807907,
+        "percentile99": 18.400000035762787,
+        "longest": 29.30000001192093,
+        "framesPerSecond": 60.014964083404315,
+        "game": {
+          "median": 1.2000000476837158,
+          "percentile99": 2,
+          "longest": 2.200000047683716
+        }
+      },
+      "inNewLand": {
+        "count": 1432,
+        "median": 16.69999998807907,
+        "percentile99": 18.5,
+        "longest": 69.60000002384186,
+        "framesPerSecond": 59.754306316048925,
+        "game": {
+          "median": 0.9000000357627869,
+          "percentile99": 1.600000023841858,
+          "longest": 1.899999976158142
+        }
+      },
+      "chunkChangeFrames": {
+        "count": 5,
+        "median": 19.400000035762787,
+        "percentile99": 22.30000001192093,
+        "longest": 22.30000001192093,
+        "framesPerSecond": 50.607287412755916,
+        "game": {
+          "median": 1.199999988079071,
+          "percentile99": 1.7000000476837158,
+          "longest": 1.7000000476837158
+        }
+      },
+      "framesRightAfterChunkChange": 20,
+      "lateRightAfterChunkChange": 0,
+      "lateFrames": [
+        {
+          "index": 3558,
+          "land": "new land",
+          "leg": "far-corner",
+          "ms": 69.60000002384186,
+          "gameMs": 1.0000000596046448,
+          "messageHandlerMs": 0.10000002384185791,
+          "walkerMs": 0,
+          "framesSinceChunkChange": 542,
+          "tile": {
+            "column": 75,
+            "row": 49
+          }
+        },
+        {
+          "index": 3559,
+          "land": "new land",
+          "leg": "far-corner",
+          "ms": 63.69999998807907,
+          "gameMs": 1.699999988079071,
+          "messageHandlerMs": 0.699999988079071,
+          "walkerMs": 0,
+          "framesSinceChunkChange": 543,
+          "tile": {
+            "column": 75,
+            "row": 50
+          }
+        }
+      ],
+      "walkerMsPerFrame": {
+        "clearing": 0.0088986783563303,
+        "newLand": 0.008798882198733324
+      },
+      "messageHandlerMsPerFrame": {
+        "clearing": 0.08356828138166587,
+        "newLand": 0.07325418992748474
+      }
+    },
+    "mostChunksDrawn": 9,
+    "framesMissingAChunk": 0,
+    "connection": {
+      "status": "online",
+      "malformedUpdates": 0,
+      "prediction": {
+        "predicting": true,
+        "unacknowledgedMoves": 0,
+        "ticksAhead": 2,
+        "reconciliations": 1276,
+        "correctionMetres": 0,
+        "largestCorrectionMetres": 0.24021233765876848
+      },
+      "drawnAt": {
+        "x": 80.51036834716797,
+        "y": 57.24497985839844
+      },
+      "serverHasPlayerAt": {
+        "x": 80.51036834716797,
+        "y": 57.24497985839844
+      },
+      "entities": 1
+    }
+  },
+  "results": [
+    {
+      "name": "the dev server, the room server and the online client are up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the whole world fits one picture of 130x92 tiles, every chunk drawn",
+      "pass": true,
+      "details": "15 of 15 chunks, 7557 trees and rocks"
+    },
+    {
+      "name": "solo: the player appears on the spawn tile (6, 14), where it always was",
+      "pass": true,
+      "details": "{\"column\":6,\"row\":14}"
+    },
+    {
+      "name": "solo: walks to the clearing at tile (30, 6), in the area clearing",
+      "pass": true,
+      "details": "32 m of route in 6.5 s"
+    },
+    {
+      "name": "solo: walks to the clearing at tile (5, 24), in the area clearing",
+      "pass": true,
+      "details": "43 m of route in 8.7 s"
+    },
+    {
+      "name": "solo: walks to the clearing at tile (34, 24), in the area clearing",
+      "pass": true,
+      "details": "33 m of route in 6.6 s"
+    },
+    {
+      "name": "solo: walks to the clearing at tile (5, 5), in the area clearing",
+      "pass": true,
+      "details": "48 m of route in 9.8 s"
+    },
+    {
+      "name": "solo: walks to the clearing at tile (30, 12), in the area clearing",
+      "pass": true,
+      "details": "32 m of route in 6.4 s"
+    },
+    {
+      "name": "solo: walks to the north-meadow at tile (18, -17), in the area north-meadow",
+      "pass": true,
+      "details": "51 m of route in 9.9 s"
+    },
+    {
+      "name": "solo: walks to the old-grove at tile (-30, -22), in the area old-grove",
+      "pass": true,
+      "details": "65 m of route in 12.6 s"
+    },
+    {
+      "name": "solo: walks to the west-woods at tile (-23, 15), in the area west-woods",
+      "pass": true,
+      "details": "76 m of route in 14.6 s"
+    },
+    {
+      "name": "solo: walks to the stone-hollow at tile (-26, 45), in the area stone-hollow",
+      "pass": true,
+      "details": "41 m of route in 8.1 s"
+    },
+    {
+      "name": "solo: walks to the south-glade at tile (18, 44), in the area south-glade",
+      "pass": true,
+      "details": "55 m of route in 10.3 s"
+    },
+    {
+      "name": "solo: walks to the far-clearing at tile (64, 46), in the area far-clearing",
+      "pass": true,
+      "details": "64 m of route in 12.2 s"
+    },
+    {
+      "name": "solo: walks to the far-corner at tile (80, 57), in the area far-clearing",
+      "pass": true,
+      "details": "31 m of route in 6.0 s"
+    },
+    {
+      "name": "solo: walks to the east-glade at tile (61, 13), in the area east-glade",
+      "pass": true,
+      "details": "65 m of route in 12.5 s"
+    },
+    {
+      "name": "solo: walks to the rock-field at tile (62, -16), in the area rock-field",
+      "pass": true,
+      "details": "64 m of route in 12.1 s"
+    },
+    {
+      "name": "solo: the walk reaches the far edge of the world, the corner furthest from the spawn",
+      "pass": true,
+      "details": "tile (80, 57): 4 tiles from the east edge, 3 from the south edge, 86 tiles from the spawn in a straight line"
+    },
+    {
+      "name": "solo: the tour stood in every area of the world",
+      "pass": true,
+      "details": "clearing, north-meadow, old-grove, west-woods, stone-hollow, south-glade, far-clearing, east-glade, rock-field"
+    },
+    {
+      "name": "solo: in every thirty ticks of the walk through the new land the player made at least 1.875 m of way (walking speed is 5 m/s)",
+      "pass": true,
+      "details": "183 spans of thirty ticks over 512 m of route in 98.5 s: the least way made was 2.49 m; in the clearing 2.41 m"
+    },
+    {
+      "name": "solo: the game never took 8 ms over a frame of the walk (update, render)",
+      "pass": true,
+      "details": "5900 frames in the new land: median 0.70 ms, 99th percentile 1.10 ms, longest 1.30 ms"
+    },
+    {
+      "name": "solo: the game's work per frame in the new land is no more than in the old clearing (by under half a millisecond)",
+      "pass": true,
+      "details": "2267 frames in the clearing: median 1.20 ms, 99th percentile 2.00 ms, longest 2.30 ms"
+    },
+    {
+      "name": "solo: building or dropping chunks cost the game no more than any other frame",
+      "pass": true,
+      "details": "16 such frames: median 0.80 ms, 99th percentile 1.20 ms, longest 1.20 ms"
+    },
+    {
+      "name": "solo: no frame that came 50 ms late had 8 ms of game work in it",
+      "pass": true,
+      "details": "0 late frames in the new land, the most game work in one 0.00 ms"
+    },
+    {
+      "name": "solo: every chunk the camera showed was drawn in every frame, and never many at once",
+      "pass": true,
+      "details": "at most 9 of 15 chunks drawn at once"
+    },
+    {
+      "name": "online: the player appears on the spawn tile (6, 14) or beside it, where it always was",
+      "pass": true,
+      "details": "{\"column\":6,\"row\":14}"
+    },
+    {
+      "name": "online: walks to the clearing at tile (30, 6), in the area clearing",
+      "pass": true,
+      "details": "32 m of route in 6.3 s"
+    },
+    {
+      "name": "online: walks to the clearing at tile (5, 24), in the area clearing",
+      "pass": true,
+      "details": "43 m of route in 8.6 s"
+    },
+    {
+      "name": "online: walks to the clearing at tile (34, 24), in the area clearing",
+      "pass": true,
+      "details": "33 m of route in 6.6 s"
+    },
+    {
+      "name": "online: walks to the clearing at tile (5, 5), in the area clearing",
+      "pass": true,
+      "details": "48 m of route in 9.7 s"
+    },
+    {
+      "name": "online: walks to the clearing at tile (30, 12), in the area clearing",
+      "pass": true,
+      "details": "32 m of route in 6.6 s"
+    },
+    {
+      "name": "online: walks to the east-glade at tile (61, 13), in the area east-glade",
+      "pass": true,
+      "details": "52 m of route in 10.5 s"
+    },
+    {
+      "name": "online: walks to the far-clearing at tile (64, 46), in the area far-clearing",
+      "pass": true,
+      "details": "38 m of route in 7.3 s"
+    },
+    {
+      "name": "online: walks to the far-corner at tile (80, 57), in the area far-clearing",
+      "pass": true,
+      "details": "31 m of route in 6.2 s"
+    },
+    {
+      "name": "online: the walk reaches the far edge of the world, the corner furthest from the spawn",
+      "pass": true,
+      "details": "tile (80, 57): 4 tiles from the east edge, 3 from the south edge, 86 tiles from the spawn in a straight line"
+    },
+    {
+      "name": "online: in every thirty ticks of the walk through the new land the player made at least 1.875 m of way (walking speed is 5 m/s)",
+      "pass": true,
+      "details": "45 spans of thirty ticks over 121 m of route in 24.0 s: the least way made was 2.21 m; in the clearing 2.39 m"
+    },
+    {
+      "name": "online: the game never took 8 ms over a frame of the walk (update, render, and applying server states)",
+      "pass": true,
+      "details": "1432 frames in the new land: median 0.90 ms, 99th percentile 1.60 ms, longest 1.90 ms"
+    },
+    {
+      "name": "online: the game's work per frame in the new land is no more than in the old clearing (by under half a millisecond)",
+      "pass": true,
+      "details": "2270 frames in the clearing: median 1.20 ms, 99th percentile 2.00 ms, longest 2.20 ms"
+    },
+    {
+      "name": "online: building or dropping chunks cost the game no more than any other frame",
+      "pass": true,
+      "details": "5 such frames: median 1.20 ms, 99th percentile 1.70 ms, longest 1.70 ms"
+    },
+    {
+      "name": "online: no frame that came 50 ms late had 8 ms of game work in it",
+      "pass": true,
+      "details": "2 late frames in the new land, the most game work in one 1.70 ms"
+    },
+    {
+      "name": "online: every chunk the camera showed was drawn in every frame, and never many at once",
+      "pass": true,
+      "details": "at most 9 of 15 chunks drawn at once"
+    },
+    {
+      "name": "online: still seated at the far corner, drawn where the server has the player, and the replica holds the player only",
+      "pass": true,
+      "details": "status online, 0.0000 m apart, 1 entity"
+    },
+    {
+      "name": "online: the page predicted the player on the server's ground the whole way: no correction beyond six ticks of walking (0.5 m)",
+      "pass": true,
+      "details": "{\"predicting\":true,\"unacknowledgedMoves\":0,\"ticksAhead\":2,\"reconciliations\":1276,\"correctionMetres\":0,\"largestCorrectionMetres\":0.24021233765876848}"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+PASS  the measurement ran
+
+                                        world before                  world now                     
+tiles                                   1200 (40x30)                  11960 (130x92)                
+chunks                                  2                             15                            
+entities in the sim                     5                             5                             
+entities in world state                 5                             5                             
+full state on join or resync, bytes     1456                          1458                          
+delta, bytes per send                   458                           458                           
+build + diff world state, ms per send   0.0115 (0.0110 to 0.0308)     0.0127 (0.0116 to 0.0176)     
+one tick of the sim, ms                 0.0228 (0.0219 to 0.0550)     0.0988 (0.0934 to 0.1266)     
+one tick with nobody in the world, ms   0.0104 (0.0097 to 0.0191)     0.0801 (0.0789 to 0.1060)     
+physics world in a snapshot, bytes      12792                         141726                        
+creating the sim, ms                    0.2132 (0.1916 to 0.4499)     1.2961 (1.1286 to 2.1310)     
+snapshot + hash, ms                     0.2954 (0.2600 to 0.5343)     2.7237 (2.2385 to 3.7833)     
+(times: median of 9 rounds, lowest to highest in brackets)
+
+PASS  the world now is about ten times the world before  (9.97 times)
+PASS  world state holds the five players and nothing else, on both
+PASS  full-state size is the same: the five players, to within the digits of their positions  (1456 and 1458 bytes)
+PASS  the delta per send is the same size  (458 and 458 bytes)
+PASS  per-send cost is the same within noise  (0.0115 (0.0110 to 0.0308) ms before, 0.0127 (0.0116 to 0.0176) ms now: 1.11 times)
+FAIL  tick cost is the same within noise  (0.0228 (0.0219 to 0.0550) ms before, 0.0988 (0.0934 to 0.1266) ms now: 4.3 times)
+PASS  the extra tick cost is there with nobody in the world: it is the terrain in the physics step, not the players  (0.0104 (0.0097 to 0.0191) ms before, 0.0801 (0.0789 to 0.1060) ms now; the physics world is 11.1 times the bytes)
+PASS  one tick still takes under 1% of the time a tick has  (the slowest round 0.1266 ms of 16.67 ms: 0.76%; the median 0.59%)
+
+1 OF 9 CHECKS FAILED

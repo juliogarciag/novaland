@@ -1,0 +1,19 @@
+{
+  "what": "The walker of this folder (walker.mjs, installWalker) run by hand in the Claude desktop app's browser pane against PORT=5148 pnpm dev (solo), on 2026-11-15, after the last commit that changed the world's areas. Not produced by run.sh: headless Chromium has no graphics card, this browser does.",
+  "graphics": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version)",
+  "tour": "spawn, three stops inside the clearing, east glade (62, 14), far clearing (64, 46), far corner (80, 57), south glade (18, 44), stone hollow (-26, 45): 8 legs, all arrived",
+  "frames": 8372,
+  "msBetweenFrames": {
+    "median": 8.3,
+    "percentile99": 13.1,
+    "longest": 20.8
+  },
+  "framesThatCame50msLate": 0,
+  "chunkChanges": 15,
+  "framesWithin3FramesOfAChunkChange": 60,
+  "ofThoseLate": 0,
+  "msOfThoseFrames": "12 5 9 8 9 8 7 9 12 5 9 8 13 4 10 8 11 5 9 8 21 1 4 7 9 9 8 8 14 2 11 6 9 7 9 7 15 2 7 8 9 9 7 8 13 5 12 4 10 11 5 8 12 5 9 8 11 7 12 5",
+  "mostGameWorkInAFrameMs": 5.2,
+  "mostChunksDrawnAtOnce": 9,
+  "reading": "The screen refreshes every 8.3 ms. The frame in which a chunk is built or dropped comes after 11 to 21 ms, so at most one refresh is skipped; no frame of the walk took longer than 20.8 ms."
+}

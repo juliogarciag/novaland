@@ -3,6 +3,7 @@ import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import { __testing__ as physicsTesting } from '../../core/physics';
 import { getRenderables } from '../../core/view';
+import { playerDefs } from '../../features/player/defs';
 import { findPlayerEntity } from '../../features/player/queries';
 import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from '../../features/terrain/defs';
 import { DefId } from '../defs';
@@ -222,9 +223,29 @@ describe('a world that grows', () => {
 });
 
 describe('the world', () => {
-  it('is one area today, the clearing, with its top-left tile on the origin', () => {
-    expect(worldMap.areas.map((mounted) => mounted.name)).toEqual(['clearing']);
-    expect(readMapTiles(worldMap).bounds).toEqual({ column: 0, row: 0, width: 40, height: 30 });
+  it('is the clearing, with its top-left tile on the origin, and areas on every side of it: ten times the clearing in all', () => {
+    const [clearing, ...around] = worldMap.areas;
+    expect(clearing).toMatchObject({ name: 'clearing', origin: { column: 0, row: 0 } });
+    expect([clearing?.rows.length, clearing?.rows[0]?.length]).toEqual([30, 40]);
+    // Which areas, and how far they reach, is for whoever adds the next one to change: only what must never change is pinned.
+    expect(around.length).toBeGreaterThanOrEqual(8);
+    const { bounds } = readMapTiles(worldMap);
+    expect((bounds.width * bounds.height) / (40 * 30)).toBeGreaterThan(9.5);
+    // The clearing is inside the land, not on its edge: there is ground on every side of it.
+    expect(bounds.column).toBeLessThan(0);
+    expect(bounds.row).toBeLessThan(0);
+    expect(bounds.column + bounds.width).toBeGreaterThan(40);
+    expect(bounds.row + bounds.height).toBeGreaterThan(30);
+    expect(worldMap.spawn).toEqual({ column: 6, row: 14 });
+  });
+
+  it('is one continuous outdoors: the areas cover the rectangle that holds them, with no tile missing', () => {
+    const tiles = readMapTiles(worldMap);
+    expect(tilesIn(tiles.bounds).filter((tile) => tileDefIdAt(tiles, tile) === undefined)).toEqual([]);
+  });
+
+  it('keeps areas small enough to edit by hand: none is much larger than the clearing', () => {
+    for (const mounted of worldMap.areas) expect(mounted.rows.length * (mounted.rows[0]?.length ?? 0), mounted.name).toBeLessThanOrEqual(1500);
   });
 
   it('has no paths: every tile is grass, a tree or a rock', () => {
@@ -240,11 +261,25 @@ describe('the world', () => {
     expect(new Set(edgeTiles.map((tile) => tileDefIdAt(tiles, tile)))).toEqual(new Set([TerrainDefId.Tree]));
   });
 
-  it('spawns on grass, with every other grass tile within reach', () => {
+  it('spawns on grass, with every other walkable tile of every area within reach on foot', () => {
     const tiles = readMapTiles(worldMap);
     expect(tileDefIdAt(tiles, worldMap.spawn)).toBe(TerrainDefId.Grass);
-    const walkableTiles = tilesIn(tiles.bounds).filter((tile) => isWalkable(tile)).length;
-    expect(walkableTilesReachableFrom(worldMap.spawn)).toHaveLength(walkableTiles);
+    const reached = new Set(walkableTilesReachableFrom(worldMap.spawn).map((tile) => `${tile.column},${tile.row}`));
+    const sealedOff = tilesIn(tiles.bounds).filter((tile) => isWalkable(tile) && !reached.has(`${tile.column},${tile.row}`));
+    expect(sealedOff).toEqual([]);
+    // Not a world of trees with a little grass: more ground to walk on than the whole clearing has tiles, three times over.
+    expect(reached.size).toBeGreaterThan(3 * 40 * 30);
+    // Every area has ground to walk on, and so is reached: none is a block of trees. A tenth of an area is the least any has.
+    for (const mounted of worldMap.areas) {
+      const { origin, rows } = mounted;
+      const reachedInArea = [...reached].map(tileFromKey).filter((tile) => tile.column >= origin.column && tile.column < origin.column + (rows[0]?.length ?? 0) && tile.row >= origin.row && tile.row < origin.row + rows.length);
+      expect(reachedInArea.length, mounted.name).toBeGreaterThan((rows.length * (rows[0]?.length ?? 0)) / 10);
+    }
+  });
+
+  it('counts reach in whole tiles a player fits through: every avatar is narrower than one tile', () => {
+    // Reach above steps up, down, left and right, never diagonally, so a gap it crosses is at least a tile wide.
+    expect(2 * Math.max(...playerDefs.map((def) => def.radius ?? Number.POSITIVE_INFINITY))).toBeLessThan(TILE_SIZE);
   });
 });
 

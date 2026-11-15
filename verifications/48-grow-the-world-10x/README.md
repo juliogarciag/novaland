@@ -1,0 +1,45 @@
+# Verifications for #48 - Grow the world 10x
+
+Ticket: https://github.com/juliogarciag/novaland/issues/48. Stacked on #47 (world as chunks, [ADR 0013](../../docs/decisions/0013-world-as-chunks.md)).
+
+The ticket's user is a player: the world they spawn into is ten times bigger, all of it can be walked to, and walking across it feels like walking across the old clearing did. So the proof is a test that every walkable tile is within reach, a measurement of what the bigger world costs next to the old one, and a walk in a real browser from the spawn through every area to the far corner, solo and online.
+
+Run everything (from anywhere; installs Playwright on first run):
+
+```bash
+bash verifications/48-grow-the-world-10x/run.sh
+```
+
+Each script prints `PASS`/`FAIL` lines, exits non-zero on failure, and writes its proof into `proof/`. **One check fails, on purpose: tick cost** (see "What is not met"). So `run.sh` ends with "SOME VERIFICATIONS FAILED"; every other check passes.
+
+| # | Verification | What it proves | Proof |
+|---|---|---|---|
+| 01 | `01-check.mjs` | `pnpm install`, `typecheck`, `lint`, `build` and `test` pass, and the headless tests the ticket asks for pass by name: **every walkable tile of every area is reached from the spawn** stepping up, down, left and right (and every avatar is narrower than a tile, so a way a tile wide is a way a player fits through); the areas cover their rectangle with no hole; the world is ten times the clearing, with the clearing at the origin, ground on every side of it and the spawn on (6, 14) as before; trees close the outer edge; there is still no dirt. Nothing under `packages/sim/src/core` changed, nor the area format | `proof/01-check.txt`, `proof/01-check.json`, `proof/01-tests.json`, `proof/01-check-output.txt` |
+| 02 | `02-measure.mjs` (runs `measure.mts`) | Five players walking on the 40x30 world from before this ticket (`baseline/world-before.json`) and on the world now, measured in turns in one process, nine rounds each. **Full-state size** and delta size: the same (the five players). **Per-send cost**: the same within noise. **Tick cost: not the same**, about four times, and the same difference is there with nobody in the world | `proof/02-measure.txt`, `proof/02-measure.json` |
+| 03 | `03-walk.mjs` (with `walker.mjs`) | In Chromium, solo and online against the real room server, with `player/move` commands only. A picture of the whole world. A control walk inside the old clearing, then: **solo, a walk through all nine areas**, the far corner included, with a screenshot standing in each; **online, a walk to the far corner** (86 tiles from the spawn in a straight line), still seated there and drawn where the server has the player. No hitch, as far as the game goes: the player made way in every thirty ticks of every leg, every chunk the camera showed was reported drawn in every frame, and the game's own work per frame (update, render, and online applying server states and reconciling the prediction) stayed a millisecond or two, no more than in the old clearing, the frames that built or dropped chunks included | `proof/03-walk.txt`, `proof/03-walk.json`, `proof/03-whole-world.png`, `proof/03-solo-*.png`, `proof/03-online-*.png`, and by hand `proof/04-real-graphics-walk.json` |
+
+## What is not met: tick cost
+
+The ticket asks for tick cost "the same within noise" as the 40x30 world. It is about four times higher: 0.023 ms a tick before, 0.099 ms now, 4.3 times (medians of nine rounds; `proof/02-measure.json` has them all). `02-measure.mjs` keeps that check as the ticket words it, so it fails.
+
+Why: the physics step costs time for the terrain in the world, whether or not anything moves near it. The script measures a sim with no player at all on both maps and finds the same difference there (0.010 ms against 0.080 ms; the physics world in a snapshot is eleven times the bytes). #47's own measurement shows the same slope on its 400x300 map. That is how the sim's core steps physics; this ticket is content only and may not change it, and no layout of trees ten times the size brings the terrain back to what 40x30 tiles held.
+
+What it means in play: a tick has 16.7 ms, and this is 0.6% of it, 0.8% in the slowest round; "one tick still takes under 1% of the time a tick has" passes. The cost is real for worlds much bigger than this one, and is ticket #58.
+
+Two more numbers grew with the map, neither named by the ticket and neither paid per tick or per send: creating a sim (0.21 ms to 1.30 ms) and taking and hashing a snapshot (0.30 ms to 2.72 ms), because the snapshot holds the physics world. ADR 0013 expected both.
+
+## What "no hitch" rests on, and what it does not
+
+- **What is asserted is the game's own work.** Each frame of the walk is timed from the scene's update through Phaser's render call, plus every WebSocket message handler that ran since the frame before (the walker wraps them before the page loads). That is where a bigger world could cost a frame, and it is a millisecond or two per frame in the new land, never 8 ms, and no more than in the control walk inside the clearing.
+- **How often frames reached the screen late is reported, not asserted.** The script prints, per mode, how many frames came 50 ms or more after the one before, in the clearing and in the new land, how many of those fell within three frames of a chunk being built or dropped, and the machine's load average; every late frame is in `proof/03-walk.json` (`lateFrames`: index, leg, tile, game work, frames since the last chunk change). It is not asserted because in headless Chromium, which renders in software, these numbers follow whatever else the machine is doing from minute to minute. Runs of this script on this machine gave, with a load average near 9, one late frame in 5,922 solo and none online, none of them after a chunk change; with a load average of 17 to 23 (a game was running on it), anything from 0.3% late in the clearing with 6.5% in the new land to 11% in the clearing with 0.7% in the new land, and up to 4 of the 20 frames after a chunk change. The game's own work per frame did not move between those runs. The committed run's numbers are the `INFO` lines of `proof/03-walk.txt`.
+- **With a graphics card there is no late frame at all.** `proof/04-real-graphics-walk.json` is this folder's walker run by hand in the desktop app's browser pane (Apple M1 Max, a 120 Hz screen) from the spawn to the far corner and on to the stone hollow: 8,372 frames, the longest 20.8 ms, none late. The frame in which a chunk is built or dropped takes 11 to 21 ms where others take 8, so at most one refresh of the screen is skipped, fifteen times in the walk. That file is not written by `run.sh`; it is there because the headless numbers cannot answer the question.
+- **Way made is counted in ticks.** In every thirty ticks of every leg, the path the sim (solo) or the server (online) moved the player along is at least three quarters of what walking speed gives. Ticks, not the clock: a page starved of frames runs fewer ticks, and that is the machine, not the world. A player the world held up (a snag on a tree, a gap that is too narrow) would show here. The first thirty ticks of a leg, which start from standing, are left out.
+- **"Every chunk the camera showed was drawn" trusts the renderer's own report** (`terrain().chunksDrawn`) against the camera's view. That the pixels are there is what the screenshots show.
+- **The walker reads the player's position from a snapshot** about 25 times a second, which costs the page time the game would not spend: about 1 ms a frame solo, where a snapshot holds the physics world, and a hundredth of that online. It is recorded per frame (`walkerMsPerFrame` in the report) and kept out of the game's number. Online, the share of the game's work that is message handling is recorded too (`messageHandlerMsPerFrame`, about 0.08 ms a frame).
+- **Online, the walker steers by where the player is drawn** (the prediction), as a person does. Its turns reach the server a tick or two apart from where the page applied them, which gives small corrections, under the 0.5 m that six ticks of walking come to (the bound the prediction's own jitter test uses). That the page and the server hold the same ground is not inferred from that: the page is only seated if its map checksum equals the server's.
+- **The walker plans its own route** over the walkable tiles it reads from the debug API, preferring the middle of trails. It proves the places are reachable by a body with the player's radius under real physics. It does not prove every tile is: the test in `01` does.
+
+## Other notes
+
+- **"Before" is the clearing as it was**, ring closed, copied into `baseline/world-before.json` from commit `81ffa8b`. The clearing in the world now has four exits cut in its ring, two tiles wide; nothing else in it changed.
+- **Trails are grass**, not dirt. #42 took the dirt paths out on purpose and a test still says the world has none, so "paths that lead somewhere" are ways cut through the forest.
