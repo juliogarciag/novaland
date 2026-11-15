@@ -14,3 +14,4 @@ One file per decision, numbered, never edited after the fact (write a new one th
 - [0010 - Standing tiles: tall tile art is one image per tile, sorted among the entities](0010-standing-tiles.md)
 - [0011 - Ground textures: a flat tile's art is a sheet of variants copied into the ground tileset](0011-ground-tile-textures.md)
 - [0012 - Client-side prediction: a second, local sim that only ever guesses](0012-client-side-prediction.md)
+- [0013 - The world as chunks: one map that grows, authored as areas, with terrain out of world state](0013-world-as-chunks.md)

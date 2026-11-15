@@ -1,0 +1,298 @@
+{
+  "world": {
+    "map": {
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      },
+      "chunks": 2,
+      "tiles": 1200,
+      "standingTiles": 358
+    },
+    "chunkSize": 32,
+    "keepMarginTiles": 18,
+    "chunksDrawn": [
+      "0,0",
+      "1,0"
+    ],
+    "groundTiles": 2048,
+    "standingImages": 358,
+    "standingTilesInDrawnChunks": 358,
+    "sceneObjects": 361,
+    "phaserLayers": 2,
+    "phaserImages": 358,
+    "camera": {
+      "zoom": 3,
+      "scrollX": -320,
+      "scrollY": -128,
+      "width": 960,
+      "height": 720,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 640,
+        "height": 480
+      },
+      "worldView": {
+        "x": 0,
+        "y": 112,
+        "width": 320,
+        "height": 240
+      },
+      "visibleMetres": {
+        "width": 20,
+        "height": 15
+      }
+    },
+    "player": {
+      "x": 6.5,
+      "y": 14.5
+    }
+  },
+  "big": {
+    "atStart": {
+      "map": {
+        "bounds": {
+          "column": 0,
+          "row": 0,
+          "width": 400,
+          "height": 300
+        },
+        "chunks": 130,
+        "tiles": 120000,
+        "standingTiles": 6273
+      },
+      "chunkSize": 32,
+      "keepMarginTiles": 18,
+      "chunksDrawn": [
+        "5,4",
+        "6,4",
+        "5,5",
+        "6,5"
+      ],
+      "groundTiles": 4096,
+      "standingImages": 126,
+      "standingTilesInDrawnChunks": 126,
+      "sceneObjects": 131,
+      "phaserLayers": 4,
+      "phaserImages": 126,
+      "camera": {
+        "zoom": 3,
+        "scrollX": 2728,
+        "scrollY": 2048,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 6400,
+          "height": 4800
+        },
+        "worldView": {
+          "x": 3048,
+          "y": 2288,
+          "width": 320,
+          "height": 240
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 15
+        }
+      },
+      "player": {
+        "x": 200.5,
+        "y": 150.5
+      }
+    },
+    "walk": {
+      "chunkSets": [
+        "5,4 6,4 5,5 6,5",
+        "5,4 6,4 5,5 6,5 7,4 7,5",
+        "6,4 6,5 7,4 7,5"
+      ],
+      "mostChunks": 6,
+      "mostImages": 189,
+      "mostObjects": 196,
+      "backgroundPixels": 0,
+      "samples": 20,
+      "movedMetres": 26.18476219472041,
+      "after": {
+        "map": {
+          "bounds": {
+            "column": 0,
+            "row": 0,
+            "width": 400,
+            "height": 300
+          },
+          "chunks": 130,
+          "tiles": 120000,
+          "standingTiles": 6273
+        },
+        "chunkSize": 32,
+        "keepMarginTiles": 18,
+        "chunksDrawn": [
+          "6,4",
+          "6,5",
+          "7,4",
+          "7,5"
+        ],
+        "groundTiles": 4096,
+        "standingImages": 118,
+        "standingTilesInDrawnChunks": 118,
+        "sceneObjects": 123,
+        "phaserLayers": 4,
+        "phaserImages": 118,
+        "camera": {
+          "zoom": 3,
+          "scrollX": 3145.6666666666665,
+          "scrollY": 2081.6666666666665,
+          "width": 960,
+          "height": 720,
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 6400,
+            "height": 4800
+          },
+          "worldView": {
+            "x": 3465.6666666666665,
+            "y": 2321.6666666666665,
+            "width": 320,
+            "height": 240
+          },
+          "visibleMetres": {
+            "width": 20,
+            "height": 15
+          }
+        },
+        "player": {
+          "x": 226.6002655029297,
+          "y": 152.6018829345703
+        }
+      }
+    },
+    "zoomedOut": {
+      "map": {
+        "bounds": {
+          "column": 0,
+          "row": 0,
+          "width": 400,
+          "height": 300
+        },
+        "chunks": 130,
+        "tiles": 120000,
+        "standingTiles": 6273
+      },
+      "chunkSize": 32,
+      "keepMarginTiles": 18,
+      "chunksDrawn": [
+        "6,4",
+        "6,5",
+        "7,4",
+        "7,5",
+        "8,4",
+        "8,5"
+      ],
+      "groundTiles": 6144,
+      "standingImages": 165,
+      "standingTilesInDrawnChunks": 165,
+      "sceneObjects": 172,
+      "phaserLayers": 6,
+      "phaserImages": 165,
+      "camera": {
+        "zoom": 1,
+        "scrollX": 3146,
+        "scrollY": 2082,
+        "width": 960,
+        "height": 720,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 6400,
+          "height": 4800
+        },
+        "worldView": {
+          "x": 3146,
+          "y": 2082,
+          "width": 960,
+          "height": 720
+        },
+        "visibleMetres": {
+          "width": 60,
+          "height": 45
+        }
+      },
+      "player": {
+        "x": 226.6002655029297,
+        "y": 152.60011291503906
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "the generated map is 400x300: 100 times the world's tiles",
+      "pass": true,
+      "details": "120000 tiles in 130 chunks, 6273 trees and rocks; the world has 1200 tiles in 2 chunks, 358 trees and rocks"
+    },
+    {
+      "name": "on the big map only the chunks near the camera are drawn",
+      "pass": true,
+      "details": "4 of 130 chunks: 5,4 6,4 5,5 6,5"
+    },
+    {
+      "name": "ground tiles alive are the drawn chunks, not the map",
+      "pass": true,
+      "details": "4096 of 120000"
+    },
+    {
+      "name": "standing images alive are the trees and rocks of the drawn chunks, not of the map",
+      "pass": true,
+      "details": "126 of 6273"
+    },
+    {
+      "name": "what Phaser holds is what the report says: one tilemap layer per drawn chunk and one image per standing tile in them",
+      "pass": true,
+      "details": "big: 4 layers, 126 images; world: 2 layers, 358 images"
+    },
+    {
+      "name": "every pixel of the screen is terrain: nothing near the camera was left out",
+      "pass": true
+    },
+    {
+      "name": "walking changed which chunks are drawn",
+      "pass": true,
+      "details": "walked 26.2 m; 3 different sets of chunks; now 6,4 6,5 7,4 7,5"
+    },
+    {
+      "name": "and never how many: chunks behind the camera were dropped as new ones were built",
+      "pass": true,
+      "details": "at most 6 chunks, 189 standing images, 196 game objects in 20 samples"
+    },
+    {
+      "name": "after the walk Phaser holds exactly the drawn chunks: nothing of the dropped ones is left behind",
+      "pass": true,
+      "details": "4 layers and 118 images for 4 chunks"
+    },
+    {
+      "name": "no terrain was missing on screen at any point of the walk",
+      "pass": true,
+      "details": "0 background pixels in 20 screenshots"
+    },
+    {
+      "name": "zoomed out to three times as much world on screen, more chunks are drawn, still a fraction of the map",
+      "pass": true,
+      "details": "20 m across: 4 chunks; 60 m across: 6 chunks, of 130"
+    },
+    {
+      "name": "zoomed out, every pixel of the screen is still terrain",
+      "pass": true
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

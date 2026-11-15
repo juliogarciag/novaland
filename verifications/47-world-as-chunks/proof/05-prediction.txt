@@ -1,0 +1,12 @@
+PASS  the link is slow: the HUD's round trip is about 300 ms  (303 ms)
+PASS  the replica holds the player and nothing else: no terrain came over the wire  (1 entities)
+PASS  the local player has entity id 1, which a prediction used to give a tree, and is predicted  (eid 1)
+PASS  the walk was predicted all the way: every frame drew the predicted player  (318 frames)
+PASS  while walking the drawn player ran ahead of the server by about a round trip of walking, so a missing tree would have shown  (1.786 m ahead; a round trip of walking is 1.500 m)
+PASS  the drawn player never entered the tree: it stops at the face plus its radius  (northmost drawn y 3.3981, the stop is 3.4)
+PASS  once at the tree it is never moved back, while states a round trip old keep arriving  (0.0096 m)
+PASS  hitting the tree added no correction: the largest one is what it was before contact, a tick or two of walking  (before contact 0.0000 m, in all 0.0000 m; one tick of walking is 0.0833 m, a round trip 1.500 m)
+PASS  at rest the drawn player is exactly where the server has it, with nothing left to correct  (drawn 3.4000, server 3.4000)
+PASS  no page errors
+
+ALL 10 CHECKS PASSED

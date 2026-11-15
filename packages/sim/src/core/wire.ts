@@ -7,9 +7,11 @@ import type { WorldState } from './worldState';
  * when the two differ, so a page loaded before a deploy is told to reload
  * instead of talking past the server. Count it up with every change to the
  * messages below. 2: `player/move` carries a sequence and the server
- * acknowledges it with `player/move-applied` (ADR 0012).
+ * acknowledges it with `player/move-applied` (ADR 0012). 3: the welcome
+ * names the map by its checksum instead of a level name, and world states no
+ * longer hold terrain (ADR 0013).
  */
-export const WIRE_PROTOCOL = 2;
+export const WIRE_PROTOCOL = 3;
 
 /**
  * The messages between a browser and the world server, as ADR 0004 and 0012
@@ -55,8 +57,12 @@ export interface WelcomeMessage {
   readonly protocol: number;
   /** The client's seat: the `slot` of its player entity and of the commands the server stamps for it. */
   readonly slot: number;
-  /** Name of the level the server runs; the client resolves it with `findLevel` and builds its replica from it. */
-  readonly level: string;
+  /**
+   * Checksum of the map the server runs (`MapTiles.checksum`). Terrain does not travel: both sides build it from
+   * the map they ship, so a client whose own map has another checksum would draw and predict against the wrong
+   * ground and cannot play here.
+   */
+  readonly map: string;
   /** Capacity of the server's sim; the replica is created with the same one (createReplica refuses one outside 1..MAX_CAPACITY). */
   readonly capacity: number;
   /** Taken after the tick that processed the client's `player/join`, so `findPlayerEntity(replica, slot)` finds the client's own entity in it. */

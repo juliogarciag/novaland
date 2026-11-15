@@ -17,10 +17,10 @@ export { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions,
 export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
 export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from './content/sprites';
-export { starterLevel } from './content/levels/starter';
-export { findLevel, levels } from './content/levels';
-export type { LevelData, TileCoordinate, TileGrid } from './content/levels/types';
-export { readTileGrid, spawnPoint, tileAt, tileCentre } from './content/levels/grid';
+export { worldMap } from './content/world';
+export { generatedWorldMap, type GeneratedMapOptions } from './content/world/generated';
+export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './content/world/types';
+export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
 export { getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
 export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';

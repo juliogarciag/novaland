@@ -1,0 +1,332 @@
+{
+  "solo": {
+    "difference": {
+      "sameSize": true,
+      "differing": 0,
+      "total": 307200,
+      "size": "640x480"
+    },
+    "content": {
+      "spawn": {
+        "column": 6,
+        "row": 14
+      },
+      "spawnCentre": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "treeRow": 2,
+      "treeName": "tree",
+      "tileSize": 1,
+      "radius": 0.4,
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      },
+      "checksum": "c9576c74",
+      "chunkSize": 32
+    },
+    "start": {
+      "x": 6.5,
+      "y": 14.5
+    },
+    "spawnTile": {
+      "column": 6,
+      "row": 14
+    },
+    "stopped": {
+      "x": 6.5,
+      "y": 3.398116111755371
+    },
+    "stopY": 3.4,
+    "wholeTerrain": {
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "chunksInMap": 2,
+      "groundTiles": 2048,
+      "standingImages": 358,
+      "keepMarginTiles": 18
+    },
+    "terrain": {
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "chunksInMap": 2,
+      "groundTiles": 2048,
+      "standingImages": 358,
+      "keepMarginTiles": 18
+    }
+  },
+  "online": {
+    "difference": {
+      "sameSize": true,
+      "differing": 0,
+      "total": 307200,
+      "size": "640x480"
+    },
+    "content": {
+      "spawn": {
+        "column": 6,
+        "row": 14
+      },
+      "spawnCentre": {
+        "x": 6.5,
+        "y": 14.5
+      },
+      "treeRow": 2,
+      "treeName": "tree",
+      "tileSize": 1,
+      "radius": 0.4,
+      "bounds": {
+        "column": 0,
+        "row": 0,
+        "width": 40,
+        "height": 30
+      },
+      "checksum": "c9576c74",
+      "chunkSize": 32
+    },
+    "start": {
+      "x": 6.5,
+      "y": 14.5
+    },
+    "spawnTile": {
+      "column": 6,
+      "row": 14
+    },
+    "stopped": {
+      "x": 6.5,
+      "y": 3.398116111755371
+    },
+    "stopY": 3.4,
+    "wholeTerrain": {
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "chunksInMap": 2,
+      "groundTiles": 2048,
+      "standingImages": 358,
+      "keepMarginTiles": 18
+    },
+    "terrain": {
+      "chunksDrawn": [
+        "0,0"
+      ],
+      "chunksInMap": 2,
+      "groundTiles": 1024,
+      "standingImages": 260,
+      "keepMarginTiles": 18
+    }
+  },
+  "firstFrames 1920x1080": [
+    {
+      "tick": 0,
+      "view": {
+        "x": 320,
+        "y": 300,
+        "width": 320,
+        "height": 180
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 1,
+      "view": {
+        "x": 0,
+        "y": 142,
+        "width": 320,
+        "height": 180
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 2,
+      "view": {
+        "x": 0,
+        "y": 142,
+        "width": 320,
+        "height": 180
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 3,
+      "view": {
+        "x": 0,
+        "y": 142,
+        "width": 320,
+        "height": 180
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 4,
+      "view": {
+        "x": 0,
+        "y": 142,
+        "width": 320,
+        "height": 180
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    }
+  ],
+  "firstFrames 1728x1000 at 2x": [
+    {
+      "tick": 0,
+      "view": {
+        "x": 294.3999999999998,
+        "y": 280,
+        "width": 345.6,
+        "height": 200
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 1,
+      "view": {
+        "x": -5.684341886080802e-14,
+        "y": 132,
+        "width": 345.6,
+        "height": 200
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 2,
+      "view": {
+        "x": -5.684341886080802e-14,
+        "y": 132,
+        "width": 345.6,
+        "height": 200
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 3,
+      "view": {
+        "x": -5.684341886080802e-14,
+        "y": 132,
+        "width": 345.6,
+        "height": 200
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    },
+    {
+      "tick": 4,
+      "view": {
+        "x": -5.684341886080802e-14,
+        "y": 132,
+        "width": 345.6,
+        "height": 200
+      },
+      "chunksDrawn": [
+        "0,0",
+        "1,0"
+      ],
+      "missing": []
+    }
+  ],
+  "results": [
+    {
+      "name": "the dev server, the room server and the online client are up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "solo: the whole map is drawn exactly as before the change, pixel for pixel",
+      "pass": true,
+      "details": "0 of 307200 pixels differ"
+    },
+    {
+      "name": "solo: the player appears on the spawn tile the map names, (6, 14)",
+      "pass": true,
+      "details": "{\"column\":6,\"row\":14}"
+    },
+    {
+      "name": "solo: walking north, the tree at row 2 stops the player at its face",
+      "pass": true,
+      "details": "stopped at y 3.398, the face plus the radius is 3.4"
+    },
+    {
+      "name": "solo: the terrain is drawn as chunks of 32x32 tiles",
+      "pass": true,
+      "details": "whole map: chunks 0,0 1,0; playing: 0,0 1,0"
+    },
+    {
+      "name": "online: the whole map is drawn exactly as before the change, pixel for pixel",
+      "pass": true,
+      "details": "0 of 307200 pixels differ"
+    },
+    {
+      "name": "online: the player appears on the spawn tile the map names, (6, 14) or beside it",
+      "pass": true,
+      "details": "{\"column\":6,\"row\":14}"
+    },
+    {
+      "name": "online: walking north, the tree at row 2 stops the player at its face",
+      "pass": true,
+      "details": "stopped at y 3.398, the face plus the radius is 3.4"
+    },
+    {
+      "name": "online: the terrain is drawn as chunks of 32x32 tiles",
+      "pass": true,
+      "details": "whole map: chunks 0,0 1,0; playing: 0,0"
+    },
+    {
+      "name": "1920x1080: from the first frame rendered, every chunk on screen is drawn",
+      "pass": true,
+      "details": "first frame at tick 0: view x 320 to 640, chunks 0,0 1,0"
+    },
+    {
+      "name": "1728x1000 at 2x: from the first frame rendered, every chunk on screen is drawn",
+      "pass": true,
+      "details": "first frame at tick 0: view x 294.3999999999998 to 639.9999999999998, chunks 0,0 1,0"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

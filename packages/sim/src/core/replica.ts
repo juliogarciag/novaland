@@ -1,5 +1,6 @@
 import { createWorld, entityExists, getAllEntities, removeEntity, type World } from 'bitecs';
-import type { LevelData } from '../content/levels/types';
+import { readMapTiles } from '../content/world/tiles';
+import type { WorldMap } from '../content/world/types';
 import { FIXED_DT } from '../content/tuning';
 import { ComponentStores, type ComponentDef, type NumericStore } from './components';
 import { registerEntityWorld, type EntityWorld } from './entityWorld';
@@ -9,7 +10,7 @@ import { snapshotEntities, type SimSnapshot } from './snapshot';
 import { readWorldStateUpdate, type WorldStateUpdate } from './worldState';
 
 export interface ReplicaConfig {
-  readonly level: LevelData;
+  readonly map: WorldMap;
   /** Must match the authoritative sim's capacity: ids above it are refused. */
   readonly capacity: number;
 }
@@ -43,7 +44,7 @@ export type WorldStateApplyResult = 'applied' | 'out-of-sequence' | 'malformed';
 export class Replica implements ReplicaHandle, EntityWorld {
   readonly isReplica = true;
   readonly world: World = createWorld();
-  readonly level: LevelData;
+  readonly map: WorldMap;
   readonly capacity: number;
   readonly dt: number = FIXED_DT;
   /** A replica has no rng, so no seed. */
@@ -55,7 +56,7 @@ export class Replica implements ReplicaHandle, EntityWorld {
   private readonly stores: ComponentStores;
 
   constructor(config: ReplicaConfig) {
-    this.level = config.level;
+    this.map = config.map;
     this.capacity = config.capacity;
     this.stores = new ComponentStores(this.capacity);
     registerEntityWorld(this, this);
@@ -81,9 +82,9 @@ export class Replica implements ReplicaHandle, EntityWorld {
   /** The entities and the tick. A replica has no physics or rng, so those fields are empty. */
   snapshot(): SimSnapshot {
     return {
-      version: 1,
+      version: 2,
       seed: this.seed,
-      level: this.level.name,
+      map: readMapTiles(this.map).checksum,
       capacity: this.capacity,
       tick: this.tick,
       rng: 0,

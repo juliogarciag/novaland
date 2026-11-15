@@ -216,10 +216,10 @@ describe('WorldConnection', () => {
   });
 
   it('stops for good on a welcome the world cannot use', async () => {
-    const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'no such level' }));
+    const { connection, rooms, endpoints, statuses } = connect(['room'], () => ({ incompatible: 'another world' }));
     await settle();
     rooms[0]!.receive(WIRE.welcome, WELCOME);
-    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'no such level' });
+    expect(connection.status).toEqual({ kind: 'incompatible', reason: 'another world' });
     expect(rooms[0]!.left).toBe(true);
     connection.retryNow();
     await vi.advanceTimersByTimeAsync(60_000);
@@ -382,7 +382,7 @@ describe('isWorldFullRefusal', () => {
 
 // ---- Helpers ----
 
-const WELCOME = { slot: 2, level: 'starter', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
+const WELCOME = { slot: 2, map: 'a1b2c3d4', capacity: 1024, state: { kind: 'full', tick: 1, entities: [] } };
 
 function connect(outcomes: readonly JoinOutcome[], onWelcome: WorldConnectionHandlers['onWelcome'] = () => 'seated') {
   const script = scriptedJoin(outcomes);

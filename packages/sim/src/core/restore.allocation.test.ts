@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { starterLevel } from '../content/levels/starter';
+import { worldMap } from '../content/world';
 import { MAX_CAPACITY } from '../content/tuning';
 import { applyWorldState, Replica } from './replica';
 import { ensureEntitiesExist } from './restore';
@@ -21,7 +21,7 @@ describe('allocation cost of writing a message into a replica', () => {
   it('a shuffled full capacity of new ids costs one pass of at most `capacity` allocations, not ids x capacity', () => {
     // One scan per id would be ids x capacity: minutes at MAX_CAPACITY with ids in a bad order (a server controls the order).
     const capacity = MAX_CAPACITY;
-    const world = new Replica({ level: starterLevel, capacity });
+    const world = new Replica({ map: worldMap, capacity });
     addEntityCalls.count = 0;
     const created = ensureEntitiesExist(world, shuffledIds(capacity));
     expect(created.size).toBe(capacity);
@@ -30,7 +30,7 @@ describe('allocation cost of writing a message into a replica', () => {
 
   it('a full state with every id in a bad order stays within one pass per message, and so does a delta', () => {
     const capacity = 4096;
-    const replica = new Replica({ level: starterLevel, capacity });
+    const replica = new Replica({ map: worldMap, capacity });
     const entities = shuffledIds(capacity).map((id) => ({ id, components: { Position: { x: id, y: 0 } } }));
     addEntityCalls.count = 0;
     expect(applyWorldState(replica, { kind: 'full', tick: 1, entities })).toBe('applied');

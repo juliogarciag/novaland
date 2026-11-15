@@ -4,7 +4,7 @@ import { getRenderables } from '../core/view';
 import { avatarDefIds, isAvatarDefId } from '../features/player/defs';
 import { getTileDef, terrainDefs } from '../features/terrain/defs';
 import { DefId, entityDefs, getDef } from './defs';
-import { starterLevel } from './levels/starter';
+import { worldMap } from './world';
 
 describe('entity definitions', () => {
   it('have unique, stable ids inside their feature block and resolve by id', () => {
@@ -34,12 +34,15 @@ describe('entity definitions', () => {
     expect(terrainDefs.map((def) => def.name)).toEqual(expect.arrayContaining(['grass', 'dirt', 'tree', 'rock']));
   });
 
-  it('terrain colliders come from level data, so a new obstacle is only a character in a row', async () => {
+  it('terrain colliders come from the map, so a new obstacle is only a character in a row', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    const colliders = sim.entityCount;
-    const withRock = { ...starterLevel, rows: starterLevel.rows.map((row, index) => (index === starterLevel.spawn.row + 2 ? `${row.slice(0, 20)}o${row.slice(21)}` : row)) };
-    const simWithRock = await createSimInternal({ seed: 1, level: withRock });
-    expect(simWithRock.entityCount).toBe(colliders + 1);
+    const [clearing] = worldMap.areas;
+    if (!clearing) throw new Error('the world has no area');
+    const rockRow = worldMap.spawn.row + 2;
+    const withRock = { ...worldMap, areas: [{ ...clearing, rows: clearing.rows.map((row, index) => (index === rockRow ? `${row.slice(0, 20)}o${row.slice(21)}` : row)) }] };
+    const simWithRock = await createSimInternal({ seed: 1, map: withRock });
+    expect(simWithRock.physics.colliders.len()).toBe(sim.physics.colliders.len() + 1);
+    expect(simWithRock.entityCount).toBe(0);
     expect(getRenderables(sim)).toHaveLength(0);
     simWithRock.destroy();
     sim.destroy();

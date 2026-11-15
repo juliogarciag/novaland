@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, getDef, getRenderables, starterLevel } from '@novaland/sim';
+import { createSim, findPlayerEntity, getDef, getRenderables } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { LocalWorld } from '../worlds/LocalWorld';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
@@ -37,12 +37,12 @@ describe('hudLines', () => {
   });
 
   it('online and not seated yet says joining... next to an unmeasured latency', async () => {
-    const world = asOnlineWorld(new LocalWorld(await createSim({ seed: 1, level: starterLevel })), { latencyMs: undefined });
+    const world = asOnlineWorld(new LocalWorld(await createSim({ seed: 1 })), { latencyMs: undefined });
     expect(hudLines(world, { framesPerSecond: 60 })).toEqual(['fps  60   latency  -- ms   2/5 online', 'you: joining...   players: 0']);
   });
 
   it('says joining... until the local player has an avatar', async () => {
-    const world = new LocalWorld(await createSim({ seed: 1, level: starterLevel }));
+    const world = new LocalWorld(await createSim({ seed: 1 }));
     expect(hudLines(world, { framesPerSecond: 60 })[1]).toBe('you: joining...   players: 0');
   });
 });
@@ -51,7 +51,7 @@ describe('hudLines', () => {
 
 /** A solo world whose local player has joined. */
 async function seatedSoloWorld(): Promise<LocalWorld> {
-  const world = new LocalWorld(await createSim({ seed: 1, level: starterLevel }));
+  const world = new LocalWorld(await createSim({ seed: 1 }));
   world.nextFrame([], world.sim.dt);
   return world;
 }

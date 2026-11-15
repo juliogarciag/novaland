@@ -6,6 +6,7 @@ import {
   getDef,
   getHeading,
   getRenderables,
+  readMapTiles,
   TICK_RATE,
   WIRE,
   WIRE_PROTOCOL,
@@ -173,7 +174,7 @@ describe('OnlineWorld predicting the local player', () => {
     expect(link.world.predictionReport!.correctionMetres).toBe(0);
   });
 
-  it('shows a teleport at once instead of sliding across the level', async () => {
+  it('shows a teleport at once instead of sliding across the map', async () => {
     const link = await linked(0, ROUND_TRIPS[0]);
     const here = link.drawn();
     const state = JSON.parse(JSON.stringify(worldState(link.server))) as WorldState;
@@ -481,7 +482,7 @@ class LaggedLink {
     this.toAcknowledge = undefined;
     this.eid = findPlayerEntity(this.server, slot) as number;
     this.lastSent = worldState(this.server);
-    room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, level: this.server.level.name, capacity: this.server.capacity, state: this.lastSent }));
+    room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, map: readMapTiles(this.server.map).checksum, capacity: this.server.capacity, state: this.lastSent }));
     this.sentMessages = 0;
     for (const message of room.sent) this.upLink.push({ arrivesAt: this.frameCount + ticksOf(this.lag.up), move: message.payload as MoveMessage });
     this.sentMessages = room.sent.length;
@@ -532,7 +533,7 @@ async function linked(slot: number, lag: LinkOptions, options: Partial<Parameter
     ...options,
   });
   const room = await nextRoom(join, 0);
-  room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, level: server.level.name, capacity: server.capacity, state: worldState(server) }));
+  room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, map: readMapTiles(server.map).checksum, capacity: server.capacity, state: worldState(server) }));
   const world = await seated;
   const link = new LaggedLink(world, server, room, join, slot, lag, predictionSims);
   clock.now = link.now;

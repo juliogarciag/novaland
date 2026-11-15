@@ -6,7 +6,7 @@
  *
  * The three checks below only show the moves (read state, send input, compare).
  * Replace them with what your ticket promises, and derive every expected number
- * from the debug API (level, grid, defs, camera) instead of hardcoding it.
+ * from the debug API (map, tiles, defs, camera) instead of hardcoding it.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';

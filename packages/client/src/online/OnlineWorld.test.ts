@@ -1,4 +1,4 @@
-import { createSim, diffWorldState, findPlayerEntity, getRenderables, WIRE, WIRE_PROTOCOL, worldState, type SimHandle, type WorldState } from '@novaland/sim';
+import { createSim, diffWorldState, findPlayerEntity, getRenderables, readMapTiles, WIRE, WIRE_PROTOCOL, worldMap, worldState, type SimHandle, type WorldState } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import type { ConnectionStatus } from './connection';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
@@ -8,12 +8,14 @@ import type { PlayableWorld } from '../worlds/PlayableWorld';
 
 const { readWelcome } = __testing__;
 const FRAME = 1 / 60;
+/** What a server running this page's map says in its welcome. */
+const MAP = readMapTiles(worldMap).checksum;
 
 describe('OnlineWorld', () => {
   it('resolves once welcomed, with a replica that holds the world, the seat and the count of players', async () => {
     const { world, server } = await seated(1);
     expect(world.sim.isReplica).toBe(true);
-    expect(world.sim.level.name).toBe(server.sim.level.name);
+    expect(world.sim.map).toBe(server.sim.map);
     expect(world.sim.capacity).toBe(server.sim.capacity);
     expect(world.localSlot).toBe(1);
     expect(findPlayerEntity(world.sim, 1)).toBeDefined();
@@ -89,7 +91,7 @@ describe('OnlineWorld', () => {
     const statuses: ConnectionStatus[] = [];
     const { seated } = OnlineWorld.join({ endpoint: 'ws://world.test', join, predictsLocalPlayer: false, onStatus: (status) => statuses.push(status) });
     const room = await nextRoom({ rooms }, 0);
-    room.receive(WIRE.welcome, { protocol: WIRE_PROTOCOL, slot: 0, level: sim.level.name, capacity: sim.capacity, state: { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] } });
+    room.receive(WIRE.welcome, { protocol: WIRE_PROTOCOL, slot: 0, map: MAP, capacity: sim.capacity, state: { kind: 'delta', fromTick: 0, tick: 1, changed: [], removed: [] } });
     const world = await seated;
     expect(statuses.at(-1)).toEqual({ kind: 'online', slot: 0 });
     expect(room.sentTypes).toEqual([WIRE.resync]);
@@ -159,15 +161,17 @@ describe('OnlineWorld', () => {
     expect(secondRoom.sent).toEqual([]);
   });
 
-  it('reports a server it cannot play on: another wire protocol or none, an unknown level, a capacity out of range, a welcome of the wrong shape', async () => {
+  it('reports a server it cannot play on: another wire protocol or none, another map, a capacity out of range, a welcome of the wrong shape', async () => {
     const protocol = WIRE_PROTOCOL;
     for (const [welcome, reason] of [
-      [{ protocol: protocol + 1, slot: 0, level: 'starter', capacity: 1024, state: emptyState() }, /different versions of the game/],
-      [{ slot: 0, level: 'starter', capacity: 1024, state: emptyState() }, /different versions of the game/],
-      [{ protocol, slot: 0, level: 'moon-base', capacity: 1024, state: emptyState() }, /no level named "moon-base"/],
-      [{ protocol, slot: 0, level: 'starter', capacity: 1e9, state: emptyState() }, /capacity/],
-      [{ protocol, slot: -1, level: 'starter', capacity: 1024, state: emptyState() }, /does not understand/],
-      [{ protocol, slot: 0, level: 'x'.repeat(65), capacity: 1024, state: emptyState() }, /does not understand/],
+      [{ protocol: protocol + 1, slot: 0, map: MAP, capacity: 1024, state: emptyState() }, /different versions of the game/],
+      [{ slot: 0, map: MAP, capacity: 1024, state: emptyState() }, /different versions of the game/],
+      [{ protocol, slot: 0, map: 'deadbeef', capacity: 1024, state: emptyState() }, /different versions of the world/],
+      [{ protocol, slot: 0, map: '', capacity: 1024, state: emptyState() }, /different versions of the world/],
+      [{ protocol, slot: 0, map: MAP, capacity: 1e9, state: emptyState() }, /capacity/],
+      [{ protocol, slot: -1, map: MAP, capacity: 1024, state: emptyState() }, /does not understand/],
+      [{ protocol, slot: 0, map: 'x'.repeat(65), capacity: 1024, state: emptyState() }, /does not understand/],
+      [{ protocol, slot: 0, level: 'starter', capacity: 1024, state: emptyState() }, /does not understand/],
       ['welcome', /does not understand/],
     ] as const) {
       const statuses: ConnectionStatus[] = [];
@@ -186,23 +190,32 @@ describe('OnlineWorld', () => {
     const { room, join, statuses, server } = await seated(0);
     room.drop(1006);
     const secondRoom = await nextRoom(join, 1);
-    secondRoom.receive(WIRE.welcome, { protocol: WIRE_PROTOCOL, slot: 0, level: server.sim.level.name, capacity: server.sim.capacity + 1, state: emptyState() });
+    secondRoom.receive(WIRE.welcome, { protocol: WIRE_PROTOCOL, slot: 0, map: MAP, capacity: server.sim.capacity + 1, state: emptyState() });
+    expect(statuses.at(-1)).toEqual({ kind: 'incompatible', reason: 'the server changed its world' });
+  });
+
+  it('after a drop refuses a welcome for another map: a server redeployed with new terrain', async () => {
+    const { room, join, statuses, server } = await seated(0);
+    room.drop(1006);
+    const secondRoom = await nextRoom(join, 1);
+    secondRoom.receive(WIRE.welcome, { protocol: WIRE_PROTOCOL, slot: 0, map: 'deadbeef', capacity: server.sim.capacity, state: emptyState() });
     expect(statuses.at(-1)).toEqual({ kind: 'incompatible', reason: 'the server changed its world' });
   });
 });
 
 describe('readWelcome', () => {
   it('accepts the wire shape and refuses anything else', () => {
-    const welcome = { protocol: WIRE_PROTOCOL, slot: 0, level: 'starter', capacity: 1024, state: emptyState() };
+    const welcome = { protocol: WIRE_PROTOCOL, slot: 0, map: MAP, capacity: 1024, state: emptyState() };
     expect(readWelcome(welcome)).toEqual(welcome);
     expect(readWelcome({ ...welcome, protocol: WIRE_PROTOCOL + 1 })).toBeUndefined();
     expect(readWelcome({ ...welcome, protocol: undefined })).toBeUndefined();
     expect(readWelcome({ ...welcome, slot: 1.5 })).toBeUndefined();
     expect(readWelcome({ ...welcome, slot: 1025 })).toBeUndefined();
-    expect(readWelcome({ ...welcome, level: 'x'.repeat(64) })).toBeDefined();
-    expect(readWelcome({ ...welcome, level: 'x'.repeat(65) })).toBeUndefined();
+    expect(readWelcome({ ...welcome, map: 'x'.repeat(64) })).toBeDefined();
+    expect(readWelcome({ ...welcome, map: 'x'.repeat(65) })).toBeUndefined();
     expect(readWelcome({ ...welcome, slot: '0' })).toBeUndefined();
-    expect(readWelcome({ ...welcome, level: 7 })).toBeUndefined();
+    expect(readWelcome({ ...welcome, map: 7 })).toBeUndefined();
+    expect(readWelcome({ ...welcome, map: undefined })).toBeUndefined();
     expect(readWelcome({ ...welcome, capacity: '1024' })).toBeUndefined();
     expect(readWelcome({ ...welcome, state: null })).toBeUndefined();
     expect(readWelcome(null)).toBeUndefined();
@@ -224,7 +237,7 @@ class FakeServer {
   welcome(room: FakeRoom, slot: number): void {
     this.room = room;
     this.lastSent = worldState(this.sim);
-    room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, level: this.sim.level.name, capacity: this.sim.capacity, state: this.lastSent }));
+    room.receive(WIRE.welcome, roundTrip({ protocol: WIRE_PROTOCOL, slot, map: MAP, capacity: this.sim.capacity, state: this.lastSent }));
   }
 
   sendDelta(): void {
