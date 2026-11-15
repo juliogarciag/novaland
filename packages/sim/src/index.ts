@@ -13,7 +13,7 @@ export { FIXED_DT, MAX_PLAYER_SLOTS, TICK_RATE } from './content/tuning';
 export { hashSnapshot, type EntitySnapshot, type SimSnapshot } from './core/snapshot';
 export { applyWorldStateDelta, diffWorldState, worldState, type EntityDelta, type WorldState, type WorldStateDelta, type WorldStateUpdate } from './core/worldState';
 export { applyWorldState, type ReplicaHandle, type WorldStateApplyResult } from './core/replica';
-export { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveAppliedMessage, type MoveMessage, type WelcomeMessage } from './core/wire';
+export { DEFAULT_SEND_RATE, isPlayerToken, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL, type JoinOptions, type MoveAppliedMessage, type MoveMessage, type WelcomeMessage } from './core/wire';
 export { getRenderables, type Renderable } from './core/view';
 export { DefId, entityDefs, getDef, type EntityDef } from './content/defs';
 export type { MinimapMarker, MinimapMarkerShape } from './content/minimap';
@@ -25,5 +25,5 @@ export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, World
 export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
 export { getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';
 export type { JoinCommand, LeaveCommand, MoveCommand, PlayerCommand } from './features/player/commands';
-export { findPlayerEntity, getHeading, type Heading } from './features/player/queries';
+export { findPlayerEntity, getHeading, getPlayerPosition, type Heading } from './features/player/queries';
 export { avatarDefIds, isAvatarDefId } from './features/player/defs';

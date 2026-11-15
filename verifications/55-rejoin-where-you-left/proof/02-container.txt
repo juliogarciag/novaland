@@ -1,0 +1,17 @@
+PASS  docker build exits 0
+PASS  with no volume the container starts as node, the server is PID 1 as node and keeps positions in memory  (PID 1 is "node packages/server/dist/index.mjs" with uid 1000, gid 1000, groups 1000, health {"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":1,"savedPositions":"memory"})
+PASS  a fresh Docker volume belongs to root and nobody else may write it  (root:root 755)
+PASS  started as node on that volume, the server refuses to boot and says the saved positions could not be opened  (The saved positions could not be opened in /data: unable to open database file)
+PASS  started as root on that volume, the server boots with its positions on disk  ({"ok":true,"roomId":"world","seats":5,"seatsTaken":0,"tick":1,"savedPositions":"disk"})
+PASS  the server is PID 1 and runs as node: uid, gid and groups are all node, none is root  (PID 1 is "node packages/server/dist/index.mjs" with uid 1000, gid 1000, groups 1000)
+PASS  no process running in the container is root  (UID                 PID                 COMMAND | 1000                4376                node packages/server/dist/index.mjs)
+PASS  the volume, the file the earlier root deploy left and the write-ahead log now belong to node  (node:node /data | node:node /data/saved-positions.sqlite | node:node /data/saved-positions.sqlite-shm | node:node /data/saved-positions.sqlite-wal)
+PASS  nothing else was handed over: a link in the volume was not followed (/etc/passwd and the link still belong to root), nor was another directory in it or the file inside  (root:root /etc/passwd | root:root /data/other | root:root /data/other/file | root:root /data/link (link))
+PASS  Docker's own health check passes through the entrypoint  (healthy)
+PASS  a browser on the served page is seated and its player walks east  (from (5.50, 15.50) to (13.17, 15.50))
+PASS  docker stop reaches the server: it says it is stopping, exits 0, and well inside the 10 seconds Docker allows  (exit 0 after 0.2 s; {"event":"world-room-stopping","signal":"SIGTERM","tick":1068,"seatsTaken":0,"dropped":{"unknownType":0,"oversized":0,"malformed":0,"overBudget":0},"idleSeatsFreed":0})
+PASS  a new container on the same volume finds one saved player on disk in /data  ({"event":"world-room-listening","port":5957,"roomId":"world","seed":"<random>","seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"/app/packages/client/dist","savedPositions":"disk","dataDirectory":"/data","savedPlayers":1,"allowedOrigins":["http://localhost:5957"],"loopbackOrigins":false})
+PASS  the same browser opens the new container and its player stands where they were  (left at (13.17, 15.50), back at (13.17, 15.50))
+PASS  the replacement also runs its server as node  (PID 1 is "node packages/server/dist/index.mjs" with uid 1000, gid 1000, groups 1000)
+
+ALL 15 CHECKS PASSED

@@ -146,7 +146,7 @@ describe('one process: the client files, /health and the request guard in front 
     const response = await fetch(`${baseUrl}/health`);
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
-    expect(await response.json()).toEqual({ ok: true, roomId: 'world', seats: MAX_SEATS, seatsTaken: 0, tick: expect.any(Number) });
+    expect(await response.json()).toEqual({ ok: true, roomId: 'world', seats: MAX_SEATS, seatsTaken: 0, tick: expect.any(Number), savedPositions: 'memory' });
   });
 
   it('refuses a matchmaking call from a foreign origin with 403, before Colyseus, and lets listed and loopback origins through', async () => {

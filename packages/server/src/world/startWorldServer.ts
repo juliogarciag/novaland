@@ -2,6 +2,7 @@ import { matchMaker, Server, type ServerOptions } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import type { Server as HttpServer } from 'node:http';
 import { MAX_FRAME_BYTES, WORLD_ROOM_NAME } from './tuning';
+import type { SavedPositions } from './savedPositions';
 import { WorldRoom, type Clock, type WorldRoomOptions } from './WorldRoom';
 
 export interface WorldServerOptions {
@@ -13,6 +14,8 @@ export interface WorldServerOptions {
   readonly idleTimeoutMs?: number;
   /** The clock the room reads; `performance.now` unless a test passes a fake. */
   readonly clock?: Clock;
+  /** Where returning players are put back (#55); the caller opened it and closes it after `stop()`. Without one the room keeps positions in memory. */
+  readonly savedPositions?: SavedPositions;
   /** What stands between the port and the world. */
   readonly front: WorldFront;
 }
@@ -74,7 +77,7 @@ function startBareWorldServer(options: Omit<WorldServerOptions, 'front'>): Promi
 /** What Colyseus's matchmaker answers with when nothing replaces it, kept so a bare boot gets it back after a fronted one in the same process. */
 const COLYSEUS_CORS = { defaultHeaders: matchMaker.controller.DEFAULT_CORS_HEADERS, headersFor: matchMaker.controller.getCorsHeaders };
 
-async function bootWorldServer({ port, seed, idleTimeoutMs, clock, front }: Omit<WorldServerOptions, 'front'> & { readonly front?: WorldFront }): Promise<WorldServer> {
+async function bootWorldServer({ port, seed, idleTimeoutMs, clock, savedPositions, front }: Omit<WorldServerOptions, 'front'> & { readonly front?: WorldFront }): Promise<WorldServer> {
   const transport = new WebSocketTransport({
     maxPayload: MAX_FRAME_BYTES,
     ...(front && { server: front.httpServer }),
@@ -96,8 +99,8 @@ async function bootWorldServer({ port, seed, idleTimeoutMs, clock, front }: Omit
     await portOpened({ gameServer, httpServer, port });
     // Nothing may be awaited between the port opening and the guard: Colyseus binds its routes as the port opens, and the first request must already find the guard.
     front?.guardRequests();
-    // Options reach `onCreate` by reference within this process, so the clock passes through as it is.
-    const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed, idleTimeoutMs, clock } satisfies WorldRoomOptions);
+    // Options reach `onCreate` by reference within this process, so the clock and the store pass through as they are.
+    const listing = await matchMaker.createRoom(WORLD_ROOM_NAME, { seed, idleTimeoutMs, clock, savedPositions } satisfies WorldRoomOptions);
     const room = matchMaker.getLocalRoomById(listing.roomId) as WorldRoom;
     const address = httpServer.address();
     const boundPort = typeof address === 'object' && address !== null ? address.port : port;

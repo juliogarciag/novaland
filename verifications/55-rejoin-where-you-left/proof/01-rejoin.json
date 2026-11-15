@@ -1,0 +1,258 @@
+{
+  "spawned": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 6.5,
+      "y": 14.5
+    },
+    "tile": {
+      "column": 6,
+      "row": 14
+    },
+    "tilesFromSpawn": 0,
+    "tick": 93
+  },
+  "walked": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 19.249988555908203,
+      "y": 14.5
+    },
+    "tile": {
+      "column": 19,
+      "row": 14
+    },
+    "tilesFromSpawn": 13,
+    "tick": 423
+  },
+  "reopened": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 19.249988555908203,
+      "y": 14.5
+    },
+    "tile": {
+      "column": 19,
+      "row": 14
+    },
+    "tilesFromSpawn": 13,
+    "tick": 784
+  },
+  "stranger": {
+    "status": "online",
+    "slot": 1,
+    "screen": null,
+    "screenText": "",
+    "players": 2,
+    "position": {
+      "x": 6.5,
+      "y": 14.5
+    },
+    "tile": {
+      "column": 6,
+      "row": 14
+    },
+    "tilesFromSpawn": 0,
+    "tick": 862
+  },
+  "beforeCrash": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 19.249988555908203,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 19,
+      "row": 22
+    },
+    "tilesFromSpawn": 13,
+    "tick": 1042
+  },
+  "afterCrash": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 19.249988555908203,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 19,
+      "row": 22
+    },
+    "tilesFromSpawn": 13,
+    "tick": 108
+  },
+  "beforeStop": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 12.833271980285645,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 12,
+      "row": 22
+    },
+    "tilesFromSpawn": 8,
+    "tick": 238
+  },
+  "afterStop": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 12.833271980285645,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 12,
+      "row": 22
+    },
+    "tilesFromSpawn": 8,
+    "tick": 118
+  },
+  "inSecondTab": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 12.833271980285645,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 12,
+      "row": 22
+    },
+    "tilesFromSpawn": 8,
+    "tick": 176
+  },
+  "tookBack": {
+    "status": "online",
+    "slot": 0,
+    "screen": null,
+    "screenText": "",
+    "players": 1,
+    "position": {
+      "x": 12.833271980285645,
+      "y": 22.33350372314453
+    },
+    "tile": {
+      "column": 12,
+      "row": 22
+    },
+    "tilesFromSpawn": 8,
+    "tick": 392
+  },
+  "results": [
+    {
+      "name": "room server (positions on disk) and dev server up, both started by this run",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5955,\"roomId\":\"world\",\"seed\":217491322,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":\"<repo>/packages/client/dist\",\"savedPositions\":\"disk\",\"dataDirectory\":\"<scratch>\",\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+    },
+    {
+      "name": "/health says positions are kept on disk",
+      "pass": true,
+      "details": "{\"ok\":true,\"roomId\":\"world\",\"seats\":5,\"seatsTaken\":0,\"tick\":3,\"savedPositions\":\"disk\"}"
+    },
+    {
+      "name": "A, a browser with no token, spawns next to the spawn tile",
+      "pass": true,
+      "details": "0 tiles from the spawn"
+    },
+    {
+      "name": "A now keeps a player token: 43 base64url characters",
+      "pass": true,
+      "details": "43 characters"
+    },
+    {
+      "name": "A walks east, well away from the spawn",
+      "pass": true,
+      "details": "13 tiles from the spawn, at (19.250, 14.500)"
+    },
+    {
+      "name": "A closes the tab, opens it again and stands where they were",
+      "pass": true,
+      "details": "left at (19.250, 14.500), back at (19.250, 14.500)"
+    },
+    {
+      "name": "B, a second browser profile, has another token and spawns as a new player next to the spawn tile",
+      "pass": true,
+      "details": "0 tiles from the spawn, seat 1"
+    },
+    {
+      "name": "a new server process starts on the same data directory and finds one saved player",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5955,\"roomId\":\"world\",\"seed\":1361998213,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":\"<repo>/packages/client/dist\",\"savedPositions\":\"disk\",\"dataDirectory\":\"<scratch>\",\"savedPlayers\":1,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+    },
+    {
+      "name": "after the server process was killed and started again, A stands where they were",
+      "pass": true,
+      "details": "before (19.250, 22.334), after (19.250, 22.334)"
+    },
+    {
+      "name": "after the server was stopped as a deploy stops it, with no time for a periodic save, A stands where they were",
+      "pass": true,
+      "details": "before (12.833, 22.334), after (12.833, 22.334)"
+    },
+    {
+      "name": "a second tab of the same browser takes the player over: the first tab shows the \"elsewhere\" screen",
+      "pass": true,
+      "details": "You are playing in another tab or window. Play here to carry on in this one."
+    },
+    {
+      "name": "the world holds one player for that token, standing where they were",
+      "pass": true,
+      "details": "1 player, 1 seat taken, at (12.833, 22.334)"
+    },
+    {
+      "name": "the replaced tab does not take the player back by itself",
+      "pass": true,
+      "details": "elsewhere"
+    },
+    {
+      "name": "\"Play here\" takes the player back: the first tab plays, the second shows \"elsewhere\", still one player in the same place",
+      "pass": true,
+      "details": "1 player at (12.833, 22.334)"
+    },
+    {
+      "name": "the server never printed either token",
+      "pass": true,
+      "details": "22 lines of server output read"
+    },
+    {
+      "name": "the token is not in the world state a client holds nor on the debug API",
+      "pass": true
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

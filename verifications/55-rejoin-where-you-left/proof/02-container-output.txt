@@ -1,0 +1,7 @@
+$ docker logs novaland-55-verify (first container)
+{"event":"world-room-listening","port":5957,"roomId":"world","seed":"<random>","seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"/app/packages/client/dist","savedPositions":"disk","dataDirectory":"/data","savedPlayers":0,"allowedOrigins":["http://localhost:5957"],"loopbackOrigins":false}
+{"event":"world-room-stopping","signal":"SIGTERM","tick":1068,"seatsTaken":0,"dropped":{"unknownType":0,"oversized":0,"malformed":0,"overBudget":0},"idleSeatsFreed":0}
+
+
+$ docker logs novaland-55-verify (second container)
+{"event":"world-room-listening","port":5957,"roomId":"world","seed":"<random>","seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":"/app/packages/client/dist","savedPositions":"disk","dataDirectory":"/data","savedPlayers":1,"allowedOrigins":["http://localhost:5957"],"loopbackOrigins":false}

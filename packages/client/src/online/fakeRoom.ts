@@ -68,7 +68,7 @@ export class FakeRoom implements JoinedRoom {
 }
 
 /** What one join attempt does: hands out a room, fails the way the SDK fails, or never settles. */
-export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting' | 'hangs' | 'another-protocol';
+export type JoinOutcome = 'room' | 'full' | 'unreachable' | 'booting' | 'hangs' | 'another-protocol' | 'replaced';
 
 /**
  * A `join` for the connection that plays a script of outcomes, one per
@@ -91,6 +91,9 @@ export function scriptedJoin(outcomes: readonly JoinOutcome[]): { join: (endpoin
         case 'another-protocol':
           // What the room's own refusal (`JOIN_REFUSAL.protocolMismatch`) looks like once the SDK rejects the join with it.
           return Promise.reject(Object.assign(new Error('protocol-mismatch'), { code: 523 }));
+        case 'replaced':
+          // What a join looks like when a newer join of the same player token took its place before it was seated (`REPLACED_KICK.reason`).
+          return Promise.reject(Object.assign(new Error('joined-elsewhere'), { code: 523 }));
         case 'unreachable':
           return Promise.reject(new TypeError('Failed to fetch'));
         case 'hangs':
