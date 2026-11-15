@@ -167,6 +167,7 @@ function checkDrawnAsWater(shot, onScreen, lake) {
   const underTheHud = ({ x, y }) => x - half < HUD_CORNER.width && y - half < HUD_CORNER.height;
   const wholeTileOnScreen = (tile) => tile.x - half >= 0 && tile.y - half >= 0 && tile.x + half < shot.width && tile.y + half < shot.height && !underTheHud(tile);
   const pointsThat = (tile, matches) => pointsOfTile(tile, onScreen.tilePixels).filter(({ x, y }) => matches(pixelOf(shot, x, y))).length;
+  // True of the shallows' blue as well: what tells deep from shallows is `paler` below.
   const isDeepBlue = ([red, green, blue]) => blue > red + 40 && blue > green + 30;
   // The shallows carry the coast: up to two of a tile's five points may lie on the bank instead of the water.
   const isWatery = ([red, green, blue]) => blue > red + 20 && blue >= green;
@@ -203,7 +204,7 @@ function checkDrawnAsWater(shot, onScreen, lake) {
     deepDrawn.length === deep.length &&
     shallowsDrawn.length === shallows.length &&
     paler > 25 &&
-    // A lake among trees has few sides in the open; four is the fewest that still shows more than one shore.
+    // A lake among trees has few sides in the open. Four is a floor against an empty look, not a promise of which shores they are on.
     coast.length >= 4 &&
     banked.length >= coast.length * 0.9 &&
     brightRims.length === 0 &&

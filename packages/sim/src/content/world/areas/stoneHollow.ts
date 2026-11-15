@@ -6,7 +6,7 @@ import type { AreaData } from '../types';
  * stones in it. Trails leave north to the west woods and east to the south
  * glade.
  *
- * A pond lies inside the ring of stones.
+ * A lake lies inside the ring of stones. Like every lake it is deep water ringed by shallows.
  *
  * 45x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every

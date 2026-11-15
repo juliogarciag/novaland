@@ -5,7 +5,7 @@ import type { AreaData } from '../types';
  * South of the clearing, through its south exit: a glade. Trails leave west
  * to the stone hollow and east to the far clearing.
  *
- * A lake lies in the middle, straight ahead of the trail from the clearing.
+ * A lake lies in the middle, straight ahead of the trail from the clearing. Like every lake it is deep water ringed by shallows.
  *
  * 40x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every

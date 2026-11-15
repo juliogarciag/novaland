@@ -6,7 +6,7 @@ import type { AreaData } from '../types';
  * apart with grass between them. Trails leave north to the old grove and
  * south to the stone hollow.
  *
- * A small pond hides in the open ground at its west end.
+ * A small lake hides in the open ground at its west end. Like every lake it is deep water ringed by shallows.
  *
  * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every

@@ -6,7 +6,7 @@ import type { AreaData } from '../types';
  * clearing with clumps of trees, and a nook in the corner of the world
  * beyond it.
  *
- * A lake lies among its scattered trees, west of the middle.
+ * A lake lies among its scattered trees, west of the middle. Like every lake it is deep water ringed by shallows.
  *
  * 45x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
