@@ -11,6 +11,7 @@ import { generatedWorldMap } from './generated';
 import { worldMap } from './index';
 import { __testing__ as tilesTesting, CHUNK_SIZE, chunkCoordinateOf, findChunk, NO_TILE, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt, WORLD_LIMIT_TILES } from './tiles';
 import type { AreaData, TileCoordinate, WorldMap } from './types';
+import { guestCharacter } from '../../features/player/character';
 
 describe('reading a map into chunks', () => {
   it('resolves an area\'s ASCII rows through its legend into tile def ids at the world tiles it reserves', () => {
@@ -60,7 +61,7 @@ describe('reading a map into chunks', () => {
     const spawn = { column: 1, row: 0 };
     expect(() => readMapTiles(mapOf([area(['TTT', 'TT'])], spawn))).toThrow(/Area "test": row 1 has 2 tiles, expected 3/);
     expect(() => readMapTiles(mapOf([area(['T?T'])], spawn))).toThrow(/no legend entry for "\?"/);
-    expect(() => readMapTiles(mapOf([{ ...area(['T.']), legend: { T: DefId.PlayerSky } }], spawn))).toThrow(/not a tile/);
+    expect(() => readMapTiles(mapOf([{ ...area(['T.']), legend: { T: DefId.Player } }], spawn))).toThrow(/not a tile/);
     expect(() => readMapTiles(mapOf([{ ...area(['T.']), legend: { TT: DefId.Tree } }], spawn))).toThrow(/one character/);
     expect(() => readMapTiles(mapOf([area([])], spawn))).toThrow(/no rows/);
     expect(() => readMapTiles(mapOf([area([''])], spawn))).toThrow(/empty rows/);
@@ -310,7 +311,7 @@ function mapOf(areas: readonly AreaData[], spawn: TileCoordinate): WorldMap {
   return { areas, spawn };
 }
 
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const join = (slot = 0): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 
 /** Three players who join and are pushed around, into trees included. */
 function walk(tick: number): Command[] {

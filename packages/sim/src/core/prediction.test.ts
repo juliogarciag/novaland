@@ -11,6 +11,7 @@ import { applyWorldState, type ReplicaHandle } from './replica';
 import type { Sim, SimHandle } from './sim';
 import { getRenderables, type Renderable } from './view';
 import { worldState, type WorldState } from './worldState';
+import { guestCharacter } from '../features/player/character';
 
 describe('a prediction', () => {
   it('starts with the same terrain colliders as a sim of the map and no entity at all, and steps like a sim', async () => {
@@ -28,7 +29,7 @@ describe('a prediction', () => {
   it('takes no entity id for terrain, however big the map: the first id a server hands a player is free to adopt', async () => {
     for (const map of [worldMap, generatedWorldMap({ columns: 400, rows: 300 })]) {
       const server = await createSim({ seed: 5, map });
-      server.step([{ type: 'player/join', slot: 0 }]);
+      server.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
       const replica = createReplica({ map, capacity: server.capacity });
       applyWorldState(replica, worldState(server));
       const prediction = await createPrediction({ map, capacity: server.capacity });
@@ -151,7 +152,7 @@ describe('a prediction', () => {
     const beside = await __testing__.createSimInternal({ seed: 9 });
     const prediction = await createPrediction({ map: worldMap });
     const replica = createReplica({ map: worldMap });
-    for (const sim of [alone, beside]) sim.step([{ type: 'player/join', slot: 0 }]);
+    for (const sim of [alone, beside]) sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     for (let tick = 0; tick < 120; tick += 1) {
       const commands = tick % 40 === 0 ? [{ type: 'player/move', slot: 0, x: Math.cos(tick), y: Math.sin(tick) } as const] : [];
       alone.step(commands);
@@ -172,8 +173,8 @@ const { staticBoxes } = physicsTesting;
 async function serverReplicaAndPrediction(): Promise<{ server: SimHandle; replica: ReplicaHandle; prediction: PredictionHandle }> {
   const server = await createSim({ seed: 5, map: worldMap });
   server.step([
-    { type: 'player/join', slot: 0 },
-    { type: 'player/join', slot: 1 },
+    { type: 'player/join', slot: 0, character: guestCharacter(0) },
+    { type: 'player/join', slot: 1, character: guestCharacter(1) },
   ]);
   const replica = createReplica({ map: worldMap, capacity: server.capacity });
   applyWorldState(replica, worldState(server));

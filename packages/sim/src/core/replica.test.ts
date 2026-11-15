@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { worldMap } from '../content/world';
 import { readMapTiles } from '../content/world/tiles';
 import { DEFAULT_CAPACITY, FIXED_DT, MAX_CAPACITY } from '../content/tuning';
-import { avatarDefIds, isAvatarDefId } from '../features/player/defs';
+import { isPlayerDefId } from '../features/player/defs';
+import { getCharacter } from '../features/player/queries';
 import { findPlayerEntity, getHeading } from '../features/player/queries';
 import type { Command } from './commands';
 import { __testing__, createReplica, createSim } from './create';
@@ -13,6 +14,7 @@ import { DefRef } from './transform';
 import { getRenderables } from './view';
 import { DEFAULT_SEND_RATE, JOIN_REFUSAL, WIRE, WIRE_PROTOCOL } from './wire';
 import { diffWorldState, worldState, type WorldState, type WorldStateUpdate } from './worldState';
+import { guestCharacter } from '../features/player/character';
 
 describe('a replica fed full world states every tick', () => {
   it('draws exactly what the sim draws, tick after tick, through JSON', async () => {
@@ -83,7 +85,7 @@ describe('a replica fed deltas at a send rate', () => {
     const replica = createReplica({ map: sim.map });
     const server = new FakeServer(sim);
     applyWorldState(replica, server.fullState());
-    sim.step([{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }, { type: 'player/join', slot: 1, character: guestCharacter(1) }]);
     applyWorldState(replica, server.delta());
     const leaver = findPlayerEntity(replica, 1);
     expect(leaver).toBeDefined();
@@ -106,7 +108,7 @@ describe('a replica fed deltas at a send rate', () => {
     sim.destroy();
   });
 
-  it('shows each player in the avatar and at the spread spawn the sim gave it, for a full room of five', async () => {
+  it('shows each player as the character it joined with and at the spread spawn the sim gave it, for a full room of five', async () => {
     const sim = await createSim({ seed: 21 });
     const replica = createReplica({ map: sim.map });
     const server = new FakeServer(sim);
@@ -114,7 +116,7 @@ describe('a replica fed deltas at a send rate', () => {
     const seats = [0, 1, 2, 3, 4];
     // Joins one per tick, like a room filling up; each one goes out as its own delta.
     for (const slot of seats) {
-      sim.step([{ type: 'player/join', slot }]);
+      sim.step([{ type: 'player/join', slot, character: guestCharacter(slot) }]);
       expect(applyWorldState(replica, overTheWire(server.delta()))).toBe('applied');
       expectSameView(replica, sim);
     }
@@ -127,10 +129,9 @@ describe('a replica fed deltas at a send rate', () => {
       return getRenderables(sim).find((renderable) => renderable.eid === eid);
     });
     expect(drawnBySlot).toEqual(simDrawnBySlot);
-    // The sim picks five different avatars (there are at least five) and five different tiles; the replica shows exactly those.
-    const avatars = drawnBySlot.map((renderable) => renderable?.defId as number);
-    expect(avatars.every((defId) => isAvatarDefId(defId))).toBe(true);
-    expect(new Set(avatars).size).toBe(Math.min(seats.length, avatarDefIds.length));
+    // Five characters on five different tiles; the replica shows exactly the names and looks the joins carried.
+    expect(drawnBySlot.every((renderable) => isPlayerDefId(renderable?.defId as number))).toBe(true);
+    expect(seats.map((slot) => getCharacter(replica, findPlayerEntity(replica, slot) as number))).toEqual(seats.map((slot) => guestCharacter(slot)));
     expect(new Set(drawnBySlot.map((renderable) => `${renderable?.x},${renderable?.y}`)).size).toBe(seats.length);
     sim.destroy();
   });
@@ -157,7 +158,7 @@ describe('a replica fed deltas at a send rate', () => {
     applyWorldState(replica, worldState(sim));
     expect(replica.tick).toBe(50);
     const restarted = await createSim({ seed: 12 });
-    restarted.step([{ type: 'player/join', slot: 4 }]);
+    restarted.step([{ type: 'player/join', slot: 4, character: guestCharacter(4) }]);
     expect(applyWorldState(replica, worldState(restarted))).toBe('applied');
     expect(replica.tick).toBe(1);
     expectSameView(replica, restarted);
@@ -196,7 +197,7 @@ describe('createReplica', () => {
   it('refuses to step: a replica only shows what the server sent', () => {
     const replica = createReplica({ map: worldMap });
     expect(() => replica.step()).toThrow(/cannot step/);
-    expect(() => replica.step([{ type: 'player/join', slot: 0 }])).toThrow(/cannot step/);
+    expect(() => replica.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }])).toThrow(/cannot step/);
   });
 
   it('only a replica takes world states; a live sim or a foreign object is refused loudly', async () => {
@@ -211,7 +212,7 @@ describe('createReplica', () => {
   it('needs a full state before it takes deltas', async () => {
     const sim = await createSim({ seed: 1 });
     const replica = createReplica({ map: sim.map });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const before = worldState(sim);
     sim.step();
     const delta = diffWorldState(before, worldState(sim));
@@ -228,7 +229,7 @@ describe('createReplica', () => {
 
   it('a DefRef at no def is a loud bug in a live sim and a skipped entity on a replica', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    sim.step([{ type: 'player/join', slot: 0 }]);
+    sim.step([{ type: 'player/join', slot: 0, character: guestCharacter(0) }]);
     const replica = createReplica({ map: sim.map });
     applyWorldState(replica, worldState(sim));
     const player = findPlayerEntity(sim, 0) as number;
@@ -241,11 +242,11 @@ describe('createReplica', () => {
 });
 
 describe('the wire contract the server and the client are built against', () => {
-  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012 and 0013 list', () => {
+  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013 and 0015 list', () => {
     // A change to any of these is a change to the contract: count WIRE_PROTOCOL up with it.
-    expect(WIRE_PROTOCOL).toBe(3);
-    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move', moveApplied: 'player/move-applied' });
-    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full', protocolMismatch: 'protocol-mismatch' });
+    expect(WIRE_PROTOCOL).toBe(4);
+    expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move', changeCharacter: 'player/change-character', moveApplied: 'player/move-applied' });
+    expect(JOIN_REFUSAL).toEqual({ worldFull: 'world-full', protocolMismatch: 'protocol-mismatch', invalidCharacter: 'invalid-character' });
     expect(DEFAULT_SEND_RATE).toBe(20);
   });
 });
@@ -426,7 +427,7 @@ const TICKS = 300;
 function script(tick: number): Command[] {
   switch (tick) {
     case 0:
-      return [{ type: 'player/join', slot: 0 }, { type: 'player/join', slot: 1 }, { type: 'player/join', slot: 2 }];
+      return [{ type: 'player/join', slot: 0, character: guestCharacter(0) }, { type: 'player/join', slot: 1, character: guestCharacter(1) }, { type: 'player/join', slot: 2, character: guestCharacter(2) }];
     case 1:
       return [
         { type: 'player/move', slot: 0, x: 1, y: 0 },
@@ -438,7 +439,7 @@ function script(tick: number): Command[] {
     case 120:
       return [{ type: 'player/leave', slot: 1 }, { type: 'player/move', slot: 0, x: -1, y: -1 }];
     case 150:
-      return [{ type: 'player/join', slot: 3 }, { type: 'player/move', slot: 3, x: 0, y: 1 }];
+      return [{ type: 'player/join', slot: 3, character: guestCharacter(3) }, { type: 'player/move', slot: 3, x: 0, y: 1 }];
     case 240:
       return [{ type: 'player/move', slot: 3, x: 1, y: 1 }, { type: 'player/move', slot: 0, x: 0, y: 0 }];
     default:

@@ -15,6 +15,8 @@ export interface ConnectionScreenActions {
   readonly onRetry: () => void;
   /** The "Reload page" button of the incompatible screen: the only way on from there, and the player's choice, never the page's own. */
   readonly onReload: () => void;
+  /** The "Make a new character" button of the character-refused screen: back to the creator. */
+  readonly onNewCharacter: () => void;
 }
 
 /**
@@ -36,7 +38,11 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
   reloadButton.type = 'button';
   reloadButton.textContent = 'Reload page';
   reloadButton.addEventListener('click', actions.onReload);
-  screen.append(message, retryButton, reloadButton);
+  const newCharacterButton = document.createElement('button');
+  newCharacterButton.type = 'button';
+  newCharacterButton.textContent = 'Make a new character';
+  newCharacterButton.addEventListener('click', actions.onNewCharacter);
+  screen.append(message, retryButton, reloadButton, newCharacterButton);
   parent.append(screen);
   let countdown: ReturnType<typeof setInterval> | undefined;
   let shown: ConnectionStatus | undefined;
@@ -52,6 +58,7 @@ export function createConnectionScreens(parent: HTMLElement, actions: Connection
     retryButton.hidden = shown.kind !== 'full' && shown.kind !== 'disconnected' && !waitsForThePlayer(shown);
     retryButton.textContent = shown.kind === 'away' ? 'Rejoin' : shown.kind === 'elsewhere' ? 'Play here' : 'Retry now';
     reloadButton.hidden = shown.kind !== 'incompatible';
+    newCharacterButton.hidden = shown.kind !== 'character-refused';
   };
 
   return {
@@ -91,6 +98,8 @@ function describeStatus(status: ConnectionStatus): string {
       return `Disconnected from the world. Retrying in ${secondsUntil(status.retryAt)}s…`;
     case 'away':
       return 'You were away too long, so the server freed your seat. Rejoin to play again.';
+    case 'character-refused':
+      return 'The server did not accept your character. Make a new one to play.';
     case 'elsewhere':
       return 'You are playing in another tab or window. Play here to carry on in this one.';
     case 'incompatible':

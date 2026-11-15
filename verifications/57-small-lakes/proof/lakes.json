@@ -178,7 +178,7 @@
   "shore": {
     "lake": "clearing",
     "player": {
-      "x": 28.50027084350586,
+      "x": 28.666942596435547,
       "y": 14.601884841918945,
       "radius": 0.4,
       "intent": {
@@ -189,7 +189,7 @@
         "column": 28,
         "row": 14
       },
-      "tick": 375,
+      "tick": 376,
       "still": true,
       "standsOn": "grass",
       "tileAhead": "shallows"
@@ -264,7 +264,7 @@
     {
       "name": "walking into the lake on the keyboard, the player stops at the top of the bank",
       "pass": true,
-      "details": "moved 22.0 m from the start, stopped -0.002 m from the edge of the shallows with S still held"
+      "details": "moved 22.2 m from the start, stopped -0.002 m from the edge of the shallows with S still held"
     },
     {
       "name": "the player stands on grass with the shallows on the next tile: not even shallow water is entered",
@@ -284,7 +284,7 @@
     {
       "name": "the lake in south-glade is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "34 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+      "details": "34 tiles walked; pushed for 92 ticks, moved 0.01 m, still on grass"
     },
     {
       "name": "the lake in south-glade is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
@@ -294,7 +294,7 @@
     {
       "name": "the lake in north-meadow is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "86 tiles walked; pushed for 91 ticks, moved 0.13 m, still on grass"
+      "details": "86 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
     },
     {
       "name": "the lake in north-meadow is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
@@ -314,7 +314,7 @@
     {
       "name": "the lake in west-woods is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "26 tiles walked; pushed for 91 ticks, moved 0.13 m, still on grass"
+      "details": "26 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
     },
     {
       "name": "the lake in west-woods is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
@@ -324,17 +324,17 @@
     {
       "name": "the lake in east-glade is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "110 tiles walked; pushed for 91 ticks, moved 0.14 m, still on grass"
+      "details": "110 tiles walked; pushed for 90 ticks, moved 0.13 m, still on grass"
     },
     {
       "name": "the lake in east-glade is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
       "pass": true,
-      "details": "44 of 44 deep tiles looked at are blue and 32 of 32 shallows tiles (82 in the lake, 1 behind the player); the shallows are paler by 54 of red; 23 of 23 sides facing grass show the bank, 0 a rim brighter than the water; 9 of 9 tiles beside it are green"
+      "details": "44 of 44 deep tiles looked at are blue and 32 of 32 shallows tiles (82 in the lake, 1 behind the player); the shallows are paler by 52 of red; 23 of 23 sides facing grass show the bank, 0 a rim brighter than the water; 9 of 9 tiles beside it are green"
     },
     {
       "name": "the lake in far-clearing is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "35 tiles walked; pushed for 90 ticks, moved 0.14 m, still on grass"
+      "details": "35 tiles walked; pushed for 90 ticks, moved 0.17 m, still on grass"
     },
     {
       "name": "the lake in far-clearing is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",
@@ -344,7 +344,7 @@
     {
       "name": "the lake in rock-field is reached on foot and its shallows hold the player on the grass",
       "pass": true,
-      "details": "81 tiles walked; pushed for 90 ticks, moved 0.13 m, still on grass"
+      "details": "81 tiles walked; pushed for 90 ticks, moved 0.18 m, still on grass"
     },
     {
       "name": "the lake in rock-field is on screen and drawn as a lake sunk in the ground: deep water, paler shallows, a bank of earth down to them, grass around it",

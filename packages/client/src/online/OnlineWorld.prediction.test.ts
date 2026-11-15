@@ -16,6 +16,7 @@ import {
   type MoveMessage,
   type SimHandle,
   type WorldState,
+  guestCharacter,
 } from '@novaland/sim';
 import { describe, expect, it, vi } from 'vitest';
 import { FakeRoom, scriptedJoin } from './fakeRoom';
@@ -196,7 +197,7 @@ describe('OnlineWorld predicting the local player', () => {
     const secondRoom = await nextRoom(link.join, 1);
     link.server.step([
       { type: 'player/leave', slot: 0 },
-      { type: 'player/join', slot: 3 },
+      { type: 'player/join', slot: 3, character: guestCharacter(3) },
     ]);
     link.reseat(secondRoom, 3);
     expect(link.world.predictionReport!.predicting).toBe(true);
@@ -363,7 +364,12 @@ describe('OnlineWorld predicting the local player', () => {
     link.frame([move(0, 0)]);
     link.frames(MAX_PREDICTION_TICKS + 60);
     expect(link.world.predictionReport!.predicting).toBe(true);
-    expect(link.drawn()).toEqual(link.serverPosition());
+    // The walk can end against a tree or a rock. The prediction runs a few ticks ahead of the server, and physics still
+    // settles a body that rests on a wall by a few millionths of a metre per tick, so the two agree to far less than a
+    // pixel (a sixteenth of a metre), not to the last bit.
+    const drawn = link.drawn();
+    const server = link.serverPosition();
+    expect(Math.hypot(drawn.x - server.x, drawn.y - server.y)).toBeLessThan(1e-5);
   });
 });
 
@@ -515,14 +521,15 @@ async function linked(slot: number, lag: LinkOptions, options: Partial<Parameter
   const server = await createSim({ seed: 7 });
   const otherSlot = slot === 0 ? 1 : 0;
   server.step([
-    { type: 'player/join', slot: otherSlot },
-    { type: 'player/join', slot },
+    { type: 'player/join', slot: otherSlot, character: guestCharacter(otherSlot) },
+    { type: 'player/join', slot, character: guestCharacter(slot) },
   ]);
   const join = scriptedJoin(['room', 'room', 'room']);
   const predictionSims: SimHandle[] = [];
   const clock = { now: (): number => 0 };
   const { seated } = OnlineWorld.join({
     endpoint: 'ws://world.test',
+    character: guestCharacter(slot),
     join: join.join,
     now: () => clock.now(),
     createPrediction: async (predictionOptions) => {

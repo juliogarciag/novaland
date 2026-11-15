@@ -25,11 +25,13 @@ import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { PROOF, check, lastLinesOf, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { PROOF, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 /** Not 5157: that is the dev server left running for the human. */
 const PORT = 5957;
 const VIEWPORT = { width: 960, height: 720 };
+/** Who the page plays as: the browser remembers this character, so the creator screen does not show. Palette indexes, as the sim's `characterPalettes` lists them. */
+const CHARACTER = { name: 'Walker', look: { skin: 0, hair: 0, clothes: 0 } };
 /** The ticket asks for screenshots of at least three lakes. */
 const LAKES_THE_TICKET_ASKS_FOR = 3;
 /** The corner of the screenshot the HUD covers, in pixels, with room to spare. */
@@ -49,7 +51,9 @@ try {
   if (!ready) throw new Error('nothing to open');
 
   browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+  await rememberCharacter(context, CHARACTER);
+  const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(String(error)));
   page.on('console', (message) => message.type() === 'error' && pageErrors.push(message.text()));
   await page.goto(`http://localhost:${PORT}/`);

@@ -13,6 +13,7 @@ import { worldState } from '../../core/worldState';
 import { findPlayerEntity } from '../player/queries';
 import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from './defs';
 import { solidRectangles } from './rectangles';
+import { guestCharacter } from '../player/character';
 
 describe('tile defs', () => {
   it('a standing sprite has at least one variant and stands on a flat tile def', () => {
@@ -261,7 +262,7 @@ describe('terrain feature (headless)', () => {
 const { createSimInternal } = __testing__;
 const { staticBoxes } = physicsTesting;
 
-const playerDef = getDef(DefId.PlayerSky);
+const playerDef = getDef(DefId.Player);
 const SPEED = playerDef.speed ?? 0;
 const RADIUS = playerDef.radius ?? 0;
 
@@ -315,7 +316,7 @@ const rockRoom: WorldMap = {
   spawn: { column: 2, row: 2 },
 };
 
-const join = (slot = 0): Command => ({ type: 'player/join', slot });
+const join = (slot = 0): Command => ({ type: 'player/join', slot, character: guestCharacter(slot) });
 const move = (x: number, y: number, slot = 0): Command => ({ type: 'player/move', slot, x, y });
 
 function playerPosition(sim: Sim, slot = 0) {

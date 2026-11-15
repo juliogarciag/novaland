@@ -1,4 +1,4 @@
-import { getHeading, getRenderables, type Heading, type Renderable, type SimHandle } from '@novaland/sim';
+import { getCharacter, getHeading, getRenderables, type Character, type Heading, type Renderable, type SimHandle } from '@novaland/sim';
 
 /**
  * Everything the entity renderer needs for one drawn frame, read from a sim
@@ -14,17 +14,22 @@ export interface ViewFrame {
   readonly renderables: readonly Renderable[];
   /** Heading by entity id, for the entities that have one. */
   readonly headings: ReadonlyMap<number, Heading>;
+  /** Character (name and look) by entity id, for the entities that have one. */
+  readonly characters: ReadonlyMap<number, Character>;
 }
 
 /** What `handle` would draw right now. */
 export function readViewFrame(handle: SimHandle): ViewFrame {
   const renderables = getRenderables(handle);
   const headings = new Map<number, Heading>();
+  const characters = new Map<number, Character>();
   for (const renderable of renderables) {
     const heading = getHeading(handle, renderable.eid);
     if (heading) headings.set(renderable.eid, heading);
+    const character = getCharacter(handle, renderable.eid);
+    if (character) characters.set(renderable.eid, character);
   }
-  return { tick: handle.tick, renderables, headings };
+  return { tick: handle.tick, renderables, headings, characters };
 }
 
 /**
@@ -34,7 +39,8 @@ export function readViewFrame(handle: SimHandle): ViewFrame {
  * where `to` has it, something that vanished is gone. A position is
  * interpolated only while the entity id means the same thing in both frames
  * (same def and size; ids are recycled), otherwise it snaps to `to`.
- * Headings are `to`'s, so a walk starts and stops with the newer frame.
+ * Headings and characters are `to`'s, so a walk starts and stops with the
+ * newer frame and a recycled id never shows the name of who had it before.
  */
 export function interpolateViewFrames(from: ViewFrame, to: ViewFrame, alpha: number): ViewFrame {
   const weight = Math.min(1, Math.max(0, alpha));
@@ -51,5 +57,5 @@ export function interpolateViewFrames(from: ViewFrame, to: ViewFrame, alpha: num
       y: before.y + (renderable.y - before.y) * weight,
     };
   });
-  return { tick: from.tick + (to.tick - from.tick) * weight, renderables, headings: to.headings };
+  return { tick: from.tick + (to.tick - from.tick) * weight, renderables, headings: to.headings, characters: to.characters };
 }

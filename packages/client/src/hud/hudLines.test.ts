@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, getDef, getRenderables } from '@novaland/sim';
+import { createSim, type Character } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { LocalWorld } from '../worlds/LocalWorld';
 import type { PlayableWorld } from '../worlds/PlayableWorld';
@@ -24,8 +24,7 @@ describe('hudLines', () => {
 
   it('keeps who you are, the player count and the dev J hint where the world offers it', async () => {
     const world = await seatedSoloWorld();
-    const avatar = getRenderables(world.sim).find((renderable) => renderable.eid === findPlayerEntity(world.sim, world.localSlot))!;
-    expect(hudLines(world, { framesPerSecond: 60 }).slice(1)).toEqual([`you: ${getDef(avatar.defId).name}   players: 1`, 'J: seat another player (dev)']);
+    expect(hudLines(world, { framesPerSecond: 60 }).slice(1)).toEqual([`you: ${CHARACTER.name}   players: 1`, 'J: seat another player (dev)']);
     expect(hudLines(asOnlineWorld(world, { latencyMs: 20 }), { framesPerSecond: 60 })).toHaveLength(2);
   });
 
@@ -37,21 +36,23 @@ describe('hudLines', () => {
   });
 
   it('online and not seated yet says joining... next to an unmeasured latency', async () => {
-    const world = asOnlineWorld(new LocalWorld(await createSim({ seed: 1 })), { latencyMs: undefined });
+    const world = asOnlineWorld(new LocalWorld(await createSim({ seed: 1 }), CHARACTER), { latencyMs: undefined });
     expect(hudLines(world, { framesPerSecond: 60 })).toEqual(['fps  60   latency  -- ms   2/5 online', 'you: joining...   players: 0']);
   });
 
-  it('says joining... until the local player has an avatar', async () => {
-    const world = new LocalWorld(await createSim({ seed: 1 }));
+  it('says joining... until the local player is in the world', async () => {
+    const world = new LocalWorld(await createSim({ seed: 1 }), CHARACTER);
     expect(hudLines(world, { framesPerSecond: 60 })[1]).toBe('you: joining...   players: 0');
   });
 });
 
 // ---- Helpers ----
 
+const CHARACTER: Character = { name: 'Ada Lovelace', look: { skin: 1, hair: 2, clothes: 3 } };
+
 /** A solo world whose local player has joined. */
 async function seatedSoloWorld(): Promise<LocalWorld> {
-  const world = new LocalWorld(await createSim({ seed: 1 }));
+  const world = new LocalWorld(await createSim({ seed: 1 }), CHARACTER);
   world.nextFrame([], world.sim.dt);
   return world;
 }
@@ -65,5 +66,6 @@ function asOnlineWorld(world: LocalWorld, { latencyMs }: { latencyMs: number | u
     latencyMs,
     nextFrame: (commands, deltaSeconds) => world.nextFrame(commands, deltaSeconds),
     queueCommand: (command) => world.queueCommand(command),
+    changeCharacter: (character) => world.changeCharacter(character),
   };
 }

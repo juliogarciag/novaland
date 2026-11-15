@@ -1,3 +1,4 @@
+/* global window */
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import net from 'node:net';
@@ -15,6 +16,20 @@ export function writeProof(name, data) {
   const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2) + '\n';
   writeFileSync(file, text.split(ROOT).join('<repo>'));
   return file;
+}
+
+/** Where the client keeps the character a player made (`CHARACTER_STORAGE_KEY` in packages/client/src/creator/rememberedCharacter.ts). */
+const CHARACTER_STORAGE_KEY = 'novaland.character';
+
+/**
+ * Makes every page of a browser context a returning player: the browser
+ * already remembers `character`, so the page goes straight into the world
+ * instead of stopping at the creator screen. Call it before the first
+ * `goto`. A check about the creator itself leaves this out and fills the
+ * form instead.
+ */
+export async function rememberCharacter(context, character) {
+  await context.addInitScript(([key, value]) => window.localStorage.setItem(key, value), [CHARACTER_STORAGE_KEY, JSON.stringify(character)]);
 }
 
 /** Starts a long-running command in its own process group, so `stop()` takes its children too, also when this script dies. */

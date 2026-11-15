@@ -2,7 +2,7 @@ import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, tileDefIdAt, TILE_SIZ
 import Phaser from 'phaser';
 import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, DRAW_MARGIN_TILES, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
 import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
-import { spriteSheetUrl } from './sprites';
+import { spriteSheetUrl } from './spriteUrl';
 import { standingTilePlacements } from './standingTiles';
 import { PIXELS_PER_METRE, toPixels } from './units';
 

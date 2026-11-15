@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Command } from '../../core/commands';
 import { __testing__ } from '../../core/create';
 import { getRenderables } from '../../core/view';
+import { guestCharacter } from '../../features/player/character';
 import { playerDefs } from '../../features/player/defs';
 import { getTileDef, terrainDefs, TerrainDefId, TILE_SIZE } from '../../features/terrain/defs';
 import { worldMap } from './index';
@@ -136,7 +137,7 @@ describe('the lakes of the world', () => {
 
 const { createSimInternal } = __testing__;
 
-const join: Command = { type: 'player/join', slot: 0 };
+const join: Command = { type: 'player/join', slot: 0, character: guestCharacter(0) };
 
 /** Every lake of the world: the groups of water and shallows tiles that touch side to side. */
 const lakes: TileCoordinate[][] = findLakes();

@@ -5,6 +5,7 @@ import {
   createReplica,
   getPlayerPosition,
   getTileDef,
+  guestCharacter,
   readMapTiles,
   spawnPoint,
   tileCentre,
@@ -199,7 +200,7 @@ describe('a player who joins again', () => {
  * a client put in the matchmaking request, and none of it may place a player.
  */
 describe('a forged or malformed join', () => {
-  it('fuzzed with 200 random join options, never throws anything but a protocol refusal and never places a player away from the spawn', async () => {
+  it('fuzzed with 200 random join options, never throws anything but a protocol or a character refusal and never places a player away from the spawn', async () => {
     const random = seededRandom(55);
     const store = openSavedPositions();
     // A known player stands far from the spawn: the place a forged join would like to appear at.
@@ -218,7 +219,8 @@ describe('a forged or malformed join', () => {
           refusal = error;
         });
         if (refusal !== undefined) {
-          expect(String((refusal as Error).message), optionsAsText(options)).toBe('protocol-mismatch');
+          // With the junk a forger adds, the options can also outgrow what the room reads of a join: that join is refused for its character.
+          expect(['protocol-mismatch', 'invalid-character'], optionsAsText(options)).toContain(String((refusal as Error).message));
           expect(room.seatsTaken).toBe(0);
           continue;
         }
@@ -235,13 +237,13 @@ describe('a forged or malformed join', () => {
       expect(store.find(keyOf(knownToken))).toEqual(faraway);
       // The real token still works after all of that: only it opens that place.
       const owner = fakeClient('owner');
-      await room.onJoin(owner, { protocol: WIRE_PROTOCOL, playerToken: knownToken });
+      await room.onJoin(owner, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: knownToken });
       const welcome = owner.sent[0]?.[1] as WelcomeMessage;
       const own = welcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === welcome.slot);
       expect(own?.components['Position']).toEqual(faraway);
       // The owner's own join cannot move them either: with their token seated and with it known, a forged position is ignored.
       const elsewhere = spawnPoint(worldMap);
-      const forged = { protocol: WIRE_PROTOCOL, playerToken: knownToken, returnTo: elsewhere, position: elsewhere, x: elsewhere.x, y: elsewhere.y };
+      const forged = { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: knownToken, returnTo: elsewhere, position: elsewhere, x: elsewhere.x, y: elsewhere.y };
       for (const sessionId of ['owner-second-tab', 'owner-after-leaving']) {
         const client = fakeClient(sessionId);
         await room.onJoin(client, forged);
@@ -264,8 +266,8 @@ describe('a forged or malformed join', () => {
       const token = newToken();
       const older = fakeClient('older');
       const newer = fakeClient('newer');
-      const olderJoin = room.onJoin(older, { protocol: WIRE_PROTOCOL, playerToken: token });
-      const newerJoin = room.onJoin(newer, { protocol: WIRE_PROTOCOL, playerToken: token });
+      const olderJoin = room.onJoin(older, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: token });
+      const newerJoin = room.onJoin(newer, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: token });
       await expect(olderJoin).rejects.toThrow(REPLACED_KICK.reason);
       await newerJoin;
       expect(older.left).toEqual([[REPLACED_KICK.code, REPLACED_KICK.reason]]);
@@ -285,7 +287,7 @@ describe('a forged or malformed join', () => {
     await room.onCreate({ seed: 5, clock, savedPositions: store });
     try {
       const earlier = fakeClient('earlier');
-      await room.onJoin(earlier, { protocol: WIRE_PROTOCOL, playerToken: newToken() });
+      await room.onJoin(earlier, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: newToken() });
       clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
       // The earlier player leaves and a known player takes the same seat and leaves again, all before the next tick: the slot still holds the earlier player's entity.
       const knownToken = newToken();
@@ -293,7 +295,7 @@ describe('a forged or malformed join', () => {
       store.save(keyOf(knownToken), remembered);
       room.onLeave(earlier);
       const hasty = fakeClient('hasty');
-      const hastyJoin = room.onJoin(hasty, { protocol: WIRE_PROTOCOL, playerToken: knownToken });
+      const hastyJoin = room.onJoin(hasty, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: knownToken });
       room.onLeave(hasty);
       await hastyJoin;
       expect(store.find(keyOf(knownToken))).toEqual(remembered);
@@ -310,7 +312,7 @@ describe('a forged or malformed join', () => {
     await room.onCreate({ seed: 6, clock, savedPositions: store });
     const token = newToken();
     const seated = fakeClient('seated');
-    await room.onJoin(seated, { protocol: WIRE_PROTOCOL, playerToken: token });
+    await room.onJoin(seated, { protocol: WIRE_PROTOCOL, character: guestCharacter(0), playerToken: token });
     const welcome = seated.sent[0]?.[1] as WelcomeMessage;
     const own = welcome.state.entities.find((entity) => entity.components['Player']?.['slot'] === welcome.slot);
     clock.skipAhead(NEW_PLAYER_SAVE_AFTER_MS);
@@ -370,7 +372,7 @@ function temporaryDirectory(): string {
 
 /** Joins the world the way the browser client does, with whatever else the join should carry, and keeps a replica in step with what the server sends. */
 async function join(port: number, extraOptions: Record<string, unknown> = {}): Promise<Player> {
-  const room = await new Client(`ws://127.0.0.1:${port}`).joinById('world', { protocol: WIRE_PROTOCOL, ...extraOptions });
+  const room = await new Client(`ws://127.0.0.1:${port}`).joinById('world', { protocol: WIRE_PROTOCOL, character: guestCharacter(0), ...extraOptions });
   room.reconnection.enabled = false;
   const messages: unknown[] = [];
   const updates = { count: 0 };
@@ -541,7 +543,7 @@ function randomJoinOptions(random: () => number, wanted: { x: number; y: number 
   const pick = <T,>(items: readonly T[]): T => items[Math.floor(random() * items.length)] as T;
   const roll = random();
   if (roll < 0.04) return pick([undefined, null, 7, 'join', [], [WIRE_PROTOCOL], true]);
-  const options: Record<string, unknown> = { protocol: roll < 0.12 ? pick([0, WIRE_PROTOCOL + 1, String(WIRE_PROTOCOL), null, NaN]) : WIRE_PROTOCOL };
+  const options: Record<string, unknown> = { protocol: roll < 0.12 ? pick([0, WIRE_PROTOCOL + 1, String(WIRE_PROTOCOL), null, NaN]) : WIRE_PROTOCOL, character: guestCharacter(0) };
   const tokenRoll = random();
   if (tokenRoll < 0.3) options['playerToken'] = newToken();
   else if (tokenRoll < 0.7) {

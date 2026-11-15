@@ -1,19 +1,23 @@
 /**
- * Generates the placeholder avatar sheets at public/sprites/player-<avatar>.png,
- * one per entry of AVATAR_PALETTES below. The keys must match the sprite keys
- * of the player avatar defs in packages/sim/src/features/player/defs.ts.
+ * Generates the placeholder character sheet at public/sprites/player.png, the
+ * sprite of the player def in packages/sim/src/features/player/defs.ts.
  *
- * Every sheet is the same character in another palette (shirt, hair, skin,
- * pants): four rows (down, up, left, right) of four 16x24 frames. Frame 0 of
- * each row is the idle pose; the walk cycle plays the whole row: stand, left
- * step, passing pose (body one pixel taller), right step. The frame layout
- * must match the avatars' `sprite` def.
+ * The sheet is painted in the template colours of TEMPLATE_PALETTE: the
+ * client swaps the skin, hair and clothes colours for the ones each player
+ * picked (src/render/characterSheet.ts, whose TEMPLATE_COLORS must match;
+ * the generator's test checks it), so those must not be used for anything
+ * else in the figure.
+ *
+ * Four rows (down, up, left, right) of four 16x24 frames. Frame 0 of each row
+ * is the idle pose; the walk cycle plays the whole row: stand, left step,
+ * passing pose (body one pixel taller), right step. The frame layout must
+ * match the def's `sprite`.
  *
  * Plain Node, no dependencies: the figure is painted into an RGBA buffer and
  * written as a PNG by the small encoder at the bottom.
  *
- *   node tools/generate-player-sheet.mjs                # writes every sheet into public/sprites/
- *   node tools/generate-player-sheet.mjs --out <dir>    # writes them somewhere else (used by verifications)
+ *   node tools/generate-player-sheet.mjs                # writes the sheet into public/sprites/
+ *   node tools/generate-player-sheet.mjs --out <dir>    # writes it somewhere else (used by verifications)
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -25,23 +29,24 @@ export const FRAME_HEIGHT = 24;
 export const DIRECTIONS = ['down', 'up', 'left', 'right'];
 export const FRAMES_PER_DIRECTION = 4;
 
-/** Colours every avatar shares. */
-const COMMON = {
+/** Sprite key of the player def: the sheet is written as `<key>.png`. */
+export const PLAYER_SHEET_KEY = 'player';
+
+/** Colours the client never swaps. */
+export const FIXED_PALETTE = {
   outline: [0x1f, 0x1a, 0x17],
   eye: [0x14, 0x12, 0x1a],
   shoe: [0x1f, 0x29, 0x37],
+  pants: [0x37, 0x41, 0x51],
+  pantsShade: [0x26, 0x2d, 0x3a],
 };
 
-/** One palette per avatar, keyed by sprite key. The shirt colour is also the def's `color` in the sim. */
-export const AVATAR_PALETTES = {
-  'player-sky': { skin: [0xf1, 0xc2, 0x7d], hair: [0x6b, 0x3e, 0x1e], shirt: [0x3b, 0x82, 0xf6], shirtShade: [0x2a, 0x5f, 0xc0], pants: [0x37, 0x41, 0x51], pantsShade: [0x26, 0x2d, 0x3a] },
-  'player-rose': { skin: [0x8d, 0x55, 0x24], hair: [0x1f, 0x1a, 0x17], shirt: [0xe1, 0x1d, 0x48], shirtShade: [0xbe, 0x12, 0x3c], pants: [0x1e, 0x29, 0x3b], pantsShade: [0x16, 0x1f, 0x2e] },
-  'player-moss': { skin: [0xff, 0xdb, 0xac], hair: [0xd9, 0x77, 0x06], shirt: [0x16, 0xa3, 0x4a], shirtShade: [0x15, 0x80, 0x3d], pants: [0x57, 0x53, 0x4e], pantsShade: [0x3f, 0x3c, 0x38] },
-  'player-sun': { skin: [0xc6, 0x86, 0x42], hair: [0x1f, 0x1a, 0x17], shirt: [0xf5, 0x9e, 0x0b], shirtShade: [0xd9, 0x77, 0x06], pants: [0x37, 0x41, 0x51], pantsShade: [0x26, 0x2d, 0x3a] },
-  'player-plum': { skin: [0xf1, 0xc2, 0x7d], hair: [0xf3, 0xe5, 0xab], shirt: [0x7c, 0x3a, 0xed], shirtShade: [0x6d, 0x28, 0xd9], pants: [0x2f, 0x2f, 0x3f], pantsShade: [0x21, 0x21, 0x2e] },
-  'player-ember': { skin: [0xe0, 0xac, 0x69], hair: [0x3b, 0x2f, 0x2f], shirt: [0xea, 0x58, 0x0c], shirtShade: [0xc2, 0x41, 0x0c], pants: [0x44, 0x40, 0x3c], pantsShade: [0x2f, 0x2c, 0x29] },
-  'player-teal': { skin: [0xff, 0xdb, 0xac], hair: [0x6b, 0x72, 0x80], shirt: [0x0d, 0x94, 0x88], shirtShade: [0x0f, 0x76, 0x6e], pants: [0x4b, 0x3a, 0x2f], pantsShade: [0x35, 0x29, 0x21] },
-  'player-slate': { skin: [0x8d, 0x55, 0x24], hair: [0xb4, 0x53, 0x09], shirt: [0x47, 0x55, 0x69], shirtShade: [0x33, 0x41, 0x55], pants: [0x1e, 0x29, 0x3b], pantsShade: [0x16, 0x1f, 0x2e] },
+/** Colours the client swaps for a player's look. `shirtShade` becomes a darker shade of the clothes colour. */
+export const TEMPLATE_PALETTE = {
+  skin: [0xf1, 0xc2, 0x7d],
+  hair: [0x6b, 0x3e, 0x1e],
+  shirt: [0x3b, 0x82, 0xf6],
+  shirtShade: [0x2a, 0x5f, 0xc0],
 };
 
 /** How the body is posed in each of the four frames of a row. `forwardLeg` is from the character's point of view. */
@@ -52,9 +57,9 @@ const POSES = [
   { bob: 0, forwardLeg: 'right' },
 ];
 
-/** The whole sheet of one avatar as RGBA bytes, rows top to bottom. */
-export function paintPlayerSheet(palette) {
-  const colors = { ...COMMON, ...palette };
+/** The whole sheet as RGBA bytes, rows top to bottom. */
+export function paintPlayerSheet() {
+  const colors = { ...FIXED_PALETTE, ...TEMPLATE_PALETTE };
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
@@ -256,19 +261,17 @@ function concat(parts) {
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
 
-/** Writes every avatar sheet into `directory` as `<key>.png` and returns the paths. */
-export function writeAvatarSheets(directory) {
+/** Writes the sheet into `directory` as `player.png` and returns its path. */
+export function writePlayerSheet(directory) {
   mkdirSync(directory, { recursive: true });
-  return Object.entries(AVATAR_PALETTES).map(([key, palette]) => {
-    const file = path.join(directory, `${key}.png`);
-    writeFileSync(file, encodePng(paintPlayerSheet(palette)));
-    return file;
-  });
+  const file = path.join(directory, `${PLAYER_SHEET_KEY}.png`);
+  writeFileSync(file, encodePng(paintPlayerSheet()));
+  return file;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const outFlag = process.argv.indexOf('--out');
-  if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheets go to public/sprites');
+  if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheet goes to public/sprites');
   const directory = outFlag >= 0 ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
-  for (const file of writeAvatarSheets(directory)) console.log(`wrote ${file}`);
+  console.log(`wrote ${writePlayerSheet(directory)}`);
 }

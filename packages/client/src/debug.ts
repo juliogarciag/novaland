@@ -1,5 +1,5 @@
-import type { Command, EntityDef, MapTiles, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
-import { avatarDefIds, CHUNK_SIZE, entityDefs, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
+import type { Character, Command, EntityDef, MapTiles, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
+import { characterPalettes, CHUNK_SIZE, entityDefs, getCharacter, getRenderables, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
 import type Phaser from 'phaser';
 import type { ConnectionStatus } from './online/connection';
 import type { PredictionReport } from './online/prediction';
@@ -29,8 +29,12 @@ export interface NovalandDebugApi {
   /** How much terrain is drawn right now: which chunks, how many ground tiles and standing images. Undefined until the world scene runs. */
   terrain(): TerrainReport | undefined;
   readonly defs: readonly EntityDef[];
-  /** The def ids a joining player may be dressed in, so checks need not guess which defs are avatars. */
-  readonly avatarDefIds: readonly number[];
+  /** The palettes a character's look indexes into, so checks derive colours from content. */
+  readonly characterPalettes: typeof characterPalettes;
+  /** Every character in the sim right now (name and look), by entity id. */
+  characters(): (Character & { readonly eid: number })[];
+  /** The names the renderer draws above characters right now, with where each sits and the texture its character is drawn from. Empty until the world scene runs. */
+  drawnNames(): ReturnType<WorldScene['drawnNames']>;
   readonly pixelsPerMetre: number;
   /** Metres the camera always keeps visible across the window; its zoom follows from this. */
   readonly minVisibleMetres: number;
@@ -90,7 +94,13 @@ export function exposeDebugApi({ world, game, online }: DebugApiOptions): void {
     tileDefIdAt: (tile) => tileDefIdAt(tiles, tile),
     terrain: () => (game.scene.isActive('world') ? (game.scene.getScene('world') as WorldScene).terrainReport() : undefined),
     defs: entityDefs,
-    avatarDefIds,
+    characterPalettes,
+    characters: () =>
+      getRenderables(sim).flatMap((renderable) => {
+        const character = getCharacter(sim, renderable.eid);
+        return character ? [{ eid: renderable.eid, ...character }] : [];
+      }),
+    drawnNames: () => (game.scene.isActive('world') ? (game.scene.getScene('world') as WorldScene).drawnNames() : []),
     pixelsPerMetre: PIXELS_PER_METRE,
     minVisibleMetres: MIN_VISIBLE_METRES,
     localSlot: () => world.localSlot,

@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, MAX_PLAYER_SLOTS, readMapTiles, worldMap } from '@novaland/sim';
+import { createSim, findPlayerEntity, guestCharacter, MAX_PLAYER_SLOTS, readMapTiles, worldMap } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { LOCAL_SLOT } from '../seats';
 import { createLocalWorld, LocalWorld } from './LocalWorld';
@@ -16,7 +16,7 @@ describe('LocalWorld', () => {
 
   it('runs queued commands on the next earned tick, like keyboard commands', async () => {
     const world = await freshWorld();
-    world.queueCommand({ type: 'player/join', slot: 2 });
+    world.queueCommand({ type: 'player/join', slot: 2, character: guestCharacter(2) });
     world.nextFrame([], world.sim.dt);
     expect(findPlayerEntity(world.sim, 2)).toBeDefined();
   });
@@ -36,18 +36,18 @@ describe('LocalWorld', () => {
 
 describe('createLocalWorld', () => {
   it('plays the world unless a generated map is asked for by size', async () => {
-    expect((await createLocalWorld()).sim.map).toBe(worldMap);
-    const big = await createLocalWorld({ generatedMap: '400x300' });
+    expect((await createLocalWorld({ character: guestCharacter(LOCAL_SLOT) })).sim.map).toBe(worldMap);
+    const big = await createLocalWorld({ character: guestCharacter(LOCAL_SLOT), generatedMap: '400x300' });
     expect(readMapTiles(big.sim.map).bounds).toEqual({ column: 0, row: 0, width: 400, height: 300 });
   });
 
   it('refuses a size it cannot read instead of quietly playing the world', async () => {
-    for (const size of ['', 'big', '400', '400x', '400x300x2', '-4x30', '4.5x30']) await expect(createLocalWorld({ generatedMap: size }), size).rejects.toThrow(/VITE_GENERATED_MAP/);
+    for (const size of ['', 'big', '400', '400x', '400x300x2', '-4x30', '4.5x30']) await expect(createLocalWorld({ character: guestCharacter(LOCAL_SLOT), generatedMap: size }), size).rejects.toThrow(/VITE_GENERATED_MAP/);
   });
 });
 
 // ---- Helpers ----
 
 async function freshWorld(): Promise<LocalWorld> {
-  return new LocalWorld(await createSim({ seed: 1 }));
+  return new LocalWorld(await createSim({ seed: 1 }), guestCharacter(LOCAL_SLOT));
 }
