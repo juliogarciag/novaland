@@ -1,4 +1,4 @@
-/* global window, document, localStorage */
+/* global window, document */
 /**
  * #55: a player who quits and joins again stands where they left, also after
  * the server process is killed or stopped and started again; a browser with
