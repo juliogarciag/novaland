@@ -1,12 +1,12 @@
-PASS  A is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":13.999919891357422,"y":14.5}, drawn at {"x":13.999919891357422,"y":14.5})
-PASS  A sees the other player as a dot in the other's avatar colour, where the other is  (dot at (855.0, 102.2), the other stands at (855.0, 102.2) on this minimap; pixel #e11d48, avatar #e11d48)
+PASS  A is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":14.166584014892578,"y":14.5}, drawn at {"x":14.166584014892578,"y":14.5})
+PASS  A sees the other player as a dot in the other's avatar colour, where the other is  (dot at (855.0, 106.0), the other stands at (855.0, 106.0) on this minimap; pixel #3b82f6, avatar #3b82f6)
 PASS  A sees the starting point marked on the spawn tile
-PASS  B is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":7.5,"y":19.583404541015625}, drawn at {"x":7.5,"y":19.583404541015625})
-PASS  B sees the other player as a dot in the other's avatar colour, where the other is  (dot at (881.0, 82.0), the other stands at (881.0, 82.0) on this minimap; pixel #0d9488, avatar #0d9488)
+PASS  B is in the middle of its own minimap, in white, centred on where its last frame drew it  (centre {"x":7.5,"y":21.500160217285156}, drawn at {"x":7.5,"y":21.500160217285156})
+PASS  B sees the other player as a dot in the other's avatar colour, where the other is  (dot at (881.3, 78.0), the other stands at (881.3, 78.0) on this minimap; pixel #ea580c, avatar #ea580c)
 PASS  B sees the starting point marked on the spawn tile
-PASS  while B walks east its dot moves east on A's minimap, sample after sample  (855.0 -> 857.7 -> 861.9 -> 866.0 -> 870.2)
-PASS  and it ends as many pixels east as the tiles B walked, while A's minimap stayed put  (B walked 8.75 m; its dot moved 17.5 px at 2 px a tile)
-PASS  on B's own minimap the terrain moved instead, and A's dot is still where A stands  (A's dot at (864.0, 82.0), expected (864.0, 82.0))
+PASS  while B walks east its dot moves east on A's minimap, sample after sample  (855.0 -> 857.6 -> 860.2 -> 866.3 -> 870.0)
+PASS  and it ends as many pixels east as the tiles B walked, while A's minimap stayed put  (B walked 8.50 m; its dot moved 17.0 px at 2 px a tile)
+PASS  on B's own minimap the terrain moved instead, and A's dot is still where A stands  (A's dot at (864.3, 78.0), expected (864.3, 78.0))
 PASS  no page errors
 
 ALL 10 CHECKS PASSED

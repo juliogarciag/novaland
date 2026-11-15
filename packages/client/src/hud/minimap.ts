@@ -8,11 +8,11 @@ import { chunkColorBytes, minimapChunkRanges } from './minimapTerrain';
 
 /** Behind the terrain, where no area put a tile: the colour of the HUD lines' backdrop, opaque so the world behind does not read as terrain. */
 const BACKDROP_COLOR = 0x0b0f14;
-/** The line around the minimap: the colour of the HUD's text. */
-const BORDER_COLOR = 0xe2e8f0;
-const BORDER_ALPHA = 0.6;
+/** The line around the minimap: dark, like the backdrop of the HUD's lines, so it frames the map without glowing. */
+const BORDER_COLOR = 0x0f172a;
+const BORDER_ALPHA = 0.9;
 /** CSS pixels. */
-const BORDER_WIDTH = 1;
+const BORDER_WIDTH = 2;
 
 /** Marker sizes in CSS pixels: a dot's radius, a diamond's half diagonal. The local player's dot is larger than any other dot and the only white thing on the minimap. */
 const DOT_RADIUS = 3;
