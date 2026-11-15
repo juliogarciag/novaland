@@ -5,6 +5,8 @@ import type { AreaData } from '../types';
  * South of the clearing, through its south exit: a glade. Trails leave west
  * to the stone hollow and east to the far clearing.
  *
+ * A lake lies in the middle, straight ahead of the trail from the clearing. Water (`~`) is solid: nobody walks on it.
+ *
  * 40x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
@@ -16,6 +18,7 @@ export const southGlade: AreaData = {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
     o: TerrainDefId.Rock,
+    '~': TerrainDefId.Water,
   },
   rows: [
     'TTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTT',
@@ -29,11 +32,11 @@ export const southGlade: AreaData = {
     'TTTTTTTTTTTTT.............TTTTTTTTTTTTTT',
     'TTTTTTTTTTTT..........T....TTTTTTTTTTTTT',
     'TTTTTTTTTT...................TTTTTTTTTTT',
-    'TTTTTTTT......................TTTTTTTTTT',
-    'TTTTTTT........................TTTTTTTT.',
-    'TT...T..........................TTTTTT..',
-    '................................TTTTT...',
-    '.......................T........TTTT....',
+    'TTTTTTTT.........~~~~.........TTTTTTTTTT',
+    'TTTTTTT........~~~~~~~.........TTTTTTTT.',
+    'TT...T........~~~~~~~~~.........TTTTTT..',
+    '...............~~~~~~~..........TTTTT...',
+    '................~~~....T........TTTT....',
     '.TTTTTT.......T........................T',
     'TTTTTTT......................TT.......TT',
     'TTTTTTTTT...................TTTTTTTTTTTT',

@@ -6,6 +6,8 @@ import type { AreaData } from '../types';
  * exit ends here, with a hidden glade off it on the way; others leave west
  * to the old grove and east to the rock field.
  *
+ * The largest lake of the world lies in the middle of the meadow. Water (`~`) is solid: nobody walks on it.
+ *
  * 40x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
@@ -16,6 +18,7 @@ export const northMeadow: AreaData = {
   legend: {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
+    '~': TerrainDefId.Water,
   },
   rows: [
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
@@ -28,12 +31,12 @@ export const northMeadow: AreaData = {
     'TTTTTTTT..TTTT..........TT..TTTTTTTTTTTT',
     'TTTTTTT...........T...........TTTTTTTTTT',
     'TTTTTT.........................TTTTTTTTT',
-    'TTTTTT..........................TTTTTTTT',
-    'TTTTT............................TTTTTTT',
-    'TTTTT.............................TTTTT.',
-    '...................................TTT..',
-    '........................................',
-    'TTTT....................................',
+    'TTTTTT.......~~~~...............TTTTTTTT',
+    'TTTTT.......~~~~~~~..............TTTTTTT',
+    'TTTTT......~~~~~~~~~..............TTTTT.',
+    '...........~~~~~~~~................TTT..',
+    '............~~~~~.......................',
+    'TTTT..........~~........................',
     'TTTT..............................TTTTTT',
     'TTTT.............................TTTTTTT',
     'TTTT.......T...................TTTTTTTTT',

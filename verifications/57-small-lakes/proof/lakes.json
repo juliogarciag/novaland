@@ -1,0 +1,307 @@
+{
+  "water": {
+    "id": 204,
+    "name": "water",
+    "shape": "box",
+    "color": 4096722,
+    "solid": true,
+    "groundSprite": {
+      "key": "water",
+      "tilePixels": 16,
+      "variantCount": 8
+    }
+  },
+  "lakes": [
+    {
+      "area": "north-meadow",
+      "box": {
+        "column": 11,
+        "row": -21,
+        "width": 9,
+        "height": 6
+      },
+      "tilesFromSpawn": 30,
+      "tileCount": 35
+    },
+    {
+      "area": "rock-field",
+      "box": {
+        "column": 70,
+        "row": -16,
+        "width": 5,
+        "height": 4
+      },
+      "tilesFromSpawn": 64,
+      "tileCount": 14
+    },
+    {
+      "area": "east-glade",
+      "box": {
+        "column": 51,
+        "row": 12,
+        "width": 8,
+        "height": 5
+      },
+      "tilesFromSpawn": 45,
+      "tileCount": 26
+    },
+    {
+      "area": "west-woods",
+      "box": {
+        "column": -34,
+        "row": 13,
+        "width": 4,
+        "height": 3
+      },
+      "tilesFromSpawn": 37,
+      "tileCount": 9
+    },
+    {
+      "area": "clearing",
+      "box": {
+        "column": 29,
+        "row": 15,
+        "width": 6,
+        "height": 4
+      },
+      "tilesFromSpawn": 23,
+      "tileCount": 18
+    },
+    {
+      "area": "south-glade",
+      "box": {
+        "column": 14,
+        "row": 41,
+        "width": 9,
+        "height": 5
+      },
+      "tilesFromSpawn": 27,
+      "tileCount": 30
+    },
+    {
+      "area": "far-clearing",
+      "box": {
+        "column": 58,
+        "row": 42,
+        "width": 8,
+        "height": 5
+      },
+      "tilesFromSpawn": 52,
+      "tileCount": 27
+    },
+    {
+      "area": "stone-hollow",
+      "box": {
+        "column": -28,
+        "row": 43,
+        "width": 5,
+        "height": 4
+      },
+      "tilesFromSpawn": 30,
+      "tileCount": 15
+    }
+  ],
+  "keyboardRoute": {
+    "length": 25,
+    "first": {
+      "key": "D",
+      "code": "KeyD",
+      "sign": 1
+    },
+    "second": {
+      "key": "S",
+      "code": "KeyS",
+      "sign": 1,
+      "axis": "y"
+    },
+    "turnAt": {
+      "column": 29,
+      "row": 14
+    },
+    "turnAtMetres": {
+      "x": 29.5,
+      "y": 14.5
+    },
+    "water": {
+      "column": 29,
+      "row": 16
+    },
+    "waterFaceMetres": 16
+  },
+  "shore": {
+    "lake": "clearing",
+    "player": {
+      "x": 29.500301361083984,
+      "y": 15.601883888244629,
+      "radius": 0.4,
+      "intent": {
+        "x": 0,
+        "y": 1
+      },
+      "tile": {
+        "column": 29,
+        "row": 15
+      },
+      "tick": 393,
+      "still": true,
+      "standsOn": "grass",
+      "tileAhead": "water"
+    },
+    "gapToWater": -0.0018838882446274852
+  },
+  "visited": [
+    "clearing",
+    "south-glade",
+    "north-meadow",
+    "stone-hollow",
+    "west-woods",
+    "east-glade",
+    "far-clearing",
+    "rock-field"
+  ],
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "water is a tile def of its own: solid, flat, with a colour",
+      "pass": true,
+      "details": "{\"id\":204,\"name\":\"water\",\"shape\":\"box\",\"color\":4096722,\"solid\":true,\"groundSprite\":{\"key\":\"water\",\"tilePixels\":16,\"variantCount\":8}}"
+    },
+    {
+      "name": "the world has several lakes: at least 3",
+      "pass": true,
+      "details": "north-meadow (35 tiles), rock-field (14 tiles), east-glade (26 tiles), west-woods (9 tiles), clearing (18 tiles), south-glade (30 tiles), far-clearing (27 tiles), stone-hollow (15 tiles)"
+    },
+    {
+      "name": "no lake is a plain rectangle",
+      "pass": true,
+      "details": "35/9x6 14/5x4 26/8x5 9/4x3 18/6x4 30/9x5 27/8x5 15/5x4"
+    },
+    {
+      "name": "no lake is on the spawn or right next to it",
+      "pass": true,
+      "details": "nearest water is 23 tiles from the spawn tile"
+    },
+    {
+      "name": "the water sheet loaded: lakes are drawn from it, not from the flat fallback",
+      "pass": true,
+      "details": "water"
+    },
+    {
+      "name": "from where the player stands, a walk along one row and then one column over grass alone runs into water",
+      "pass": true,
+      "details": "D to column 29, then S to the water at (29, 16)"
+    },
+    {
+      "name": "walking into the lake on the keyboard, the player stops at the shore",
+      "pass": true,
+      "details": "moved 23.0 m from the start, stopped -0.002 m from the water's edge with S still held"
+    },
+    {
+      "name": "the player stands on grass with water on the next tile",
+      "pass": true,
+      "details": "on grass, facing water"
+    },
+    {
+      "name": "a second of pushing moves the player nowhere",
+      "pass": true,
+      "details": "0.0000 m"
+    },
+    {
+      "name": "the lake in clearing is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "18 of 18 water tiles looked at are blue (18 in the lake, 0 behind the player); 14 of 14 shore tiles are green"
+    },
+    {
+      "name": "the lake in south-glade is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "36 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in south-glade is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "30 of 30 water tiles looked at are blue (30 in the lake, 0 behind the player); 19 of 19 shore tiles are green"
+    },
+    {
+      "name": "the lake in north-meadow is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "91 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in north-meadow is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "34 of 34 water tiles looked at are blue (35 in the lake, 1 behind the player); 20 of 20 shore tiles are green"
+    },
+    {
+      "name": "the lake in stone-hollow is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "130 tiles walked; pushed for 90 ticks, moved 0.14 m, still on grass"
+    },
+    {
+      "name": "the lake in stone-hollow is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "15 of 15 water tiles looked at are blue (15 in the lake, 0 behind the player); 13 of 13 shore tiles are green"
+    },
+    {
+      "name": "the lake in west-woods is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "30 tiles walked; pushed for 90 ticks, moved 0.16 m, still on grass"
+    },
+    {
+      "name": "the lake in west-woods is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "8 of 8 water tiles looked at are blue (9 in the lake, 1 behind the player); 10 of 10 shore tiles are green"
+    },
+    {
+      "name": "the lake in east-glade is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "107 tiles walked; pushed for 90 ticks, moved 0.14 m, still on grass"
+    },
+    {
+      "name": "the lake in east-glade is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "25 of 25 water tiles looked at are blue (26 in the lake, 1 behind the player); 17 of 17 shore tiles are green"
+    },
+    {
+      "name": "the lake in far-clearing is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "38 tiles walked; pushed for 90 ticks, moved 0.17 m, still on grass"
+    },
+    {
+      "name": "the lake in far-clearing is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "27 of 27 water tiles looked at are blue (27 in the lake, 0 behind the player); 18 of 18 shore tiles are green"
+    },
+    {
+      "name": "the lake in rock-field is reached on foot and its water holds the player on the shore",
+      "pass": true,
+      "details": "85 tiles walked; pushed for 90 ticks, moved 0.17 m, still on grass"
+    },
+    {
+      "name": "the lake in rock-field is on screen and drawn as water, with grass around it",
+      "pass": true,
+      "details": "13 of 13 water tiles looked at are blue (14 in the lake, 1 behind the player); 12 of 12 shore tiles are green"
+    },
+    {
+      "name": "every lake was visited and photographed",
+      "pass": true,
+      "details": "clearing, south-glade, north-meadow, stone-hollow, west-woods, east-glade, far-clearing, rock-field"
+    },
+    {
+      "name": "on the whole walk the player was never on a water, tree or rock tile",
+      "pass": true
+    },
+    {
+      "name": "water's colour is far from every other tile's, so a view that draws tiles by colour shows the lakes",
+      "pass": true,
+      "details": "nearest is 96 away of 441: grass 142, dirt 165, tree 154, rock 96"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

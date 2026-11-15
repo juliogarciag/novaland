@@ -5,6 +5,8 @@ import type { AreaData } from '../types';
  * North-east of the clearing: open ground strewn with rocks. A trail runs
  * south from it to the east glade.
  *
+ * A pond lies at its east end, clear of the rocks. Water (`~`) is solid: nobody walks on it.
+ *
  * 45x31 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
@@ -16,6 +18,7 @@ export const rockField: AreaData = {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
     o: TerrainDefId.Rock,
+    '~': TerrainDefId.Water,
   },
   rows: [
     'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
@@ -33,10 +36,10 @@ export const rockField: AreaData = {
     '...TTT.....T..........o..........oTo...TTTTTT',
     '.TTTTTT...........o......o...o.o......TTTTTTT',
     '.TTTTTo......o....o.......oo.........TTTTTTTT',
-    'TTTTTT.....o.........................TTTTTTTT',
-    'TTTTTT......................o........TTTTTTTT',
-    'TTTTTT...........o....o....T.........TTTTTTTT',
-    'TTTTTTT...o...........................TTTTTTT',
+    'TTTTTT.....o...................~~~...TTTTTTTT',
+    'TTTTTT......................o.~~~~~..TTTTTTTT',
+    'TTTTTT...........o....o....T..~~~~...TTTTTTTT',
+    'TTTTTTT...o....................~~.....TTTTTTT',
     'TTTTTTT........o........o............TTTTTTTT',
     'TTTTTTTT.......oo....o.......o......TTTTTTTTT',
     'TTTTTTTTTT.....o..o....o......o...TTTTTTTTTTT',

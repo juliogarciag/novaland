@@ -3,7 +3,10 @@ import type { EntityDef } from '../../content/defs';
 /** Side of one tile in metres. The client turns it into pixels with PIXELS_PER_METRE. */
 export const TILE_SIZE = 1;
 
-/** A kind of tile. Solid tiles become static colliders; the rest is ground players walk on. */
+/**
+ * A kind of tile. Solid tiles become static colliders; the rest is ground players walk on.
+ * Solid says only that a player cannot be there: a tree stands up from the ground, water lies flat in it.
+ */
 export interface TileDef extends EntityDef {
   readonly solid: boolean;
   /**
@@ -64,6 +67,7 @@ export const TerrainDefId = {
   Dirt: 201,
   Tree: 202,
   Rock: 203,
+  Water: 204,
 } as const;
 
 /**
@@ -72,7 +76,12 @@ export const TerrainDefId = {
  * written by a generator in packages/client/tools whose frame size and
  * variant count must match the sprite declared here (a test next to each
  * generator checks it): `generate-grass-sheet.mjs` for grass,
- * `generate-tree-sheet.mjs` for the tree, `generate-rock-sheet.mjs` for the rock.
+ * `generate-tree-sheet.mjs` for the tree, `generate-rock-sheet.mjs` for the rock,
+ * `generate-water-sheet.mjs` for water.
+ *
+ * Water is flat like grass and solid like a tree: it is drawn in the ground
+ * and nobody walks on it. Its colour is far from every other tile's, so a
+ * view that draws tiles by colour alone (a minimap) shows where the lakes are.
  */
 export const terrainDefs: readonly TileDef[] = [
   { id: TerrainDefId.Grass, name: 'grass', shape: 'box', color: 0x5c9e4a, solid: false, groundSprite: { key: 'grass', tilePixels: 16, variantCount: 24 } },
@@ -93,6 +102,7 @@ export const terrainDefs: readonly TileDef[] = [
     solid: true,
     standingSprite: { key: 'rock', frameWidth: 16, frameHeight: 20, pixelsPerMetre: 16, variantCount: 4, groundDefId: TerrainDefId.Grass },
   },
+  { id: TerrainDefId.Water, name: 'water', shape: 'box', color: 0x3e82d2, solid: true, groundSprite: { key: 'water', tilePixels: 16, variantCount: 8 } },
 ];
 
 const tileDefsById: ReadonlyMap<number, TileDef> = new Map(terrainDefs.map((def) => [def.id, def]));

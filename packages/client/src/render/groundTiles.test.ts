@@ -33,6 +33,7 @@ describe("groundTilesetSlots", () => {
       ["dirt", 1],
       ["tree", 1],
       ["rock", 1],
+      ["water", 8],
     ]);
   });
 

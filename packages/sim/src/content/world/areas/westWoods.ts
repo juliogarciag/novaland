@@ -6,6 +6,8 @@ import type { AreaData } from '../types';
  * apart with grass between them. Trails leave north to the old grove and
  * south to the stone hollow.
  *
+ * A small pond hides in the open ground at its west end. Water (`~`) is solid: nobody walks on it.
+ *
  * 45x30 tiles, first laid out by packages/sim/tools/generate-world-areas.mjs.
  * To change the land, edit the rows here by hand, not the script. Every
  * grass tile must stay within reach of the spawn (a test checks it).
@@ -17,6 +19,7 @@ export const westWoods: AreaData = {
     T: TerrainDefId.Tree,
     '.': TerrainDefId.Grass,
     o: TerrainDefId.Rock,
+    '~': TerrainDefId.Water,
   },
   rows: [
     'TTTTTTTTT...TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT',
@@ -32,9 +35,9 @@ export const westWoods: AreaData = {
     'TTTTTT......TT....T.....T.T.T....T...T.......',
     'TTTT......T..TT...T.....T..........T.....TT..',
     'TTTT...T....................T....T........TTT',
-    'TTTT....oT......T.T.......................TTT',
-    'TTTTT..................T.......o...T.....TTTT',
-    'TTTTT....T.................T.....TTT......TTT',
+    'TTTT....oT..~~..T.T.......................TTT',
+    'TTTTT......~~~~........T.......o...T.....TTTT',
+    'TTTTT....T..~~~............T.....TTT......TTT',
     'TTTTTT.............TT.....TT..............TTT',
     'TTTTTT.T...TT........T........T..........TTTT',
     'TTTTTT..T.......T.................T....TTTTTT',
