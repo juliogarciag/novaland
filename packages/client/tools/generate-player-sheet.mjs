@@ -322,10 +322,10 @@ const PLAYER_HAIRSTYLE = 'short';
 const NECK = ['sssS'];
 const NECK_LEFT = 14;
 
-/** The torso, 10 wide from TORSO_LEFT: a highlight down the left, a shade down the right and a darker hem. */
-const TORSO = [...Array.from({ length: 10 }, () => 'LccccccccC'), 'CCCCCCCCCC'];
-const TORSO_LEFT = 11;
-const TORSO_WIDTH = 10;
+/** The torso, 12 wide from TORSO_LEFT: a highlight down the left, a shade down the right and a darker hem. */
+const TORSO = [...Array.from({ length: 10 }, () => 'LccccccccccC'), 'CCCCCCCCCCCC'];
+const TORSO_LEFT = 10;
+const TORSO_WIDTH = 12;
 const ARM_WIDTH = 2;
 /** Arms hang beside the torso in front and back views; in profile the near arm hangs over its middle. */
 const ARM_COLUMNS = { screenLeft: TORSO_LEFT - ARM_WIDTH, screenRight: TORSO_LEFT + TORSO_WIDTH, profile: TORSO_LEFT + TORSO_WIDTH / 2 - ARM_WIDTH / 2 };
@@ -351,7 +351,7 @@ function paintTorsoAndArms(canvas, colors, { direction, pose, top }) {
   }
 }
 
-const LEG_WIDTH = 4;
+const LEG_WIDTH = 5;
 const SHOE_ROWS = 3;
 /** The two legs side by side under the middle of the torso in front and back views; in profile, where each stands before the walk spreads them. */
 const LEG_COLUMNS = {
