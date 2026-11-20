@@ -9,6 +9,11 @@
  * canopy is a handful of overlapping leaf clumps lit from the top-left and
  * shaded in four flat tones with a one-pixel dark edge, like the avatars.
  *
+ * No two trees of the sheet are alike, because a forest shows them side by
+ * side: each is grown from its own seed, with a crown of its own width,
+ * height and lean, clumps of its own sizes, a rim that is smooth on some and
+ * leafy on others, and one of a few greens.
+ *
  * Plain Node, no dependencies; the pixel canvas and the file writing are shared with the other terrain sheets.
  *
  *   node tools/generate-tree-sheet.mjs                # writes public/sprites/tree.png
@@ -21,12 +26,18 @@ export const TREE_SPRITE_KEY = 'tree';
 export const FRAME_WIDTH = 48;
 export const FRAME_HEIGHT = 64;
 
+/**
+ * The greens a canopy is painted in, from its edge to its highlight: the
+ * forest's own green, a warmer one and a deeper, cooler one. Trees take
+ * them by turns, so a forest is never one flat colour.
+ */
+const CANOPY_GREENS = [
+  { edge: [0x14, 0x2e, 0x1f], shade: [0x1f, 0x4d, 0x2e], base: [0x2f, 0x6b, 0x3a], light: [0x43, 0x8c, 0x45], highlight: [0x6a, 0xb0, 0x55] },
+  { edge: [0x17, 0x2f, 0x1c], shade: [0x25, 0x4f, 0x2a], base: [0x36, 0x6f, 0x37], light: [0x4c, 0x8f, 0x42], highlight: [0x78, 0xb4, 0x54] },
+  { edge: [0x12, 0x2b, 0x20], shade: [0x1b, 0x49, 0x31], base: [0x29, 0x65, 0x3f], light: [0x3b, 0x85, 0x4a], highlight: [0x60, 0xa8, 0x5b] },
+]
+
 const COLORS = {
-  canopyEdge: [0x14, 0x2e, 0x1f],
-  canopyShade: [0x1f, 0x4d, 0x2e],
-  canopy: [0x2f, 0x6b, 0x3a],
-  canopyLight: [0x43, 0x8c, 0x45],
-  canopyHighlight: [0x6a, 0xb0, 0x55],
   trunkEdge: [0x2a, 0x1b, 0x12],
   trunkShade: [0x4f, 0x34, 0x20],
   trunk: [0x6f, 0x4a, 0x2b],
@@ -42,61 +53,54 @@ const TRUNK_FOOT_ROW = FRAME_HEIGHT - 6;
 /** How wide the trunk is between its dark edges, in pixels. */
 const TRUNK_PIXELS = 8;
 
-/**
- * One entry per frame. `clumps` are the leaf clumps of the canopy as circles
- * in frame pixels: a crown on top and a wide, flat skirt of clumps at the
- * bottom that hangs out past the crown on both sides, so the canopy is a
- * broad dome over the trunk rather than a ball narrowing into it.
- * `trunkColumn` is the left column of the trunk; `seed` scatters the leaf
- * texture and the tufts round the rim so no two variants share them.
- */
-const TREE_VARIANTS = [
-  {
-    seed: 11,
-    trunkColumn: 20,
-    clumps: [
-      { x: 24, y: 14, radius: 11 },
-      { x: 15, y: 22, radius: 10 },
-      { x: 33, y: 22, radius: 10 },
-      { x: 10, y: 33, radius: 8.5 },
-      { x: 38, y: 33, radius: 8.5 },
-      { x: 24, y: 30, radius: 12 },
-    ],
-  },
-  {
-    seed: 23,
-    trunkColumn: 20,
-    clumps: [
-      { x: 21, y: 12, radius: 9.5 },
-      { x: 30, y: 16, radius: 10 },
-      { x: 14, y: 24, radius: 10 },
-      { x: 9, y: 34, radius: 7.5 },
-      { x: 37, y: 31, radius: 9.5 },
-      { x: 23, y: 31, radius: 12 },
-    ],
-  },
-  {
-    seed: 37,
-    trunkColumn: 20,
-    clumps: [
-      { x: 25, y: 11, radius: 9 },
-      { x: 17, y: 19, radius: 10.5 },
-      { x: 33, y: 21, radius: 10 },
-      { x: 11, y: 31, radius: 9 },
-      { x: 39, y: 34, radius: 7.5 },
-      { x: 25, y: 31, radius: 11.5 },
-    ],
-  },
-];
+/** How many trees the sheet holds. */
+export const TREE_VARIANT_COUNT = 8;
 
-/** Small clumps set round the rim of every canopy, so its outline is a run of leafy bumps instead of a few smooth arcs. */
-const RIM_TUFTS = 22;
+/**
+ * The trees of the sheet, each grown from its index. `clumps` are the leaf
+ * clumps of the canopy as circles in frame pixels: one in the middle and a
+ * ring round it, filling an oval crown whose width, top, bottom and lean the
+ * tree draws for itself. `rimTufts` is how many small clumps bump its
+ * outline (none on a smooth one); `greens` its colours; `trunkColumn` the
+ * left column of the trunk, under the crown; `seed` scatters the leaves.
+ */
+const TREE_VARIANTS = Array.from({ length: TREE_VARIANT_COUNT }, (_, index) => growTree(index));
+
+function growTree(index) {
+  const draw = (what) => noise(index, what, 977);
+  const halfWidth = 18 + draw(1) * 4.5;
+  const top = 3 + draw(2) * 8;
+  const bottom = 40 + draw(3) * 6;
+  const lean = (draw(4) - 0.5) * 4;
+  const centre = { x: FRAME_WIDTH / 2 + lean, y: (top + bottom) / 2 };
+  const halfHeight = (bottom - top) / 2;
+  const ringCount = 5 + Math.floor(draw(5) * 3);
+  const clumps = [{ x: centre.x, y: centre.y + halfHeight * 0.15, radius: Math.min(halfWidth, halfHeight) * 0.7 }];
+  for (let step = 0; step < ringCount; step += 1) {
+    const angle = ((step + draw(10 + step) * 0.5) / ringCount) * Math.PI * 2;
+    const radius = Math.min(halfWidth, halfHeight) * (0.42 + draw(20 + step) * 0.2);
+    clumps.push({ x: centre.x + Math.cos(angle) * (halfWidth - radius), y: centre.y + Math.sin(angle) * (halfHeight - radius), radius });
+  }
+  return {
+    seed: 11 + index * 13,
+    trunkColumn: Math.round(FRAME_WIDTH / 2 - TRUNK_PIXELS / 2 + lean / 2),
+    clumps: clumps.map(insideFrame),
+    rimTufts: draw(6) < 0.35 ? 0 : 10 + Math.floor(draw(7) * 14),
+    greens: CANOPY_GREENS[index % CANOPY_GREENS.length],
+  };
+}
+
+/** A clump moved and shrunk as little as needed to leave a pixel clear on every side of the frame but the bottom. */
+function insideFrame({ x, y, radius }) {
+  const fitted = Math.min(radius, (FRAME_WIDTH - 2) / 2);
+  return { x: Math.min(Math.max(x, 1 + fitted), FRAME_WIDTH - 1 - fitted), y: Math.max(y, 1 + fitted), radius: fitted };
+}
+
 const RIM_TUFT_RADIUS = { smallest: 3, largest: 4.5 };
 
 /** How far up from the canopy's lowest row its underside is in shade, in pixels. */
 const UNDERSIDE_PIXELS = 10;
 
-export const TREE_VARIANT_COUNT = TREE_VARIANTS.length;
 
 /** The whole sheet: every variant side by side. */
 export function paintTreeSheet() {
@@ -186,8 +190,8 @@ function trunkTone(column) {
  * the bands into leaves. Pixels on the seam under another clump go dark,
  * which is what separates the clumps from each other.
  */
-function paintCanopy(frame, { clumps: mainClumps, seed }) {
-  const clumps = [...mainClumps, ...rimTufts(mainClumps, seed)];
+function paintCanopy(frame, { clumps: mainClumps, seed, rimTufts: tuftCount, greens }) {
+  const clumps = [...mainClumps, ...rimTufts(mainClumps, { seed, count: tuftCount })];
   const bottom = canopyBottom(mainClumps);
   const leaf = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   for (let y = 0; y < FRAME_HEIGHT; y += 1) {
@@ -196,14 +200,14 @@ function paintCanopy(frame, { clumps: mainClumps, seed }) {
       if (!owner) continue;
       const { clump, bulge } = owner;
       const towardsLight = (-(x + 0.5 - clump.x) * 0.55 - (y + 0.5 - clump.y) * 0.85) / clump.radius;
-      const underside = Math.min(1, Math.max(0, (y - (bottom - UNDERSIDE_PIXELS)) / UNDERSIDE_PIXELS)) * 0.7;
+      const underside = Math.min(1, Math.max(0, (y - (bottom - UNDERSIDE_PIXELS)) / UNDERSIDE_PIXELS)) * 0.5;
       // Leaves are two pixels across, with a little grain of their own: noise on single pixels would read as sand.
       const scatter = (noise(Math.floor(x / 2), Math.floor(y / 2), seed) - 0.5) * 0.4 + (noise(x, y, seed + 1) - 0.5) * 0.15;
       const light = towardsLight - underside + scatter + (bulge < 0.22 && towardsLight < 0.2 ? -0.5 : 0);
-      pixel(leaf, x, y, canopyTone(light));
+      pixel(leaf, x, y, canopyTone(light, greens));
     }
   }
-  outline(leaf, COLORS.canopyEdge);
+  outline(leaf, greens.edge);
   blitOpaque(frame, leaf);
 }
 
@@ -218,12 +222,12 @@ function canopyBottom(clumps) {
  * little inside it, so half of it bulges out. None hangs below the canopy's
  * lowest row (the trunk stays clear) or leaves the frame.
  */
-function rimTufts(clumps, seed) {
-  const centre = { x: FRAME_WIDTH / 2, y: clumps.reduce((sum, clump) => sum + clump.y, 0) / clumps.length };
+function rimTufts(clumps, { seed, count }) {
+  const centre = { x: clumps[0].x, y: clumps.reduce((sum, clump) => sum + clump.y, 0) / clumps.length };
   const bottom = canopyBottom(clumps);
   const tufts = [];
-  for (let index = 0; index < RIM_TUFTS; index += 1) {
-    const angle = ((index + noise(index, 0, seed + 3) * 0.6) / RIM_TUFTS) * Math.PI * 2;
+  for (let index = 0; index < count; index += 1) {
+    const angle = ((index + noise(index, 0, seed + 3) * 0.6) / count) * Math.PI * 2;
     let reach = 0;
     while (clumpAt(clumps, centre.x + Math.cos(angle) * (reach + 1), centre.y + Math.sin(angle) * (reach + 1))) reach += 1;
     const radius = RIM_TUFT_RADIUS.smallest + noise(index, 1, seed + 3) * (RIM_TUFT_RADIUS.largest - RIM_TUFT_RADIUS.smallest);
@@ -245,11 +249,11 @@ function clumpAt(clumps, x, y) {
   return best;
 }
 
-function canopyTone(light) {
-  if (light > 0.62) return COLORS.canopyHighlight;
-  if (light > 0.22) return COLORS.canopyLight;
-  if (light > -0.38) return COLORS.canopy;
-  return COLORS.canopyShade;
+function canopyTone(light, greens) {
+  if (light > 0.62) return greens.highlight;
+  if (light > 0.22) return greens.light;
+  if (light > -0.38) return greens.base;
+  return greens.shade;
 }
 
 /** Writes the tree sheet into `directory` as `tree.png` and returns the path. */

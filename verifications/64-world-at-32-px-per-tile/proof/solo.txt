@@ -1,7 +1,7 @@
 PASS  dev server up, started by this run
 PASS  the client draws the world at 32 pixels per metre  (32)
 PASS  the grass sheet is art at 32 pixels per metre, loaded at the size its def declares  (32-pixel tiles; image 768x32)
-PASS  the tree sheet is art at 32 pixels per metre, loaded at the size its def declares  (48x64 frames at 32 per metre; image 144x64)
+PASS  the tree sheet is art at 32 pixels per metre, loaded at the size its def declares  (48x64 frames at 32 per metre; image 384x64)
 PASS  the rock sheet is art at 32 pixels per metre, loaded at the size its def declares  (32x40 frames at 32 per metre; image 128x40)
 PASS  the water sheet is art at 32 pixels per metre, loaded at the size its def declares  (32-pixel tiles; image 1728x32)
 PASS  the shallows sheet is art at 32 pixels per metre, loaded at the size its def declares  (32-pixel tiles; image 1728x32)

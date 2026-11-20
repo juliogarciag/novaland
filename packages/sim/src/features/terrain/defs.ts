@@ -141,7 +141,7 @@ export const terrainDefs: readonly TileDef[] = [
     shape: 'box',
     color: 0x2f6b3a,
     solid: true,
-    standingSprite: { key: 'tree', frameWidth: 48, frameHeight: 64, pixelsPerMetre: 32, variantCount: 3, groundDefId: TerrainDefId.Grass },
+    standingSprite: { key: 'tree', frameWidth: 48, frameHeight: 64, pixelsPerMetre: 32, variantCount: 8, groundDefId: TerrainDefId.Grass },
   },
   {
     id: TerrainDefId.Rock,
