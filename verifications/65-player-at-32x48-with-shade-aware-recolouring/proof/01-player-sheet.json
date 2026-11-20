@@ -23,13 +23,13 @@
         "skinShade": [
           "#b5925e"
         ],
-        "shirt": [
+        "clothes": [
           "#3b82f6"
         ],
-        "shirtShade": [
+        "clothesShade": [
           "#2c62b9"
         ],
-        "shirtLight": [
+        "clothesLight": [
           "#60b6ff"
         ]
       }
@@ -57,13 +57,13 @@
         "skinShade": [
           "#bfa481"
         ],
-        "shirt": [
+        "clothes": [
           "#f59e0b"
         ],
-        "shirtShade": [
+        "clothesShade": [
           "#b87708"
         ],
-        "shirtLight": [
+        "clothesLight": [
           "#ffd727"
         ]
       }
@@ -91,13 +91,13 @@
         "skinShade": [
           "#452c19"
         ],
-        "shirt": [
+        "clothes": [
           "#475569"
         ],
-        "shirtShade": [
+        "clothesShade": [
           "#35404f"
         ],
-        "shirtLight": [
+        "clothesLight": [
           "#6f8098"
         ]
       }
@@ -125,13 +125,13 @@
         "skinShade": [
           "#956532"
         ],
-        "shirt": [
+        "clothes": [
           "#7c3aed"
         ],
-        "shirtShade": [
+        "clothesShade": [
           "#5d2cb2"
         ],
-        "shirtLight": [
+        "clothesLight": [
           "#ae5fff"
         ]
       }
@@ -243,7 +243,11 @@
   "creatorPreview": {
     "width": 96,
     "height": 144,
-    "look": "4-2-5"
+    "look": "1-5-2",
+    "frame": [
+      32,
+      48
+    ]
   },
   "results": [
     {
@@ -268,7 +272,7 @@
     {
       "name": "look {\"skin\":1,\"hair\":1,\"clothes\":0}: every template colour became one colour, the right one for its part",
       "pass": true,
-      "details": "{\"hairLight\":[\"#9a643e\"],\"hair\":[\"#6b3e1e\"],\"hairShade\":[\"#502f17\"],\"skin\":[\"#f1c27d\"],\"skinShade\":[\"#b5925e\"],\"shirt\":[\"#3b82f6\"],\"shirtShade\":[\"#2c62b9\"],\"shirtLight\":[\"#60b6ff\"]}"
+      "details": "{\"hairLight\":[\"#9a643e\"],\"hair\":[\"#6b3e1e\"],\"hairShade\":[\"#502f17\"],\"skin\":[\"#f1c27d\"],\"skinShade\":[\"#b5925e\"],\"clothes\":[\"#3b82f6\"],\"clothesShade\":[\"#2c62b9\"],\"clothesLight\":[\"#60b6ff\"]}"
     },
     {
       "name": "walking down plays all four frames of its row",
@@ -293,22 +297,22 @@
     {
       "name": "look {\"skin\":0,\"hair\":4,\"clothes\":3}: every template colour became one colour, the right one for its part",
       "pass": true,
-      "details": "{\"hairLight\":[\"#ffffe7\"],\"hair\":[\"#f3e5ab\"],\"hairShade\":[\"#b6ac80\"],\"skin\":[\"#ffdbac\"],\"skinShade\":[\"#bfa481\"],\"shirt\":[\"#f59e0b\"],\"shirtShade\":[\"#b87708\"],\"shirtLight\":[\"#ffd727\"]}"
+      "details": "{\"hairLight\":[\"#ffffe7\"],\"hair\":[\"#f3e5ab\"],\"hairShade\":[\"#b6ac80\"],\"skin\":[\"#ffdbac\"],\"skinShade\":[\"#bfa481\"],\"clothes\":[\"#f59e0b\"],\"clothesShade\":[\"#b87708\"],\"clothesLight\":[\"#ffd727\"]}"
     },
     {
       "name": "look {\"skin\":5,\"hair\":0,\"clothes\":7}: every template colour became one colour, the right one for its part",
       "pass": true,
-      "details": "{\"hairLight\":[\"#4c4644\"],\"hair\":[\"#2a2523\"],\"hairShade\":[\"#201c1a\"],\"skin\":[\"#5c3a21\"],\"skinShade\":[\"#452c19\"],\"shirt\":[\"#475569\"],\"shirtShade\":[\"#35404f\"],\"shirtLight\":[\"#6f8098\"]}"
+      "details": "{\"hairLight\":[\"#4c4644\"],\"hair\":[\"#2a2523\"],\"hairShade\":[\"#201c1a\"],\"skin\":[\"#5c3a21\"],\"skinShade\":[\"#452c19\"],\"clothes\":[\"#475569\"],\"clothesShade\":[\"#35404f\"],\"clothesLight\":[\"#6f8098\"]}"
     },
     {
       "name": "look {\"skin\":3,\"hair\":6,\"clothes\":4}: every template colour became one colour, the right one for its part",
       "pass": true,
-      "details": "{\"hairLight\":[\"#ff70d1\"],\"hair\":[\"#ec4899\"],\"hairShade\":[\"#b13673\"],\"skin\":[\"#c68642\"],\"skinShade\":[\"#956532\"],\"shirt\":[\"#7c3aed\"],\"shirtShade\":[\"#5d2cb2\"],\"shirtLight\":[\"#ae5fff\"]}"
+      "details": "{\"hairLight\":[\"#ff70d1\"],\"hair\":[\"#ec4899\"],\"hairShade\":[\"#b13673\"],\"skin\":[\"#c68642\"],\"skinShade\":[\"#956532\"],\"clothes\":[\"#7c3aed\"],\"clothesShade\":[\"#5d2cb2\"],\"clothesLight\":[\"#ae5fff\"]}"
     },
     {
-      "name": "the creator previews the character at 96x144, three screen pixels per sheet pixel",
+      "name": "the creator previews the character at its old size, 96x144: the def's frame at three screen pixels per sheet pixel",
       "pass": true,
-      "details": "{\"width\":96,\"height\":144,\"look\":\"4-2-5\"}"
+      "details": "{\"width\":96,\"height\":144,\"look\":\"1-5-2\",\"frame\":[32,48]}"
     },
     {
       "name": "no page errors",

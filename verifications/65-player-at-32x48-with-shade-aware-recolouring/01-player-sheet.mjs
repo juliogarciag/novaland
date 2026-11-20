@@ -1,4 +1,4 @@
-/* global window */
+/* global window, document */
 /**
  * #65 end to end, in the real client (solo, `pnpm dev`): the player is the
  * 32x48 sheet, drawn at the size the def says on today's tiles, recoloured in
@@ -34,9 +34,9 @@ const TEMPLATE_PARTS = [
   { template: 'hair', part: 'hair', kind: 'base' },
   { template: 'hairShade', part: 'hair', kind: 'shade' },
   { template: 'hairLight', part: 'hair', kind: 'light' },
-  { template: 'shirt', part: 'clothes', kind: 'base' },
-  { template: 'shirtShade', part: 'clothes', kind: 'shade' },
-  { template: 'shirtLight', part: 'clothes', kind: 'light' },
+  { template: 'clothes', part: 'clothes', kind: 'base' },
+  { template: 'clothesShade', part: 'clothes', kind: 'shade' },
+  { template: 'clothesLight', part: 'clothes', kind: 'light' },
 ];
 const WALKS = [
   { direction: 'down', key: 'KeyS' },
@@ -82,12 +82,15 @@ try {
         // The frame before the turn is the last direction's; count from the first frame of this row.
         await waitFor(`the player to turn ${walk.direction}`, { read: () => playerSpriteOf(page), until: (sprite) => Number(sprite.frame) >= range.start && Number(sprite.frame) <= range.end }).catch(() => undefined);
         const frames = new Set();
-        let midWalk;
+        let walkShotTaken = false;
         const until = Date.now() + 1200;
         while (Date.now() < until) {
           const sprite = await playerSpriteOf(page);
           frames.add(Number(sprite.frame));
-          if (!midWalk && frames.size >= 2 && Date.now() > until - 600) midWalk = await page.screenshot({ path: path.join(PROOF, `walk-${walk.direction}.png`), clip: await clipAround(page) });
+          if (!walkShotTaken && frames.size >= 2 && Date.now() > until - 600) {
+            walkShotTaken = true;
+            await page.screenshot({ path: path.join(PROOF, `walk-${walk.direction}.png`), clip: await clipAround(page) });
+          }
           await page.waitForTimeout(25);
         }
         await page.keyboard.up(walk.key);
@@ -110,11 +113,13 @@ try {
   await page.waitForFunction(() => document.querySelector('#creator canvas.creator-preview')?.dataset.look !== undefined);
   const preview = await page.evaluate(() => {
     const canvas = document.querySelector('#creator canvas.creator-preview');
-    const sprite = window.__novaland?.defs?.find((def) => def.name === 'player')?.sprite;
-    return { width: canvas.width, height: canvas.height, look: canvas.dataset.look, frame: sprite ? [sprite.frameWidth, sprite.frameHeight] : undefined };
+    return { width: canvas.width, height: canvas.height, look: canvas.dataset.look };
   });
+  // The creator shows before the game, and its debug API, exist: the frame comes from the def read in the world above.
+  preview.frame = report.sprite && [report.sprite.frameWidth, report.sprite.frameHeight];
   report.creatorPreview = preview;
-  results.push(check('the creator previews the character at 96x144, three screen pixels per sheet pixel', preview.width === 96 && preview.height === 144, JSON.stringify(preview)));
+  // 96x144 is the size the creator's preview had with the 16x24 sheet: the new sheet keeps it at three screen pixels per sheet pixel.
+  results.push(check('the creator previews the character at its old size, 96x144: the def\'s frame at three screen pixels per sheet pixel', preview.frame && preview.width === preview.frame[0] * 3 && preview.height === preview.frame[1] * 3 && preview.width === 96 && preview.height === 144, JSON.stringify(preview)));
   await page.locator('#creator').screenshot({ path: path.join(PROOF, 'creator.png') });
   await context.close();
 
@@ -224,6 +229,7 @@ async function recolourReport(page, textureKey, look) {
     if (kind === 'base' && color !== picked) problems.push(`${template} is ${hex(color)}, not the picked ${hex(picked)}`);
     if (kind === 'shade' && !(brightness(color) < brightness(picked))) problems.push(`${template} ${hex(color)} is not darker than ${hex(picked)}`);
     if (kind === 'light' && !(brightness(color) > brightness(picked))) problems.push(`${template} ${hex(color)} is not lighter than ${hex(picked)}`);
+    // A shade or highlight that came out as a fixed colour (the outline, an eye) would melt into it; a base is the player's own pick.
     if (fixed.has(color) && kind !== 'base') problems.push(`${template} became the fixed colour ${hex(color)}`);
   }
   return { problems, colors: Object.fromEntries(Object.entries(colors.becameFrom).map(([name, list]) => [name, list.map(hex)])) };

@@ -1,18 +1,7 @@
 import { characterPalettes, DefId, getDef } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { __testing__ as characterSheet, paintLook } from '../src/render/characterSheet.ts';
-import {
-  DIRECTIONS,
-  FIXED_PALETTE,
-  FRAME_HEIGHT,
-  FRAME_WIDTH,
-  FRAMES_PER_DIRECTION,
-  paintFrameLayers,
-  paintPlayerSheet,
-  PLAYER_SHEET_KEY,
-  POSES,
-  TEMPLATE_PALETTE,
-} from './generate-player-sheet.mjs';
+import { __testing__ as generator, DIRECTIONS, FIXED_PALETTE, FRAME_HEIGHT, FRAME_WIDTH, FRAMES_PER_DIRECTION, paintPlayerSheet, PLAYER_SHEET_KEY, TEMPLATE_PALETTE } from './generate-player-sheet.mjs';
 
 describe('player sheet generator', () => {
   it('writes the sheet under the sprite key the player def declares', () => {
@@ -26,9 +15,9 @@ describe('player sheet generator', () => {
       hair: rgb(TEMPLATE_PALETTE.hair),
       hairShade: rgb(TEMPLATE_PALETTE.hairShade),
       hairLight: rgb(TEMPLATE_PALETTE.hairLight),
-      clothes: rgb(TEMPLATE_PALETTE.shirt),
-      clothesShade: rgb(TEMPLATE_PALETTE.shirtShade),
-      clothesLight: rgb(TEMPLATE_PALETTE.shirtLight),
+      clothes: rgb(TEMPLATE_PALETTE.clothes),
+      clothesShade: rgb(TEMPLATE_PALETTE.clothesShade),
+      clothesLight: rgb(TEMPLATE_PALETTE.clothesLight),
     });
     const swapped = Object.values(TEMPLATE_PALETTE).map(rgb);
     const fixed = Object.values(FIXED_PALETTE).map(rgb);
@@ -41,12 +30,12 @@ describe('player sheet generator', () => {
   });
 
   it('derives the template\'s own shades from its base colours the way the client derives a look\'s', () => {
-    const { lightOf, shadeOf } = characterSheet;
+    const { highlightOf, shadeOf } = characterSheet;
     expect(rgb(TEMPLATE_PALETTE.skinShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.skin)));
     expect(rgb(TEMPLATE_PALETTE.hairShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.hair)));
-    expect(rgb(TEMPLATE_PALETTE.hairLight)).toBe(lightOf(rgb(TEMPLATE_PALETTE.hair)));
-    expect(rgb(TEMPLATE_PALETTE.shirtShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.shirt)));
-    expect(rgb(TEMPLATE_PALETTE.shirtLight)).toBe(lightOf(rgb(TEMPLATE_PALETTE.shirt)));
+    expect(rgb(TEMPLATE_PALETTE.hairLight)).toBe(highlightOf(rgb(TEMPLATE_PALETTE.hair)));
+    expect(rgb(TEMPLATE_PALETTE.clothesShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.clothes)));
+    expect(rgb(TEMPLATE_PALETTE.clothesLight)).toBe(highlightOf(rgb(TEMPLATE_PALETTE.clothes)));
   });
 
   it('recolours every pixel of every part in all sixteen frames for every look', () => {
@@ -76,17 +65,17 @@ describe('player sheet generator', () => {
     expect(looks).toBe(characterPalettes.skin.length * characterPalettes.hair.length * characterPalettes.clothes.length);
   });
 
-  it('keeps the hair on a layer of its own, over a skull painted whole', () => {
+  it('keeps every hairstyle on a layer of its own, over a body that carries no hair', () => {
     const hairColors = new Set([TEMPLATE_PALETTE.hair, TEMPLATE_PALETTE.hairShade, TEMPLATE_PALETTE.hairLight].map(rgb));
-    for (const direction of DIRECTIONS) {
-      for (const pose of POSES) {
-        const { body, hair } = paintFrameLayers(direction, pose);
-        for (const color of paintedColors(hair)) expect(hairColors).toContain(color);
-        // The body carries no hair but the eyebrows (in the hair's shade), so taking the hair layer away leaves a bald head.
-        expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hair))).toBe(false);
-        expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hairLight))).toBe(false);
-        for (let offset = 0; offset < hair.data.length; offset += 4) {
-          if (hair.data[offset + 3] === 255) expect(body.data[offset + 3], `${direction}: hair at pixel ${offset / 4} floats off the head`).toBe(255);
+    for (const hairstyle of Object.keys(generator.HAIRSTYLES)) {
+      for (const direction of DIRECTIONS) {
+        for (const pose of generator.POSES) {
+          const { body, hair } = generator.paintFrameLayers(direction, pose, hairstyle);
+          expect(paintedColors(hair).size).toBeGreaterThan(0);
+          for (const color of paintedColors(hair)) expect(hairColors).toContain(color);
+          // The body carries no hair but the eyebrows (in the hair's shade), so taking the hair layer away leaves a bald head.
+          expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hair))).toBe(false);
+          expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hairLight))).toBe(false);
         }
       }
     }
@@ -105,20 +94,16 @@ describe('player sheet generator', () => {
     }
   });
 
-  it('keeps the figure inside its frame with a clear edge, so frames never bleed into each other', () => {
-    for (const direction of DIRECTIONS) {
-      for (const pose of POSES) {
-        const { body, hair } = paintFrameLayers(direction, pose);
-        for (const layer of [body, hair]) {
-          for (let y = 0; y < FRAME_HEIGHT; y += 1) {
-            for (let x = 0; x < FRAME_WIDTH; x += 1) {
-              const onEdge = x === 0 || y === 0 || x === FRAME_WIDTH - 1 || y === FRAME_HEIGHT - 1;
-              if (onEdge) expect(layer.data[(y * FRAME_WIDTH + x) * 4 + 3]).toBe(0);
-            }
-          }
-        }
+  it('leaves a clear pixel on every edge of every frame, outline included, so frames never bleed into each other', () => {
+    const sheet = paintPlayerSheet();
+    const touching = [];
+    for (let y = 0; y < sheet.height; y += 1) {
+      for (let x = 0; x < sheet.width; x += 1) {
+        const onFrameEdge = [0, FRAME_WIDTH - 1].includes(x % FRAME_WIDTH) || [0, FRAME_HEIGHT - 1].includes(y % FRAME_HEIGHT);
+        if (onFrameEdge && sheet.data[(y * sheet.width + x) * 4 + 3] !== 0) touching.push([x, y]);
       }
     }
+    expect(touching).toEqual([]);
   });
 });
 

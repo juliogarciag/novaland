@@ -2,7 +2,7 @@
   "name": "verification-65",
   "private": true,
   "type": "module",
-  "description": "Starting point for a ticket's verification scripts. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "description": "Verification scripts for #65 (player at 32x48 with shade-aware recolouring). Not part of the workspace; install with: pnpm install --ignore-workspace",
   "scripts": {
     "verify": "bash run.sh"
   },

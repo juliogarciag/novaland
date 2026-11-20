@@ -16,10 +16,10 @@ describe('painting a look over the template sheet', () => {
       shadeOf(skin),
       hair,
       shadeOf(hair),
-      lightOf(hair),
+      highlightOf(hair),
       clothes,
       shadeOf(clothes),
-      lightOf(clothes),
+      highlightOf(clothes),
       outline,
     ]);
   });
@@ -47,9 +47,9 @@ describe('painting a look over the template sheet', () => {
     for (const swatches of Object.values(characterPalettes)) {
       for (const { color } of swatches) {
         expect(shadeOf(color)).not.toBe(color);
-        expect(lightOf(color)).not.toBe(color);
+        expect(highlightOf(color)).not.toBe(color);
         expect(brightness(shadeOf(color))).toBeLessThan(brightness(color));
-        expect(brightness(lightOf(color))).toBeGreaterThan(brightness(color));
+        expect(brightness(highlightOf(color))).toBeGreaterThan(brightness(color));
       }
     }
   });
@@ -57,9 +57,9 @@ describe('painting a look over the template sheet', () => {
   it('shades and lights channel by channel, clamped to the colour range, and writes colours the way CSS reads them', () => {
     expect(shadeOf(0xffffff)).toBe(0xbfbfbf);
     expect(shadeOf(0x000000)).toBe(0x000000);
-    expect(lightOf(0x000000)).toBe(0x1a1a1a);
-    expect(lightOf(0xffffff)).toBe(0xffffff);
-    expect(lightOf(0xf3e5ab)).toBe(0xffffe7);
+    expect(highlightOf(0x000000)).toBe(0x1a1a1a);
+    expect(highlightOf(0xffffff)).toBe(0xffffff);
+    expect(highlightOf(0xf3e5ab)).toBe(0xffffe7);
     expect(cssColor(0x0d9488)).toBe('#0d9488');
     expect(cssColor(0x00000f)).toBe('#00000f');
   });
@@ -67,7 +67,7 @@ describe('painting a look over the template sheet', () => {
 
 // ---- Helpers ----
 
-const { lightOf, lookColors, shadeOf, TEMPLATE_COLORS } = __testing__;
+const { highlightOf, lookColors, shadeOf, TEMPLATE_COLORS } = __testing__;
 
 function rgba(colors: readonly number[]): Uint8ClampedArray {
   return new Uint8ClampedArray(colors.flatMap((color) => [(color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff, 255]));
