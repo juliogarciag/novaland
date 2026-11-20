@@ -16,10 +16,14 @@ import { describe, expect, it } from "vitest";
 import {
   EMPTY_GROUND_TILE,
   GROUND_TILE_PIXELS,
+  GROUND_TILESET_COLUMNS,
   groundTileIndexRows,
+  groundTilesetCellOf,
+  groundTilesetSizeOf,
   groundTilesetSlots,
 } from "./groundTiles";
 import { variantOfTile } from "./tileVariant";
+import { PIXELS_PER_METRE } from "./units";
 
 describe("groundTilesetSlots", () => {
   it("gives a def with a loaded ground sprite one tile per variant and every other def one flat tile, end to end in def order", () => {
@@ -67,15 +71,54 @@ describe("groundTilesetSlots", () => {
     }
   });
 
+  it("every terrain sprite is art at the pixels per metre the world is drawn at", () => {
+    for (const def of terrainDefs) {
+      if (def.groundSprite) expect(def.groundSprite.tilePixels, def.name).toBe(PIXELS_PER_METRE);
+      if (def.standingSprite) expect(def.standingSprite.pixelsPerMetre, def.name).toBe(PIXELS_PER_METRE);
+    }
+  });
+
   it("refuses a ground sprite whose tiles are another size", () => {
     const grass = getTileDef(idOf("grass"));
-    const oversized: TileDef = {
+    const otherSize: TileDef = {
       ...grass,
-      groundSprite: { ...grass.groundSprite!, tilePixels: 32 },
+      groundSprite: { ...grass.groundSprite!, tilePixels: GROUND_TILE_PIXELS / 2 },
     };
-    expect(() => groundTilesetSlots([oversized], everythingLoaded)).toThrow(
-      /32-pixel tiles/,
+    expect(() => groundTilesetSlots([otherSize], everythingLoaded)).toThrow(
+      new RegExp(`${GROUND_TILE_PIXELS / 2}-pixel tiles`),
     );
+  });
+});
+
+describe("the ground tileset's rows", () => {
+  it("holds every tile of the terrain defs in a texture no side of which passes 4096 pixels", () => {
+    const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
+    const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
+    const { columns, rows } = groundTilesetSizeOf(tileCount);
+    expect(columns * rows).toBeGreaterThanOrEqual(tileCount);
+    expect(columns * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
+    expect(rows * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
+  });
+
+  it("puts tiles left to right, then on the next row, the order a tileset counts them in, each in a cell of its own", () => {
+    expect(groundTilesetCellOf(0)).toEqual({ column: 0, row: 0 });
+    expect(groundTilesetCellOf(GROUND_TILESET_COLUMNS - 1)).toEqual({ column: GROUND_TILESET_COLUMNS - 1, row: 0 });
+    expect(groundTilesetCellOf(GROUND_TILESET_COLUMNS)).toEqual({ column: 0, row: 1 });
+    const tileCount = 3 * GROUND_TILESET_COLUMNS + 5;
+    const { columns, rows } = groundTilesetSizeOf(tileCount);
+    const cells = new Set<string>();
+    for (let tileIndex = 0; tileIndex < tileCount; tileIndex += 1) {
+      const { column, row } = groundTilesetCellOf(tileIndex);
+      expect(row * columns + column).toBe(tileIndex);
+      expect(row).toBeLessThan(rows);
+      cells.add(`${column},${row}`);
+    }
+    expect(cells.size).toBe(tileCount);
+  });
+
+  it("is one row, no wider than its tiles, while they fit in one", () => {
+    expect(groundTilesetSizeOf(5)).toEqual({ columns: 5, rows: 1 });
+    expect(groundTilesetSizeOf(GROUND_TILESET_COLUMNS)).toEqual({ columns: GROUND_TILESET_COLUMNS, rows: 1 });
   });
 });
 

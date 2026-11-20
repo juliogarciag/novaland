@@ -1,0 +1,11 @@
+PASS  room server and dev server up, both started by this run  ({"event":"world-room-listening","port":5265,"roomId":"world","seed":1397131680,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":null,"savedPositions":"memory","dataDirectory":null,"savedPlayers":0,"allowedOrigins":[],"loopbackOrigins":true})
+PASS  both players are seated and each tab draws both of them  (A sees Ana,Bo, B sees Ana,Bo)
+PASS  tab A: the world at 32 px per metre, a metre as many device pixels as before  (zoom 2 (4 before), 20 m across, 2 chunks and 847 trees and rocks drawn)
+PASS  tab A: both characters stand 1 x 1.5 m, drawn at 1:1  (1 x 1.5 m at 1x, 1 x 1.5 m at 1x)
+PASS  tab A: every name sits 0.0625 m above its own character's head  (Ana: gap 0.0625 m, Bo: gap 0.0625 m)
+PASS  tab B: the world at 32 px per metre, a metre as many device pixels as before  (zoom 2 (4 before), 20 m across, 2 chunks and 847 trees and rocks drawn)
+PASS  tab B: both characters stand 1 x 1.5 m, drawn at 1:1  (1 x 1.5 m at 1x, 1 x 1.5 m at 1x)
+PASS  tab B: every name sits 0.0625 m above its own character's head  (Ana: gap 0.0625 m, Bo: gap 0.0625 m)
+PASS  no page errors
+
+ALL 9 CHECKS PASSED

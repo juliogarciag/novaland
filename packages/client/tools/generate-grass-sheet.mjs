@@ -20,7 +20,7 @@ import { blit, createCanvas, noise, pixel } from './pixelCanvas.mjs';
 import { writeSheet, writeSheetWhenRunDirectly } from './sheetFile.mjs';
 
 export const GRASS_SPRITE_KEY = 'grass';
-export const TILE_PIXELS = 16;
+export const TILE_PIXELS = 32;
 export const GRASS_VARIANT_COUNT = 24;
 
 /** The greens of the ground. Exported so that things standing in the grass (the rock's buried foot) are painted in the same ones. */
@@ -39,24 +39,25 @@ const FLOWER_COLORS = {
 
 /** The tiles of the sheet that carry a flower, by variant: where its centre is in the tile and the colour of its petals. */
 const FLOWERS_BY_VARIANT = new Map([
-  [5, { x: 9, y: 6, petal: FLOWER_COLORS.whitePetal }],
-  [17, { x: 4, y: 11, petal: FLOWER_COLORS.pinkPetal }],
+  [5, { x: 18, y: 11, petal: FLOWER_COLORS.whitePetal }],
+  [17, { x: 8, y: 21, petal: FLOWER_COLORS.pinkPetal }],
 ]);
 
 /**
  * Blades are dealt out evenly: the tile is cut into cells of this many
  * pixels a side and every cell gets one tuft, somewhere in the cell.
  * Scattering them freely over the tile leaves bald patches in one tile and
- * thickets in the next. A tuft is one blade, or two side by side, in a tone
- * close to the turf: the ground should read as a calm lawn, not as noise.
+ * thickets in the next. A tuft is a blade with a shorter one leaning out
+ * beside it, sometimes on both sides, in a tone close to the turf: the
+ * ground should read as a calm lawn, not as noise.
  */
-const CELL_PIXELS = 4;
+const CELL_PIXELS = 8;
 
 /** Of every ten tufts, how many are in the lighter green; the rest are in the darker one. */
 const LIGHT_TUFTS_IN_TEN = 5;
 
 /** No square of turf this many pixels a side is left without a blade. */
-const LARGEST_BARE_PATCH = 6;
+const LARGEST_BARE_PATCH = 12;
 
 /** The whole sheet: every variant side by side. */
 export function paintGrassSheet() {
@@ -78,24 +79,44 @@ function paintGrassTile(variant) {
   return tile;
 }
 
-/** Calls `paint(x, y)` for the pixel each tuft of this tile grows from: one in every cell. */
+/** Calls `paint(x, y)` for the pixel each tuft of this tile grows from: two in every cell, one in its upper half and one in its lower. */
 function forEachTuftFoot(seed, paint) {
+  const halfCell = CELL_PIXELS / 2;
   for (let cellY = 0; cellY < TILE_PIXELS; cellY += CELL_PIXELS) {
     for (let cellX = 0; cellX < TILE_PIXELS; cellX += CELL_PIXELS) {
-      const x = cellX + Math.floor(noise(cellX, cellY, seed) * CELL_PIXELS);
-      const y = cellY + Math.floor(noise(cellX, cellY, seed + 50) * CELL_PIXELS);
-      paint(x, y);
+      for (const halfTop of [cellY, cellY + halfCell]) {
+        const x = cellX + Math.floor(noise(cellX, halfTop, seed) * CELL_PIXELS);
+        const y = halfTop + Math.floor(noise(cellX, halfTop, seed + 50) * halfCell);
+        paint(x, y);
+      }
     }
   }
 }
 
-/** One blade two pixels tall, light or dark; a light one sometimes has a bright tip, and a tuft in three has a shorter second blade beside it. */
+/**
+ * A blade three to five pixels tall, light or dark, with a shorter one
+ * standing beside it, and in a tuft in three a third on the other side; a
+ * light one sometimes has a bright tip. Now and then the short blade bends
+ * out at the top, which keeps a field from reading as a comb.
+ */
 function paintTuft(tile, { x, y, seed }) {
   const isLight = noise(x, y, seed + 1) * 10 < LIGHT_TUFTS_IN_TEN;
   const color = isLight ? GRASS_COLORS.bladeLight : GRASS_COLORS.turfShade;
-  paintBlade(tile, { x, y, height: 2, color });
-  if (isLight && noise(x, y, seed + 2) < 0.2) paintBlade(tile, { x, y: y - 1, height: 1, color: GRASS_COLORS.bladeTip });
-  if (x + 1 < TILE_PIXELS && noise(x, y, seed + 3) < 0.33) paintBlade(tile, { x: x + 1, y, height: 1, color });
+  const height = 3 + Math.floor(noise(x, y, seed + 6) * 3);
+  paintBlade(tile, { x, y, height, color });
+  if (isLight && noise(x, y, seed + 2) < 0.2 && y - height >= 0) paintBlade(tile, { x, y: y - height, height: 1, color: GRASS_COLORS.bladeTip });
+  const side = noise(x, y, seed + 7) < 0.5 ? -1 : 1;
+  paintSideBlade(tile, { x: x + side, y, height: height - 1 - Math.floor(noise(x, y, seed + 8) * 2), color, bendsOut: noise(x, y, seed + 9) < 0.3 ? side : 0 });
+  if (noise(x, y, seed + 3) < 0.33) paintSideBlade(tile, { x: x - side, y, height: 2, color, bendsOut: 0 });
+}
+
+/** A shorter blade beside a tuft's middle one, its top pixel one column further out when it `bendsOut` (-1 or 1). What would leave the tile is left out. */
+function paintSideBlade(tile, { x, y, height, color, bendsOut }) {
+  if (x < 0 || x >= TILE_PIXELS) return;
+  paintBlade(tile, { x, y, height: height - (bendsOut ? 1 : 0), color });
+  const tipX = x + bendsOut;
+  const tipY = y - height + 1;
+  if (bendsOut && tipX >= 0 && tipX < TILE_PIXELS && tipY >= 0) pixel(tile, tipX, tipY, color);
 }
 
 /** Wherever a square of plain turf is left between the blades, grows one more light blade in it, until there is none. */
@@ -104,8 +125,8 @@ function coverBarePatches(tile, seed) {
     for (let left = 0; left + LARGEST_BARE_PATCH <= TILE_PIXELS; left += 1) {
       if (!isPlainTurf(tile, { left, top, size: LARGEST_BARE_PATCH })) continue;
       const x = left + Math.floor(noise(left, top, seed + 4) * LARGEST_BARE_PATCH);
-      const y = top + 1 + Math.floor(noise(left, top, seed + 5) * (LARGEST_BARE_PATCH - 1));
-      paintBlade(tile, { x, y, height: 2, color: GRASS_COLORS.bladeLight });
+      const y = top + 2 + Math.floor(noise(left, top, seed + 5) * (LARGEST_BARE_PATCH - 2));
+      paintBlade(tile, { x, y, height: 3, color: GRASS_COLORS.bladeLight });
     }
   }
 }
@@ -127,14 +148,17 @@ function paintBlade(tile, { x, y, height, color }) {
   }
 }
 
-/** Four petals around a centre, on a short stem. */
+/** A centre of four pixels with a petal on each side, on a stem with a leaf. */
 function paintFlower(tile, { x, y, petal }) {
-  pixel(tile, x, y + 2, GRASS_COLORS.turfShade);
-  pixel(tile, x, y - 1, petal);
-  pixel(tile, x - 1, y, petal);
-  pixel(tile, x + 1, y, petal);
-  pixel(tile, x, y + 1, petal);
-  pixel(tile, x, y, FLOWER_COLORS.centre);
+  for (const [stemX, stemY] of [[x, y + 3], [x, y + 4], [x + 1, y + 5], [x - 1, y + 4]]) pixel(tile, stemX, stemY, GRASS_COLORS.turfShade);
+  const petals = [
+    [x, y - 2], [x + 1, y - 2], [x, y - 1], [x + 1, y - 1],
+    [x - 2, y], [x - 1, y], [x - 2, y + 1], [x - 1, y + 1],
+    [x + 2, y], [x + 3, y], [x + 2, y + 1], [x + 3, y + 1],
+    [x, y + 2], [x + 1, y + 2],
+  ];
+  for (const [petalX, petalY] of petals) pixel(tile, petalX, petalY, petal);
+  for (const [centreX, centreY] of [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]]) pixel(tile, centreX, centreY, FLOWER_COLORS.centre);
 }
 
 /** Writes the grass sheet into `directory` as `grass.png` and returns the path. */

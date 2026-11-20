@@ -20,8 +20,8 @@ import { blit, blitOpaque, createCanvas, isOpaque, noise, outline, pixel } from 
 import { writeSheet, writeSheetWhenRunDirectly } from './sheetFile.mjs';
 
 export const ROCK_SPRITE_KEY = 'rock';
-export const FRAME_WIDTH = 16;
-export const FRAME_HEIGHT = 20;
+export const FRAME_WIDTH = 32;
+export const FRAME_HEIGHT = 40;
 
 const COLORS = {
   stoneEdge: [0x2b, 0x2d, 0x36],
@@ -32,62 +32,76 @@ const COLORS = {
 };
 
 /** The row where the stone goes into the ground: it is cut off flat here and the grass covers the cut. */
-const GROUND_ROW = FRAME_HEIGHT - 3;
+const GROUND_ROW = FRAME_HEIGHT - 6;
 
-/** Of every ten columns of the stone's foot, how many have a blade of grass standing a pixel taller than the lawn in front of it. */
+/** Rows of lawn in front of the stone's foot, the ground row the lowest. */
+const LAWN_ROWS = 2;
+
+/** Of every ten columns of the stone's foot, how many have a blade of grass standing taller than the lawn in front of it. */
 const TALLER_BLADES_IN_TEN_COLUMNS = 4;
 
 /**
  * One entry per frame. `lumps` are the masses of the rock as ellipses in
  * frame pixels, cut off flat at the ground row, so their centres sit low:
- * the widest part of a lump is at or below the ground; `cracks` are single
- * dark pixels; `seed` scatters the grain so no two variants share it.
+ * the widest part of a lump is at or below the ground; `cracks` are the
+ * dark pixels of the cracks, a pixel wide; `seed` scatters the grain so no
+ * two variants share it.
  */
 const ROCK_VARIANTS = [
   {
     seed: 5,
     lumps: [
-      { x: 8, y: 15, radiusX: 6, radiusY: 8 },
-      { x: 11.5, y: 16.5, radiusX: 3.5, radiusY: 5 },
+      { x: 16, y: 30, radiusX: 12, radiusY: 16 },
+      { x: 23, y: 33, radiusX: 7, radiusY: 10 },
     ],
     cracks: [
-      [9, 10],
-      [9, 11],
-      [10, 12],
+      [18, 20],
+      [19, 21],
+      [18, 22],
+      [19, 23],
+      [20, 24],
+      [21, 25],
     ],
   },
   {
     seed: 17,
     lumps: [
-      { x: 6.5, y: 15.5, radiusX: 4.5, radiusY: 8 },
-      { x: 12.5, y: 17, radiusX: 2.5, radiusY: 4 },
+      { x: 13, y: 31, radiusX: 9, radiusY: 16 },
+      { x: 25, y: 34, radiusX: 5, radiusY: 8 },
     ],
     cracks: [
-      [6, 11],
-      [7, 12],
+      [12, 22],
+      [13, 23],
+      [14, 24],
+      [15, 25],
     ],
   },
   {
     seed: 29,
     lumps: [
-      { x: 8.5, y: 16.5, radiusX: 6.5, radiusY: 5.5 },
-      { x: 5.5, y: 16, radiusX: 3.5, radiusY: 6.5 },
+      { x: 17, y: 33, radiusX: 13, radiusY: 11 },
+      { x: 11, y: 32, radiusX: 7, radiusY: 13 },
     ],
     cracks: [
-      [10, 13],
-      [11, 14],
+      [20, 26],
+      [21, 27],
+      [22, 28],
+      [23, 29],
     ],
   },
   {
     seed: 41,
     lumps: [
-      { x: 9.5, y: 15, radiusX: 4.5, radiusY: 9.5 },
-      { x: 4.5, y: 17, radiusX: 3, radiusY: 5 },
+      { x: 19, y: 30, radiusX: 9, radiusY: 19 },
+      { x: 9, y: 34, radiusX: 6, radiusY: 10 },
     ],
     cracks: [
-      [9, 9],
-      [10, 10],
-      [10, 11],
+      [18, 18],
+      [19, 19],
+      [20, 20],
+      [21, 21],
+      [20, 22],
+      [21, 23],
     ],
   },
 ];
@@ -122,7 +136,7 @@ function paintStone(frame, { lumps, cracks, seed }) {
       if (!owner) continue;
       const { lump, bulge } = owner;
       const towardsLight = -((x + 0.5 - lump.x) / lump.radiusX) * 0.4 - ((y + 0.5 - lump.y) / lump.radiusY) * 0.75 - 0.15;
-      const grain = (noise(x, y, seed) - 0.5) * 0.2;
+      const grain = (noise(Math.floor(x / 2), Math.floor(y / 2), seed) - 0.5) * 0.2 + (noise(x, y, seed + 1) - 0.5) * 0.08;
       const light = towardsLight + grain + (bulge < 0.2 && towardsLight < 0.15 ? -0.45 : 0);
       pixel(stone, x, y, stoneTone(light));
     }
@@ -135,17 +149,20 @@ function paintStone(frame, { lumps, cracks, seed }) {
 
 /**
  * Sinks the stone into the ground: the dark edge under it is taken away
- * and its lowest row is covered by the lawn in front of it, with a blade
- * of grass standing a pixel taller in some columns. The rock ends in a
- * ragged line of grass instead of sitting on top of the lawn, and it casts
- * no shadow: what is in the ground does not stand over it.
+ * and its lowest LAWN_ROWS rows are covered by the lawn in front of it,
+ * with a blade of grass standing taller in some columns. The rock ends in
+ * a ragged line of grass instead of sitting on top of the lawn, and it
+ * casts no shadow: what is in the ground does not stand over it.
  */
 function buryFoot(stone, seed) {
   for (let x = 0; x < FRAME_WIDTH; x += 1) {
     if (!isOpaque(stone, x, GROUND_ROW)) continue;
     pixel(stone, x, GROUND_ROW + 1, [0, 0, 0], 0);
-    pixel(stone, x, GROUND_ROW, GRASS_COLORS.turf);
-    if (noise(x, GROUND_ROW, seed) * 10 < TALLER_BLADES_IN_TEN_COLUMNS) pixel(stone, x, GROUND_ROW - 1, noise(x, GROUND_ROW, seed + 1) < 0.5 ? GRASS_COLORS.bladeLight : GRASS_COLORS.turfShade);
+    for (let row = 0; row < LAWN_ROWS; row += 1) pixel(stone, x, GROUND_ROW - row, row === 0 || noise(x, row, seed + 2) < 0.7 ? GRASS_COLORS.turf : GRASS_COLORS.turfShade);
+    if (noise(x, GROUND_ROW, seed) * 10 >= TALLER_BLADES_IN_TEN_COLUMNS) continue;
+    const bladeColor = noise(x, GROUND_ROW, seed + 1) < 0.5 ? GRASS_COLORS.bladeLight : GRASS_COLORS.turfShade;
+    const bladeHeight = 1 + Math.floor(noise(x, GROUND_ROW, seed + 3) * 2);
+    for (let step = 1; step <= bladeHeight; step += 1) pixel(stone, x, GROUND_ROW - LAWN_ROWS + 1 - step, bladeColor);
   }
 }
 
