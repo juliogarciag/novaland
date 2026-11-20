@@ -12,13 +12,16 @@ import {
   type CharacterPart,
   type CharacterShapePart,
   type LookPart,
+  type SpriteDirection,
 } from '@novaland/sim';
 import { cssColor, layerSheetsOf, lookKey, paintFigure } from '../render/characterSheet';
+import { facingOfKeyPress } from './facingKeys';
 
-/** What the preview needs of the character's sheets: the size of one frame, and where the sheet under a sprite key is (the layer sheets a look is drawn from). */
+/** What the preview needs of the character's sheets: the size of one frame, the frame a figure stands in facing each way, and where the sheet under a sprite key is (the layer sheets a look is drawn from). */
 export interface PreviewSheet {
   readonly frameWidth: number;
   readonly frameHeight: number;
+  readonly idleFrames: Readonly<Record<SpriteDirection, number>>;
   urlOf(sheetKey: string): string;
 }
 
@@ -86,7 +89,8 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
   preview.className = 'creator-preview';
   preview.width = previewSheet.frameWidth * PREVIEW_SCALE;
   preview.height = previewSheet.frameHeight * PREVIEW_SCALE;
-  const paintPreview = characterPreview(preview, previewSheet);
+  const characterView = characterPreview(preview, previewSheet);
+  const paintPreview = characterView.show;
 
   const nameInput = document.createElement('input');
   nameInput.name = 'name';
@@ -135,8 +139,18 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
 
   form.append(title, preview, nameField, problem, ...shapes, ...palettes, submit);
 
+  // The keys that walk in the game turn the figure, while the player is not typing.
+  const onFacingKey = (event: KeyboardEvent): void => {
+    const facing = facingOfKeyPress(event);
+    if (!facing) return;
+    // An arrow on a picker would otherwise pick the next choice, and on the page scroll it.
+    event.preventDefault();
+    characterView.face(facing);
+  };
+  document.addEventListener('keydown', onFacingKey);
   let stopListeningForEscape = (): void => {};
   const close = (): void => {
+    document.removeEventListener('keydown', onFacingKey);
     stopListeningForEscape();
     form.remove();
   };
@@ -251,14 +265,20 @@ function shapePicker(part: CharacterShapePart, selected: number, onPick: (index:
   return fieldset;
 }
 
+/** The creator's preview: shows a look, and turns the figure to face a way. */
+interface CharacterView {
+  show(look: CharacterLook): void;
+  face(facing: SpriteDirection): void;
+}
+
 /**
- * Draws the character standing, facing the player, in a look: the first
- * frame of its gender's sheet with its hairstyle's over it, outlined and
- * recoloured the way the game draws it (`paintFigure`). Returns the function
- * that paints a look; until both sheets have loaded (or if they never do)
- * the preview keeps what it showed and the creator works without it.
+ * Draws the character standing in a look, facing the player until it is
+ * turned: the idle frame of its gender's sheet for the way it faces, with its
+ * hairstyle's over it, outlined and recoloured the way the game draws it
+ * (`paintFigure`). Until both sheets have loaded (or if they never do) the
+ * preview keeps what it showed and the creator works without it.
  */
-function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (look: CharacterLook) => void {
+function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): CharacterView {
   const context = preview.getContext('2d');
   const frame = document.createElement('canvas');
   frame.width = sheet.frameWidth;
@@ -281,6 +301,7 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
   };
   const loaded = (image: HTMLImageElement): boolean => image.complete && image.naturalWidth > 0;
   let shown: CharacterLook | undefined;
+  let facing: SpriteDirection = 'down';
   const clearPreview = (): void => {
     context?.clearRect(0, 0, preview.width, preview.height);
     delete preview.dataset['look'];
@@ -291,12 +312,16 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     const body = imageOf(layers.body);
     const hair = imageOf(layers.hair);
     if (!loaded(body) || !loaded(hair)) return;
-    const firstFrameOf = (image: HTMLImageElement): Uint8ClampedArray => {
+    const standingFrame = sheet.idleFrames[facing];
+    const standingFrameOf = (image: HTMLImageElement): Uint8ClampedArray => {
+      const columns = Math.max(1, Math.floor(image.naturalWidth / frame.width));
+      const left = (standingFrame % columns) * frame.width;
+      const top = Math.floor(standingFrame / columns) * frame.height;
       frameContext.clearRect(0, 0, frame.width, frame.height);
-      frameContext.drawImage(image, 0, 0, frame.width, frame.height, 0, 0, frame.width, frame.height);
+      frameContext.drawImage(image, left, top, frame.width, frame.height, 0, 0, frame.width, frame.height);
       return frameContext.getImageData(0, 0, frame.width, frame.height).data;
     };
-    const figure = paintFigure({ body: firstFrameOf(body), hair: firstFrameOf(hair), width: frame.width, height: frame.height }, shown);
+    const figure = paintFigure({ body: standingFrameOf(body), hair: standingFrameOf(hair), width: frame.width, height: frame.height }, shown);
     const pixels = frameContext.createImageData(frame.width, frame.height);
     pixels.data.set(figure);
     frameContext.putImageData(pixels, 0, 0);
@@ -304,12 +329,19 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     context.clearRect(0, 0, preview.width, preview.height);
     context.drawImage(frame, 0, 0, preview.width, preview.height);
     preview.dataset['look'] = lookKey(shown);
+    preview.dataset['facing'] = facing;
   };
   // Every choice is a click away: fetch all the layer sheets now, so a pick draws at once.
   for (const shape of [...characterShapes.gender, ...characterShapes.hairStyle]) imageOf(shape.sheet);
-  return (look) => {
-    shown = { ...look };
-    paint();
+  return {
+    show(look) {
+      shown = { ...look };
+      paint();
+    },
+    face(way) {
+      facing = way;
+      paint();
+    },
   };
 }
 

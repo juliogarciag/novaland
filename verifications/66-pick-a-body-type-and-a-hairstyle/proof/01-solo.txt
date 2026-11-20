@@ -1,22 +1,27 @@
 PASS  dev server up, started by this run
 PASS  the creator offers at least two genders, by name  ({"legend":"Gender","options":[{"value":0,"label":"Gender: male"},{"value":1,"label":"Gender: female"}]})
 PASS  the creator offers at least three hairstyles, by name, as a choice of its own  ({"legend":"Hairstyle","options":[{"value":0,"label":"Hairstyle: short"},{"value":1,"label":"Hairstyle: long"},{"value":2,"label":"Hairstyle: tied back"}]})
+PASS  W, A, S, D and the arrows turn the figure in the preview, with focus on a picker  ({"standing":"down","turned":{"KeyD":"right","KeyW":"up","KeyA":"left","KeyS":"down","ArrowRight":"right","ArrowUp":"up","ArrowLeft":"left","ArrowDown":"down"}})
+PASS  each way draws a different figure
+PASS  an arrow on a picker turns the figure instead of picking another choice  (gender stays 0)
+PASS  typing W, A, S or D in the name field types it and leaves the figure as it faces  ({"name":"dw","facing":"down"})
 PASS  the preview follows both pickers through all 6 pairings  (0-0, 0-1, 0-2, 1-0, 1-1, 1-2)
 PASS  every pairing of gender and hairstyle draws a different preview  (6 distinct)
 PASS  picking a gender in the creator picked the hairstyle the sim suggests for it  ([0,1] vs [0,1])
 PASS  and the player still entered with another hairstyle picked after it
 PASS  the creator's choices are the sim's lists, in order  ({"gender":[{"name":"male","sheet":"player-body-male","defaultHairStyle":0},{"name":"female","sheet":"player-body-female","defaultHairStyle":1}],"hairStyle":[{"name":"short","sheet":"player-hair-short"},{"name":"long","sheet":"player-hair-long"},{"name":"tied back","sheet":"player-hair-tied-back"}]})
-PASS  the player enters the world with the gender and hairstyle picked  ({"eid":1,"name":"Bea","look":{"skin":0,"hair":4,"clothes":0,"gender":1,"hairStyle":2}})
+PASS  the player enters the world with the gender and hairstyle picked  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":6,"clothes":3,"gender":1,"hairStyle":2}})
 PASS  the game loaded every body sheet (one per gender) and hair layer sheet, so looks are laid from layers, not the plain sheet  ([{"sheet":"player-body-male","loaded":true},{"sheet":"player-body-female","loaded":true},{"sheet":"player-hair-short","loaded":true},{"sheet":"player-hair-long","loaded":true},{"sheet":"player-hair-tied-back","loaded":true}])
-PASS  the renderer draws the player from a texture made for that look  (player/look/0-4-0-1-2)
-PASS  the browser remembers both choices  ({"name":"Bea","look":{"skin":0,"hair":4,"clothes":0,"gender":1,"hairStyle":2}})
+PASS  the renderer draws the player from a texture made for that look  (player/look/2-6-3-1-2)
+PASS  the browser remembers both choices  ({"name":"Bea","look":{"skin":2,"hair":6,"clothes":3,"gender":1,"hairStyle":2}})
 PASS  the creator opened from the world starts from the gender and hairstyle worn
-PASS  changing character gives the same player the other gender and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":0,"hair":4,"clothes":0,"gender":0,"hairStyle":1}})
+PASS  the creator opened from the world turns too, and the player in the world does not walk  ({"x":0,"y":0})
+PASS  changing character gives the same player the other gender and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":6,"clothes":3,"gender":0,"hairStyle":1}})
 PASS  and keeps the rest of the look and the name
-PASS  the renderer draws the player in the new look  (player/look/0-4-0-0-1)
-PASS  after a reload the player goes straight in with the changed gender and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":0,"hair":4,"clothes":0,"gender":0,"hairStyle":1}})
+PASS  the renderer draws the player in the new look  (player/look/2-6-3-0-1)
+PASS  after a reload the player goes straight in with the changed gender and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":6,"clothes":3,"gender":0,"hairStyle":1}})
 PASS  a character remembered before genders existed skips the creator  (creator shown: false)
 PASS  and plays with its colours and name, in the first gender and hairstyle  ({"eid":1,"name":"Old Timer","look":{"skin":1,"hair":2,"clothes":3,"gender":0,"hairStyle":0}})
 PASS  no page errors
 
-ALL 20 CHECKS PASSED
+ALL 25 CHECKS PASSED

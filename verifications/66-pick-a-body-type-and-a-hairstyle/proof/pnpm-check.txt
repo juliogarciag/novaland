@@ -9,27 +9,27 @@
 
  RUN  v5.1.0 <repo>
 
-(node:59183) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:63773) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:59184) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:63774) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:59185) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:63775) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:59201) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:63784) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:59203) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:63786) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
- Test Files  69 passed (69)
-      Tests  619 passed (619)
-   Start at  21:10:17
-   Duration  18.95s (tests 85%, import 12%, transform 2%)
+ Test Files  70 passed (70)
+      Tests  621 passed (621)
+   Start at  21:13:46
+   Duration  18.33s (tests 86%, import 11%, transform 3%, worker 1%)
 
 
 > novaland@0.0.0 typecheck <repo>
 > tsc -p tsconfig.json && pnpm -r typecheck
 
-(node:59549) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:63890) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json

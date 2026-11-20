@@ -31,6 +31,19 @@
       ]
     }
   },
+  "turning": {
+    "standing": "down",
+    "turned": {
+      "KeyD": "right",
+      "KeyW": "up",
+      "KeyA": "left",
+      "KeyS": "down",
+      "ArrowRight": "right",
+      "ArrowUp": "up",
+      "ArrowLeft": "left",
+      "ArrowDown": "down"
+    }
+  },
   "suggestedHairStyles": [
     0,
     1
@@ -41,9 +54,9 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 1,
         "hairStyle": 2
       }
@@ -53,17 +66,21 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/0-4-0-1-2"
+      "textureKey": "player/look/2-6-3-1-2"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 1,
         "hairStyle": 2
       }
+    },
+    "moveIntent": {
+      "x": 0,
+      "y": 0
     },
     "creatorShown": false
   },
@@ -123,9 +140,9 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 0,
         "hairStyle": 1
       }
@@ -135,17 +152,21 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/0-4-0-0-1"
+      "textureKey": "player/look/2-6-3-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 0,
         "hairStyle": 1
       }
+    },
+    "moveIntent": {
+      "x": 0,
+      "y": 0
     },
     "creatorShown": false
   },
@@ -155,9 +176,9 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 0,
         "hairStyle": 1
       }
@@ -167,17 +188,21 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/0-4-0-0-1"
+      "textureKey": "player/look/2-6-3-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 0,
-        "hair": 4,
-        "clothes": 0,
+        "skin": 2,
+        "hair": 6,
+        "clothes": 3,
         "gender": 0,
         "hairStyle": 1
       }
+    },
+    "moveIntent": {
+      "x": 0,
+      "y": 0
     },
     "creatorShown": false
   },
@@ -209,6 +234,10 @@
         "clothes": 3
       }
     },
+    "moveIntent": {
+      "x": 0,
+      "y": 0
+    },
     "creatorShown": false
   },
   "results": [
@@ -225,6 +254,25 @@
       "name": "the creator offers at least three hairstyles, by name, as a choice of its own",
       "pass": true,
       "details": "{\"legend\":\"Hairstyle\",\"options\":[{\"value\":0,\"label\":\"Hairstyle: short\"},{\"value\":1,\"label\":\"Hairstyle: long\"},{\"value\":2,\"label\":\"Hairstyle: tied back\"}]}"
+    },
+    {
+      "name": "W, A, S, D and the arrows turn the figure in the preview, with focus on a picker",
+      "pass": true,
+      "details": "{\"standing\":\"down\",\"turned\":{\"KeyD\":\"right\",\"KeyW\":\"up\",\"KeyA\":\"left\",\"KeyS\":\"down\",\"ArrowRight\":\"right\",\"ArrowUp\":\"up\",\"ArrowLeft\":\"left\",\"ArrowDown\":\"down\"}}"
+    },
+    {
+      "name": "each way draws a different figure",
+      "pass": true
+    },
+    {
+      "name": "an arrow on a picker turns the figure instead of picking another choice",
+      "pass": true,
+      "details": "gender stays 0"
+    },
+    {
+      "name": "typing W, A, S or D in the name field types it and leaves the figure as it faces",
+      "pass": true,
+      "details": "{\"name\":\"dw\",\"facing\":\"down\"}"
     },
     {
       "name": "the preview follows both pickers through all 6 pairings",
@@ -253,7 +301,7 @@
     {
       "name": "the player enters the world with the gender and hairstyle picked",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":0,\"hair\":4,\"clothes\":0,\"gender\":1,\"hairStyle\":2}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":6,\"clothes\":3,\"gender\":1,\"hairStyle\":2}}"
     },
     {
       "name": "the game loaded every body sheet (one per gender) and hair layer sheet, so looks are laid from layers, not the plain sheet",
@@ -263,21 +311,26 @@
     {
       "name": "the renderer draws the player from a texture made for that look",
       "pass": true,
-      "details": "player/look/0-4-0-1-2"
+      "details": "player/look/2-6-3-1-2"
     },
     {
       "name": "the browser remembers both choices",
       "pass": true,
-      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":0,\"hair\":4,\"clothes\":0,\"gender\":1,\"hairStyle\":2}}"
+      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":6,\"clothes\":3,\"gender\":1,\"hairStyle\":2}}"
     },
     {
       "name": "the creator opened from the world starts from the gender and hairstyle worn",
       "pass": true
     },
     {
+      "name": "the creator opened from the world turns too, and the player in the world does not walk",
+      "pass": true,
+      "details": "{\"x\":0,\"y\":0}"
+    },
+    {
       "name": "changing character gives the same player the other gender and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":0,\"hair\":4,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":6,\"clothes\":3,\"gender\":0,\"hairStyle\":1}}"
     },
     {
       "name": "and keeps the rest of the look and the name",
@@ -286,12 +339,12 @@
     {
       "name": "the renderer draws the player in the new look",
       "pass": true,
-      "details": "player/look/0-4-0-0-1"
+      "details": "player/look/2-6-3-0-1"
     },
     {
       "name": "after a reload the player goes straight in with the changed gender and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":0,\"hair\":4,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":6,\"clothes\":3,\"gender\":0,\"hairStyle\":1}}"
     },
     {
       "name": "a character remembered before genders existed skips the creator",

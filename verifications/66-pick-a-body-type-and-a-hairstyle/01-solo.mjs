@@ -49,6 +49,29 @@ try {
   results.push(check('the creator offers at least three hairstyles, by name, as a choice of its own', offered.hairStyle.legend === 'Hairstyle' && shapes.hairStyle.length >= 3, JSON.stringify(offered.hairStyle)));
   await page.screenshot({ path: path.join(PROOF, 'creator.png') });
 
+  // ---- The keys that walk turn the figure in the preview, outside the name field.
+  const previewState = () => page.evaluate(() => ({ facing: document.querySelector('#creator .creator-preview')?.dataset.facing, pixels: document.querySelector('#creator .creator-preview')?.toDataURL(), gender: document.querySelector('#creator input[name="gender"]:checked')?.value, name: document.querySelector('#creator input[name="name"]').value }));
+  const facingNow = (way) => waitFor(`the preview facing ${way}`, { read: previewState, until: (state) => state.facing === way }).catch(() => undefined);
+  await page.click('#creator fieldset[data-part="gender"] label');
+  const standing = await facingNow('down');
+  const turned = {};
+  for (const [key, way] of [['KeyD', 'right'], ['KeyW', 'up'], ['KeyA', 'left'], ['KeyS', 'down'], ['ArrowRight', 'right'], ['ArrowUp', 'up'], ['ArrowLeft', 'left'], ['ArrowDown', 'down']]) {
+    await page.keyboard.press(key);
+    turned[key] = await facingNow(way);
+    if (way !== 'down') await page.locator('#creator .creator-preview').screenshot({ path: path.join(PROOF, `preview-facing-${way}.png`) });
+  }
+  const genderKept = Object.values(turned).every((state) => state?.gender === standing?.gender);
+  report.turning = { standing: standing?.facing, turned: Object.fromEntries(Object.entries(turned).map(([key, state]) => [key, state?.facing])) };
+  results.push(check('W, A, S, D and the arrows turn the figure in the preview, with focus on a picker', standing !== undefined && Object.values(turned).every(Boolean), JSON.stringify(report.turning)));
+  results.push(check('each way draws a different figure', new Set(['KeyS', 'KeyW', 'KeyA', 'KeyD'].map((key) => turned[key]?.pixels)).size === 4));
+  results.push(check('an arrow on a picker turns the figure instead of picking another choice', genderKept, `gender stays ${standing?.gender}`));
+  await page.focus('#creator input[name="name"]');
+  await page.keyboard.press('KeyD');
+  await page.keyboard.press('KeyW');
+  const typing = await previewState();
+  results.push(check('typing W, A, S or D in the name field types it and leaves the figure as it faces', typing.name.endsWith('dw') && typing.facing === 'down', JSON.stringify({ name: typing.name, facing: typing.facing })));
+  await page.fill('#creator input[name="name"]', '');
+
   // ---- Picking a gender picks its suggested hairstyle. Start each time from another gender wearing the last hairstyle, so the pick is a real change.
   const hairStyleChecked = () => page.evaluate(() => Number(document.querySelector('#creator input[name="hairStyle"]:checked')?.value));
   const suggestedHairStyles = [];
@@ -110,6 +133,11 @@ try {
   const genderShownOnOpen = await page.isChecked(`#creator input[name="gender"][value="${lastGender}"]`);
   const hairShownOnOpen = await page.isChecked(`#creator input[name="hairStyle"][value="${lastHairStyle}"]`);
   results.push(check('the creator opened from the world starts from the gender and hairstyle worn', genderShownOnOpen && hairShownOnOpen));
+  await page.click('#creator .creator-preview');
+  await page.keyboard.press('ArrowLeft');
+  const turnedOverGame = await facingNow('left');
+  const stillPlaying = await localCharacterOf(page);
+  results.push(check('the creator opened from the world turns too, and the player in the world does not walk', turnedOverGame !== undefined && stillPlaying.moveIntent?.x === 0 && stillPlaying.moveIntent?.y === 0, JSON.stringify(stillPlaying.moveIntent)));
   await page.check('#creator input[name="gender"][value="0"]');
   await page.check('#creator input[name="hairStyle"][value="1"]');
   await page.screenshot({ path: path.join(PROOF, 'change-character.png') });
@@ -176,7 +204,7 @@ function localCharacterOf(page) {
     } catch {
       remembered = undefined;
     }
-    return { eid: player?.id, character, drawn, remembered, creatorShown: document.querySelector('#creator') !== null };
+    return { eid: player?.id, character, drawn, remembered, moveIntent: player?.components.MoveIntent, creatorShown: document.querySelector('#creator') !== null };
   });
 }
 
