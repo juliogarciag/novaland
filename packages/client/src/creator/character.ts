@@ -104,7 +104,7 @@ export function addChangeCharacterButton(parent: HTMLElement, { playing, changeT
 /** Where the creator's preview finds the character's sheet. */
 function playerPreviewSheet(): PreviewSheet {
   const sprite = getDef(DefId.Player).sprite;
-  return { url: spriteSheetUrl(sprite?.key ?? 'player'), frameWidth: sprite?.frameWidth ?? 16, frameHeight: sprite?.frameHeight ?? 24 };
+  return { url: spriteSheetUrl(sprite?.key ?? 'player'), frameWidth: sprite?.frameWidth ?? 32, frameHeight: sprite?.frameHeight ?? 48 };
 }
 
 /** A suggestion for a first visit, so two new players rarely start out looking the same. Only a starting point: the player picks. */
