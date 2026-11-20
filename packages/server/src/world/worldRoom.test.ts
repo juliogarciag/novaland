@@ -217,6 +217,9 @@ describe('WorldRoom over a real connection', () => {
       { ...legal, name: 'Ada\nLovelace' },
       { ...legal, look: { skin: 99, hair: 0, clothes: 0, body: 0, hairStyle: 0 } },
       { ...legal, look: { skin: 0, hair: -1, clothes: 0, body: 0, hairStyle: 0 } },
+      // A look as a page from before body types and hairstyles sends it: the server never fills them in.
+      { ...legal, look: { skin: 0, hair: 0, clothes: 0 } },
+      { ...legal, look: { skin: 0, hair: 0, clothes: 0, body: 2, hairStyle: 0 } },
       { ...legal, look: { skin: 0, hair: 0 } },
       { ...legal, slot: 0 },
     ];

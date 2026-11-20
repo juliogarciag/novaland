@@ -1,0 +1,19 @@
+PASS  dev server up, started by this run
+PASS  the creator offers at least two body types, by name  ({"legend":"Body type","options":[{"value":0,"label":"Body type: straight"},{"value":1,"label":"Body type: curvy"}]})
+PASS  the creator offers at least three hairstyles, by name, as a choice of its own  ({"legend":"Hairstyle","options":[{"value":0,"label":"Hairstyle: short"},{"value":1,"label":"Hairstyle: long"},{"value":2,"label":"Hairstyle: tied back"}]})
+PASS  the preview follows both pickers through all 6 pairings  (0-0, 0-1, 0-2, 1-0, 1-1, 1-2)
+FAIL  every pairing of body type and hairstyle draws a different preview  (1 distinct)
+PASS  the creator's choices are the sim's lists, in order  ({"body":[{"name":"straight","sheet":"player-body-straight"},{"name":"curvy","sheet":"player-body-curvy"}],"hairStyle":[{"name":"short","sheet":"player-hair-short"},{"name":"long","sheet":"player-hair-long"},{"name":"tied back","sheet":"player-hair-tied-back"}]})
+PASS  the player enters the world with the body type and hairstyle picked  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":7,"clothes":4,"body":1,"hairStyle":2}})
+PASS  the renderer draws the player from a texture made for that look  (player/look/2-7-4-1-2)
+PASS  the browser remembers both choices  ({"name":"Bea","look":{"skin":2,"hair":7,"clothes":4,"body":1,"hairStyle":2}})
+PASS  the creator opened from the world starts from the body type and hairstyle worn
+PASS  changing character gives the same player the other body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":7,"clothes":4,"body":0,"hairStyle":1}})
+PASS  and keeps the rest of the look and the name
+PASS  the renderer draws the player in the new look  (player/look/2-7-4-0-1)
+PASS  after a reload the player goes straight in with the changed body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":7,"clothes":4,"body":0,"hairStyle":1}})
+PASS  a character remembered before body types existed skips the creator  (creator shown: false)
+PASS  and plays with its colours and name, in the first body type and hairstyle  ({"eid":1,"name":"Old Timer","look":{"skin":1,"hair":2,"clothes":3,"body":0,"hairStyle":0}})
+PASS  no page errors
+
+1 OF 17 CHECKS FAILED

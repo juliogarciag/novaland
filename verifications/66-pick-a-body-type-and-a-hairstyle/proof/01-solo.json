@@ -1,0 +1,270 @@
+{
+  "offered": {
+    "body": {
+      "legend": "Body type",
+      "options": [
+        {
+          "value": 0,
+          "label": "Body type: straight"
+        },
+        {
+          "value": 1,
+          "label": "Body type: curvy"
+        }
+      ]
+    },
+    "hairStyle": {
+      "legend": "Hairstyle",
+      "options": [
+        {
+          "value": 0,
+          "label": "Hairstyle: short"
+        },
+        {
+          "value": 1,
+          "label": "Hairstyle: long"
+        },
+        {
+          "value": 2,
+          "label": "Hairstyle: tied back"
+        }
+      ]
+    }
+  },
+  "entered": {
+    "eid": 1,
+    "character": {
+      "eid": 1,
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 1,
+        "hairStyle": 2
+      }
+    },
+    "drawn": {
+      "eid": 1,
+      "name": "Bea",
+      "x": 104,
+      "y": 213,
+      "textureKey": "player/look/2-7-4-1-2"
+    },
+    "remembered": {
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 1,
+        "hairStyle": 2
+      }
+    },
+    "creatorShown": false
+  },
+  "simShapes": {
+    "body": [
+      {
+        "name": "straight",
+        "sheet": "player-body-straight"
+      },
+      {
+        "name": "curvy",
+        "sheet": "player-body-curvy"
+      }
+    ],
+    "hairStyle": [
+      {
+        "name": "short",
+        "sheet": "player-hair-short"
+      },
+      {
+        "name": "long",
+        "sheet": "player-hair-long"
+      },
+      {
+        "name": "tied back",
+        "sheet": "player-hair-tied-back"
+      }
+    ]
+  },
+  "changed": {
+    "eid": 1,
+    "character": {
+      "eid": 1,
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 0,
+        "hairStyle": 1
+      }
+    },
+    "drawn": {
+      "eid": 1,
+      "name": "Bea",
+      "x": 104,
+      "y": 213,
+      "textureKey": "player/look/2-7-4-0-1"
+    },
+    "remembered": {
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 0,
+        "hairStyle": 1
+      }
+    },
+    "creatorShown": false
+  },
+  "reloaded": {
+    "eid": 1,
+    "character": {
+      "eid": 1,
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 0,
+        "hairStyle": 1
+      }
+    },
+    "drawn": {
+      "eid": 1,
+      "name": "Bea",
+      "x": 104,
+      "y": 213,
+      "textureKey": "player/look/2-7-4-0-1"
+    },
+    "remembered": {
+      "name": "Bea",
+      "look": {
+        "skin": 2,
+        "hair": 7,
+        "clothes": 4,
+        "body": 0,
+        "hairStyle": 1
+      }
+    },
+    "creatorShown": false
+  },
+  "rememberedBefore66": {
+    "eid": 1,
+    "character": {
+      "eid": 1,
+      "name": "Old Timer",
+      "look": {
+        "skin": 1,
+        "hair": 2,
+        "clothes": 3,
+        "body": 0,
+        "hairStyle": 0
+      }
+    },
+    "drawn": {
+      "eid": 1,
+      "name": "Old Timer",
+      "x": 104,
+      "y": 213,
+      "textureKey": "player/look/1-2-3-0-0"
+    },
+    "remembered": {
+      "name": "Old Timer",
+      "look": {
+        "skin": 1,
+        "hair": 2,
+        "clothes": 3
+      }
+    },
+    "creatorShown": false
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the creator offers at least two body types, by name",
+      "pass": true,
+      "details": "{\"legend\":\"Body type\",\"options\":[{\"value\":0,\"label\":\"Body type: straight\"},{\"value\":1,\"label\":\"Body type: curvy\"}]}"
+    },
+    {
+      "name": "the creator offers at least three hairstyles, by name, as a choice of its own",
+      "pass": true,
+      "details": "{\"legend\":\"Hairstyle\",\"options\":[{\"value\":0,\"label\":\"Hairstyle: short\"},{\"value\":1,\"label\":\"Hairstyle: long\"},{\"value\":2,\"label\":\"Hairstyle: tied back\"}]}"
+    },
+    {
+      "name": "the preview follows both pickers through all 6 pairings",
+      "pass": true,
+      "details": "0-0, 0-1, 0-2, 1-0, 1-1, 1-2"
+    },
+    {
+      "name": "every pairing of body type and hairstyle draws a different preview",
+      "pass": false,
+      "details": "1 distinct"
+    },
+    {
+      "name": "the creator's choices are the sim's lists, in order",
+      "pass": true,
+      "details": "{\"body\":[{\"name\":\"straight\",\"sheet\":\"player-body-straight\"},{\"name\":\"curvy\",\"sheet\":\"player-body-curvy\"}],\"hairStyle\":[{\"name\":\"short\",\"sheet\":\"player-hair-short\"},{\"name\":\"long\",\"sheet\":\"player-hair-long\"},{\"name\":\"tied back\",\"sheet\":\"player-hair-tied-back\"}]}"
+    },
+    {
+      "name": "the player enters the world with the body type and hairstyle picked",
+      "pass": true,
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
+    },
+    {
+      "name": "the renderer draws the player from a texture made for that look",
+      "pass": true,
+      "details": "player/look/2-7-4-1-2"
+    },
+    {
+      "name": "the browser remembers both choices",
+      "pass": true,
+      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
+    },
+    {
+      "name": "the creator opened from the world starts from the body type and hairstyle worn",
+      "pass": true
+    },
+    {
+      "name": "changing character gives the same player the other body type and hairstyle",
+      "pass": true,
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
+    },
+    {
+      "name": "and keeps the rest of the look and the name",
+      "pass": true
+    },
+    {
+      "name": "the renderer draws the player in the new look",
+      "pass": true,
+      "details": "player/look/2-7-4-0-1"
+    },
+    {
+      "name": "after a reload the player goes straight in with the changed body type and hairstyle",
+      "pass": true,
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
+    },
+    {
+      "name": "a character remembered before body types existed skips the creator",
+      "pass": true,
+      "details": "creator shown: false"
+    },
+    {
+      "name": "and plays with its colours and name, in the first body type and hairstyle",
+      "pass": true,
+      "details": "{\"eid\":1,\"name\":\"Old Timer\",\"look\":{\"skin\":1,\"hair\":2,\"clothes\":3,\"body\":0,\"hairStyle\":0}}"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
