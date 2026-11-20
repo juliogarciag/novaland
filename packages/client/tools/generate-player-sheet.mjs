@@ -1,8 +1,8 @@
 /**
  * Generates the character sheets in public/sprites/: player.png, the sprite
  * of the player def in packages/sim/src/features/player/defs.ts, and the
- * layer sheets the client builds each look from: one body sheet per body
- * type and one hair sheet per hairstyle (LAYER_SHEETS, ADR 0017).
+ * layer sheets the client builds each look from: one body sheet per gender
+ * and one hair sheet per hairstyle (LAYER_SHEETS, ADR 0017).
  *
  * The sheet is painted in the template colours of TEMPLATE_PALETTE: the
  * client swaps each of them for a colour it derives from the skin, hair and
@@ -20,8 +20,8 @@
  * painted whole in skin, so any hairstyle (HAIRSTYLES) can go over it; the
  * outline goes around both layers together. The eyebrows stay on the body,
  * in the hair's shade. The genders (BUILDS) differ in build (shoulders,
- * waist, hips) and in lashes; the head sits in the same place on every one,
- * so any hairstyle goes on any body.
+ * waist, hips) and in lashes; the head sits in the same place on both, so
+ * any hairstyle goes with either gender.
  *
  * Every part is drawn as a stencil, one character per pixel (see
  * STENCIL_KEYS), so the art reads as it looks. Light comes from the left: every material is
@@ -103,8 +103,8 @@ const POSES = [
 ];
 
 /**
- * The genders and hairstyles, by the name the sim's `characterShapes`
- * gives them, each with the sprite key its layer sheet is written under (the
+ * The genders and hairstyles, by the name the sim's `characterShapes` gives
+ * them, each with the sprite key its layer sheet is written under (the
  * `sheet` of the sim's entry; the generator's test checks they agree).
  */
 const LAYER_SHEETS = {
@@ -113,8 +113,8 @@ const LAYER_SHEETS = {
 };
 
 /**
- * The whole sheet as RGBA bytes, rows top to bottom: a gender's body wearing a
- * hairstyle, outlined together. The default is what `player.png` holds.
+ * The whole sheet as RGBA bytes, rows top to bottom: a gender's body wearing
+ * a hairstyle, outlined together. The default is what `player.png` holds.
  */
 export function paintPlayerSheet({ gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
@@ -131,15 +131,15 @@ export function paintPlayerSheet({ gender = PLAYER_GENDER, hairstyle = PLAYER_HA
   return sheet;
 }
 
-/** Last row of the figure. Its outline takes the row below; the last two rows stay clear. */
-const FEET_ROW = 44;
-/** First column of the head stencils, which are 18 wide: the 16-pixel skull plus a column each side for a nose in profile. */
-const HEAD_LEFT = 7;
+/** Last row of the figure. Its outline takes the row below; the last row stays clear. */
+const FEET_ROW = 45;
+/** First column of the head stencils, which are 22 wide: the 20-pixel skull plus a column each side for a nose in profile. */
+const HEAD_LEFT = 5;
 
 /**
- * One layer of every frame, unoutlined, in the sheet's layout: what a body
- * type's sheet (`layer` 'body') or a hairstyle's sheet ('hair') holds. The
- * client lays a hair sheet over a body sheet and outlines the two together.
+ * One layer of every frame, unoutlined, in the sheet's layout: what a
+ * gender's body sheet (`layer` 'body') or a hairstyle's sheet ('hair') holds.
+ * The client lays a hair sheet over a body sheet and outlines the two together.
  */
 function paintLayerSheet(layer, { gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
@@ -174,79 +174,91 @@ function paintFrameLayers(direction, pose, { gender = PLAYER_GENDER, hairstyle =
 }
 
 /**
- * The face, 18 columns from HEAD_LEFT by 15 rows: a 16-wide skull with
- * stepped corners, a column clear on each side but where a profile's nose
- * sticks out, painted whole in skin with everything on it (eyebrows, eyes
+ * The face, 22 columns from HEAD_LEFT by 18 rows: a 20-wide skull with
+ * stepped corners, wider than the torso, a column clear on each side but
+ * where a profile's nose sticks out, painted whole in skin with everything on it (eyebrows, eyes
  * with a shine, nose shade, mouth). A hairstyle goes over it.
  */
 const FACE_STENCILS = {
   down: [
-    '....ssssssssss....',
-    '..ssssssssssssss..',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssbbbssssbbbssS.',
-    '.sssssssssssssssS.',
-    '.sssswesssswesssS.',
-    '.sssseesssseesssS.',
-    '.sssseesssseesssS.',
-    '.ssssssssSssssssS.',
-    '..ssssssSSsssssS..',
-    '....sssssssssS....',
+    '.....sssssssssssS.....',
+    '...sssssssssssssssS...',
+    '..sssssssssssssssssS..',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssbbbssssbbbssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssweessssweessssS.',
+    '.ssssseeesssseeessssS.',
+    '.ssssseeesssseeessssS.',
+    '.ssssssssssSssssssssS.',
+    '.sssssssssssssssssssS.',
+    '..ssssssssSSsssssssS..',
+    '...sssssssssssssssS...',
+    '.....sssssssssssS.....',
   ],
   up: [
-    '....ssssssssss....',
-    '..ssssssssssssss..',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '..sssssssssssssS..',
-    '....sssssssssS....',
+    '.....sssssssssssS.....',
+    '...sssssssssssssssS...',
+    '..sssssssssssssssssS..',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '..sssssssssssssssssS..',
+    '...sssssssssssssssS...',
+    '.....sssssssssssS.....',
   ],
   left: [
-    '....ssssssssss....',
-    '..ssssssssssssss..',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.ssbbbssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sswesssssssssssS.',
-    '.sseesssssssssssS.',
-    'ssseesssssssssssS.',
-    '.SssssssssssssssS.',
-    '..ssSSsssssssssS..',
-    '....sssssssssS....',
+    '.....sssssssssssS.....',
+    '...sssssssssssssssS...',
+    '..sssssssssssssssssS..',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.ssbbbssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sswesssssssssssssssS.',
+    '.sseesssssssssssssssS.',
+    '.sseesssssssssssssssS.',
+    'ssssssssssssssssssssS.',
+    '.SssssssssssssssssssS.',
+    '..ssSSsssssssssssssS..',
+    '...sssssssssssssssS...',
+    '.....sssssssssssS.....',
   ],
   right: [
-    '....ssssssssss....',
-    '..ssssssssssssss..',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssbbbsS.',
-    '.sssssssssssssssS.',
-    '.sssssssssssswesS.',
-    '.sssssssssssseesS.',
-    '.sssssssssssseessS',
-    '.sssssssssssssssS.',
-    '..ssssssssssSSsS..',
-    '....sssssssssS....',
+    '.....sssssssssssS.....',
+    '...sssssssssssssssS...',
+    '..sssssssssssssssssS..',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssbbbsS.',
+    '.sssssssssssssssssssS.',
+    '.sssssssssssssssswesS.',
+    '.sssssssssssssssseesS.',
+    '.sssssssssssssssseesS.',
+    '.sssssssssssssssssssSS',
+    '.sssssssssssssssssssS.',
+    '..ssssssssssssssSSsS..',
+    '...sssssssssssssssS...',
+    '.....sssssssssssS.....',
   ],
 };
 
@@ -259,72 +271,84 @@ const FACE_STENCILS = {
 const HAIRSTYLES = {
   short: {
     down: [
-      '....llllhhhhhH....',
-      '..hllllhhhhhhhhH..',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhh.hh.hh.hh.hhH.',
-      '.hh............hH.',
-      '.hh............hH.',
-      '.h..............H.',
-      '..................',
-      '..................',
-      '..................',
-      '..................',
-      '..................',
+      '.....llllllhhhhhH.....',
+      '...hllllllhhhhhhhhH...',
+      '..hhhhhhhhhhhhhhhhhH..',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhh.hh.hh.hh.hh.hhhH.',
+      '.hh................hH.',
+      '.hh................hH.',
+      '.h..................H.',
+      '......................',
+      '......................',
+      '......................',
+      '......................',
+      '......................',
+      '......................',
+      '......................',
     ],
     up: [
-      '....llllhhhhhH....',
-      '..hllllhhhhhhhhH..',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '..hhhhhhhhhhhhhH..',
-      '....hh.hhh.hhH....',
+      '.....llllllhhhhhH.....',
+      '...hllllllhhhhhhhhH...',
+      '..hhhhhhhhhhhhhhhhhH..',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '..hhhhhhhhhhhhhhhhhH..',
+      '...hhhhhhhhhhhhhhhH...',
+      '.....hh.hhh.hhhhH.....',
     ],
     left: [
-      '....llllhhhhhH....',
-      '..hllllhhhhhhhhH..',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.h.hh.hhhhhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhhH.',
-      '.........hhhhhhH..',
-      '.........hhhhH....',
+      '.....llllllhhhhhH.....',
+      '...hllllllhhhhhhhhH...',
+      '..hhhhhhhhhhhhhhhhhH..',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.h.hh.hhhhhhhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhhH.',
+      '...........hhhhhhhhH..',
+      '...........hhhhhhhH...',
+      '...........hhhhhH.....',
     ],
     right: [
-      '....llllhhhhhH....',
-      '..hllllhhhhhhhhH..',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhhhhhhH.',
-      '.hhhhhhhhhhh.hh.H.',
-      '.hhhhhhhH.........',
-      '.hhhhhhhH.........',
-      '.hhhhhhhH.........',
-      '.hhhhhhhH.........',
-      '.hhhhhhhH.........',
-      '.hhhhhhhH.........',
-      '..hhhhhhH.........',
-      '....hhhhH.........',
+      '.....llllllhhhhhH.....',
+      '...hllllllhhhhhhhhH...',
+      '..hhhhhhhhhhhhhhhhhH..',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhhhhhhH.',
+      '.hhhhhhhhhhhhhhh.hh.H.',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '.hhhhhhhhhH...........',
+      '..hhhhhhhhH...........',
+      '...hhhhhhhH...........',
+      '.....hhhhhH...........',
     ],
   },
 };
@@ -344,87 +368,93 @@ function mirrored(rows) {
   });
 }
 
-/** The crown every hairstyle shares: the top of the head, as the short hair has it. */
-const CROWN = HAIRSTYLES.short.down.slice(0, 5);
-
-/** Long hair in profile: the short hair's back of the head, falling on down the back. */
-const LONG_HAIR_LEFT = [
-  ...HAIRSTYLES.short.left,
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hh.hH...',
+/** Long hair in profile below the head: the short hair's back of the head, falling on down the back. */
+const LONG_HAIR_BELOW_HEAD_LEFT = [
+  '.............hhhhhhH..',
+  '.............hhhhhhH..',
+  '.............hhhhhhH..',
+  '.............hhhhhhH..',
+  '.............hhhhhhH..',
+  '.............hhhhhhH..',
+  '.............hh.hhH...',
 ];
 
-/** Hair tied back, in profile: a hairline swept back from the brow and a tail down the nape. */
+/** Hair tied back, in profile: a hairline swept back from the brow and a tail that hangs down the nape. */
 const TIED_BACK_HAIR_LEFT = [
-  ...CROWN,
-  '..hhhhhhhhhhhhhhH.',
-  '....hhhhhhhhhhhhH.',
-  '.......hhhhhhhhhH.',
-  '..........hhhhhhhH',
-  '...........hhhhhhH',
-  '............hhhhhH',
-  '............hhhhhH',
-  '.............hhhhH',
-  '..............hhhH',
-  '..............hhhH',
-  '...............hhH',
-  '...............hH.',
-  '...............hH.',
-  '...............hH.',
-  '................H.',
+  ...HAIRSTYLES.short.left.slice(0, 7),
+  '..hhhhhhhhhhhhhhhhhhH.',
+  '....hhhhhhhhhhhhhhhhH.',
+  '........hhhhhhhhhhhhH.',
+  '...........hhhhhhhhhhH',
+  '............hhhhhhhhhH',
+  '.............hhhhhhhhH',
+  '..............hhhhhhhH',
+  '...............hhhhhhH',
+  '................hhhhH.',
+  '................hhhH..',
+  '.................hhH..',
+  '.................hhH..',
+  '.................hhH..',
+  '.................hhH..',
+  '.................hH...',
+  '.................hH...',
+  '..................H...',
 ];
 
 /** Long hair: framing the face, over the shoulders from the front, down the back from behind. */
 HAIRSTYLES.long = {
   down: [
-    ...HAIRSTYLES.short.down.slice(0, 7),
-    '.hh............hH.',
-    '.hh............hH.',
-    '.hh............hH.',
-    '.hh............hH.',
-    '.hh............hH.',
-    '.hh............hH.',
-    '.hhh..........hhH.',
-    '.hhh..........hhH.',
-    '.hhh..........hhH.',
-    '.hhh..........hhH.',
-    '.hhh..........hhH.',
-    '.hhh..........hhH.',
-    '.hh............hH.',
-    '.h..............H.',
+    ...HAIRSTYLES.short.down.slice(0, 8),
+    '.hh................hH.',
+    '.hh................hH.',
+    '.hh................hH.',
+    '.hh................hH.',
+    '.hh................hH.',
+    '.hh................hH.',
+    '.hhh..............hhH.',
+    '.hhh..............hhH.',
+    '.hhh..............hhH.',
+    '.hhh..............hhH.',
+    '..hhh............hhH..',
+    '..hhh............hhH..',
+    '..hhh............hhH..',
+    '..hhh............hhH..',
+    '..hh..............hH..',
+    '..h................H..',
   ],
   up: [
-    ...HAIRSTYLES.short.up.slice(0, 14),
-    '..hhhhhhhhhhhhhH..',
-    '..hhhhhhhhhhhhhH..',
-    '..hhhhhhhhhhhhhH..',
-    '..hhhhhhhhhhhhhH..',
-    '..hhhhhhhhhhhhhH..',
-    '..hhhhhhhhhhhhhH..',
-    '...hhhhhhhhhhhH...',
-    '....hh.hhh.hhH....',
+    ...HAIRSTYLES.short.up.slice(0, 17),
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '...hhhhhhhhhhhhhhhH...',
+    '....hhhhhhhhhhhhhH....',
+    '.....hh.hhhh.hhhH.....',
   ],
-  left: LONG_HAIR_LEFT,
+  left: [...HAIRSTYLES.short.left, ...LONG_HAIR_BELOW_HEAD_LEFT],
   // The head rows are the short hair's own right profile; only what falls below the head is mirrored.
-  right: [...HAIRSTYLES.short.right, ...mirrored(LONG_HAIR_LEFT.slice(HAIRSTYLES.short.left.length))],
+  right: [...HAIRSTYLES.short.right, ...mirrored(LONG_HAIR_BELOW_HEAD_LEFT)],
 };
 
 /** Hair tied back: a high hairline from the front, a band and a tail from behind and in profile. */
 HAIRSTYLES['tied back'] = {
-  down: [...CROWN, '.hh............hH.', '.h..............H.', '.h..............H.'],
+  down: [...HAIRSTYLES.short.down.slice(0, 7), '.hh................hH.', '.h..................H.', '.h..................H.'],
   up: [
-    ...HAIRSTYLES.short.up.slice(0, 13),
-    '....hhhHHHhhhH....',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '........hH........',
-    '........H.........',
+    ...HAIRSTYLES.short.up.slice(0, 16),
+    '...hhhhhhHHHhhhhhhH...',
+    '.........hhhH.........',
+    '.........hhhH.........',
+    '.........hhhH.........',
+    '.........hhhH.........',
+    '.........hhhH.........',
+    '.........hhhH.........',
+    '..........hhH.........',
+    '..........hH..........',
+    '...........H..........',
   ],
   left: TIED_BACK_HAIR_LEFT,
   right: mirrored(TIED_BACK_HAIR_LEFT),
@@ -437,12 +467,12 @@ const PLAYER_HAIRSTYLE = 'short';
  */
 const LASHES = {
   down: [
-    [4, 8],
-    [13, 8],
+    [5, 9],
+    [16, 9],
   ],
   up: [],
-  left: [[2, 8]],
-  right: [[15, 8]],
+  left: [[2, 9]],
+  right: [[19, 9]],
 };
 
 function withLashes(face, direction) {
@@ -455,15 +485,8 @@ function withLashes(face, direction) {
 const NECK = ['sssS'];
 const NECK_LEFT = 14;
 
-/** The torso, 12 wide from TORSO_LEFT: a highlight down the left, a shade down the right, a darker hem and a round neckline. */
-const TORSO = [
-  'LcccsssScccC',
-  'LccccsSccccC',
-  ...Array.from({ length: 8 }, () => 'LccccccccccC'),
-  'CCCCCCCCCCCC',
-];
-/** The torso from behind and in profile: no neckline. */
-const TORSO_PLAIN = [...Array.from({ length: 10 }, () => 'LccccccccccC'), 'CCCCCCCCCCCC'];
+/** The torso, 12 wide from TORSO_LEFT: a highlight down the left, a shade down the right and a darker hem. */
+const TORSO = [...Array.from({ length: 10 }, () => 'LccccccccccC'), 'CCCCCCCCCCCC'];
 const TORSO_LEFT = 10;
 const TORSO_WIDTH = 12;
 const ARM_WIDTH = 2;
@@ -477,8 +500,8 @@ const ARM_COLUMNS = { screenLeft: TORSO_LEFT - ARM_WIDTH, screenRight: TORSO_LEF
  * male torso's, so the neck, the legs and the profile arm stay put.
  */
 const FEMALE_TORSO = [
-  '...LcsssScC...',
-  '...LccsSccC...',
+  '...LccccccC...',
+  '...LccccccC...',
   '...LccccccC...',
   '....LccccC....',
   '....LccccC....',
@@ -489,21 +512,19 @@ const FEMALE_TORSO = [
   'LccccccccccccC',
   'CCCCCCCCCCCCCC',
 ];
-const FEMALE_TORSO_PLAIN = ['...LccccccC...', ...FEMALE_TORSO.slice(1)];
 const FEMALE_TORSO_LEFT = TORSO_LEFT - 1;
 /** Where the female shoulders start and end: the arms hang against them. */
 const FEMALE_SHOULDERS = { left: FEMALE_TORSO_LEFT + 3, width: 8 };
 
 /**
- * The build of each gender: the torso from the front and from
- * elsewhere and its first column, the columns the arms hang at in front and
- * back views (against the shoulders), and whether the face has lashes.
+ * The build of each gender: its torso and the torso's first column, the
+ * columns the arms hang at in front and back views (against the shoulders),
+ * and whether the face has lashes.
  */
 const BUILDS = {
-  male: { torso: TORSO, torsoPlain: TORSO_PLAIN, torsoLeft: TORSO_LEFT, armColumns: ARM_COLUMNS, lashes: false },
+  male: { torso: TORSO, torsoLeft: TORSO_LEFT, armColumns: ARM_COLUMNS, lashes: false },
   female: {
     torso: FEMALE_TORSO,
-    torsoPlain: FEMALE_TORSO_PLAIN,
     torsoLeft: FEMALE_TORSO_LEFT,
     armColumns: { screenLeft: FEMALE_SHOULDERS.left - ARM_WIDTH, screenRight: FEMALE_SHOULDERS.left + FEMALE_SHOULDERS.width, profile: ARM_COLUMNS.profile },
     lashes: true,
@@ -517,7 +538,7 @@ const ARM_IN_PROFILE = ['CC', 'CC', 'CC', 'CC', 'sS', 'sS', 'sS', 'sS', 'sS', 's
 
 function paintTorsoAndArms(canvas, colors, { direction, pose, top, build }) {
   paintStencil(canvas, colors, { rows: NECK, left: NECK_LEFT, top: top - 1 });
-  paintStencil(canvas, colors, { rows: direction === 'down' ? build.torso : build.torsoPlain, left: build.torsoLeft, top });
+  paintStencil(canvas, colors, { rows: build.torso, left: build.torsoLeft, top });
   const armColumns = build.armColumns;
   const swing = 2 * (pose.forwardLeg === 'left' ? 1 : pose.forwardLeg === 'right' ? -1 : 0);
   if (direction === 'down' || direction === 'up') {
@@ -649,8 +670,8 @@ const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
 /** Writes the sheet into `directory` as `player.png` and returns its path. */
 /**
  * Writes the sheets into `directory` and returns their paths: `player.png`
- * (the first gender's body wearing the first hairstyle, outlined: what the def
- * names, and what the client draws if it cannot lay the layers), then one
+ * (the first gender's body wearing the first hairstyle, outlined: what the
+ * def names, and what the client draws if it cannot lay the layers), then one
  * layer sheet per gender (its body) and per hairstyle.
  */
 export function writePlayerSheet(directory) {
