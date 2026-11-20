@@ -305,10 +305,10 @@ describe('player/join with a character', () => {
     sim.destroy();
   });
 
-  it('keeps the same seed and joins deterministic, and a different name a different state', async () => {
-    const run = async (name: string): Promise<string> => {
+  it('keeps the same seed and joins deterministic, and a different name, body type or hairstyle a different state', async () => {
+    const run = async (name: string, shape: { body: number; hairStyle: number } = { body: 0, hairStyle: 0 }): Promise<string> => {
       const sim = await createSimInternal({ seed: 9 });
-      sim.step([join(0, { name, look: { skin: 1, hair: 1, clothes: 1, body: 0, hairStyle: 0 } })]);
+      sim.step([join(0, { name, look: { skin: 1, hair: 1, clothes: 1, ...shape } })]);
       for (let tick = 0; tick < 30; tick += 1) sim.step([]);
       const hash = hashSnapshot(sim.snapshot());
       sim.destroy();
@@ -316,6 +316,8 @@ describe('player/join with a character', () => {
     };
     expect(await run('Ada')).toBe(await run('Ada'));
     expect(await run('Ada')).not.toBe(await run('Bea'));
+    expect(await run('Ada')).not.toBe(await run('Ada', { body: 1, hairStyle: 0 }));
+    expect(await run('Ada')).not.toBe(await run('Ada', { body: 0, hairStyle: 2 }));
   });
 
   it('reads no character for something that has none, or for an id that is no entity', async () => {
@@ -334,12 +336,12 @@ describe('a character on a replica', () => {
   it('arrives with the join, in a full state and in a delta, as plain numbers', async () => {
     const sim = await createSimInternal({ seed: 2 });
     const replica = createReplica({ map: sim.map, capacity: sim.capacity });
-    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, body: 0, hairStyle: 0 } };
+    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, body: 1, hairStyle: 2 } };
     sim.step([join(0, ada)]);
     const first = worldState(sim);
     expect(applyWorldState(replica, overTheWire(first))).toBe('applied');
     expect(characterInSlot(replica, 0)).toEqual(ada);
-    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 5, body: 0, hairStyle: 0 } };
+    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 5, body: 0, hairStyle: 1 } };
     sim.step([join(1, bea)]);
     const delta = diffWorldState(first, worldState(sim));
     // The name travels once: the delta carries the newcomer's and not a field of the player who was already there.
@@ -440,7 +442,7 @@ describe('player/change-character', () => {
     sim.step([join(0, { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 0, hairStyle: 0 } })]);
     const joined = worldState(sim);
     applyWorldState(replica, overTheWire(joined));
-    const grace: Character = { name: 'Grace 🚀', look: { skin: 0, hair: 3, clothes: 2, body: 0, hairStyle: 0 } };
+    const grace: Character = { name: 'Grace 🚀', look: { skin: 0, hair: 3, clothes: 2, body: 1, hairStyle: 1 } };
     sim.step([change(0, grace)]);
     expect(applyWorldState(replica, overTheWire(diffWorldState(joined, worldState(sim))))).toBe('applied');
     expect(findPlayerEntity(replica, 0)).toBe(findPlayerEntity(sim, 0));

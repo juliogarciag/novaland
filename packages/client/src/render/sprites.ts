@@ -55,6 +55,8 @@ export function lookTextureKey(scene: Phaser.Scene, sheet: SpriteDef, look: Char
 function paintedLookCanvas(scene: Phaser.Scene, sheet: SpriteDef, look: CharacterLook): HTMLCanvasElement | undefined {
   const layers = layerSheetsOf(look);
   const fromLayers = layers !== undefined && scene.textures.exists(layers.body) && scene.textures.exists(layers.hair);
+  // The player's own body type and hairstyle cannot be drawn: say so, rather than quietly drawing the default pair.
+  if (layers && !fromLayers) console.warn(`novaland: layer sheets ${layers.body} or ${layers.hair} did not load; drawing ${sheet.key} instead`);
   if (!fromLayers && !scene.textures.exists(sheet.key)) return undefined;
   const sourceOf = (textureKey: string): CanvasImageSource => scene.textures.get(textureKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
   const base = sourceOf(fromLayers ? layers.body : sheet.key) as HTMLImageElement | HTMLCanvasElement;

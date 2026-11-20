@@ -1,7 +1,8 @@
 import { characterPalettes, characterShapes, DefId, getDef } from '@novaland/sim';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { __testing__ as characterSheet, layerSheetsOf, paintFigure, paintLook } from '../src/render/characterSheet.ts';
-import { __testing__ as generator, DIRECTIONS, FIXED_PALETTE, FRAME_HEIGHT, FRAME_WIDTH, FRAMES_PER_DIRECTION, paintPlayerSheet, PLAYER_SHEET_KEY, TEMPLATE_PALETTE } from './generate-player-sheet.mjs';
+import { __testing__ as generator, DIRECTIONS, encodePng, FIXED_PALETTE, FRAME_HEIGHT, FRAME_WIDTH, FRAMES_PER_DIRECTION, paintPlayerSheet, PLAYER_SHEET_KEY, TEMPLATE_PALETTE } from './generate-player-sheet.mjs';
 
 describe('player sheet generator', () => {
   it('writes the sheet under the sprite key the player def declares', () => {
@@ -94,6 +95,12 @@ describe('player sheet generator', () => {
         }
       }
     }
+  });
+
+  it('has the committed layer sheets the generator paints today, so a stencil edit cannot ship without its sheets', () => {
+    const committed = (key) => readFileSync(new URL(`../public/sprites/${key}.png`, import.meta.url));
+    for (const [body, key] of Object.entries(generator.LAYER_SHEETS.body)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('body', { body })))), key).toBe(true);
+    for (const [hairstyle, key] of Object.entries(generator.LAYER_SHEETS.hairstyle)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('hair', { hairstyle })))), key).toBe(true);
   });
 
   it('keeps player.png as the first body type wearing the first hairstyle', () => {

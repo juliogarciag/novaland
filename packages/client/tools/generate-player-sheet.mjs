@@ -409,7 +409,8 @@ HAIRSTYLES.long = {
     '....hh.hhh.hhH....',
   ],
   left: LONG_HAIR_LEFT,
-  right: mirrored(LONG_HAIR_LEFT),
+  // The head rows are the short hair's own right profile; only what falls below the head is mirrored.
+  right: [...HAIRSTYLES.short.right, ...mirrored(LONG_HAIR_LEFT.slice(HAIRSTYLES.short.left.length))],
 };
 
 /** Hair tied back: a high hairline from the front, a band and a tail from behind and in profile. */

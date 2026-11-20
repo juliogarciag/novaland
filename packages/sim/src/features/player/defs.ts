@@ -127,7 +127,9 @@ export const MAX_NAME_CHARACTERS = 20;
 export const MAX_NAME_CODE_POINTS = 40;
 
 /**
- * The character is one sheet, `sprites/player.png`: four rows (down, up,
+ * The character's sheet, `sprites/player.png` (the first body type wearing
+ * the first hairstyle; the client lays each look from one body sheet and one
+ * hair sheet in the same layout, ADR 0017): four rows (down, up,
  * left, right) of four 32x48 frames, frame 0 of a row being the idle pose and
  * the whole row the walk cycle. It is painted in fixed template colours by
  * packages/client/tools/generate-player-sheet.mjs and the client swaps them

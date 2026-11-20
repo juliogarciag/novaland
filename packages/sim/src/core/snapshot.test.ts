@@ -36,7 +36,7 @@ describe('snapshot', () => {
       Facing: { x: 0, y: 1 },
       MoveIntent: { x: 0, y: 0 },
       Player: { slot: 0 },
-      // The look as palette indexes and the name as code points: "Guest 1" is 7 of them, the rest of the fields are zero.
+      // The look as palette and shape indexes and the name as code points: "Guest 1" is 7 of them, the rest of the fields are zero.
       PlayerLook: guestCharacter(0).look,
       PlayerName: expect.objectContaining({ length: 7, codePoint00: 'G'.codePointAt(0), codePoint06: '1'.codePointAt(0), codePoint07: 0, codePoint39: 0 }),
       Position: spawnPoint(sim.map),

@@ -106,8 +106,8 @@ describe('WorldRoom over a real connection', () => {
 
   it('seats two players as two different characters, and shows both to each of them', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 0, hairStyle: 0 } };
-    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6, body: 0, hairStyle: 0 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6, body: 0, hairStyle: 1 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, jose));
     const [first, second] = players as [Player, Player];
@@ -128,8 +128,8 @@ describe('WorldRoom over a real connection', () => {
 
   it('changes a seated player into another character where it stands, for every player, on the same entity', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 0, hairStyle: 0 } };
-    const grace: Character = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4, body: 0, hairStyle: 0 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
+    const grace: Character = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4, body: 0, hairStyle: 1 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, guestCharacter(1)));
     const [changer, watcher] = players as [Player, Player];
@@ -157,7 +157,7 @@ describe('WorldRoom over a real connection', () => {
 
   it('drops a character change that is malformed, oversized or names another seat, and changes nobody', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 0, hairStyle: 0 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, guestCharacter(1)));
     const [sender, other] = players as [Player, Player];

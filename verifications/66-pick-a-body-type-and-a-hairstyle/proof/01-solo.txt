@@ -4,16 +4,17 @@ PASS  the creator offers at least three hairstyles, by name, as a choice of its 
 PASS  the preview follows both pickers through all 6 pairings  (0-0, 0-1, 0-2, 1-0, 1-1, 1-2)
 PASS  every pairing of body type and hairstyle draws a different preview  (6 distinct)
 PASS  the creator's choices are the sim's lists, in order  ({"body":[{"name":"straight","sheet":"player-body-straight"},{"name":"curvy","sheet":"player-body-curvy"}],"hairStyle":[{"name":"short","sheet":"player-hair-short"},{"name":"long","sheet":"player-hair-long"},{"name":"tied back","sheet":"player-hair-tied-back"}]})
-PASS  the player enters the world with the body type and hairstyle picked  ({"eid":1,"name":"Bea","look":{"skin":1,"hair":5,"clothes":4,"body":1,"hairStyle":2}})
-PASS  the renderer draws the player from a texture made for that look  (player/look/1-5-4-1-2)
-PASS  the browser remembers both choices  ({"name":"Bea","look":{"skin":1,"hair":5,"clothes":4,"body":1,"hairStyle":2}})
+PASS  the player enters the world with the body type and hairstyle picked  ({"eid":1,"name":"Bea","look":{"skin":4,"hair":7,"clothes":2,"body":1,"hairStyle":2}})
+PASS  the game loaded every body and hair layer sheet, so looks are laid from layers, not the plain sheet  ([{"sheet":"player-body-straight","loaded":true},{"sheet":"player-body-curvy","loaded":true},{"sheet":"player-hair-short","loaded":true},{"sheet":"player-hair-long","loaded":true},{"sheet":"player-hair-tied-back","loaded":true}])
+PASS  the renderer draws the player from a texture made for that look  (player/look/4-7-2-1-2)
+PASS  the browser remembers both choices  ({"name":"Bea","look":{"skin":4,"hair":7,"clothes":2,"body":1,"hairStyle":2}})
 PASS  the creator opened from the world starts from the body type and hairstyle worn
-PASS  changing character gives the same player the other body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":1,"hair":5,"clothes":4,"body":0,"hairStyle":1}})
+PASS  changing character gives the same player the other body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":4,"hair":7,"clothes":2,"body":0,"hairStyle":1}})
 PASS  and keeps the rest of the look and the name
-PASS  the renderer draws the player in the new look  (player/look/1-5-4-0-1)
-PASS  after a reload the player goes straight in with the changed body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":1,"hair":5,"clothes":4,"body":0,"hairStyle":1}})
+PASS  the renderer draws the player in the new look  (player/look/4-7-2-0-1)
+PASS  after a reload the player goes straight in with the changed body type and hairstyle  ({"eid":1,"name":"Bea","look":{"skin":4,"hair":7,"clothes":2,"body":0,"hairStyle":1}})
 PASS  a character remembered before body types existed skips the creator  (creator shown: false)
 PASS  and plays with its colours and name, in the first body type and hairstyle  ({"eid":1,"name":"Old Timer","look":{"skin":1,"hair":2,"clothes":3,"body":0,"hairStyle":0}})
 PASS  no page errors
 
-ALL 17 CHECKS PASSED
+ALL 18 CHECKS PASSED

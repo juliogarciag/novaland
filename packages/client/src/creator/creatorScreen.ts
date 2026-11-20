@@ -112,12 +112,12 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
   // A problem shown by a submit goes away as soon as the player types; it is only ever raised by a submit.
   nameInput.addEventListener('input', () => showProblem(undefined));
 
-  const pick = (part: LookPart) => (index: number) => {
+  const pickHandlerFor = (part: LookPart) => (index: number) => {
     look[part] = index;
     paintPreview(look);
   };
-  const shapes = CHARACTER_SHAPE_PARTS.map((part) => shapePicker(part, look[part], pick(part)));
-  const palettes = CHARACTER_PARTS.map((part) => swatchPicker(part, look[part], pick(part)));
+  const shapes = CHARACTER_SHAPE_PARTS.map((part) => shapePicker(part, look[part], pickHandlerFor(part)));
+  const palettes = CHARACTER_PARTS.map((part) => swatchPicker(part, look[part], pickHandlerFor(part)));
 
   const submit = document.createElement('button');
   submit.type = 'submit';
@@ -260,6 +260,10 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     if (!image) {
       image = new Image();
       image.addEventListener('load', () => paint());
+      // A sheet that cannot load must not leave the figure of an earlier pick on show.
+      image.addEventListener('error', () => {
+        if (shown && Object.values(layerSheetsOf(shown) ?? {}).includes(sheetKey)) clearPreview();
+      });
       image.src = sheet.urlOf(sheetKey);
       images.set(sheetKey, image);
     }
@@ -267,6 +271,10 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
   };
   const loaded = (image: HTMLImageElement): boolean => image.complete && image.naturalWidth > 0;
   let shown: CharacterLook | undefined;
+  const clearPreview = (): void => {
+    context?.clearRect(0, 0, preview.width, preview.height);
+    delete preview.dataset['look'];
+  };
   const paint = (): void => {
     const layers = shown && layerSheetsOf(shown);
     if (!context || !frameContext || !shown || !layers) return;
@@ -287,6 +295,8 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     context.drawImage(frame, 0, 0, preview.width, preview.height);
     preview.dataset['look'] = lookKey(shown);
   };
+  // Every choice is a click away: fetch all the layer sheets now, so a pick draws at once.
+  for (const shape of [...characterShapes.body, ...characterShapes.hairStyle]) imageOf(shape.sheet);
   return (look) => {
     shown = { ...look };
     paint();
