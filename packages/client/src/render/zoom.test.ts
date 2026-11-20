@@ -17,6 +17,16 @@ describe('wholeZoomFor', () => {
     }
   });
 
+  it('shows about as many metres on common desktop screens as the same rule did with art at 16 pixels per metre', () => {
+    // Device pixels across: 1280 to 3840 wide monitors and laptop panels, 1x and 2x.
+    for (const width of [1280, 1366, 1440, 1536, 1920, 2560, 2880, 3024, 3456, 3840]) {
+      const metresNow = width / (PIXELS_PER_METRE * wholeZoomFor(width));
+      const metresAtSixteen = width / (16 * Math.max(1, Math.floor(width / (16 * MIN_VISIBLE_METRES))));
+      expect(metresNow, `${width} px`).toBeGreaterThanOrEqual(metresAtSixteen);
+      expect(metresNow / metresAtSixteen, `${width} px`).toBeLessThanOrEqual(1.15);
+    }
+  });
+
   it('never goes below 1, even for a window too narrow for the minimum metres', () => {
     expect(wholeZoomFor(ONE_ZOOM_WIDTH - 1)).toBe(1);
     expect(wholeZoomFor(50)).toBe(1);

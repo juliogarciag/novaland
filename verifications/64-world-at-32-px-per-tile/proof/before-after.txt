@@ -1,0 +1,13 @@
+Preparing worktree (detached HEAD c466e78)
+PASS  both clients up: c466e78 (before) and this branch (after)
+PASS  the art went from 16 to 32 pixels per metre  (16 -> 32)
+PASS  a metre takes as many device pixels on screen  (64 before, 64 after)
+PASS  the camera shows as many metres across  ({"width":20,"height":12.5} before, {"width":20,"height":12.5} after)
+PASS  a tree is as big on screen  ({"width":96,"height":128} before, {"width":96,"height":128} after)
+PASS  a rock is as big on screen  ({"width":64,"height":80} before, {"width":64,"height":80} after)
+PASS  the player is as big on screen  ({"width":64,"height":96} before, {"width":64,"height":96} after)
+PASS  a pixel of a name is as big on screen  (2 before, 2 after)
+PASS  the player stands at the same spot on screen  ({"x":640,"y":400} before, {"x":640,"y":400} after)
+PASS  no page errors
+
+ALL 10 CHECKS PASSED

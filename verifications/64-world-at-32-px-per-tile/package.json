@@ -1,0 +1,12 @@
+{
+  "name": "verification-64-world-at-32-px-per-tile",
+  "private": true,
+  "type": "module",
+  "description": "#64's verification scripts. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "scripts": {
+    "verify": "bash run.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

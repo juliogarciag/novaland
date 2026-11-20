@@ -1,0 +1,104 @@
+{
+  "baseCommit": "c466e787553b2c0b6501da8e81ebe9c8146cacc3",
+  "before": {
+    "pixelsPerMetre": 16,
+    "devicePixelsPerMetre": 64,
+    "visibleMetres": {
+      "width": 20,
+      "height": 12.5
+    },
+    "tree": {
+      "width": 96,
+      "height": 128
+    },
+    "rock": {
+      "width": 64,
+      "height": 80
+    },
+    "player": {
+      "width": 64,
+      "height": 96
+    },
+    "nameLetterPixel": 2,
+    "playerAt": {
+      "x": 640,
+      "y": 400
+    }
+  },
+  "after": {
+    "pixelsPerMetre": 32,
+    "devicePixelsPerMetre": 64,
+    "visibleMetres": {
+      "width": 20,
+      "height": 12.5
+    },
+    "tree": {
+      "width": 96,
+      "height": 128
+    },
+    "rock": {
+      "width": 64,
+      "height": 80
+    },
+    "player": {
+      "width": 64,
+      "height": 96
+    },
+    "nameLetterPixel": 2,
+    "playerAt": {
+      "x": 640,
+      "y": 400
+    }
+  },
+  "results": [
+    {
+      "name": "both clients up: c466e78 (before) and this branch (after)",
+      "pass": true
+    },
+    {
+      "name": "the art went from 16 to 32 pixels per metre",
+      "pass": true,
+      "details": "16 -> 32"
+    },
+    {
+      "name": "a metre takes as many device pixels on screen",
+      "pass": true,
+      "details": "64 before, 64 after"
+    },
+    {
+      "name": "the camera shows as many metres across",
+      "pass": true,
+      "details": "{\"width\":20,\"height\":12.5} before, {\"width\":20,\"height\":12.5} after"
+    },
+    {
+      "name": "a tree is as big on screen",
+      "pass": true,
+      "details": "{\"width\":96,\"height\":128} before, {\"width\":96,\"height\":128} after"
+    },
+    {
+      "name": "a rock is as big on screen",
+      "pass": true,
+      "details": "{\"width\":64,\"height\":80} before, {\"width\":64,\"height\":80} after"
+    },
+    {
+      "name": "the player is as big on screen",
+      "pass": true,
+      "details": "{\"width\":64,\"height\":96} before, {\"width\":64,\"height\":96} after"
+    },
+    {
+      "name": "a pixel of a name is as big on screen",
+      "pass": true,
+      "details": "2 before, 2 after"
+    },
+    {
+      "name": "the player stands at the same spot on screen",
+      "pass": true,
+      "details": "{\"x\":640,\"y\":400} before, {\"x\":640,\"y\":400} after"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

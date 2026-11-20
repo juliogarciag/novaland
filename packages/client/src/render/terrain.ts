@@ -1,7 +1,7 @@
 import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, tileDefIdAt, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
 import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, DRAW_MARGIN_TILES, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
-import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
+import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetCellOf, groundTilesetSizeOf, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
 import { spriteSheetUrl } from './spriteUrl';
 import { standingTilePlacements } from './standingTiles';
 import { PIXELS_PER_METRE, toPixels } from './units';
@@ -161,35 +161,43 @@ function standingTileSprites(): StandingTileSprite[] {
 }
 
 /**
- * The ground tileset: one strip with the tiles of every slot in order. A
- * slot with a ground sprite gets the tiles of its sheet copied in; any
- * other gets one flat-colour tile, with a darker rim when the def stands up
- * from the ground, so that a tree or rock whose image is missing still reads
- * as an object. Water without its sheet has no rim: a lake is one surface.
+ * The ground tileset: the tiles of every slot in order, in rows
+ * (`groundTilesetCellOf`). A slot with a ground sprite gets the tiles of
+ * its sheet copied in; any other gets one flat-colour tile, with a darker
+ * rim when the def stands up from the ground, so that a tree or rock whose
+ * image is missing still reads as an object. Water without its sheet has no
+ * rim: a lake is one surface.
  */
 function buildGroundTileset(scene: Phaser.Scene, slots: readonly GroundTilesetSlot[]): void {
-  // Built again for every renderer: the slots depend on which sheets loaded, and a strip from an earlier scene may be laid out differently.
+  // Built again for every renderer: the slots depend on which sheets loaded, and a tileset from an earlier scene may be laid out differently.
   if (scene.textures.exists(TILESET_TEXTURE_KEY)) scene.textures.remove(TILESET_TEXTURE_KEY);
-  const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
-  const tileset = scene.textures.createCanvas(TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS * tileCount, GROUND_TILE_PIXELS);
+  const { columns, rows } = groundTilesetSizeOf(slots.reduce((count, slot) => count + slot.tileCount, 0));
+  const tileset = scene.textures.createCanvas(TILESET_TEXTURE_KEY, GROUND_TILE_PIXELS * columns, GROUND_TILE_PIXELS * rows);
   if (!tileset) throw new Error('Could not create the terrain tileset texture');
   const context = tileset.getContext();
+  const cornerOf = (tileIndex: number) => {
+    const { column, row } = groundTilesetCellOf(tileIndex);
+    return { left: column * GROUND_TILE_PIXELS, top: row * GROUND_TILE_PIXELS };
+  };
   for (const slot of slots) {
-    const slotLeft = slot.firstTileIndex * GROUND_TILE_PIXELS;
     if (slot.groundSprite) {
-      for (let sheetTile = 0; sheetTile < slot.tileCount; sheetTile += 1) tileset.drawFrame(slot.groundSprite.key, sheetTile, slotLeft + sheetTile * GROUND_TILE_PIXELS, 0, false);
+      for (let sheetTile = 0; sheetTile < slot.tileCount; sheetTile += 1) {
+        const { left, top } = cornerOf(slot.firstTileIndex + sheetTile);
+        tileset.drawFrame(slot.groundSprite.key, sheetTile, left, top, false);
+      }
       continue;
     }
+    const { left, top } = cornerOf(slot.firstTileIndex);
     context.fillStyle = cssColor(slot.def.color);
-    context.fillRect(slotLeft, 0, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS);
+    context.fillRect(left, top, GROUND_TILE_PIXELS, GROUND_TILE_PIXELS);
     if (slot.def.standingSprite) {
       context.strokeStyle = cssColor(darken(slot.def.color));
       context.lineWidth = 1;
-      context.strokeRect(slotLeft + 0.5, 0.5, GROUND_TILE_PIXELS - 1, GROUND_TILE_PIXELS - 1);
+      context.strokeRect(left + 0.5, top + 0.5, GROUND_TILE_PIXELS - 1, GROUND_TILE_PIXELS - 1);
     }
   }
   tileset.refresh();
-  // Scaled up with linear filtering, tile edges would bleed into their neighbours in the strip.
+  // Scaled up with linear filtering, tile edges would bleed into their neighbours in the tileset.
   tileset.setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 
