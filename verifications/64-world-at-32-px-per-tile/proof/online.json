@@ -1,0 +1,173 @@
+{
+  "together": {
+    "A": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 2,
+        "scrollX": -432,
+        "scrollY": 64,
+        "width": 1280,
+        "height": 800,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -112,
+          "y": 264,
+          "width": 640,
+          "height": 400
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 12.5
+        }
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "-1,0",
+          "0,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 2048,
+        "standingImages": 847,
+        "keepMarginTiles": 18
+      },
+      "players": [
+        {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1
+        },
+        {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1
+        }
+      ],
+      "names": [
+        {
+          "name": "Ana",
+          "overHead": true,
+          "gapMetres": 0.0625
+        },
+        {
+          "name": "Bo",
+          "overHead": true,
+          "gapMetres": 0.0625
+        }
+      ]
+    },
+    "B": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 2,
+        "scrollX": -464,
+        "scrollY": 64,
+        "width": 1280,
+        "height": 800,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -144,
+          "y": 264,
+          "width": 640,
+          "height": 400
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 12.5
+        }
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "-1,0",
+          "0,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 2048,
+        "standingImages": 847,
+        "keepMarginTiles": 18
+      },
+      "players": [
+        {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1
+        },
+        {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1
+        }
+      ],
+      "names": [
+        {
+          "name": "Ana",
+          "overHead": true,
+          "gapMetres": 0.0625
+        },
+        {
+          "name": "Bo",
+          "overHead": true,
+          "gapMetres": 0.0625
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "name": "room server and dev server up, both started by this run",
+      "pass": true,
+      "details": "{\"event\":\"world-room-listening\",\"port\":5265,\"roomId\":\"world\",\"seed\":1397131680,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+    },
+    {
+      "name": "both players are seated and each tab draws both of them",
+      "pass": true,
+      "details": "A sees Ana,Bo, B sees Ana,Bo"
+    },
+    {
+      "name": "tab A: the world at 32 px per metre, a metre as many device pixels as before",
+      "pass": true,
+      "details": "zoom 2 (4 before), 20 m across, 2 chunks and 847 trees and rocks drawn"
+    },
+    {
+      "name": "tab A: both characters stand 1 x 1.5 m, drawn at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m at 1x, 1 x 1.5 m at 1x"
+    },
+    {
+      "name": "tab A: every name sits 0.0625 m above its own character's head",
+      "pass": true,
+      "details": "Ana: gap 0.0625 m, Bo: gap 0.0625 m"
+    },
+    {
+      "name": "tab B: the world at 32 px per metre, a metre as many device pixels as before",
+      "pass": true,
+      "details": "zoom 2 (4 before), 20 m across, 2 chunks and 847 trees and rocks drawn"
+    },
+    {
+      "name": "tab B: both characters stand 1 x 1.5 m, drawn at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m at 1x, 1 x 1.5 m at 1x"
+    },
+    {
+      "name": "tab B: every name sits 0.0625 m above its own character's head",
+      "pass": true,
+      "details": "Ana: gap 0.0625 m, Bo: gap 0.0625 m"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

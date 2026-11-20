@@ -13,7 +13,7 @@ import type { WorldState } from './worldState';
  * longer hold terrain (ADR 0013). 4: a join carries the player's character
  * and is refused without a legal one, and `player/change-character` changes
  * it afterwards (ADR 0015). 5: a character's look carries a gender and a
- * hairstyle (ADR 0017), so a page from before would send looks the server
+ * hairstyle (ADR 0018), so a page from before would send looks the server
  * refuses. Not counted up for `JoinOptions.playerToken`
  * (ADR 0014): a join without it and a server that ignores it both still work,
  * so no page has to reload for it.

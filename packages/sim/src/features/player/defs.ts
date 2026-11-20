@@ -76,7 +76,7 @@ export const CHARACTER_PARTS: readonly CharacterPart[] = ['skin', 'hair', 'cloth
 /** One shape a player may pick for a part of their character: a gender or a hairstyle. */
 export interface ShapeChoice {
   readonly name: string;
-  /** The sheet the client draws this choice from, under `sprites/`: one body sheet per gender, one hair layer per hairstyle (ADR 0017). */
+  /** The sheet the client draws this choice from, under `sprites/`: one body sheet per gender, one hair layer per hairstyle (ADR 0018). */
   readonly sheet: string;
 }
 
@@ -90,7 +90,7 @@ export interface GenderChoice extends ShapeChoice {
  * The shapes a player picks their character from: a gender and a hairstyle.
  * Both genders have the same body; the female face has lashes.
  * Picking a gender in the creator suggests its `defaultHairStyle`, but any
- * hairstyle goes with any gender (ADR 0017). A look holds an index into each.
+ * hairstyle goes with any gender (ADR 0018). A look holds an index into each.
  * Indexes are forever, like the palettes': add a choice at the end, never
  * reorder or remove one. The first entry of each is what a character
  * remembered before these choices existed wears (`readRememberedCharacter`),
@@ -137,7 +137,7 @@ export const MAX_NAME_CODE_POINTS = 40;
 /**
  * The character's sheet, `sprites/player.png` (the first gender wearing
  * the first hairstyle; the client lays each look from one body sheet and one
- * hair sheet in the same layout, ADR 0017): four rows (down, up,
+ * hair sheet in the same layout, ADR 0018): four rows (down, up,
  * left, right) of four 32x48 frames, frame 0 of a row being the idle pose and
  * the whole row the walk cycle. It is painted in fixed template colours by
  * packages/client/tools/generate-player-sheet.mjs and the client swaps them

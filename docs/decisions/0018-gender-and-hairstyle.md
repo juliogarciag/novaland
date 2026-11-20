@@ -1,4 +1,4 @@
-# 0017 - Gender and hairstyle: two shape choices in the look, drawn as layers, with old remembered characters read with defaults
+# 0018 - Gender and hairstyle: two shape choices in the look, drawn as layers, with old remembered characters read with defaults
 
 Status: accepted. Date: 2026-11-19. Supersedes three parts of [0015](0015-player-character.md): what a look holds, the rule that a remembered character the sim refuses is asked for again, and the one recoloured sheet per look. Builds on ticket #65's 32x48 sheet, which paints the body and the hair as separate layers. Ticket #66.
 

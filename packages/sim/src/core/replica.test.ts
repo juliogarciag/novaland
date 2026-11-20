@@ -242,7 +242,7 @@ describe('createReplica', () => {
 });
 
 describe('the wire contract the server and the client are built against', () => {
-  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013, 0015 and 0017 list', () => {
+  it('pins the protocol version, the message names, the refusal reasons and the default send rate ADR 0004, 0012, 0013, 0015 and 0018 list', () => {
     // A change to any of these is a change to the contract: count WIRE_PROTOCOL up with it.
     expect(WIRE_PROTOCOL).toBe(5);
     expect(WIRE).toEqual({ welcome: 'world/welcome', delta: 'world/delta', state: 'world/state', resync: 'world/resync', move: 'player/move', changeCharacter: 'player/change-character', moveApplied: 'player/move-applied' });

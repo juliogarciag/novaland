@@ -151,7 +151,7 @@ describe('readCharacter', () => {
   });
 
   it('keeps every gender and hairstyle at its index: browsers and the server remember looks by them', () => {
-    // Append only (ADR 0017). Changing this list moves what remembered characters wear.
+    // Append only (ADR 0018). Changing this list moves what remembered characters wear.
     expect(characterShapes.gender.map((shape) => shape.name)).toEqual(['male', 'female']);
     expect(characterShapes.hairStyle.map((shape) => shape.name)).toEqual(['short', 'long', 'tied back']);
   });

@@ -1,0 +1,1693 @@
+{
+  "screens": {
+    "1280x800": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 2,
+        "scrollX": -432,
+        "scrollY": 64,
+        "width": 1280,
+        "height": 800,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -112,
+          "y": 264,
+          "width": 640,
+          "height": 400
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 12.5
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 1387
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 19
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 2,
+          "devicePixelsTall": 20
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 1108,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 1175,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 1188,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 1188,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 3072,
+        "standingImages": 1406,
+        "keepMarginTiles": 18
+      }
+    },
+    "1920x1080": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 3,
+        "scrollX": -752,
+        "scrollY": -76,
+        "width": 1920,
+        "height": 1080,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -112,
+          "y": 284,
+          "width": 640,
+          "height": 360
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 11.25
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 1387
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 19
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 4,
+          "devicePixelsTall": 40
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 1748,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 1815,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 1828,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 1828,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 3072,
+        "standingImages": 1406,
+        "keepMarginTiles": 18
+      }
+    },
+    "2560x1440": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 4,
+        "scrollX": -1072,
+        "scrollY": -256,
+        "width": 2560,
+        "height": 1440,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -112,
+          "y": 284,
+          "width": 640,
+          "height": 360
+        },
+        "visibleMetres": {
+          "width": 20,
+          "height": 11.25
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 1387
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 19
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 5,
+          "devicePixelsTall": 50
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 2388,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 2455,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 2468,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 2468,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 3072,
+        "standingImages": 1406,
+        "keepMarginTiles": 18
+      }
+    },
+    "1440x900@2x": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 4,
+        "scrollX": -1232,
+        "scrollY": -436,
+        "width": 2880,
+        "height": 1800,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -152,
+          "y": 239,
+          "width": 720,
+          "height": 450
+        },
+        "visibleMetres": {
+          "width": 22.5,
+          "height": 14.0625
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 2697
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 21
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 5,
+          "devicePixelsTall": 50
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 1268,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 1335,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 1348,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 1348,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "0,1",
+          "1,1",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 5120,
+        "standingImages": 2718,
+        "keepMarginTiles": 18
+      }
+    },
+    "1512x982@2x": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 4,
+        "scrollX": -1304,
+        "scrollY": -518,
+        "width": 3024,
+        "height": 1964,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -170,
+          "y": 218.5,
+          "width": 756,
+          "height": 491
+        },
+        "visibleMetres": {
+          "width": 23.625,
+          "height": 15.34375
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 2697
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 21
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 5,
+          "devicePixelsTall": 50
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 1340,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 1407,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 1420,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 1420,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "0,1",
+          "1,1",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 5120,
+        "standingImages": 2718,
+        "keepMarginTiles": 18
+      }
+    },
+    "1728x1117@2x": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 5,
+        "scrollX": -1520,
+        "scrollY": -653,
+        "width": 3456,
+        "height": 2234,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -137.60000000000002,
+          "y": 240.6,
+          "width": 691.2,
+          "height": 446.8
+        },
+        "visibleMetres": {
+          "width": 21.6,
+          "height": 13.9625
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 2697
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 21
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 6,
+          "devicePixelsTall": 60
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 1556,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 1623,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 1636,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 1636,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "0,0",
+          "1,0",
+          "0,1",
+          "1,1",
+          "-1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 5120,
+        "standingImages": 2718,
+        "keepMarginTiles": 18
+      }
+    },
+    "1024x768": {
+      "pixelsPerMetre": 32,
+      "minVisibleMetres": 20,
+      "camera": {
+        "zoom": 1,
+        "scrollX": -304,
+        "scrollY": 80,
+        "width": 1024,
+        "height": 768,
+        "bounds": {
+          "x": -1440,
+          "y": -992,
+          "width": 4160,
+          "height": 2944
+        },
+        "worldView": {
+          "x": -304,
+          "y": 80,
+          "width": 1024,
+          "height": 768
+        },
+        "visibleMetres": {
+          "width": 32,
+          "height": 24
+        }
+      },
+      "sheets": [
+        {
+          "kind": "ground",
+          "key": "grass",
+          "tilePixels": 32,
+          "variantCount": 24,
+          "image": {
+            "width": 768,
+            "height": 32
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "tree",
+          "frameWidth": 48,
+          "frameHeight": 64,
+          "pixelsPerMetre": 32,
+          "variantCount": 3,
+          "groundDefId": 200,
+          "image": {
+            "width": 144,
+            "height": 64
+          }
+        },
+        {
+          "kind": "standing",
+          "key": "rock",
+          "frameWidth": 32,
+          "frameHeight": 40,
+          "pixelsPerMetre": 32,
+          "variantCount": 4,
+          "groundDefId": 200,
+          "image": {
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "water",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        },
+        {
+          "kind": "ground",
+          "key": "shallows",
+          "tilePixels": 32,
+          "variantCount": 8,
+          "edgeTiles": {
+            "sameSurfaceDefIds": [
+              205,
+              204
+            ]
+          },
+          "image": {
+            "width": 1728,
+            "height": 32
+          }
+        }
+      ],
+      "tileset": {
+        "width": 2048,
+        "height": 96,
+        "tilePixels": 32,
+        "tileCount": 135
+      },
+      "drawn": {
+        "tree": {
+          "width": 1.5,
+          "height": 2,
+          "scale": 1,
+          "count": 3310
+        },
+        "rock": {
+          "width": 1,
+          "height": 1.25,
+          "scale": 1,
+          "count": 46
+        },
+        "player": {
+          "width": 1,
+          "height": 1.5,
+          "scale": 1,
+          "count": 1
+        }
+      },
+      "names": [
+        {
+          "name": "Thirty-Two",
+          "x": 208,
+          "headX": 208,
+          "gapMetres": 0.0625,
+          "devicePixelsPerLetterPixel": 1,
+          "devicePixelsTall": 10
+        }
+      ],
+      "minimap": {
+        "rect": {
+          "x": 852,
+          "y": 12,
+          "width": 160,
+          "height": 160
+        },
+        "tilesAcross": 80,
+        "cssPixelsPerTile": 2,
+        "centre": {
+          "x": 6.5,
+          "y": 14.5
+        },
+        "worldOriginOnScreen": {
+          "x": 919,
+          "y": 63
+        },
+        "chunksDrawn": [
+          "-2,-1",
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-2,0",
+          "-1,0",
+          "0,0",
+          "1,0",
+          "-2,1",
+          "-1,1",
+          "0,1",
+          "1,1"
+        ],
+        "chunksInMap": 15,
+        "chunksPainted": 12,
+        "localPlayerColor": 16777215,
+        "edgeInset": 13,
+        "marks": [
+          {
+            "source": "landmark",
+            "name": "starting point",
+            "isLocalPlayer": false,
+            "shape": "diamond",
+            "color": 16767050,
+            "onEdge": false,
+            "x": 932,
+            "y": 92
+          },
+          {
+            "source": "entity",
+            "name": "player",
+            "eid": 1,
+            "isLocalPlayer": true,
+            "shape": "dot",
+            "color": 14753096,
+            "onEdge": false,
+            "x": 932,
+            "y": 92
+          }
+        ]
+      },
+      "terrain": {
+        "chunksDrawn": [
+          "-1,-1",
+          "0,-1",
+          "1,-1",
+          "-1,0",
+          "0,0",
+          "1,0"
+        ],
+        "chunksInMap": 15,
+        "groundTiles": 6144,
+        "standingImages": 3356,
+        "keepMarginTiles": 18
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the client draws the world at 32 pixels per metre",
+      "pass": true,
+      "details": "32"
+    },
+    {
+      "name": "the grass sheet is art at 32 pixels per metre, loaded at the size its def declares",
+      "pass": true,
+      "details": "32-pixel tiles; image 768x32"
+    },
+    {
+      "name": "the tree sheet is art at 32 pixels per metre, loaded at the size its def declares",
+      "pass": true,
+      "details": "48x64 frames at 32 per metre; image 144x64"
+    },
+    {
+      "name": "the rock sheet is art at 32 pixels per metre, loaded at the size its def declares",
+      "pass": true,
+      "details": "32x40 frames at 32 per metre; image 128x40"
+    },
+    {
+      "name": "the water sheet is art at 32 pixels per metre, loaded at the size its def declares",
+      "pass": true,
+      "details": "32-pixel tiles; image 1728x32"
+    },
+    {
+      "name": "the shallows sheet is art at 32 pixels per metre, loaded at the size its def declares",
+      "pass": true,
+      "details": "32-pixel tiles; image 1728x32"
+    },
+    {
+      "name": "the ground tileset holds every ground tile in a texture no side of which passes 4096 pixels",
+      "pass": true,
+      "details": "2048x96 for 135 tiles of 32"
+    },
+    {
+      "name": "1280x800: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "1280 device px: zoom 2 (4 before), 64 device px per metre (64 before), 20.0 m across, 1x the world"
+    },
+    {
+      "name": "1280x800: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 1387 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1280x800: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1280x800: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1280x800: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 2 device px (2 expected, 2 before), 20 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1280x800: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "holding D walks the player east and its name goes with it",
+      "pass": true,
+      "details": "name from x 208 to 365.33203125 world px"
+    },
+    {
+      "name": "the nearest lake is drawn in the ground, coast and all",
+      "pass": true,
+      "details": "water tile 28,16"
+    },
+    {
+      "name": "1920x1080: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "1920 device px: zoom 3 (6 before), 96 device px per metre (96 before), 20.0 m across, 1x the world"
+    },
+    {
+      "name": "1920x1080: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 1387 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1920x1080: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1920x1080: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1920x1080: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 4 device px (4 expected, 4 before), 40 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1920x1080: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "2560x1440: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "2560 device px: zoom 4 (8 before), 128 device px per metre (128 before), 20.0 m across, 1x the world"
+    },
+    {
+      "name": "2560x1440: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 1387 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "2560x1440: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "2560x1440: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "2560x1440: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 5 device px (5 expected, 5 before), 50 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "2560x1440: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "1440x900@2x: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "2880 device px: zoom 4 (9 before), 128 device px per metre (144 before), 22.5 m across, 1.125x the world"
+    },
+    {
+      "name": "1440x900@2x: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 2697 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1440x900@2x: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1440x900@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1440x900@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 5 device px (5 expected, 5 before), 50 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1440x900@2x: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "1512x982@2x: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "3024 device px: zoom 4 (9 before), 128 device px per metre (144 before), 23.6 m across, 1.125x the world"
+    },
+    {
+      "name": "1512x982@2x: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 2697 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1512x982@2x: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1512x982@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1512x982@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 5 device px (5 expected, 5 before), 50 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1512x982@2x: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "1728x1117@2x: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "3456 device px: zoom 5 (10 before), 160 device px per metre (160 before), 21.6 m across, 1x the world"
+    },
+    {
+      "name": "1728x1117@2x: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 2697 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1728x1117@2x: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1728x1117@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1728x1117@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 6 device px (6 expected, 6 before), 60 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1728x1117@2x: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "1024x768: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd",
+      "pass": true,
+      "details": "1024 device px: zoom 1 (3 before), 32 device px per metre (48 before), 32.0 m across, 1.5x the world"
+    },
+    {
+      "name": "1024x768: trees stand 1.5 x 2 m, as before",
+      "pass": true,
+      "details": "1.5 x 2 m, 3310 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1024x768: rocks stand 1 x 1.25 m, as before",
+      "pass": true,
+      "details": "1 x 1.25 m, 46 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1024x768: players stand 1 x 1.5 m, as before, the sheet at 1:1",
+      "pass": true,
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
+    },
+    {
+      "name": "1024x768: the name is lettered as big against the world as before and sits 0.0625 m above the head",
+      "pass": true,
+      "details": "letter pixel 1 device px (1 expected, 2 before), 10 device px tall, gap 0.0625 m"
+    },
+    {
+      "name": "1024x768: the minimap paints the terrain around the player",
+      "pass": true,
+      "details": "12 chunks, 2 marks, 160x160 css px"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}

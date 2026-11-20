@@ -60,7 +60,7 @@ describe('water sheet generator', () => {
       const tile = coloursOfTile(sheet, WATER_VARIANT_COUNT + index);
       for (const side of sides) {
         // The middle of the side: its ends belong to the corners, which the sides beside it shape too.
-        const middle = side.pixels(tile).slice(6, 10);
+        const middle = side.pixels(tile).slice(TILE_PIXELS * 0.375, TILE_PIXELS * 0.625);
         const endsHere = (shape & side.bit) === 0;
         expect(middle.every((colour) => colour === firstBand), `shape ${shape}, side ${side.bit}`).toBe(endsHere);
       }
@@ -95,11 +95,12 @@ describe('water sheet generator', () => {
     };
     const column = (tile, x) => tile.filter((_, index) => index % TILE_PIXELS === x);
     const row = (tile, y) => tile.slice(y * TILE_PIXELS, (y + 1) * TILE_PIXELS);
-    const north = bankPixels({ bits: EdgeNeighbour.North | EdgeNeighbour.NorthEast | EdgeNeighbour.NorthWest }, (tile) => column(tile, 8));
-    const south = bankPixels({ bits: EdgeNeighbour.South | EdgeNeighbour.SouthEast | EdgeNeighbour.SouthWest }, (tile) => column(tile, 8).reverse());
-    const west = bankPixels({ bits: EdgeNeighbour.West | EdgeNeighbour.SouthWest | EdgeNeighbour.NorthWest }, (tile) => row(tile, 8));
-    const east = bankPixels({ bits: EdgeNeighbour.East | EdgeNeighbour.NorthEast | EdgeNeighbour.SouthEast }, (tile) => row(tile, 8).reverse());
-    expect([north, west, east, south]).toEqual([4, 2, 2, 1]);
+    const middle = TILE_PIXELS / 2;
+    const north = bankPixels({ bits: EdgeNeighbour.North | EdgeNeighbour.NorthEast | EdgeNeighbour.NorthWest }, (tile) => column(tile, middle));
+    const south = bankPixels({ bits: EdgeNeighbour.South | EdgeNeighbour.SouthEast | EdgeNeighbour.SouthWest }, (tile) => column(tile, middle).reverse());
+    const west = bankPixels({ bits: EdgeNeighbour.West | EdgeNeighbour.SouthWest | EdgeNeighbour.NorthWest }, (tile) => row(tile, middle));
+    const east = bankPixels({ bits: EdgeNeighbour.East | EdgeNeighbour.NorthEast | EdgeNeighbour.SouthEast }, (tile) => row(tile, middle).reverse());
+    expect([north, west, east, south]).toEqual([8, 4, 4, 2]);
     const brightness = (colour) => colour.split(',').map(Number).reduce((sum, channel) => sum + channel, 0);
     EDGE_SHAPES.forEach((_, index) => {
       for (const colour of coloursOfTile(sheet, WATER_VARIANT_COUNT + index)) {

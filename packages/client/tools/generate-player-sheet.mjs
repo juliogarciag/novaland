@@ -2,7 +2,7 @@
  * Generates the character sheets in public/sprites/: player.png, the sprite
  * of the player def in packages/sim/src/features/player/defs.ts, and the
  * layer sheets the client builds each look from: one body sheet per gender
- * and one hair sheet per hairstyle (LAYER_SHEETS, ADR 0017).
+ * and one hair sheet per hairstyle (LAYER_SHEETS, ADR 0018).
  *
  * The sheet is painted in the template colours of TEMPLATE_PALETTE: the
  * client swaps each of them for a colour it derives from the skin, hair and

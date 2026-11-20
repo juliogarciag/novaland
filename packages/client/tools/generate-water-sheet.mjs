@@ -32,7 +32,7 @@
 import { blit, createCanvas, noise, pixel } from './pixelCanvas.mjs';
 import { writeSheet, writeSheetWhenRunDirectly } from './sheetFile.mjs';
 
-export const TILE_PIXELS = 16;
+export const TILE_PIXELS = 32;
 export const WATER_VARIANT_COUNT = 8;
 
 /**
@@ -48,7 +48,7 @@ export const EDGE_SHAPES = [...new Set(Array.from({ length: ALL_NEIGHBOURS + 1 }
   .sort((first, second) => first - second);
 
 /** Where the lake turns a corner, the other side rounds into the tile along a circle of this radius, in pixels. */
-const CORNER_RADIUS = 5;
+const CORNER_RADIUS = 10;
 
 /**
  * The two surfaces. `surface` is the def's `color`: what a view without the
@@ -67,7 +67,8 @@ export const WATER_SURFACES = {
     colors: { rippleShade: [0x34, 0x72, 0xc0], surface: [0x3e, 0x82, 0xd2], rippleLight: [0x62, 0xa0, 0xe4], glint: [0xa6, 0xcc, 0xf2] },
     // Past deep water are the shallows: the same blue as their sheet below.
     outside: [0x74, 0xb8, 0xea],
-    edgeColor: ({ distance }) => [[0x5c, 0xa2, 0xe0], [0x4a, 0x90, 0xd8]][distance - 1],
+    // Two steps of two pixels each.
+    edgeColor: ({ distance }) => [[0x5c, 0xa2, 0xe0], [0x4a, 0x90, 0xd8]][Math.ceil(distance / 2) - 1],
   },
   shallows: {
     key: 'shallows',
@@ -76,21 +77,28 @@ export const WATER_SURFACES = {
     // Past the shallows is land: the turf of the grass sheet.
     outside: [0x5c, 0x9e, 0x4a],
     edgeColor: ({ distance, outsideToNorth }) => {
-      // The wall is four pixels tall where it faces the viewer, two at the sides, and one, the lip alone, where it faces away.
-      const wallPixels = Math.round(outsideToNorth > 0 ? 2 + 2 * outsideToNorth : 2 + outsideToNorth);
+      // The wall is eight pixels tall where it faces the viewer, four at the sides, and two, the lip alone, where it faces away.
+      const wallPixels = Math.round(outsideToNorth > 0 ? 4 + 4 * outsideToNorth : 4 + 2 * outsideToNorth);
       // A bank that faces away casts no shadow this side of it.
-      const shadowPixels = outsideToNorth < 0 ? 0 : Math.round(1 + outsideToNorth);
-      if (distance === 1) return BANK_COLORS.lip;
-      if (distance < wallPixels) return BANK_COLORS.earth;
-      if (distance === wallPixels) return BANK_COLORS.earthFoot;
+      const shadowPixels = outsideToNorth < 0 ? 0 : Math.round(2 + 2 * outsideToNorth);
+      // The lip: the turf darkens as it curls over the edge.
+      if (distance === 1) return BANK_COLORS.turfOverEdge;
+      if (distance === LIP_PIXELS) return BANK_COLORS.lip;
+      if (distance <= wallPixels - EARTH_FOOT_PIXELS) return BANK_COLORS.earth;
+      if (distance <= wallPixels) return BANK_COLORS.earthFoot;
       if (distance <= wallPixels + shadowPixels) return BANK_COLORS.shadowOnWater;
       return undefined;
     },
   },
 };
 
-/** The bank of a lake, from the grass down: the dark lip of the turf, the earth under it, its darker foot at the waterline, and the shallows in the bank's shadow. */
+/** How many pixels tall the lip of the turf is, and the darker foot of the earth at the waterline. */
+const LIP_PIXELS = 2;
+const EARTH_FOOT_PIXELS = 2;
+
+/** The bank of a lake, from the grass down: the turf darkening over the edge and its dark lip, the earth under it, its darker foot at the waterline, and the shallows in the bank's shadow. */
 export const BANK_COLORS = {
+  turfOverEdge: [0x52, 0x92, 0x44],
   lip: [0x3a, 0x6e, 0x38],
   earth: [0x7a, 0x5c, 0x3a],
   earthFoot: [0x5a, 0x42, 0x2c],
@@ -102,11 +110,14 @@ export const BANK_COLORS = {
  * pixels and every band gets one ripple, somewhere along it. Scattering
  * them freely leaves one tile bare and the next crowded.
  */
-const BAND_PIXELS = 4;
+const BAND_PIXELS = 8;
 
 /** A ripple is this many pixels long at least and at most, and one pixel tall. */
-const SHORTEST_RIPPLE = 3;
-const LONGEST_RIPPLE = 5;
+const SHORTEST_RIPPLE = 6;
+const LONGEST_RIPPLE = 10;
+
+/** Ripples keep this many pixels clear of every side of the tile. */
+const RIPPLE_MARGIN = 2;
 
 /** The whole sheet of one surface: every variant side by side, then every edge tile. */
 export function paintWaterSheet(surface) {
@@ -126,15 +137,26 @@ function paintPlainTile(surface, variant) {
   return tile;
 }
 
-/** One ripple in the band that starts at `bandTop`: light or dark by turns down the tile, clear of the tile's edge, a light one sometimes with a glint on it. */
+/**
+ * One ripple in the band that starts at `bandTop`: light or dark by turns
+ * down the tile, clear of the tile's edge. A light one is the crest of a
+ * swell, with the darker blue under it two pixels shorter at each end, and
+ * sometimes a glint on it.
+ */
 function paintRipple(tile, { bandTop, seed, colors }) {
   const length = SHORTEST_RIPPLE + Math.floor(noise(bandTop, 1, seed) * (LONGEST_RIPPLE - SHORTEST_RIPPLE + 1));
-  const left = 1 + Math.floor(noise(bandTop, 2, seed) * (TILE_PIXELS - 2 - length + 1));
-  // Rows 1 and 2 of the band: never the tile's first row, never its last.
-  const y = bandTop + 1 + Math.floor(noise(bandTop, 3, seed) * 2);
+  const left = RIPPLE_MARGIN + Math.floor(noise(bandTop, 2, seed) * (TILE_PIXELS - 2 * RIPPLE_MARGIN - length + 1));
+  // Rows 2 to 4 of the band, the swell's second row at most 5: never near the tile's first row or its last.
+  const y = bandTop + 2 + Math.floor(noise(bandTop, 3, seed) * 3);
   const isLight = (bandTop / BAND_PIXELS + seed) % 2 === 0;
-  for (let x = left; x < left + length; x += 1) pixel(tile, x, y, isLight ? colors.rippleLight : colors.rippleShade);
-  if (isLight && noise(bandTop, 4, seed) < 0.5) pixel(tile, left + 1, y, colors.glint);
+  const color = isLight ? colors.rippleLight : colors.rippleShade;
+  for (let x = left; x < left + length; x += 1) pixel(tile, x, y, color);
+  if (!isLight) return;
+  for (let x = left + 2; x < left + length - 2; x += 1) pixel(tile, x, y + 1, colors.rippleShade);
+  if (noise(bandTop, 4, seed) < 0.5) {
+    pixel(tile, left + 2, y, colors.glint);
+    pixel(tile, left + 3, y, colors.glint);
+  }
 }
 
 /** A plain tile with the end of the surface painted over it: the outside where it reaches into the tile, then what the surface says belongs near its edge. */
@@ -147,9 +169,9 @@ function paintEdgeTile(surface, { shape, variant }) {
         pixel(tile, x, y, surface.outside);
         continue;
       }
-      const nearest = nearestOutside(isOutside, x, y);
-      if (!nearest) continue;
-      const color = surface.edgeColor({ distance: Math.round(nearest.distance), outsideToNorth: (y - nearest.y) / nearest.distance });
+      const edge = edgeNear(isOutside, x, y);
+      if (!edge) continue;
+      const color = surface.edgeColor({ distance: Math.round(edge.distance), outsideToNorth: edge.outsideToNorth });
       if (color) pixel(tile, x, y, color);
     }
   }
@@ -188,19 +210,39 @@ function neighbourBit(column, row) {
   return column === -1 ? NEIGHBOUR.west : NEIGHBOUR.east;
 }
 
-/** The pixel past the edge that is nearest to this pixel of the surface, and how far it is in pixels: one for a pixel that touches it by a side, a little more by a corner. Nothing when the edge is further than any edge is painted. */
-function nearestOutside(isOutside, x, y) {
-  const reach = 7;
-  let nearest;
+/**
+ * How far the edge is from this pixel of the surface, in pixels (one for a
+ * pixel that touches it by a side, a little more by a corner), and which way
+ * it lies, as `outsideToNorth` (see WATER_SURFACES). The way is the average
+ * over the outside pixels nearly as near as the nearest, not that one alone:
+ * round a corner the nearest pixel jumps between the arc and the straight
+ * edge, and the bank would come out speckled. Nothing when the edge is
+ * further than any edge is painted.
+ */
+function edgeNear(isOutside, x, y) {
+  const reach = 14;
+  const outsidePixels = [];
   for (let otherY = y - reach; otherY <= y + reach; otherY += 1) {
     for (let otherX = x - reach; otherX <= x + reach; otherX += 1) {
-      if (!isOutside(otherX, otherY)) continue;
-      const distance = Math.hypot(otherX - x, otherY - y);
-      if (!nearest || distance < nearest.distance) nearest = { x: otherX, y: otherY, distance };
+      if (isOutside(otherX, otherY)) outsidePixels.push({ across: otherX - x, down: otherY - y, distance: Math.hypot(otherX - x, otherY - y) });
     }
   }
-  return nearest;
+  if (outsidePixels.length === 0) return undefined;
+  const distance = Math.min(...outsidePixels.map((outsidePixel) => outsidePixel.distance));
+  let across = 0;
+  let down = 0;
+  for (const outsidePixel of outsidePixels) {
+    if (outsidePixel.distance > distance + NEARLY_AS_NEAR) continue;
+    across += outsidePixel.across / outsidePixel.distance;
+    down += outsidePixel.down / outsidePixel.distance;
+  }
+  const length = Math.hypot(across, down);
+  // Outside pixels on opposite sides cancel out: the edge then lies neither north nor south.
+  return { distance, outsideToNorth: length === 0 ? 0 : -down / length };
 }
+
+/** Outside pixels this many pixels further than the nearest still count towards which way the edge lies. */
+const NEARLY_AS_NEAR = 2;
 
 function edgeShapeOf(neighbours) {
   const has = (bits) => (neighbours & bits) === bits;

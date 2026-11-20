@@ -85,7 +85,7 @@ export function paintLook(pixels: Uint8ClampedArray, look: CharacterLook): void 
 /** The colour of the figure's edge, as 0xRRGGBB: FIXED_PALETTE.outline in tools/generate-player-sheet.mjs (the generator's test checks it). */
 const OUTLINE_COLOR = 0x1f1a17;
 
-/** The sprite keys of the two layer sheets a look is drawn from: its gender's and its hairstyle's (ADR 0017). Undefined for an index outside the lists. */
+/** The sprite keys of the two layer sheets a look is drawn from: its gender's and its hairstyle's (ADR 0018). Undefined for an index outside the lists. */
 export function layerSheetsOf(look: CharacterLook): { readonly body: string; readonly hair: string } | undefined {
   const body = characterShapes.gender[look.gender]?.sheet;
   const hair = characterShapes.hairStyle[look.hairStyle]?.sheet;

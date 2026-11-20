@@ -2,7 +2,25 @@ import { CHUNK_SIZE, EDGE_SHAPES, EdgeNeighbour, edgeShapeOf, getTileDef, NO_TIL
 import { variantOfTile } from './tileVariant';
 
 /** Side of one tile of the ground tileset in texture pixels. A ground sprite's tiles must be this size. */
-export const GROUND_TILE_PIXELS = 16;
+export const GROUND_TILE_PIXELS = 32;
+
+/**
+ * Most tiles in one row of the ground tileset. Its tiles are laid in rows
+ * of this many, left to right and top to bottom, the order a Phaser tileset
+ * counts them in: 2048 pixels wide, well inside the 4096 every WebGL device
+ * can hold in one texture, however many surfaces the world gains.
+ */
+export const GROUND_TILESET_COLUMNS = 64;
+
+/** Where tile `tileIndex` of the ground tileset sits, in tiles from its top-left corner. */
+export function groundTilesetCellOf(tileIndex: number): { column: number; row: number } {
+  return { column: tileIndex % GROUND_TILESET_COLUMNS, row: Math.floor(tileIndex / GROUND_TILESET_COLUMNS) };
+}
+
+/** How many tiles across and down a ground tileset of `tileCount` tiles is. */
+export function groundTilesetSizeOf(tileCount: number): { columns: number; rows: number } {
+  return { columns: Math.min(tileCount, GROUND_TILESET_COLUMNS), rows: Math.ceil(tileCount / GROUND_TILESET_COLUMNS) };
+}
 
 /**
  * The tiles one def owns in the ground tileset: `tileCount` of them in a
