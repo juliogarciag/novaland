@@ -9,30 +9,27 @@
 
  RUN  v5.1.0 <repo>
 
-(node:57262) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:59183) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:57264) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:59184) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:57265) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:59185) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:57275) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:59201) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:57278) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:59203) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
  Test Files  69 passed (69)
       Tests  619 passed (619)
-   Start at  21:08:17
-   Duration  20.30s (tests 81%, import 14%, transform 4%, worker 1%)
-
-    Isolate  69 workers spawned · ~205ms startup each (spawn + environment, per file)
-             at least ~1.37s faster with isolate: false — reuses workers across files instead of one per file
+   Start at  21:10:17
+   Duration  18.95s (tests 85%, import 12%, transform 2%)
 
 
 > novaland@0.0.0 typecheck <repo>
 > tsc -p tsconfig.json && pnpm -r typecheck
 
-(node:57383) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(node:59549) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
