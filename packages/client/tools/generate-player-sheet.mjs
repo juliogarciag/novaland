@@ -366,37 +366,54 @@ function mirrored(rows) {
   });
 }
 
-/** Long hair in profile below the head: the short hair's back of the head, falling on down the back. */
-const LONG_HAIR_BELOW_HEAD_LEFT = [
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hh.hH...',
-];
+/**
+ * Long hair in profile, rows from the head's first: the short hair's crown
+ * and fringe, then one lock that keeps the back of the head's width past the
+ * skull and falls straight down behind the neck and the back of the
+ * shoulders, ending at the shoulder blades. It never pinches at the nape.
+ */
+const LONG_HAIR_LEFT = [
+  ...HAIRSTYLES.short.left.slice(0, 15),
+  '.........hhhhhhhH.',
+  '..........hhhhhhH.',
+  '..........hhhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '............hhhhH.',
+  '.............hh.H.',
+]
 
-/** Hair tied back, in profile: a hairline swept back from the brow and a tail that hangs down the nape. */
+/**
+ * Hair tied back, in profile: a hairline swept back from the brow, the back
+ * of the head drawn in to a band at the crown's back, and a tail that hangs
+ * from it down the nape, standing a pixel off the back of the head.
+ */
 const TIED_BACK_HAIR_LEFT = [
   ...HAIRSTYLES.short.left.slice(0, 7),
   '..hhhhhhhhhhhhhhH.',
   '....hhhhhhhhhhhhH.',
   '.......hhhhhhhhhH.',
+  '.........hhhhhhhHH',
+  '.........hhhhhhhHH',
+  '.........hhhhhhhhH',
+  '.........hhhhhhhhH',
+  '.........hhhhhhhhH',
   '.........hhhhhhhhH',
   '..........hhhhhhhH',
   '...........hhhhhhH',
-  '...........hhhhhhH',
-  '............hhhhhH',
-  '.............hhhhH',
-  '..............hhH.',
-  '..............hhH.',
-  '..............hhH.',
-  '..............hhH.',
-  '..............hH..',
-  '..............hH..',
-  '...............H..',
-];
+  '...............hhH',
+  '...............hhH',
+  '...............hhH',
+  '...............hH.',
+  '...............hH.',
+  '...............hH.',
+  '................H.',
+]
 
 /** Long hair: framing the face, over the shoulders from the front, down the back from behind. */
 HAIRSTYLES.long = {
@@ -432,9 +449,9 @@ HAIRSTYLES.long = {
     '...hhhhhhhhhhhH...',
     '....hh.hhhh.hhH...',
   ],
-  left: [...HAIRSTYLES.short.left, ...LONG_HAIR_BELOW_HEAD_LEFT],
-  // The head rows are the short hair's own right profile; only what falls below the head is mirrored.
-  right: [...HAIRSTYLES.short.right, ...mirrored(LONG_HAIR_BELOW_HEAD_LEFT)],
+  left: LONG_HAIR_LEFT,
+  // The rows the short hair has its own right profile for come from it; only what differs from the short hair is mirrored.
+  right: [...HAIRSTYLES.short.right.slice(0, 15), ...mirrored(LONG_HAIR_LEFT.slice(15))],
 };
 
 /** Hair tied back: a high hairline from the front, a band and a tail from behind and in profile. */
