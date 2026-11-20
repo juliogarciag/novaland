@@ -80,15 +80,15 @@ export interface ShapeChoice {
   readonly sheet: string;
 }
 
-/** A gender: the body it is drawn with, and the hairstyle the creator suggests when it is picked. */
+/** A gender: the body sheet it is drawn with (the same body, with or without lashes), and the hairstyle the creator suggests when it is picked. */
 export interface GenderChoice extends ShapeChoice {
   /** Index into `characterShapes.hairStyle`. Only a suggestion: the player may pick any hairstyle afterwards. */
   readonly defaultHairStyle: number;
 }
 
 /**
- * The shapes a player picks their character from: a gender, which sets the
- * build of the body (shoulders, waist, hips, lashes), and a hairstyle.
+ * The shapes a player picks their character from: a gender and a hairstyle.
+ * Both genders have the same body; the female face has lashes.
  * Picking a gender in the creator suggests its `defaultHairStyle`, but any
  * hairstyle goes with any gender (ADR 0017). A look holds an index into each.
  * Indexes are forever, like the palettes': add a choice at the end, never

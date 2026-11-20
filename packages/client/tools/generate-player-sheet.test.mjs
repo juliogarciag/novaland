@@ -69,7 +69,7 @@ describe('player sheet generator', () => {
   it('writes a layer sheet for every gender and hairstyle the sim lists, under the key the sim gives it', () => {
     expect(Object.entries(generator.LAYER_SHEETS.gender)).toEqual(characterShapes.gender.map((shape) => [shape.name, shape.sheet]));
     expect(Object.entries(generator.LAYER_SHEETS.hairstyle)).toEqual(characterShapes.hairStyle.map((shape) => [shape.name, shape.sheet]));
-    expect(Object.keys(generator.BUILDS)).toEqual(Object.keys(generator.LAYER_SHEETS.gender));
+    expect(Object.keys(generator.GENDERS)).toEqual(Object.keys(generator.LAYER_SHEETS.gender));
     expect(Object.keys(generator.HAIRSTYLES)).toEqual(Object.keys(generator.LAYER_SHEETS.hairstyle));
   });
 
@@ -108,23 +108,27 @@ describe('player sheet generator', () => {
     expect(Buffer.from(paintPlayerSheet().data).equals(Buffer.from(paintPlayerSheet(first).data))).toBe(true);
   });
 
-  it('gives each gender its own silhouette from every side, and only the female one lashes', () => {
+  it('gives both genders the same body, and the female face lashes and nothing else', () => {
     const eyes = rgb(FIXED_PALETTE.eye);
-    const standing = generator.POSES[0];
     for (const direction of DIRECTIONS) {
-      const [male, female] = ['male', 'female'].map((gender) => generator.paintFrameLayers(direction, standing, { gender }).body);
-      expect(maskOf(female), direction).not.toEqual(maskOf(male));
-      if (direction !== 'up') expect(countOf(female, eyes), direction).toBeGreaterThan(countOf(male, eyes));
+      for (const pose of generator.POSES) {
+        const [male, female] = ['male', 'female'].map((gender) => generator.paintFrameLayers(direction, pose, { gender }).body);
+        const differing = [];
+        for (let offset = 0; offset < male.data.length; offset += 4) {
+          if (!Buffer.from(male.data.subarray(offset, offset + 4)).equals(Buffer.from(female.data.subarray(offset, offset + 4)))) differing.push(offset);
+        }
+        // Seen from behind there is no face; from the front two lashes, in profile one, each a pixel of the eyes' colour on the skin.
+        expect(differing.length, `${direction}`).toBe({ down: 2, up: 0, left: 1, right: 1 }[direction]);
+        for (const offset of differing) {
+          expect(rgb(female.data.subarray(offset, offset + 3))).toBe(eyes);
+          expect(rgb(male.data.subarray(offset, offset + 3))).toBe(rgb(TEMPLATE_PALETTE.skin));
+        }
+      }
     }
-    // From the front: narrower shoulders than the male build's, and hips wider than the female waist.
-    const [male, female] = ['male', 'female'].map((gender) => generator.paintFrameLayers('down', standing, { gender }).body);
-    const shoulderRow = firstRowWith(female, rgb(TEMPLATE_PALETTE.clothes));
-    expect(widthOfRow(female, shoulderRow)).toBeLessThan(widthOfRow(male, shoulderRow));
-    expect(widthOfRow(female, shoulderRow + 9)).toBeGreaterThan(widthOfRow(female, shoulderRow + 3));
   });
 
   it('gives each hairstyle its own shape from every side, on either gender', () => {
-    for (const gender of Object.keys(generator.BUILDS)) {
+    for (const gender of Object.keys(generator.GENDERS)) {
       for (const direction of DIRECTIONS) {
         const masks = Object.keys(generator.HAIRSTYLES).map((hairstyle) => maskOf(generator.paintFrameLayers(direction, generator.POSES[0], { gender, hairstyle }).hair).join(''));
         expect(new Set(masks).size, `${gender}, ${direction}`).toBe(masks.length);
@@ -184,37 +188,12 @@ function rgb([r, g, b]) {
 
 /** Every gender with every hairstyle, as the generator names them. */
 function everyPairing() {
-  return Object.keys(generator.BUILDS).flatMap((gender) => Object.keys(generator.HAIRSTYLES).map((hairstyle) => ({ gender, hairstyle })));
+  return Object.keys(generator.GENDERS).flatMap((gender) => Object.keys(generator.HAIRSTYLES).map((hairstyle) => ({ gender, hairstyle })));
 }
 
 /** Which pixels of a canvas are painted, row by row. */
 function maskOf(canvas) {
   return Array.from({ length: canvas.height }, (_, y) => Array.from({ length: canvas.width }, (_, x) => (canvas.data[(y * canvas.width + x) * 4 + 3] === 255 ? '#' : '.')).join(''));
-}
-
-/** How many pixels of one row are painted. */
-function widthOfRow(canvas, row) {
-  return [...maskOf(canvas)[row]].filter((pixel) => pixel === '#').length;
-}
-
-/** The first row holding a pixel of `color`. */
-function firstRowWith(canvas, color) {
-  for (let y = 0; y < canvas.height; y += 1) {
-    for (let x = 0; x < canvas.width; x += 1) {
-      const offset = (y * canvas.width + x) * 4;
-      if (canvas.data[offset + 3] === 255 && rgb(canvas.data.subarray(offset, offset + 3)) === color) return y;
-    }
-  }
-  return -1;
-}
-
-/** How many painted pixels of a canvas are `color`. */
-function countOf(canvas, color) {
-  let count = 0;
-  for (let offset = 0; offset < canvas.data.length; offset += 4) {
-    if (canvas.data[offset + 3] === 255 && rgb(canvas.data.subarray(offset, offset + 3)) === color) count += 1;
-  }
-  return count;
 }
 
 function paintedColors(canvas) {
