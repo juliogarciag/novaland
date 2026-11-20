@@ -44,43 +44,57 @@ const TRUNK_PIXELS = 8;
 
 /**
  * One entry per frame. `clumps` are the leaf clumps of the canopy as circles
- * in frame pixels; `trunkColumn` is the left column of the trunk;
- * `seed` scatters the leaf texture so no two variants share it.
+ * in frame pixels: a crown on top and a wide, flat skirt of clumps at the
+ * bottom that hangs out past the crown on both sides, so the canopy is a
+ * broad dome over the trunk rather than a ball narrowing into it.
+ * `trunkColumn` is the left column of the trunk; `seed` scatters the leaf
+ * texture and the tufts round the rim so no two variants share them.
  */
 const TREE_VARIANTS = [
   {
     seed: 11,
     trunkColumn: 20,
     clumps: [
-      { x: 23, y: 16, radius: 14 },
-      { x: 14, y: 27, radius: 12 },
-      { x: 33, y: 27, radius: 12 },
-      { x: 24, y: 33, radius: 12 },
+      { x: 24, y: 14, radius: 11 },
+      { x: 15, y: 22, radius: 10 },
+      { x: 33, y: 22, radius: 10 },
+      { x: 10, y: 33, radius: 8.5 },
+      { x: 38, y: 33, radius: 8.5 },
+      { x: 24, y: 30, radius: 12 },
     ],
   },
   {
     seed: 23,
     trunkColumn: 20,
     clumps: [
-      { x: 24, y: 13, radius: 11 },
-      { x: 16, y: 21, radius: 12 },
-      { x: 31, y: 22, radius: 13 },
-      { x: 20, y: 33, radius: 12 },
-      { x: 30, y: 34, radius: 10 },
+      { x: 21, y: 12, radius: 9.5 },
+      { x: 30, y: 16, radius: 10 },
+      { x: 14, y: 24, radius: 10 },
+      { x: 9, y: 34, radius: 7.5 },
+      { x: 37, y: 31, radius: 9.5 },
+      { x: 23, y: 31, radius: 12 },
     ],
   },
   {
     seed: 37,
     trunkColumn: 20,
     clumps: [
-      { x: 20, y: 15, radius: 12 },
-      { x: 31, y: 17, radius: 11 },
-      { x: 13, y: 28, radius: 11 },
-      { x: 34, y: 29, radius: 12 },
-      { x: 24, y: 31, radius: 13 },
+      { x: 25, y: 11, radius: 9 },
+      { x: 17, y: 19, radius: 10.5 },
+      { x: 33, y: 21, radius: 10 },
+      { x: 11, y: 31, radius: 9 },
+      { x: 39, y: 34, radius: 7.5 },
+      { x: 25, y: 31, radius: 11.5 },
     ],
   },
 ];
+
+/** Small clumps set round the rim of every canopy, so its outline is a run of leafy bumps instead of a few smooth arcs. */
+const RIM_TUFTS = 22;
+const RIM_TUFT_RADIUS = { smallest: 3, largest: 4.5 };
+
+/** How far up from the canopy's lowest row its underside is in shade, in pixels. */
+const UNDERSIDE_PIXELS = 10;
 
 export const TREE_VARIANT_COUNT = TREE_VARIANTS.length;
 
@@ -95,8 +109,19 @@ function paintTree(variant) {
   const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   paintGroundShadow(frame);
   paintTrunk(frame, variant);
+  shadeTrunkUnderCanopy(frame, variant);
   paintCanopy(frame, variant);
   return frame;
+}
+
+/** The canopy's shadow on the trunk: the few rows of bark just under the leaves are in shade, darkest at the top. */
+function shadeTrunkUnderCanopy(frame, { clumps, trunkColumn }) {
+  const firstRow = Math.floor(canopyBottom(clumps));
+  for (let step = 0; step < 4; step += 1) {
+    for (let x = trunkColumn; x < trunkColumn + TRUNK_PIXELS; x += 1) {
+      if (step < 2 || x >= trunkColumn + 2) pixel(frame, x, firstRow + step, step === 0 ? COLORS.trunkEdge : COLORS.trunkShade);
+    }
+  }
 }
 
 /** A soft dark ellipse on the ground around the trunk's foot. */
@@ -156,11 +181,14 @@ function trunkTone(column) {
  * Every pixel inside a clump belongs to the clump that bulges most there
  * (the one whose centre it is relatively closest to) and takes its tone from
  * where it sits on that clump: towards the top-left is lit, towards the
- * bottom-right is in shade. A scattered half-step of noise breaks the bands
- * into leaves. Pixels on the seam under another clump go dark, which is what
- * separates the clumps from each other.
+ * bottom-right is in shade. The whole canopy is lit from above too, so its
+ * underside darkens towards the trunk. A scattered half-step of noise breaks
+ * the bands into leaves. Pixels on the seam under another clump go dark,
+ * which is what separates the clumps from each other.
  */
-function paintCanopy(frame, { clumps, seed }) {
+function paintCanopy(frame, { clumps: mainClumps, seed }) {
+  const clumps = [...mainClumps, ...rimTufts(mainClumps, seed)];
+  const bottom = canopyBottom(mainClumps);
   const leaf = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   for (let y = 0; y < FRAME_HEIGHT; y += 1) {
     for (let x = 0; x < FRAME_WIDTH; x += 1) {
@@ -168,14 +196,42 @@ function paintCanopy(frame, { clumps, seed }) {
       if (!owner) continue;
       const { clump, bulge } = owner;
       const towardsLight = (-(x + 0.5 - clump.x) * 0.55 - (y + 0.5 - clump.y) * 0.85) / clump.radius;
+      const underside = Math.min(1, Math.max(0, (y - (bottom - UNDERSIDE_PIXELS)) / UNDERSIDE_PIXELS)) * 0.7;
       // Leaves are two pixels across, with a little grain of their own: noise on single pixels would read as sand.
       const scatter = (noise(Math.floor(x / 2), Math.floor(y / 2), seed) - 0.5) * 0.4 + (noise(x, y, seed + 1) - 0.5) * 0.15;
-      const light = towardsLight + scatter + (bulge < 0.22 && towardsLight < 0.2 ? -0.5 : 0);
+      const light = towardsLight - underside + scatter + (bulge < 0.22 && towardsLight < 0.2 ? -0.5 : 0);
       pixel(leaf, x, y, canopyTone(light));
     }
   }
   outline(leaf, COLORS.canopyEdge);
   blitOpaque(frame, leaf);
+}
+
+/** The lowest row any of these clumps reaches. */
+function canopyBottom(clumps) {
+  return Math.max(...clumps.map((clump) => clump.y + clump.radius));
+}
+
+/**
+ * Small clumps round the rim: walking round the canopy's middle, one every
+ * so many degrees, each set where the canopy ends in that direction and a
+ * little inside it, so half of it bulges out. None hangs below the canopy's
+ * lowest row (the trunk stays clear) or leaves the frame.
+ */
+function rimTufts(clumps, seed) {
+  const centre = { x: FRAME_WIDTH / 2, y: clumps.reduce((sum, clump) => sum + clump.y, 0) / clumps.length };
+  const bottom = canopyBottom(clumps);
+  const tufts = [];
+  for (let index = 0; index < RIM_TUFTS; index += 1) {
+    const angle = ((index + noise(index, 0, seed + 3) * 0.6) / RIM_TUFTS) * Math.PI * 2;
+    let reach = 0;
+    while (clumpAt(clumps, centre.x + Math.cos(angle) * (reach + 1), centre.y + Math.sin(angle) * (reach + 1))) reach += 1;
+    const radius = RIM_TUFT_RADIUS.smallest + noise(index, 1, seed + 3) * (RIM_TUFT_RADIUS.largest - RIM_TUFT_RADIUS.smallest);
+    const tuft = { x: centre.x + Math.cos(angle) * (reach - radius * 0.4), y: centre.y + Math.sin(angle) * (reach - radius * 0.4), radius };
+    const inFrame = tuft.x - tuft.radius >= 1 && tuft.x + tuft.radius <= FRAME_WIDTH - 1 && tuft.y - tuft.radius >= 1;
+    if (inFrame && tuft.y + tuft.radius <= bottom) tufts.push(tuft);
+  }
+  return tufts;
 }
 
 /** The clump covering this pixel that bulges most there, or undefined outside the canopy. `bulge` is 1 at its centre, 0 at its rim. */

@@ -1497,7 +1497,7 @@
     {
       "name": "holding D walks the player east and its name goes with it",
       "pass": true,
-      "details": "name from x 208 to 349.332275390625 world px"
+      "details": "name from x 208 to 365.33203125 world px"
     },
     {
       "name": "the nearest lake is drawn in the ground, coast and all",

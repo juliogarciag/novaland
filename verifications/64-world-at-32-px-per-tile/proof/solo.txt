@@ -12,7 +12,7 @@ PASS  1280x800: rocks stand 1 x 1.25 m, as before  (1 x 1.25 m, 19 drawn, sheet 
 PASS  1280x800: players stand 1 x 1.5 m, as before  (1 x 1.5 m, 1 drawn, sheet scaled 2x)
 PASS  1280x800: the name is lettered as big against the world as before and sits 0.0625 m above the head  (letter pixel 2 device px (2 expected, 2 before), 20 device px tall, gap 0.0625 m)
 PASS  1280x800: the minimap paints the terrain around the player  (12 chunks, 2 marks, 160x160 css px)
-PASS  holding D walks the player east and its name goes with it  (name from x 208 to 349.332275390625 world px)
+PASS  holding D walks the player east and its name goes with it  (name from x 208 to 365.33203125 world px)
 PASS  the nearest lake is drawn in the ground, coast and all  (water tile 28,16)
 PASS  1920x1080: a whole zoom showing at least 20 m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd  (1920 device px: zoom 3 (6 before), 96 device px per metre (96 before), 20.0 m across, 1x the world)
 PASS  1920x1080: trees stand 1.5 x 2 m, as before  (1.5 x 2 m, 1387 drawn, sheet scaled 1x)
