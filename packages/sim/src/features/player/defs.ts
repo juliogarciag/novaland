@@ -110,7 +110,11 @@ export const LOOK_PARTS: readonly LookPart[] = [...CHARACTER_PARTS, ...CHARACTER
 
 /** How many choices a look part has: swatches of a palette or entries of a shape list. */
 export function choiceCount(part: LookPart): number {
-  return part === 'body' || part === 'hairStyle' ? characterShapes[part].length : characterPalettes[part].length;
+  return isShapePart(part) ? characterShapes[part].length : characterPalettes[part].length;
+}
+
+function isShapePart(part: LookPart): part is CharacterShapePart {
+  return (CHARACTER_SHAPE_PARTS as readonly LookPart[]).includes(part);
 }
 
 /** A name is at most this many user-visible characters (grapheme clusters: an accented letter or an emoji counts once). */

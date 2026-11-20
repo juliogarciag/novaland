@@ -17,13 +17,15 @@
  *
  * Each frame is painted in two layers: the body (legs, torso, arms, the face
  * with its eyebrows) and the hair above it. The skull under the hair is
- * painted whole in skin, so any hair layer can go over it; the outline goes
- * around both layers together. Body types differ in build (shoulders, waist,
- * hips) and in lashes; hairstyles in the hair layer only.
+ * painted whole in skin, so any hairstyle (HAIRSTYLES) can go over it; the
+ * outline goes around both layers together. The eyebrows stay on the body,
+ * in the hair's shade. Body types (BODY_TYPES) differ in build (shoulders,
+ * waist, hips) and in lashes; the head sits in the same place on every one,
+ * so any hairstyle goes on any body.
  *
- * The head is drawn as stencils, one character per pixel (see STENCIL_KEYS),
- * so the art reads as it looks. Light comes from the left: every material is
- * darker on its right edge and the hair and shirt carry a highlight.
+ * Every part is drawn as a stencil, one character per pixel (see
+ * STENCIL_KEYS), so the art reads as it looks. Light comes from the left: every material is
+ * darker on its right edge and the hair and the shirt carry a highlight.
  *
  * Plain Node, no dependencies: the figure is painted into an RGBA buffer and
  * written as a PNG by the small encoder at the bottom.
@@ -58,7 +60,7 @@ export const FIXED_PALETTE = {
 
 /**
  * Colours the client swaps for a player's look. Each part has one colour a
- * player picks (`skin`, `hair`, `shirt`); the others are its shade and
+ * player picks (`skin`, `hair`, `clothes`); the others are its shade and
  * highlight, which the client derives from the picked colour. The template's
  * own shades are derived from its base colours the same way.
  */
@@ -68,9 +70,9 @@ export const TEMPLATE_PALETTE = {
   hair: [0x6b, 0x3e, 0x1e],
   hairShade: [0x50, 0x2f, 0x17],
   hairLight: [0x9a, 0x64, 0x3e],
-  shirt: [0x3b, 0x82, 0xf6],
-  shirtShade: [0x2c, 0x62, 0xb9],
-  shirtLight: [0x60, 0xb6, 0xff],
+  clothes: [0x3b, 0x82, 0xf6],
+  clothesShade: [0x2c, 0x62, 0xb9],
+  clothesLight: [0x60, 0xb6, 0xff],
 };
 
 /** The colour each stencil character paints; `.` leaves the pixel as it is. */
@@ -83,9 +85,9 @@ const STENCIL_KEYS = {
   h: 'hair',
   H: 'hairShade',
   l: 'hairLight',
-  c: 'shirt',
-  C: 'shirtShade',
-  L: 'shirtLight',
+  c: 'clothes',
+  C: 'clothesShade',
+  L: 'clothesLight',
   p: 'pants',
   P: 'pantsShade',
   o: 'shoe',
@@ -93,7 +95,7 @@ const STENCIL_KEYS = {
 };
 
 /** How the body is posed in each of the four frames of a row. `forwardLeg` is from the character's point of view. */
-export const POSES = [
+const POSES = [
   { bob: 0, forwardLeg: null },
   { bob: 0, forwardLeg: 'left' },
   { bob: -2, forwardLeg: null },
@@ -105,17 +107,20 @@ export const POSES = [
  * gives them, each with the sprite key its layer sheet is written under (the
  * `sheet` of the sim's entry; the generator's test checks they agree).
  */
-export const LAYER_SHEETS = {
+const LAYER_SHEETS = {
   body: { straight: 'player-body-straight', curvy: 'player-body-curvy' },
-  hairStyle: { short: 'player-hair-short', long: 'player-hair-long', 'tied back': 'player-hair-tied-back' },
+  hairstyle: { short: 'player-hair-short', long: 'player-hair-long', 'tied back': 'player-hair-tied-back' },
 };
 
-/** The whole sheet as RGBA bytes, rows top to bottom: a body type with a hairstyle, outlined together. The default is what `player.png` holds. */
-export function paintPlayerSheet({ body: bodyType = 'straight', hairStyle = 'short' } = {}) {
+/**
+ * The whole sheet as RGBA bytes, rows top to bottom: a body type wearing a
+ * hairstyle, outlined together. The default is what `player.png` holds.
+ */
+export function paintPlayerSheet({ body: bodyType = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      const { body, hair } = paintFrameLayers(direction, pose, { body: bodyType, hairStyle });
+      const { body, hair } = paintFrameLayers(direction, pose, { body: bodyType, hairstyle });
       const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
       blitOpaque(frame, body);
       blitOpaque(frame, hair);
@@ -126,71 +131,134 @@ export function paintPlayerSheet({ body: bodyType = 'straight', hairStyle = 'sho
   return sheet;
 }
 
-/** Last row of the figure. Its outline takes the row below; the rows under it stay clear. */
-const FEET_ROW = 43;
+/** Last row of the figure. Its outline takes the row below; the last two rows stay clear. */
+const FEET_ROW = 44;
 /** First column of the head stencils, which are 18 wide: the 16-pixel skull plus a column each side for a nose in profile. */
 const HEAD_LEFT = 7;
 
 /**
- * One frame's two layers, unoutlined, each the size of a frame: the body of
- * a body type, and the hair of a hairstyle that goes over it. Any hairstyle
- * goes on any body: the hair is placed by the head, which every body type
- * carries in the same place.
+ * One layer of every frame, unoutlined, in the sheet's layout: what a body
+ * type's sheet (`layer` 'body') or a hairstyle's sheet ('hair') holds. The
+ * client lays a hair sheet over a body sheet and outlines the two together.
  */
-export function paintFrameLayers(direction, pose, { body: bodyType = 'straight', hairStyle = 'short' } = {}) {
-  const build = BODY_TYPES[bodyType];
-  const hairStencils = HAIR_STYLES[hairStyle];
-  if (!build) throw new Error(`no body type '${bodyType}'`);
-  if (!hairStencils) throw new Error(`no hairstyle '${hairStyle}'`);
-  const colors = { ...FIXED_PALETTE, ...TEMPLATE_PALETTE };
-  const top = 3 + pose.bob; // first row of the head; the rows above hold the outline and a clear margin
-  const torsoTop = top + HEAD_STENCILS[direction].face.length + 1; // the neck sits on the row between head and torso
-  const body = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
-  paintLegs(body, colors, { direction, pose, top: torsoTop + TORSO.length });
-  paintTorsoAndArms(body, colors, { direction, pose, top: torsoTop, build });
-  paintStencil(body, colors, { rows: build.lashes ? withLashes(HEAD_STENCILS[direction].face, direction) : HEAD_STENCILS[direction].face, left: HEAD_LEFT, top });
-  const hair = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
-  paintStencil(hair, colors, { rows: hairStencils[direction], left: HEAD_LEFT, top });
-  return { body, hair };
-}
-
-/** One layer of every frame, unoutlined, in the sheet's layout: what a body type's or a hairstyle's sheet holds. The client lays a hair sheet over a body sheet and outlines the two together. */
-export function paintLayerSheet(layer, { body = 'straight', hairStyle = 'short' } = {}) {
+function paintLayerSheet(layer, { body = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      blit(sheet, paintFrameLayers(direction, pose, { body, hairStyle })[layer], column * FRAME_WIDTH, row * FRAME_HEIGHT);
+      blit(sheet, paintFrameLayers(direction, pose, { body, hairstyle })[layer], column * FRAME_WIDTH, row * FRAME_HEIGHT);
     });
   });
   return sheet;
 }
 
 /**
- * The head, 18 columns from HEAD_LEFT by 15 rows: a 16-wide skull with
- * stepped corners, a column clear on each side but where a profile's nose
- * sticks out. `face` is the skin and everything on it (eyebrows, eyes with a
- * shine, nose shade, mouth); `hair` goes over it.
+ * One frame's two layers, unoutlined, each the size of a frame: the body of
+ * `body` (a key of BODY_TYPES), and the hair of `hairstyle` (a key of
+ * HAIRSTYLES) that goes over it.
  */
-const HEAD_STENCILS = {
-  down: {
-    face: [
-      '....ssssssssss....',
-      '..ssssssssssssss..',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssbbbssssbbbssS.',
-      '.sssssssssssssssS.',
-      '.sssswesssswesssS.',
-      '.sssseesssseesssS.',
-      '.sssseesssseesssS.',
-      '.ssssssssSssssssS.',
-      '..ssssssSSsssssS..',
-      '....sssssssssS....',
-    ],
-    hair: [
+function paintFrameLayers(direction, pose, { body: bodyType = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+  const build = BODY_TYPES[bodyType];
+  if (!build) throw new Error(`no body type '${bodyType}'`);
+  if (!HAIRSTYLES[hairstyle]) throw new Error(`no hairstyle '${hairstyle}'`);
+  const colors = { ...FIXED_PALETTE, ...TEMPLATE_PALETTE };
+  // First row of the head. The passing pose lifts it by two; the rows above it still hold the outline and a clear row.
+  const top = 4 + pose.bob;
+  const torsoTop = top + FACE_STENCILS[direction].length + 1; // the neck sits on the row between head and torso
+  const body = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
+  paintLegs(body, colors, { direction, pose, top: torsoTop + TORSO.length });
+  paintTorsoAndArms(body, colors, { direction, pose, top: torsoTop, build });
+  paintStencil(body, colors, { rows: build.lashes ? withLashes(FACE_STENCILS[direction], direction) : FACE_STENCILS[direction], left: HEAD_LEFT, top });
+  const hair = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
+  paintStencil(hair, colors, { rows: HAIRSTYLES[hairstyle][direction], left: HEAD_LEFT, top });
+  return { body, hair };
+}
+
+/**
+ * The face, 18 columns from HEAD_LEFT by 15 rows: a 16-wide skull with
+ * stepped corners, a column clear on each side but where a profile's nose
+ * sticks out, painted whole in skin with everything on it (eyebrows, eyes
+ * with a shine, nose shade, mouth). A hairstyle goes over it.
+ */
+const FACE_STENCILS = {
+  down: [
+    '....ssssssssss....',
+    '..ssssssssssssss..',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssbbbssssbbbssS.',
+    '.sssssssssssssssS.',
+    '.sssswesssswesssS.',
+    '.sssseesssseesssS.',
+    '.sssseesssseesssS.',
+    '.ssssssssSssssssS.',
+    '..ssssssSSsssssS..',
+    '....sssssssssS....',
+  ],
+  up: [
+    '....ssssssssss....',
+    '..ssssssssssssss..',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '..sssssssssssssS..',
+    '....sssssssssS....',
+  ],
+  left: [
+    '....ssssssssss....',
+    '..ssssssssssssss..',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.ssbbbssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sswesssssssssssS.',
+    '.sseesssssssssssS.',
+    'ssseesssssssssssS.',
+    '.SssssssssssssssS.',
+    '..ssSSsssssssssS..',
+    '....sssssssssS....',
+  ],
+  right: [
+    '....ssssssssss....',
+    '..ssssssssssssss..',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssbbbsS.',
+    '.sssssssssssssssS.',
+    '.sssssssssssswesS.',
+    '.sssssssssssseesS.',
+    '.sssssssssssseessS',
+    '.sssssssssssssssS.',
+    '..ssssssssssSSsS..',
+    '....sssssssssS....',
+  ],
+};
+
+/**
+ * Hairstyles: for each direction, rows in the frame of FACE_STENCILS painted
+ * on the hair layer. A new hairstyle is a new entry; the sheet wears
+ * `PLAYER_HAIRSTYLE`. Hair may stand past the skull (the outline goes around
+ * it), within the frame's clear margin.
+ */
+const HAIRSTYLES = {
+  short: {
+    down: [
       '....llllhhhhhH....',
       '..hllllhhhhhhhhH..',
       '.hhhhhhhhhhhhhhhH.',
@@ -207,26 +275,7 @@ const HEAD_STENCILS = {
       '..................',
       '..................',
     ],
-  },
-  up: {
-    face: [
-      '....ssssssssss....',
-      '..ssssssssssssss..',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '..sssssssssssssS..',
-      '....sssssssssS....',
-    ],
-    hair: [
+    up: [
       '....llllhhhhhH....',
       '..hllllhhhhhhhhH..',
       '.hhhhhhhhhhhhhhhH.',
@@ -243,26 +292,7 @@ const HEAD_STENCILS = {
       '..hhhhhhhhhhhhhH..',
       '....hh.hhh.hhH....',
     ],
-  },
-  left: {
-    face: [
-      '....ssssssssss....',
-      '..ssssssssssssss..',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.ssbbbssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sswesssssssssssS.',
-      '.sseesssssssssssS.',
-      'ssseesssssssssssS.',
-      '.SssssssssssssssS.',
-      '..ssSSsssssssssS..',
-      '....sssssssssS....',
-    ],
-    hair: [
+    left: [
       '....llllhhhhhH....',
       '..hllllhhhhhhhhH..',
       '.hhhhhhhhhhhhhhhH.',
@@ -279,26 +309,7 @@ const HEAD_STENCILS = {
       '.........hhhhhhH..',
       '.........hhhhH....',
     ],
-  },
-  right: {
-    face: [
-      '....ssssssssss....',
-      '..ssssssssssssss..',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssbbbsS.',
-      '.sssssssssssssssS.',
-      '.sssssssssssswesS.',
-      '.sssssssssssseesS.',
-      '.sssssssssssseessS',
-      '.sssssssssssssssS.',
-      '..ssssssssssSSsS..',
-      '....sssssssssS....',
-    ],
-    hair: [
+    right: [
       '....llllhhhhhH....',
       '..hllllhhhhhhhhH..',
       '.hhhhhhhhhhhhhhhH.',
@@ -319,8 +330,109 @@ const HEAD_STENCILS = {
 };
 
 /**
+ * The mirror of a profile's hair, for the other profile. A row the same
+ * shape both ways is kept as it is, highlights included (the light comes from
+ * the left in both). Any other row is reversed and shaded again: plain hair,
+ * with the shade on the right end of every run.
+ */
+function mirrored(rows) {
+  return rows.map((row) => {
+    const mask = [...row].map((character) => character !== '.');
+    if (mask.every((painted, index) => painted === mask[mask.length - 1 - index])) return row;
+    const flipped = [...row].reverse().map((character) => (character === '.' ? '.' : 'h'));
+    return flipped.map((character, index) => (character === 'h' && flipped[index + 1] !== 'h' ? 'H' : character)).join('');
+  });
+}
+
+/** The crown every hairstyle shares: the top of the head, as the short hair has it. */
+const CROWN = HAIRSTYLES.short.down.slice(0, 5);
+
+/** Long hair in profile: the short hair's back of the head, falling on down the back. */
+const LONG_HAIR_LEFT = [
+  ...HAIRSTYLES.short.left,
+  '..........hhhhhH..',
+  '..........hhhhhH..',
+  '..........hhhhhH..',
+  '..........hhhhhH..',
+  '..........hhhhhH..',
+  '..........hh.hH...',
+];
+
+/** Hair tied back, in profile: a hairline swept back from the brow and a tail down the nape. */
+const TIED_BACK_HAIR_LEFT = [
+  ...CROWN,
+  '..hhhhhhhhhhhhhhH.',
+  '....hhhhhhhhhhhhH.',
+  '.......hhhhhhhhhH.',
+  '..........hhhhhhhH',
+  '...........hhhhhhH',
+  '............hhhhhH',
+  '............hhhhhH',
+  '.............hhhhH',
+  '..............hhhH',
+  '..............hhhH',
+  '...............hhH',
+  '...............hH.',
+  '...............hH.',
+  '...............hH.',
+  '................H.',
+];
+
+/** Long hair: framing the face, over the shoulders from the front, down the back from behind. */
+HAIRSTYLES.long = {
+  down: [
+    ...HAIRSTYLES.short.down.slice(0, 7),
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hh............hH.',
+    '.h..............H.',
+  ],
+  up: [
+    ...HAIRSTYLES.short.up.slice(0, 14),
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '...hhhhhhhhhhhH...',
+    '....hh.hhh.hhH....',
+  ],
+  left: LONG_HAIR_LEFT,
+  right: mirrored(LONG_HAIR_LEFT),
+};
+
+/** Hair tied back: a high hairline from the front, a band and a tail from behind and in profile. */
+HAIRSTYLES['tied back'] = {
+  down: [...CROWN, '.hh............hH.', '.h..............H.', '.h..............H.'],
+  up: [
+    ...HAIRSTYLES.short.up.slice(0, 13),
+    '....hhhHHHhhhH....',
+    '.......hhH........',
+    '.......hhH........',
+    '.......hhH........',
+    '.......hhH........',
+    '........hH........',
+    '........H.........',
+  ],
+  left: TIED_BACK_HAIR_LEFT,
+  right: mirrored(TIED_BACK_HAIR_LEFT),
+};
+const PLAYER_HAIRSTYLE = 'short';
+
+/**
  * Lashes: one pixel of the eyes' colour flicking up from the outer corner of
- * each eye, on the row above it. Coordinates are in the head stencil.
+ * each eye, on the row above it, as columns and rows of FACE_STENCILS.
  */
 const LASHES = {
   down: [
@@ -338,109 +450,6 @@ function withLashes(face, direction) {
   return rows.map((row) => row.join(''));
 }
 
-/**
- * The mirror of a profile's hair, for the other profile. A row the same
- * shape both ways is kept as it is, highlights included (the light comes from
- * the left in both). Any other row is reversed and shaded again: plain hair,
- * with the shade on the right end of every run.
- */
-function mirrored(rows) {
-  return rows.map((row) => {
-    const mask = [...row].map((character) => character !== '.');
-    if (mask.every((painted, index) => painted === mask[mask.length - 1 - index])) return row;
-    const flipped = [...row].reverse().map((character) => (character === '.' ? '.' : 'h'));
-    return flipped.map((character, index) => (character === 'h' && flipped[index + 1] !== 'h' ? 'H' : character)).join('');
-  });
-}
-
-/** The crown every hairstyle shares: the top of the head, as the short hair has it. */
-const CROWN = HEAD_STENCILS.down.hair.slice(0, 5);
-
-const LONG_LEFT = [
-  ...HEAD_STENCILS.left.hair,
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hhhhhH..',
-  '..........hh.hH...',
-];
-
-const TIED_BACK_LEFT = [
-  ...CROWN,
-  '..hhhhhhhhhhhhhhH.',
-  '....hhhhhhhhhhhhH.',
-  '.......hhhhhhhhhH.',
-  '..........hhhhhhhH',
-  '...........hhhhhhH',
-  '............hhhhhH',
-  '............hhhhhH',
-  '.............hhhhH',
-  '..............hhhH',
-  '..............hhhH',
-  '...............hhH',
-  '...............hH.',
-  '...............hH.',
-  '...............hH.',
-  '................H.',
-]
-
-/**
- * The hair of each hairstyle, by direction: stencils from HEAD_LEFT and the
- * head's first row, like the head's, that may run below the head (over the
- * shoulders and the back). Short is the hair #65 drew.
- */
-const HAIR_STYLES = {
-  short: { down: HEAD_STENCILS.down.hair, up: HEAD_STENCILS.up.hair, left: HEAD_STENCILS.left.hair, right: HEAD_STENCILS.right.hair },
-  long: {
-    down: [
-      ...HEAD_STENCILS.down.hair.slice(0, 7),
-      '.hh............hH.',
-      '.hh............hH.',
-      '.hh............hH.',
-      '.hh............hH.',
-      '.hh............hH.',
-      '.hh............hH.',
-      '.hhh..........hhH.',
-      '.hhh..........hhH.',
-      '.hhh..........hhH.',
-      '.hhh..........hhH.',
-      '.hhh..........hhH.',
-      '.hhh..........hhH.',
-      '.hh............hH.',
-      '.h..............H.',
-    ],
-    up: [
-      ...HEAD_STENCILS.up.hair.slice(0, 14),
-      '..hhhhhhhhhhhhhH..',
-      '..hhhhhhhhhhhhhH..',
-      '..hhhhhhhhhhhhhH..',
-      '..hhhhhhhhhhhhhH..',
-      '..hhhhhhhhhhhhhH..',
-      '..hhhhhhhhhhhhhH..',
-      '...hhhhhhhhhhhH...',
-      '....hh.hhh.hhH....',
-    ],
-    left: LONG_LEFT,
-    right: mirrored(LONG_LEFT),
-  },
-  'tied back': {
-    down: [...CROWN, '.hh............hH.', '.h..............H.', '.h..............H.'],
-    up: [
-      ...HEAD_STENCILS.up.hair.slice(0, 13),
-      '....hhhHHHhhhH....',
-      '.......hhH........',
-      '.......hhH........',
-      '.......hhH........',
-      '.......hhH........',
-      '........hH........',
-      '........H.........',
-    ],
-    left: TIED_BACK_LEFT,
-    right: mirrored(TIED_BACK_LEFT),
-  },
-};
-
 /** The neck, centred under the head on the row above the torso. */
 const NECK = ['sssS'];
 const NECK_LEFT = 14;
@@ -455,11 +464,16 @@ const TORSO = [
 /** The torso from behind and in profile: no neckline. */
 const TORSO_PLAIN = [...Array.from({ length: 10 }, () => 'LccccccccccC'), 'CCCCCCCCCCCC'];
 const TORSO_LEFT = 10;
+const TORSO_WIDTH = 12;
+const ARM_WIDTH = 2;
+/** Arms hang beside the torso in front and back views; in profile the near arm hangs over its middle. */
+const ARM_COLUMNS = { screenLeft: TORSO_LEFT - ARM_WIDTH, screenRight: TORSO_LEFT + TORSO_WIDTH, profile: TORSO_LEFT + TORSO_WIDTH / 2 - ARM_WIDTH / 2 };
 
 /**
- * The curvy torso, 14 wide from CURVY_TORSO_LEFT (a column wider than the
- * straight one on each side): shoulders two pixels narrower on each side, a
- * waist narrower still, and hips that flare past the hands.
+ * The curvy torso, a column wider than the straight one on each side, from
+ * CURVY_TORSO_LEFT: shoulders two pixels narrower on each side, a waist
+ * narrower still, and hips that flare past the hands. Its middle is the
+ * straight torso's, so the neck, the legs and the profile arm stay put.
  */
 const CURVY_TORSO = [
   '...LcsssScC...',
@@ -475,18 +489,26 @@ const CURVY_TORSO = [
   'CCCCCCCCCCCCCC',
 ];
 const CURVY_TORSO_PLAIN = ['...LccccccC...', ...CURVY_TORSO.slice(1)];
-const CURVY_TORSO_LEFT = 9;
+const CURVY_TORSO_LEFT = TORSO_LEFT - 1;
+/** Where the curvy shoulders start and end: the arms hang against them. */
+const CURVY_SHOULDERS = { left: CURVY_TORSO_LEFT + 3, width: 8 };
 
 /**
  * The builds a player picks from: the torso from the front and from
- * elsewhere and its first column, where the arms hang (left columns, front
- * then back view: they sit against the shoulders), and whether the face has
- * lashes.
+ * elsewhere and its first column, the columns the arms hang at in front and
+ * back views (against the shoulders), and whether the face has lashes.
  */
 const BODY_TYPES = {
-  straight: { torso: TORSO, torsoPlain: TORSO_PLAIN, torsoLeft: TORSO_LEFT, arms: { down: [22, 8], up: [8, 22] }, lashes: false },
-  curvy: { torso: CURVY_TORSO, torsoPlain: CURVY_TORSO_PLAIN, torsoLeft: CURVY_TORSO_LEFT, arms: { down: [20, 10], up: [10, 20] }, lashes: true },
+  straight: { torso: TORSO, torsoPlain: TORSO_PLAIN, torsoLeft: TORSO_LEFT, armColumns: ARM_COLUMNS, lashes: false },
+  curvy: {
+    torso: CURVY_TORSO,
+    torsoPlain: CURVY_TORSO_PLAIN,
+    torsoLeft: CURVY_TORSO_LEFT,
+    armColumns: { screenLeft: CURVY_SHOULDERS.left - ARM_WIDTH, screenRight: CURVY_SHOULDERS.left + CURVY_SHOULDERS.width, profile: ARM_COLUMNS.profile },
+    lashes: true,
+  },
 };
+const PLAYER_BODY = 'straight';
 
 /** An arm, 2 wide: a short sleeve over the skin of the forearm and hand. In profile the sleeve is in shade, so it reads over the torso. */
 const ARM = ['cC', 'cC', 'cC', 'cC', 'sS', 'sS', 'sS', 'sS', 'sS', 'sS'];
@@ -495,51 +517,60 @@ const ARM_IN_PROFILE = ['CC', 'CC', 'CC', 'CC', 'sS', 'sS', 'sS', 'sS', 'sS', 's
 function paintTorsoAndArms(canvas, colors, { direction, pose, top, build }) {
   paintStencil(canvas, colors, { rows: NECK, left: NECK_LEFT, top: top - 1 });
   paintStencil(canvas, colors, { rows: direction === 'down' ? build.torso : build.torsoPlain, left: build.torsoLeft, top });
+  const armColumns = build.armColumns;
   const swing = 2 * (pose.forwardLeg === 'left' ? 1 : pose.forwardLeg === 'right' ? -1 : 0);
   if (direction === 'down' || direction === 'up') {
     // The arm opposite the forward leg swings forward (drawn lower), the other one back (higher).
-    const [leftArm, rightArm] = build.arms[direction];
+    // Facing the viewer, the character's left arm is on the screen's right.
+    const [leftArm, rightArm] = direction === 'down' ? [armColumns.screenRight, armColumns.screenLeft] : [armColumns.screenLeft, armColumns.screenRight];
     paintStencil(canvas, colors, { rows: ARM, left: leftArm, top: top - swing });
     paintStencil(canvas, colors, { rows: ARM, left: rightArm, top: top + swing });
   } else {
     // In profile only the near arm shows, swinging along the walk.
-    const left = direction === 'left' ? 14 - swing : 16 + swing;
+    const left = armColumns.profile + (direction === 'left' ? -swing : swing);
     paintStencil(canvas, colors, { rows: ARM_IN_PROFILE, left, top });
   }
 }
 
+const LEG_WIDTH = 5;
+const SHOE_ROWS = 3;
+/** The two legs side by side under the middle of the torso in front and back views; in profile, where each stands before the walk spreads them. */
+const LEG_COLUMNS = {
+  screenLeft: TORSO_LEFT + TORSO_WIDTH / 2 - LEG_WIDTH,
+  screenRight: TORSO_LEFT + TORSO_WIDTH / 2,
+  profileFar: TORSO_LEFT + TORSO_WIDTH / 2 - 2,
+  profileNear: TORSO_LEFT + TORSO_WIDTH / 2 - 4,
+};
+
 function paintLegs(canvas, colors, { direction, pose, top }) {
   if (direction === 'down' || direction === 'up') {
-    // Front and back view: the lifted leg is two pixels shorter, the planted one keeps its length.
-    const [leftColumn, rightColumn] = direction === 'down' ? [16, 11] : [11, 16];
-    paintLeg(canvas, colors, { left: leftColumn, top, lift: pose.forwardLeg === 'right' ? 2 : 0, far: false, toe: 0 });
-    paintLeg(canvas, colors, { left: rightColumn, top, lift: pose.forwardLeg === 'left' ? 2 : 0, far: false, toe: 0 });
+    // Front and back view: the leg behind the forward one is lifted two pixels, so it is shorter; the forward leg is planted and keeps its length.
+    const [leftColumn, rightColumn] = direction === 'down' ? [LEG_COLUMNS.screenRight, LEG_COLUMNS.screenLeft] : [LEG_COLUMNS.screenLeft, LEG_COLUMNS.screenRight];
+    paintLeg(canvas, colors, { left: leftColumn, top, lift: pose.forwardLeg === 'right' ? 2 : 0, isFarLeg: false, toeDirection: 0 });
+    paintLeg(canvas, colors, { left: rightColumn, top, lift: pose.forwardLeg === 'left' ? 2 : 0, isFarLeg: false, toeDirection: 0 });
     return;
   }
   // Profile: the legs spread apart along the walk and the shoes point ahead. The far leg is drawn first and darker.
   const ahead = direction === 'left' ? -1 : 1;
   const spread = 2 * (pose.forwardLeg === null ? 0 : pose.forwardLeg === 'left' ? ahead : -ahead);
-  paintLeg(canvas, colors, { left: 14 - spread, top, lift: 0, far: true, toe: ahead });
-  paintLeg(canvas, colors, { left: 12 + spread, top, lift: 0, far: false, toe: ahead });
+  paintLeg(canvas, colors, { left: LEG_COLUMNS.profileFar - spread, top, lift: 0, isFarLeg: true, toeDirection: ahead });
+  paintLeg(canvas, colors, { left: LEG_COLUMNS.profileNear + spread, top, lift: 0, isFarLeg: false, toeDirection: ahead });
 }
-
-const LEG_WIDTH = 5;
-const SHOE_ROWS = 3;
 
 /**
  * A leg from `top` down to the feet row, `lift` pixels off the ground: pants
  * (shaded on the right; all shade for the far leg in profile), then a shoe
- * with a lighter top. `toe` (-1, 0, 1) is where the shoe's sole reaches past
- * the leg, one pixel, in profile.
+ * with a lighter top. `toeDirection` (-1 west, 1 east, 0 none) is where the
+ * shoe's sole reaches one pixel past the leg, in profile.
  */
-function paintLeg(canvas, colors, { left, top, lift, far, toe }) {
+function paintLeg(canvas, colors, { left, top, lift, isFarLeg, toeDirection }) {
   const bottom = FEET_ROW - lift;
-  const pantsRow = far ? 'P'.repeat(LEG_WIDTH) : `${'p'.repeat(LEG_WIDTH - 1)}P`;
+  const pantsRow = isFarLeg ? 'P'.repeat(LEG_WIDTH) : `${'p'.repeat(LEG_WIDTH - 1)}P`;
   const pants = Array.from({ length: bottom - SHOE_ROWS + 1 - top }, () => pantsRow);
   const shoe = [`${'q'.repeat(LEG_WIDTH - 1)}o`, ...Array.from({ length: SHOE_ROWS - 1 }, () => 'o'.repeat(LEG_WIDTH))];
   paintStencil(canvas, colors, { rows: [...pants, ...shoe], left, top });
-  if (toe === 0) return;
-  const toeColumn = toe < 0 ? left - 1 : left + LEG_WIDTH;
+  if (toeDirection === 0) return;
+  const toeColumn = toeDirection < 0 ? left - 1 : left + LEG_WIDTH;
   for (let row = bottom - (SHOE_ROWS - 2); row <= bottom; row += 1) pixel(canvas, toeColumn, row, colors.shoe);
 }
 
@@ -554,6 +585,8 @@ function paintStencil(canvas, colors, { rows, left, top }) {
     });
   });
 }
+
+export const __testing__ = { BODY_TYPES, HAIRSTYLES, LAYER_SHEETS, paintFrameLayers, paintLayerSheet, POSES };
 
 // ---- PNG encoder (8-bit RGBA, no filtering, one IDAT) ----
 
@@ -612,9 +645,10 @@ function concat(parts) {
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
 
+/** Writes the sheet into `directory` as `player.png` and returns its path. */
 /**
  * Writes the sheets into `directory` and returns their paths: `player.png`
- * (the first body type with the first hairstyle, outlined: what the def
+ * (the first body type wearing the first hairstyle, outlined: what the def
  * names, and what the client draws if it cannot lay the layers), then one
  * layer sheet per body type and per hairstyle.
  */
@@ -628,7 +662,7 @@ export function writePlayerSheet(directory) {
   return [
     write(PLAYER_SHEET_KEY, paintPlayerSheet()),
     ...Object.entries(LAYER_SHEETS.body).map(([body, key]) => write(key, paintLayerSheet('body', { body }))),
-    ...Object.entries(LAYER_SHEETS.hairStyle).map(([hairStyle, key]) => write(key, paintLayerSheet('hair', { hairStyle }))),
+    ...Object.entries(LAYER_SHEETS.hairstyle).map(([hairstyle, key]) => write(key, paintLayerSheet('hair', { hairstyle }))),
   ];
 }
 

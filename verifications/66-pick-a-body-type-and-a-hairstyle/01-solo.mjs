@@ -82,6 +82,9 @@ try {
   report.simShapes = simShapes;
   results.push(check("the creator's choices are the sim's lists, in order", ['body', 'hairStyle'].every((part) => simShapes[part].length === shapes[part].length && simShapes[part].every((shape, index) => shape.name === shapes[part][index].name)), JSON.stringify(simShapes)));
   results.push(check('the player enters the world with the body type and hairstyle picked', entered.character?.look.body === lastBody && entered.character?.look.hairStyle === lastHairStyle && entered.character?.name === 'Bea', JSON.stringify(entered.character)));
+  const layersLoaded = await page.evaluate(() => [...window.__novaland.characterShapes.body, ...window.__novaland.characterShapes.hairStyle].map((shape) => ({ sheet: shape.sheet, loaded: window.__novaland.game.textures.exists(shape.sheet) })));
+  report.layersLoaded = layersLoaded;
+  results.push(check('the game loaded every body and hair layer sheet, so looks are laid from layers, not the plain sheet', layersLoaded.every((layer) => layer.loaded), JSON.stringify(layersLoaded)));
   results.push(check('the renderer draws the player from a texture made for that look', entered.drawn?.textureKey?.endsWith(`/look/${lookKeyOf(entered.character.look)}`), entered.drawn?.textureKey));
   results.push(check('the browser remembers both choices', entered.remembered?.look?.body === lastBody && entered.remembered?.look?.hairStyle === lastHairStyle, JSON.stringify(entered.remembered)));
   await page.screenshot({ path: path.join(PROOF, 'entered.png') });

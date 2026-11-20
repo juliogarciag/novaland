@@ -35,10 +35,10 @@ function lookColors(look: CharacterLook): Record<TemplatePart, number> {
     skinShade: shadeOf(skin),
     hair,
     hairShade: shadeOf(hair),
-    hairLight: lightOf(hair),
+    hairLight: highlightOf(hair),
     clothes,
     clothesShade: shadeOf(clothes),
-    clothesLight: lightOf(clothes),
+    clothesLight: highlightOf(clothes),
   };
 }
 
@@ -47,11 +47,12 @@ function shadeOf(color: number): number {
   return mapChannels(color, (channel) => channel * SHADE);
 }
 
-/** A lighter tint of a colour, channel by channel, clamped to white. */
-function lightOf(color: number): number {
+/** The highlight of a colour: lighter, channel by channel, clamped to white. */
+function highlightOf(color: number): number {
   return mapChannels(color, (channel) => Math.min(255, channel * LIGHT.gain + 255 * LIGHT.lift));
 }
 
+/** A colour with `map` applied to each of its red, green and blue channels, rounded to a whole value. */
 function mapChannels(color: number, map: (channel: number) => number): number {
   const channel = (shift: number): number => Math.round(map((color >> shift) & 0xff)) << shift;
   return channel(16) | channel(8) | channel(0);
@@ -129,4 +130,4 @@ export function cssColor(color: number): string {
   return `#${color.toString(16).padStart(6, '0')}`;
 }
 
-export const __testing__ = { lightOf, lookColors, OUTLINE_COLOR, shadeOf, TEMPLATE_COLORS };
+export const __testing__ = { highlightOf, lookColors, OUTLINE_COLOR, shadeOf, TEMPLATE_COLORS };

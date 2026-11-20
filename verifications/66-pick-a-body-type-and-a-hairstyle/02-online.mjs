@@ -60,6 +60,8 @@ try {
   const beaIn = (characters) => characters?.find((character) => character.name === 'Bea');
   results.push(check("the server seats A with the body type and hairstyle A picked, and B's replica holds them", adaIn(seen?.fromB)?.look.body === madeByA.body && adaIn(seen?.fromB)?.look.hairStyle === madeByA.hairStyle, JSON.stringify(adaIn(seen?.fromB)?.look)));
   results.push(check("A's replica holds Bea's remembered body type and hairstyle", beaIn(seen?.fromA)?.look.body === BEA.look.body && beaIn(seen?.fromA)?.look.hairStyle === BEA.look.hairStyle, JSON.stringify(beaIn(seen?.fromA)?.look)));
+  const layersLoaded = await tabB.evaluate(() => [...window.__novaland.characterShapes.body, ...window.__novaland.characterShapes.hairStyle].every((shape) => window.__novaland.game.textures.exists(shape.sheet)));
+  results.push(check('the online client loaded every body and hair layer sheet', layersLoaded));
   results.push(check('each tab draws the other player from a texture made for that look', drawnAsItsLook(adaIn(seen?.fromB)) && drawnAsItsLook(beaIn(seen?.fromA)), `${adaIn(seen?.fromB)?.drawn} | ${beaIn(seen?.fromA)?.drawn}`));
   await tabA.screenshot({ path: path.join(PROOF, 'online-A.png') });
   await tabB.screenshot({ path: path.join(PROOF, 'online-B.png') });

@@ -236,7 +236,7 @@ describe('readRememberedCharacter', () => {
 });
 
 describe('sameCharacter', () => {
-  it('calls two characters the same when the name and every colour match', () => {
+  it('calls two characters the same when the name and every part of the look match', () => {
     expect(sameCharacter(ADA, { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } })).toBe(true);
   });
 
