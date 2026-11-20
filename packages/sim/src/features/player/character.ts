@@ -1,7 +1,7 @@
-import { CHARACTER_PARTS, characterPalettes, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS, type CharacterPart } from './defs';
+import { CHARACTER_PARTS, characterPalettes, characterShapes, choiceCount, LOOK_PARTS, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS, type LookPart } from './defs';
 
-/** Which swatch of each palette a character wears: indexes into `characterPalettes` (defs.ts). */
-export type CharacterLook = Readonly<Record<CharacterPart, number>>;
+/** Which swatch of each palette and which shape of each list a character wears: indexes into `characterPalettes` and `characterShapes` (defs.ts). */
+export type CharacterLook = Readonly<Record<LookPart, number>>;
 
 /** What a player chooses before entering the world: a look and the name drawn above their head. */
 export interface Character {
@@ -163,7 +163,7 @@ export function showsSomething(text: string): boolean {
 /**
  * The character behind an arbitrary value, or undefined when it is not one:
  * exactly a `name` that `readCharacterName` accepts and a `look` holding
- * exactly one in-range palette index per part. The result is a fresh object
+ * exactly one in-range index per part (`LOOK_PARTS`). The result is a fresh object
  * with the normalised name, so nothing of the value it was read from travels
  * on. This is the one rule for what a legal character is: the join handler,
  * the server's inbound gate and the creator screen all ask it. Never throws.
@@ -183,7 +183,7 @@ export function readCharacter(value: unknown): Character | undefined {
 
 /** True when two characters are the same name in the same look: nothing a player or the world could tell apart. */
 export function sameCharacter(one: Character, other: Character): boolean {
-  return one.name === other.name && CHARACTER_PARTS.every((part) => one.look[part] === other.look[part]);
+  return one.name === other.name && LOOK_PARTS.every((part) => one.look[part] === other.look[part]);
 }
 
 /**
@@ -199,6 +199,8 @@ export function guestCharacter(slot: number): Character {
       skin: seat % characterPalettes.skin.length,
       hair: (seat * 3 + 1) % characterPalettes.hair.length,
       clothes: seat % characterPalettes.clothes.length,
+      body: seat % characterShapes.body.length,
+      hairStyle: seat % characterShapes.hairStyle.length,
     },
   };
 }
@@ -208,16 +210,32 @@ export function codePointsOf(text: string): number[] {
   return Array.from(text, (character) => character.codePointAt(0) as number);
 }
 
-/** True when `index` picks a swatch of the palette for `part`. */
-export function isPaletteIndex(part: CharacterPart, index: unknown): index is number {
-  return typeof index === 'number' && Number.isInteger(index) && index >= 0 && index < characterPalettes[part].length;
+/**
+ * The character a browser remembered, or undefined when it is not one. A
+ * character remembered before body types and hairstyles existed (#66) has a
+ * look without `body` and `hairStyle`: it reads with the first entry of each,
+ * what every player wore then, instead of sending the player back to the
+ * creator. Anything else is judged by `readCharacter` as it is. Never throws.
+ */
+export function readRememberedCharacter(value: unknown): Character | undefined {
+  try {
+    if (!hasExactlyKeys(value, ['look', 'name']) || !hasExactlyKeys(value['look'], [...CHARACTER_PARTS].sort())) return readCharacter(value);
+    return readCharacter({ name: value['name'], look: { ...value['look'], body: 0, hairStyle: 0 } });
+  } catch {
+    return undefined;
+  }
+}
+
+/** True when `index` picks one of the choices for `part`: a swatch of a palette or a shape of a list. */
+export function isLookIndex(part: LookPart, index: unknown): index is number {
+  return typeof index === 'number' && Number.isInteger(index) && index >= 0 && index < choiceCount(part);
 }
 
 function readCharacterLook(value: unknown): CharacterLook | undefined {
-  if (!hasExactlyKeys(value, [...CHARACTER_PARTS].sort())) return undefined;
-  const { skin, hair, clothes } = value;
-  if (!isPaletteIndex('skin', skin) || !isPaletteIndex('hair', hair) || !isPaletteIndex('clothes', clothes)) return undefined;
-  return { skin, hair, clothes };
+  if (!hasExactlyKeys(value, [...LOOK_PARTS].sort())) return undefined;
+  const { skin, hair, clothes, body, hairStyle } = value;
+  if (!isLookIndex('skin', skin) || !isLookIndex('hair', hair) || !isLookIndex('clothes', clothes) || !isLookIndex('body', body) || !isLookIndex('hairStyle', hairStyle)) return undefined;
+  return { skin, hair, clothes, body, hairStyle };
 }
 
 /** True when `value` is a plain object whose own keys are exactly `sortedKeys`. */

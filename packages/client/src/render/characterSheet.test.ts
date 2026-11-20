@@ -4,7 +4,7 @@ import { __testing__, cssColor, lookKey, paintLook } from './characterSheet';
 
 describe('painting a look over the template sheet', () => {
   it('swaps each template colour for the look\'s and leaves every other pixel alone', () => {
-    const look = { skin: 4, hair: 6, clothes: 1 };
+    const look = { skin: 4, hair: 6, clothes: 1, body: 0, hairStyle: 0 };
     const outline = 0x1f1a17;
     const pixels = rgba([TEMPLATE_COLORS.skin, TEMPLATE_COLORS.hair, TEMPLATE_COLORS.clothes, TEMPLATE_COLORS.clothesShade, outline]);
     paintLook(pixels, look);
@@ -20,20 +20,20 @@ describe('painting a look over the template sheet', () => {
   it('does not repaint transparent pixels, whatever colour they carry', () => {
     const pixels = rgba([TEMPLATE_COLORS.skin]);
     pixels[3] = 0;
-    paintLook(pixels, { skin: 5, hair: 0, clothes: 0 });
+    paintLook(pixels, { skin: 5, hair: 0, clothes: 0, body: 0, hairStyle: 0 });
     expect(colorsOf(pixels)).toEqual([TEMPLATE_COLORS.skin]);
   });
 
   it('gives two looks different colours and different keys, and the same look the same key', () => {
-    const one = { skin: 0, hair: 0, clothes: 0 };
-    const other = { skin: 1, hair: 0, clothes: 0 };
+    const one = { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0 };
+    const other = { skin: 1, hair: 0, clothes: 0, body: 0, hairStyle: 0 };
     expect(lookColors(one)).not.toEqual(lookColors(other));
     expect(lookKey(one)).not.toBe(lookKey(other));
     expect(lookKey(one)).toBe(lookKey({ ...one }));
   });
 
   it('falls back to the template colours for an index outside a palette instead of failing in the draw loop', () => {
-    expect(lookColors({ skin: 99, hair: -1, clothes: 1.5 })).toEqual({ ...TEMPLATE_COLORS, clothesShade: shadeOf(TEMPLATE_COLORS.clothes) });
+    expect(lookColors({ skin: 99, hair: -1, clothes: 1.5, body: 0, hairStyle: 0 })).toEqual({ ...TEMPLATE_COLORS, clothesShade: shadeOf(TEMPLATE_COLORS.clothes) });
   });
 
   it('shades the clothes darker and writes colours the way CSS reads them', () => {

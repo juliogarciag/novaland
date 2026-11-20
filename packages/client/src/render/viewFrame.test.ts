@@ -15,7 +15,7 @@ describe('readViewFrame', () => {
 
   it('reads the character of each player: the name to draw above it and its look', async () => {
     const sim = await createSim({ seed: 1 });
-    const ada = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7 } };
+    const ada = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 0, hairStyle: 0 } };
     sim.step([{ type: 'player/join', slot: 0, character: ada }]);
     const frame = readViewFrame(sim);
     expect(frame.characters.get(frame.renderables[0]!.eid)).toEqual(ada);

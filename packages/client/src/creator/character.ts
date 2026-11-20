@@ -1,4 +1,4 @@
-import { characterPalettes, DefId, getDef, sameCharacter, type Character, type CharacterLook } from '@novaland/sim';
+import { characterPalettes, characterShapes, DefId, getDef, sameCharacter, type Character, type CharacterLook } from '@novaland/sim';
 import { spriteSheetUrl } from '../render/spriteUrl';
 import { changeCharacter, chooseCharacter, type PreviewSheet } from './creatorScreen';
 import { browserCharacterStorage, readRememberedCharacter, rememberCharacter } from './rememberedCharacter';
@@ -110,7 +110,13 @@ function playerPreviewSheet(): PreviewSheet {
 /** A suggestion for a first visit, so two new players rarely start out looking the same. Only a starting point: the player picks. */
 function randomLook(): CharacterLook {
   const randomIndexOf = (swatches: readonly unknown[]): number => Math.floor(Math.random() * swatches.length);
-  return { skin: randomIndexOf(characterPalettes.skin), hair: randomIndexOf(characterPalettes.hair), clothes: randomIndexOf(characterPalettes.clothes) };
+  return {
+    skin: randomIndexOf(characterPalettes.skin),
+    hair: randomIndexOf(characterPalettes.hair),
+    clothes: randomIndexOf(characterPalettes.clothes),
+    body: randomIndexOf(characterShapes.body),
+    hairStyle: randomIndexOf(characterShapes.hairStyle),
+  };
 }
 
 /**

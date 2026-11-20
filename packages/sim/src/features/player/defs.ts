@@ -73,6 +73,46 @@ export const characterPalettes = {
 export type CharacterPart = keyof typeof characterPalettes;
 export const CHARACTER_PARTS: readonly CharacterPart[] = ['skin', 'hair', 'clothes'];
 
+/** One shape a player may pick for a part of their character: a body type or a hairstyle. */
+export interface ShapeChoice {
+  readonly name: string;
+  /** The sheet the client draws this choice from, under `sprites/`: one per body type, one hair layer per hairstyle (ADR 0017). */
+  readonly sheet: string;
+}
+
+/**
+ * The shapes a player picks their character from: a body type and a
+ * hairstyle, two separate choices, so any hairstyle goes on any body (ADR
+ * 0017). A look holds an index into each. Indexes are forever, like the
+ * palettes': add a choice at the end, never reorder or remove one. The first
+ * entry of each is what a character remembered before these choices existed
+ * wears (`readRememberedCharacter`), so it must stay what players had then.
+ */
+export const characterShapes = {
+  body: [
+    { name: 'straight', sheet: 'player-body-straight' },
+    { name: 'curvy', sheet: 'player-body-curvy' },
+  ],
+  hairStyle: [
+    { name: 'short', sheet: 'player-hair-short' },
+    { name: 'long', sheet: 'player-hair-long' },
+    { name: 'tied back', sheet: 'player-hair-tied-back' },
+  ],
+} as const satisfies Record<string, readonly ShapeChoice[]>;
+
+/** The parts of a character a player shapes, in the order the creator offers them. */
+export type CharacterShapePart = keyof typeof characterShapes;
+export const CHARACTER_SHAPE_PARTS: readonly CharacterShapePart[] = ['body', 'hairStyle'];
+
+/** Every part of a look: the colours, then the shapes. */
+export type LookPart = CharacterPart | CharacterShapePart;
+export const LOOK_PARTS: readonly LookPart[] = [...CHARACTER_PARTS, ...CHARACTER_SHAPE_PARTS];
+
+/** How many choices a look part has: swatches of a palette or entries of a shape list. */
+export function choiceCount(part: LookPart): number {
+  return part === 'body' || part === 'hairStyle' ? characterShapes[part].length : characterPalettes[part].length;
+}
+
 /** A name is at most this many user-visible characters (grapheme clusters: an accented letter or an emoji counts once). */
 export const MAX_NAME_CHARACTERS = 20;
 /**

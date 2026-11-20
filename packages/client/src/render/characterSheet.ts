@@ -34,7 +34,7 @@ function shadeOf(color: number): number {
 
 /** One name per look, for texture and animation keys: two players with the same look share a texture. */
 export function lookKey(look: CharacterLook): string {
-  return `${look.skin}-${look.hair}-${look.clothes}`;
+  return `${look.skin}-${look.hair}-${look.clothes}-${look.body}-${look.hairStyle}`;
 }
 
 /**

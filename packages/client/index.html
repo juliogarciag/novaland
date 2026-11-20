@@ -29,12 +29,17 @@
       #creator input[type="text"][aria-invalid="true"] { border-color: #f87171; }
       #creator .creator-problem { margin: 0; min-height: 1.4em; max-width: 26em; color: #fca5a5; text-align: center; }
       #creator fieldset { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0; border: 0; width: 24em; max-width: 100%; }
-      #creator legend { float: left; width: 5em; padding: 0; }
+      #creator legend { float: left; width: 6em; padding: 0; }
       #creator .creator-swatch { position: relative; width: 28px; height: 28px; cursor: pointer; }
       #creator .creator-swatch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
       #creator .creator-swatch span { display: block; width: 100%; height: 100%; box-sizing: border-box; border: 2px solid #0b0f14; border-radius: 4px; outline: 1px solid #475569; }
       #creator .creator-swatch input:checked + span { outline: 3px solid #f8fafc; }
       #creator .creator-swatch input:focus-visible + span { outline: 3px solid #38bdf8; }
+      #creator .creator-shape { position: relative; cursor: pointer; }
+      #creator .creator-shape input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+      #creator .creator-shape span { display: block; padding: 4px 10px; border: 1px solid #475569; border-radius: 4px; background: #1e293b; }
+      #creator .creator-shape input:checked + span { color: #0b0f14; background: #e2e8f0; border-color: #e2e8f0; }
+      #creator .creator-shape input:focus-visible + span { outline: 3px solid #38bdf8; }
       #creator button { font: inherit; margin-top: 8px; padding: 8px 16px; color: #0b0f14; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; }
       #creator button:hover { background: #f8fafc; }
       /* The creator opened from inside the world: the game shows behind it and it can be closed. */

@@ -21,11 +21,13 @@ export const Facing = defineComponent('Facing', (capacity) => ({
   y: f64(capacity),
 }));
 
-/** The swatch of each palette the player wears: indexes into `characterPalettes` (defs.ts). */
+/** The swatch of each palette and the shape of each list the player wears: indexes into `characterPalettes` and `characterShapes` (defs.ts). */
 export const PlayerLook = defineComponent('PlayerLook', (capacity) => ({
   skin: u32(capacity),
   hair: u32(capacity),
   clothes: u32(capacity),
+  body: u32(capacity),
+  hairStyle: u32(capacity),
 }));
 
 /** Field of PlayerName holding the code point at `index` of the name. */

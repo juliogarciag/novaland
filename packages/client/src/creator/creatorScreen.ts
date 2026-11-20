@@ -1,6 +1,8 @@
 import {
   CHARACTER_PARTS,
+  CHARACTER_SHAPE_PARTS,
   characterPalettes,
+  characterShapes,
   MAX_NAME_CHARACTERS,
   readCharacter,
   readCharacterName,
@@ -8,8 +10,10 @@ import {
   type CharacterLook,
   type CharacterNameProblem,
   type CharacterPart,
+  type CharacterShapePart,
+  type LookPart,
 } from '@novaland/sim';
-import { cssColor, paintLook } from '../render/characterSheet';
+import { cssColor, lookKey, paintLook } from '../render/characterSheet';
 
 /** What the preview needs of the character's sheet: where it is and the size of one frame. */
 export interface PreviewSheet {
@@ -27,11 +31,12 @@ export interface CreatorScreenOptions {
 /** Screen pixels per sheet pixel in the preview. */
 const PREVIEW_SCALE = 6;
 
-const PART_LABELS: Readonly<Record<CharacterPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes' };
+const PART_LABELS: Readonly<Record<LookPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes', body: 'Body type', hairStyle: 'Hairstyle' };
 
 /**
- * The creator: the screen where a player picks a skin, hair and clothes
- * colour and a name before entering the world. Plain DOM over the page, like
+ * The creator: the screen where a player picks a body type, a hairstyle, a
+ * skin, hair and clothes colour and a name before entering the world. Body
+ * and hairstyle are two separate choices: any hairstyle goes on any body. Plain DOM over the page, like
  * the connection screens, because it shows before the game exists. It decides
  * nothing: the palettes come from the sim and so does the verdict on the
  * name (`readCharacter`), which is the same rule the server applies. The
@@ -66,7 +71,7 @@ interface CreatorScreenUse {
 }
 
 function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScreenOptions, { title: titleText, submitLabel, onSubmit, onDismiss }: CreatorScreenUse): void {
-  const look: Record<CharacterPart, number> = { ...initial.look };
+  const look: Record<LookPart, number> = { ...initial.look };
 
   const form = document.createElement('form');
   form.id = 'creator';
@@ -107,18 +112,18 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
   // A problem shown by a submit goes away as soon as the player types; it is only ever raised by a submit.
   nameInput.addEventListener('input', () => showProblem(undefined));
 
-  const palettes = CHARACTER_PARTS.map((part) =>
-    swatchPicker(part, look[part], (index) => {
-      look[part] = index;
-      paintPreview(look);
-    }),
-  );
+  const pick = (part: LookPart) => (index: number) => {
+    look[part] = index;
+    paintPreview(look);
+  };
+  const shapes = CHARACTER_SHAPE_PARTS.map((part) => shapePicker(part, look[part], pick(part)));
+  const palettes = CHARACTER_PARTS.map((part) => swatchPicker(part, look[part], pick(part)));
 
   const submit = document.createElement('button');
   submit.type = 'submit';
   submit.textContent = submitLabel;
 
-  form.append(title, preview, nameField, problem, ...palettes, submit);
+  form.append(title, preview, nameField, problem, ...shapes, ...palettes, submit);
 
   let stopListeningForEscape = (): void => {};
   const close = (): void => {
@@ -208,6 +213,34 @@ function swatchPicker(part: CharacterPart, selected: number, onPick: (index: num
   return fieldset;
 }
 
+/** One row of named choices for a part's shape (a body type, a hairstyle): radio buttons, like the swatches. */
+function shapePicker(part: CharacterShapePart, selected: number, onPick: (index: number) => void): HTMLFieldSetElement {
+  const fieldset = document.createElement('fieldset');
+  fieldset.dataset['part'] = part;
+  fieldset.className = 'creator-shapes';
+  const legend = document.createElement('legend');
+  legend.textContent = PART_LABELS[part];
+  fieldset.append(legend);
+  characterShapes[part].forEach((shape, index) => {
+    const option = document.createElement('label');
+    option.className = 'creator-shape';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = part;
+    radio.value = String(index);
+    radio.checked = index === selected;
+    radio.setAttribute('aria-label', `${PART_LABELS[part]}: ${shape.name}`);
+    radio.addEventListener('change', () => {
+      if (radio.checked) onPick(index);
+    });
+    const caption = document.createElement('span');
+    caption.textContent = shape.name;
+    option.append(radio, caption);
+    fieldset.append(option);
+  });
+  return fieldset;
+}
+
 /**
  * Draws the character standing, facing the player, in a look's colours: the
  * first frame of the sheet, repainted the way the game repaints it. Returns
@@ -232,7 +265,7 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, preview.width, preview.height);
     context.drawImage(frame, 0, 0, preview.width, preview.height);
-    preview.dataset['look'] = `${shown.skin}-${shown.hair}-${shown.clothes}`;
+    preview.dataset['look'] = lookKey(shown);
   };
   image.addEventListener('load', paint);
   image.src = sheet.url;
