@@ -13,13 +13,13 @@ import {
   type CharacterShapePart,
   type LookPart,
 } from '@novaland/sim';
-import { cssColor, lookKey, paintLook } from '../render/characterSheet';
+import { cssColor, layerSheetsOf, lookKey, paintFigure } from '../render/characterSheet';
 
-/** What the preview needs of the character's sheet: where it is and the size of one frame. */
+/** What the preview needs of the character's sheets: the size of one frame, and where the sheet under a sprite key is (the layer sheets a look is drawn from). */
 export interface PreviewSheet {
-  readonly url: string;
   readonly frameWidth: number;
   readonly frameHeight: number;
+  urlOf(sheetKey: string): string;
 }
 
 export interface CreatorScreenOptions {
@@ -242,10 +242,11 @@ function shapePicker(part: CharacterShapePart, selected: number, onPick: (index:
 }
 
 /**
- * Draws the character standing, facing the player, in a look's colours: the
- * first frame of the sheet, repainted the way the game repaints it. Returns
- * the function that paints a look; until the sheet has loaded (or if it never
- * does) the preview stays empty and the creator works without it.
+ * Draws the character standing, facing the player, in a look: the first
+ * frame of its body type's sheet with its hairstyle's over it, outlined and
+ * recoloured the way the game draws it (`paintFigure`). Returns the function
+ * that paints a look; until both sheets have loaded (or if they never do)
+ * the preview keeps what it showed and the creator works without it.
  */
 function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (look: CharacterLook) => void {
   const context = preview.getContext('2d');
@@ -253,22 +254,39 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
   frame.width = sheet.frameWidth;
   frame.height = sheet.frameHeight;
   const frameContext = frame.getContext('2d', { willReadFrequently: true });
-  const image = new Image();
+  const images = new Map<string, HTMLImageElement>();
+  const imageOf = (sheetKey: string): HTMLImageElement => {
+    let image = images.get(sheetKey);
+    if (!image) {
+      image = new Image();
+      image.addEventListener('load', () => paint());
+      image.src = sheet.urlOf(sheetKey);
+      images.set(sheetKey, image);
+    }
+    return image;
+  };
+  const loaded = (image: HTMLImageElement): boolean => image.complete && image.naturalWidth > 0;
   let shown: CharacterLook | undefined;
   const paint = (): void => {
-    if (!context || !frameContext || !shown || !image.complete || image.naturalWidth === 0) return;
-    frameContext.clearRect(0, 0, frame.width, frame.height);
-    frameContext.drawImage(image, 0, 0, frame.width, frame.height, 0, 0, frame.width, frame.height);
-    const pixels = frameContext.getImageData(0, 0, frame.width, frame.height);
-    paintLook(pixels.data, shown);
+    const layers = shown && layerSheetsOf(shown);
+    if (!context || !frameContext || !shown || !layers) return;
+    const body = imageOf(layers.body);
+    const hair = imageOf(layers.hair);
+    if (!loaded(body) || !loaded(hair)) return;
+    const firstFrameOf = (image: HTMLImageElement): Uint8ClampedArray => {
+      frameContext.clearRect(0, 0, frame.width, frame.height);
+      frameContext.drawImage(image, 0, 0, frame.width, frame.height, 0, 0, frame.width, frame.height);
+      return frameContext.getImageData(0, 0, frame.width, frame.height).data;
+    };
+    const figure = paintFigure({ body: firstFrameOf(body), hair: firstFrameOf(hair), width: frame.width, height: frame.height }, shown);
+    const pixels = frameContext.createImageData(frame.width, frame.height);
+    pixels.data.set(figure);
     frameContext.putImageData(pixels, 0, 0);
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, preview.width, preview.height);
     context.drawImage(frame, 0, 0, preview.width, preview.height);
     preview.dataset['look'] = lookKey(shown);
   };
-  image.addEventListener('load', paint);
-  image.src = sheet.url;
   return (look) => {
     shown = { ...look };
     paint();

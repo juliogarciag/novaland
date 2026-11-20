@@ -1,6 +1,6 @@
-import { entityDefs, type CharacterLook, type SpriteDef, type SpriteDirection } from '@novaland/sim';
+import { characterShapes, entityDefs, type CharacterLook, type SpriteDef, type SpriteDirection } from '@novaland/sim';
 import Phaser from 'phaser';
-import { lookKey, paintLook } from './characterSheet';
+import { layerSheetsOf, lookKey, paintFigure, paintLook } from './characterSheet';
 import { spriteSheetUrl } from './spriteUrl';
 
 export const SPRITE_DIRECTIONS: readonly SpriteDirection[] = ['down', 'up', 'left', 'right'];
@@ -10,11 +10,13 @@ export function walkAnimationKey(textureKey: string, direction: SpriteDirection)
   return `${textureKey}/walk/${direction}`;
 }
 
-/** Queues every sheet the defs reference. Call from a scene's `preload`. */
+/** Queues every sheet the defs reference, and the layer sheets characters are built from (one per body type and per hairstyle). Call from a scene's `preload`. */
 export function loadSpriteSheets(scene: Phaser.Scene): void {
   for (const sprite of distinctSpriteSheets()) {
     scene.load.spritesheet(sprite.key, spriteSheetUrl(sprite.key), { frameWidth: sprite.frameWidth, frameHeight: sprite.frameHeight });
   }
+  // Only their pixels are read, to build a look's texture: plain images.
+  for (const shape of [...characterShapes.body, ...characterShapes.hairStyle]) scene.load.image(shape.sheet, spriteSheetUrl(shape.sheet));
 }
 
 /**
@@ -29,31 +31,52 @@ export function createSpriteAnimations(scene: Phaser.Scene): void {
 }
 
 /**
- * The texture that draws `sheet` in a look's colours, made the first time a
- * look is seen: a copy of the sheet's texture with the template colours
- * swapped (characterSheet.ts), cut into the same frames, with its own walk
- * animations. Players with the same look share it. Undefined when the sheet
- * did not load or the browser gives no canvas to paint on; the renderer then
- * draws the sheet as it is.
+ * The texture that draws `sheet` in a look, made the first time a look is
+ * seen: the hair sheet of the look's hairstyle laid over the body sheet of
+ * its body type, outlined and recoloured (`paintFigure`), cut into the
+ * frames of `sheet`, with its own walk animations. Players with the same look
+ * share it. Without both layer sheets it is a recoloured copy of `sheet`
+ * itself (the first body type with the first hairstyle). Undefined when
+ * nothing loaded or the browser gives no canvas to paint on; the renderer
+ * then draws the sheet as it is.
  */
 export function lookTextureKey(scene: Phaser.Scene, sheet: SpriteDef, look: CharacterLook): string | undefined {
   const key = `${sheet.key}/look/${lookKey(look)}`;
   if (scene.textures.exists(key)) return key;
-  if (!scene.textures.exists(sheet.key)) return undefined;
-  const template = scene.textures.get(sheet.key).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
-  const canvas = document.createElement('canvas');
-  canvas.width = template.width;
-  canvas.height = template.height;
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  if (!context) return undefined;
-  context.drawImage(template, 0, 0);
-  const image = context.getImageData(0, 0, canvas.width, canvas.height);
-  paintLook(image.data, look);
-  context.putImageData(image, 0, 0);
+  const canvas = paintedLookCanvas(scene, sheet, look);
+  if (!canvas) return undefined;
   // Phaser types the source as an image; a canvas is drawn from the same way.
   if (!scene.textures.addSpriteSheet(key, canvas as unknown as HTMLImageElement, { frameWidth: sheet.frameWidth, frameHeight: sheet.frameHeight })) return undefined;
   createWalkAnimations(scene, sheet, key);
   return key;
+}
+
+/** A canvas holding `sheet`'s frames in a look, from its layers when both loaded, else from `sheet` recoloured. */
+function paintedLookCanvas(scene: Phaser.Scene, sheet: SpriteDef, look: CharacterLook): HTMLCanvasElement | undefined {
+  const layers = layerSheetsOf(look);
+  const fromLayers = layers !== undefined && scene.textures.exists(layers.body) && scene.textures.exists(layers.hair);
+  if (!fromLayers && !scene.textures.exists(sheet.key)) return undefined;
+  const sourceOf = (textureKey: string): CanvasImageSource => scene.textures.get(textureKey).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+  const base = sourceOf(fromLayers ? layers.body : sheet.key) as HTMLImageElement | HTMLCanvasElement;
+  const canvas = document.createElement('canvas');
+  canvas.width = base.width;
+  canvas.height = base.height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) return undefined;
+  const pixelsOf = (source: CanvasImageSource): ImageData => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(source, 0, 0);
+    return context.getImageData(0, 0, canvas.width, canvas.height);
+  };
+  const image = pixelsOf(base);
+  if (fromLayers) {
+    const hair = pixelsOf(sourceOf(layers.hair));
+    image.data.set(paintFigure({ body: image.data, hair: hair.data, width: canvas.width, height: canvas.height }, look));
+  } else {
+    paintLook(image.data, look);
+  }
+  context.putImageData(image, 0, 0);
+  return canvas;
 }
 
 /** The walk animations of `sheet`'s layout over the texture `textureKey`, which is kept crisp when scaled. */

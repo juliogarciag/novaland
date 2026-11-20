@@ -1,4 +1,4 @@
-import { characterPalettes, type CharacterLook } from '@novaland/sim';
+import { characterPalettes, characterShapes, type CharacterLook } from '@novaland/sim';
 
 /**
  * The colours `sprites/player.png` is painted in, as 0xRRGGBB: the ones a
@@ -81,9 +81,52 @@ export function paintLook(pixels: Uint8ClampedArray, look: CharacterLook): void 
   }
 }
 
+/** The colour of the figure's edge, as 0xRRGGBB: FIXED_PALETTE.outline in tools/generate-player-sheet.mjs (the generator's test checks it). */
+const OUTLINE_COLOR = 0x1f1a17;
+
+/** The sprite keys of the two layer sheets a look is drawn from: its body type's and its hairstyle's (ADR 0017). Undefined for an index outside the lists. */
+export function layerSheetsOf(look: CharacterLook): { readonly body: string; readonly hair: string } | undefined {
+  const body = characterShapes.body[look.body]?.sheet;
+  const hair = characterShapes.hairStyle[look.hairStyle]?.sheet;
+  return body && hair ? { body, hair } : undefined;
+}
+
+/** RGBA bytes of a layer, as a canvas gives them, with their size in pixels. */
+export interface LayerPixels {
+  readonly body: Uint8ClampedArray;
+  readonly hair: Uint8ClampedArray;
+  readonly width: number;
+  readonly height: number;
+}
+
+/**
+ * A look's figure from its two layers, as new RGBA bytes the size of the
+ * layers: the hair laid over the body, a one-pixel edge around the two
+ * together (any clear pixel beside the figure, as the generator outlines a
+ * frame), then the template colours swapped for the look's (`paintLook`).
+ * Frames keep a clear border, so outlining a whole sheet at once outlines
+ * each frame on its own.
+ */
+export function paintFigure({ body, hair, width, height }: LayerPixels, look: CharacterLook): Uint8ClampedArray {
+  const figure = new Uint8ClampedArray(body);
+  for (let offset = 0; offset + 3 < hair.length; offset += 4) {
+    if (hair[offset + 3] === 255) figure.set(hair.subarray(offset, offset + 4), offset);
+  }
+  const opaque = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < width && y < height && figure[(y * width + x) * 4 + 3] === 255;
+  const edge: number[] = [];
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      if (!opaque(x, y) && (opaque(x - 1, y) || opaque(x + 1, y) || opaque(x, y - 1) || opaque(x, y + 1))) edge.push((y * width + x) * 4);
+    }
+  }
+  for (const offset of edge) figure.set([(OUTLINE_COLOR >> 16) & 0xff, (OUTLINE_COLOR >> 8) & 0xff, OUTLINE_COLOR & 0xff, 255], offset);
+  paintLook(figure, look);
+  return figure;
+}
+
 /** A colour as the CSS hex string a style takes. */
 export function cssColor(color: number): string {
   return `#${color.toString(16).padStart(6, '0')}`;
 }
 
-export const __testing__ = { lightOf, lookColors, shadeOf, TEMPLATE_COLORS };
+export const __testing__ = { lightOf, lookColors, OUTLINE_COLOR, shadeOf, TEMPLATE_COLORS };

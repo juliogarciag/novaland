@@ -1,6 +1,6 @@
 import { characterPalettes } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { __testing__, cssColor, lookKey, paintLook } from './characterSheet';
+import { __testing__, cssColor, layerSheetsOf, lookKey, paintLook } from './characterSheet';
 
 describe('painting a look over the template sheet', () => {
   it('swaps each template colour for the look\'s and leaves every other pixel alone', () => {
@@ -41,6 +41,13 @@ describe('painting a look over the template sheet', () => {
 
   it('falls back to the template colours for an index outside a palette instead of failing in the draw loop', () => {
     expect(lookColors({ skin: 99, hair: -1, clothes: 1.5, body: 0, hairStyle: 0 })).toEqual(TEMPLATE_COLORS);
+  });
+
+  it('names no layer sheets for a body type or hairstyle outside the lists, so the renderer falls back to the plain sheet', () => {
+    const look = { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0 };
+    expect(layerSheetsOf(look)).toBeDefined();
+    expect(layerSheetsOf({ ...look, body: 99 })).toBeUndefined();
+    expect(layerSheetsOf({ ...look, hairStyle: -1 })).toBeUndefined();
   });
 
   it('gives every swatch a shade darker and a highlight lighter than itself, so each part keeps its shading in every look', () => {

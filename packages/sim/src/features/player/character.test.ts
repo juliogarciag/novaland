@@ -150,6 +150,12 @@ describe('readCharacter', () => {
     }
   });
 
+  it('keeps every body type and hairstyle at its index: browsers and the server remember looks by them', () => {
+    // Append only (ADR 0017). Changing this list moves what remembered characters wear.
+    expect(characterShapes.body.map((shape) => shape.name)).toEqual(['straight', 'curvy']);
+    expect(characterShapes.hairStyle.map((shape) => shape.name)).toEqual(['short', 'long', 'tied back']);
+  });
+
   it('refuses a look without a body type or a hairstyle: the join and the change carry both', () => {
     const { skin, hair, clothes, body, hairStyle } = guestCharacter(0).look;
     const withoutBody = { skin, hair, clothes, hairStyle };

@@ -37,8 +37,8 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 1,
         "hairStyle": 2
@@ -49,13 +49,13 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/2-7-4-1-2"
+      "textureKey": "player/look/1-5-4-1-2"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 1,
         "hairStyle": 2
@@ -95,8 +95,8 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 0,
         "hairStyle": 1
@@ -107,13 +107,13 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/2-7-4-0-1"
+      "textureKey": "player/look/1-5-4-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 0,
         "hairStyle": 1
@@ -127,8 +127,8 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 0,
         "hairStyle": 1
@@ -139,13 +139,13 @@
       "name": "Bea",
       "x": 104,
       "y": 213,
-      "textureKey": "player/look/2-7-4-0-1"
+      "textureKey": "player/look/1-5-4-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 2,
-        "hair": 7,
+        "skin": 1,
+        "hair": 5,
         "clothes": 4,
         "body": 0,
         "hairStyle": 1
@@ -205,8 +205,8 @@
     },
     {
       "name": "every pairing of body type and hairstyle draws a different preview",
-      "pass": false,
-      "details": "1 distinct"
+      "pass": true,
+      "details": "6 distinct"
     },
     {
       "name": "the creator's choices are the sim's lists, in order",
@@ -216,17 +216,17 @@
     {
       "name": "the player enters the world with the body type and hairstyle picked",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":5,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
     },
     {
       "name": "the renderer draws the player from a texture made for that look",
       "pass": true,
-      "details": "player/look/2-7-4-1-2"
+      "details": "player/look/1-5-4-1-2"
     },
     {
       "name": "the browser remembers both choices",
       "pass": true,
-      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
+      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":5,\"clothes\":4,\"body\":1,\"hairStyle\":2}}"
     },
     {
       "name": "the creator opened from the world starts from the body type and hairstyle worn",
@@ -235,7 +235,7 @@
     {
       "name": "changing character gives the same player the other body type and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":5,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
     },
     {
       "name": "and keeps the rest of the look and the name",
@@ -244,12 +244,12 @@
     {
       "name": "the renderer draws the player in the new look",
       "pass": true,
-      "details": "player/look/2-7-4-0-1"
+      "details": "player/look/1-5-4-0-1"
     },
     {
       "name": "after a reload the player goes straight in with the changed body type and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":7,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":5,\"clothes\":4,\"body\":0,\"hairStyle\":1}}"
     },
     {
       "name": "a character remembered before body types existed skips the creator",
