@@ -10,7 +10,7 @@ PASS  walking right plays all four frames of its row  (saw 12,13,14,15, row 12,1
 PASS  look {"skin":0,"hair":4,"clothes":3}: every template colour became one colour, the right one for its part  ({"hairLight":["#ffffe7"],"hair":["#f3e5ab"],"hairShade":["#b6ac80"],"skin":["#ffdbac"],"skinShade":["#bfa481"],"clothes":["#f59e0b"],"clothesShade":["#b87708"],"clothesLight":["#ffd727"]})
 PASS  look {"skin":5,"hair":0,"clothes":7}: every template colour became one colour, the right one for its part  ({"hairLight":["#4c4644"],"hair":["#2a2523"],"hairShade":["#201c1a"],"skin":["#5c3a21"],"skinShade":["#452c19"],"clothes":["#475569"],"clothesShade":["#35404f"],"clothesLight":["#6f8098"]})
 PASS  look {"skin":3,"hair":6,"clothes":4}: every template colour became one colour, the right one for its part  ({"hairLight":["#ff70d1"],"hair":["#ec4899"],"hairShade":["#b13673"],"skin":["#c68642"],"skinShade":["#956532"],"clothes":["#7c3aed"],"clothesShade":["#5d2cb2"],"clothesLight":["#ae5fff"]})
-PASS  the creator previews the character at its old size, 96x144: the def's frame at three screen pixels per sheet pixel  ({"width":96,"height":144,"look":"1-5-2","frame":[32,48]})
+PASS  the creator previews the character at its old size, 96x144: the def's frame at three screen pixels per sheet pixel  ({"width":96,"height":144,"look":"0-3-7","frame":[32,48]})
 PASS  no page errors
 
 ALL 14 CHECKS PASSED
