@@ -1,0 +1,319 @@
+{
+  "looks": [
+    {
+      "look": {
+        "skin": 1,
+        "hair": 1,
+        "clothes": 0
+      },
+      "problems": [],
+      "colors": {
+        "hairLight": [
+          "#9a643e"
+        ],
+        "hair": [
+          "#6b3e1e"
+        ],
+        "hairShade": [
+          "#502f17"
+        ],
+        "skin": [
+          "#f1c27d"
+        ],
+        "skinShade": [
+          "#b5925e"
+        ],
+        "shirt": [
+          "#3b82f6"
+        ],
+        "shirtShade": [
+          "#2c62b9"
+        ],
+        "shirtLight": [
+          "#60b6ff"
+        ]
+      }
+    },
+    {
+      "look": {
+        "skin": 0,
+        "hair": 4,
+        "clothes": 3
+      },
+      "problems": [],
+      "colors": {
+        "hairLight": [
+          "#ffffe7"
+        ],
+        "hair": [
+          "#f3e5ab"
+        ],
+        "hairShade": [
+          "#b6ac80"
+        ],
+        "skin": [
+          "#ffdbac"
+        ],
+        "skinShade": [
+          "#bfa481"
+        ],
+        "shirt": [
+          "#f59e0b"
+        ],
+        "shirtShade": [
+          "#b87708"
+        ],
+        "shirtLight": [
+          "#ffd727"
+        ]
+      }
+    },
+    {
+      "look": {
+        "skin": 5,
+        "hair": 0,
+        "clothes": 7
+      },
+      "problems": [],
+      "colors": {
+        "hairLight": [
+          "#4c4644"
+        ],
+        "hair": [
+          "#2a2523"
+        ],
+        "hairShade": [
+          "#201c1a"
+        ],
+        "skin": [
+          "#5c3a21"
+        ],
+        "skinShade": [
+          "#452c19"
+        ],
+        "shirt": [
+          "#475569"
+        ],
+        "shirtShade": [
+          "#35404f"
+        ],
+        "shirtLight": [
+          "#6f8098"
+        ]
+      }
+    },
+    {
+      "look": {
+        "skin": 3,
+        "hair": 6,
+        "clothes": 4
+      },
+      "problems": [],
+      "colors": {
+        "hairLight": [
+          "#ff70d1"
+        ],
+        "hair": [
+          "#ec4899"
+        ],
+        "hairShade": [
+          "#b13673"
+        ],
+        "skin": [
+          "#c68642"
+        ],
+        "skinShade": [
+          "#956532"
+        ],
+        "shirt": [
+          "#7c3aed"
+        ],
+        "shirtShade": [
+          "#5d2cb2"
+        ],
+        "shirtLight": [
+          "#ae5fff"
+        ]
+      }
+    }
+  ],
+  "walks": [
+    {
+      "direction": "down",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "expected": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "direction": "up",
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "expected": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "direction": "left",
+      "frames": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "expected": [
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "direction": "right",
+      "frames": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "expected": [
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
+  "sprite": {
+    "key": "player",
+    "frameWidth": 32,
+    "frameHeight": 48,
+    "pixelsPerMetre": 32,
+    "origin": {
+      "x": 0.5,
+      "y": 0.75
+    },
+    "frameRate": 8,
+    "directions": {
+      "down": {
+        "idle": 0,
+        "walk": {
+          "start": 0,
+          "end": 3
+        }
+      },
+      "up": {
+        "idle": 4,
+        "walk": {
+          "start": 4,
+          "end": 7
+        }
+      },
+      "left": {
+        "idle": 8,
+        "walk": {
+          "start": 8,
+          "end": 11
+        }
+      },
+      "right": {
+        "idle": 12,
+        "walk": {
+          "start": 12,
+          "end": 15
+        }
+      }
+    }
+  },
+  "creatorPreview": {
+    "width": 96,
+    "height": 144,
+    "look": "4-2-5"
+  },
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "the def declares 32x48 frames",
+      "pass": true,
+      "details": "32x48 at 32 px/m"
+    },
+    {
+      "name": "the loaded sheet is four rows of four of those frames",
+      "pass": true,
+      "details": "128x192, 16 frames"
+    },
+    {
+      "name": "the player is drawn at the def's size in world pixels (half scale on 16 px tiles)",
+      "pass": true,
+      "details": "16x24 world px, 1.5 m tall"
+    },
+    {
+      "name": "look {\"skin\":1,\"hair\":1,\"clothes\":0}: every template colour became one colour, the right one for its part",
+      "pass": true,
+      "details": "{\"hairLight\":[\"#9a643e\"],\"hair\":[\"#6b3e1e\"],\"hairShade\":[\"#502f17\"],\"skin\":[\"#f1c27d\"],\"skinShade\":[\"#b5925e\"],\"shirt\":[\"#3b82f6\"],\"shirtShade\":[\"#2c62b9\"],\"shirtLight\":[\"#60b6ff\"]}"
+    },
+    {
+      "name": "walking down plays all four frames of its row",
+      "pass": true,
+      "details": "saw 0,1,2,3, row 0,1,2,3"
+    },
+    {
+      "name": "walking up plays all four frames of its row",
+      "pass": true,
+      "details": "saw 4,5,6,7, row 4,5,6,7"
+    },
+    {
+      "name": "walking left plays all four frames of its row",
+      "pass": true,
+      "details": "saw 8,9,10,11, row 8,9,10,11"
+    },
+    {
+      "name": "walking right plays all four frames of its row",
+      "pass": true,
+      "details": "saw 12,13,14,15, row 12,13,14,15"
+    },
+    {
+      "name": "look {\"skin\":0,\"hair\":4,\"clothes\":3}: every template colour became one colour, the right one for its part",
+      "pass": true,
+      "details": "{\"hairLight\":[\"#ffffe7\"],\"hair\":[\"#f3e5ab\"],\"hairShade\":[\"#b6ac80\"],\"skin\":[\"#ffdbac\"],\"skinShade\":[\"#bfa481\"],\"shirt\":[\"#f59e0b\"],\"shirtShade\":[\"#b87708\"],\"shirtLight\":[\"#ffd727\"]}"
+    },
+    {
+      "name": "look {\"skin\":5,\"hair\":0,\"clothes\":7}: every template colour became one colour, the right one for its part",
+      "pass": true,
+      "details": "{\"hairLight\":[\"#4c4644\"],\"hair\":[\"#2a2523\"],\"hairShade\":[\"#201c1a\"],\"skin\":[\"#5c3a21\"],\"skinShade\":[\"#452c19\"],\"shirt\":[\"#475569\"],\"shirtShade\":[\"#35404f\"],\"shirtLight\":[\"#6f8098\"]}"
+    },
+    {
+      "name": "look {\"skin\":3,\"hair\":6,\"clothes\":4}: every template colour became one colour, the right one for its part",
+      "pass": true,
+      "details": "{\"hairLight\":[\"#ff70d1\"],\"hair\":[\"#ec4899\"],\"hairShade\":[\"#b13673\"],\"skin\":[\"#c68642\"],\"skinShade\":[\"#956532\"],\"shirt\":[\"#7c3aed\"],\"shirtShade\":[\"#5d2cb2\"],\"shirtLight\":[\"#ae5fff\"]}"
+    },
+    {
+      "name": "the creator previews the character at 96x144, three screen pixels per sheet pixel",
+      "pass": true,
+      "details": "{\"width\":96,\"height\":144,\"look\":\"4-2-5\"}"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
