@@ -108,7 +108,7 @@ const POSES = [
  */
 const LAYER_SHEETS = {
   gender: { male: 'player-body-male', female: 'player-body-female' },
-  hairstyle: { short: 'player-hair-short', long: 'player-hair-long', 'tied back': 'player-hair-tied-back' },
+  hairstyle: { short: 'player-hair-short', long: 'player-hair-long' },
 };
 
 /**
@@ -388,33 +388,6 @@ const LONG_HAIR_LEFT = [
   '.............hh.H.',
 ]
 
-/**
- * Hair tied back, in profile: a hairline swept back from the brow, the back
- * of the head drawn in to a band at the crown's back, and a tail that hangs
- * from it down the nape, standing a pixel off the back of the head.
- */
-const TIED_BACK_HAIR_LEFT = [
-  ...HAIRSTYLES.short.left.slice(0, 7),
-  '..hhhhhhhhhhhhhhH.',
-  '....hhhhhhhhhhhhH.',
-  '.......hhhhhhhhhH.',
-  '.........hhhhhhhHH',
-  '.........hhhhhhhHH',
-  '.........hhhhhhhhH',
-  '.........hhhhhhhhH',
-  '.........hhhhhhhhH',
-  '.........hhhhhhhhH',
-  '..........hhhhhhhH',
-  '...........hhhhhhH',
-  '...............hhH',
-  '...............hhH',
-  '...............hhH',
-  '...............hH.',
-  '...............hH.',
-  '...............hH.',
-  '................H.',
-]
-
 /** Long hair: framing the face, over the shoulders from the front, down the back from behind. */
 HAIRSTYLES.long = {
   down: [
@@ -454,24 +427,6 @@ HAIRSTYLES.long = {
   right: [...HAIRSTYLES.short.right.slice(0, 15), ...mirrored(LONG_HAIR_LEFT.slice(15))],
 };
 
-/** Hair tied back: a high hairline from the front, a band and a tail from behind and in profile. */
-HAIRSTYLES['tied back'] = {
-  down: [...HAIRSTYLES.short.down.slice(0, 7), '.hh............hH.', '.h..............H.', '.h..............H.'],
-  up: [
-    ...HAIRSTYLES.short.up.slice(0, 16),
-    '...hhhhHHHhhhhH...',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '.......hhH........',
-    '........hH........',
-    '........H.........',
-  ],
-  left: TIED_BACK_HAIR_LEFT,
-  right: mirrored(TIED_BACK_HAIR_LEFT),
-};
 const PLAYER_HAIRSTYLE = 'short';
 
 /**

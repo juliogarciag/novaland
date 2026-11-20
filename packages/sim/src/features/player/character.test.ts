@@ -10,7 +10,7 @@ import { Position } from '../../core/transform';
 import { getRenderables } from '../../core/view';
 import { diffWorldState, worldState, type WorldState } from '../../core/worldState';
 import { codePointsOf, guestCharacter, readCharacter, readCharacterName, readRememberedCharacter, sameCharacter, type Character } from './character';
-import { characterPalettes, characterShapes, isPlayerDefId, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS } from './defs';
+import { characterPalettes, characterShapes, DEFAULT_LOOK, isPlayerDefId, MAX_NAME_CHARACTERS, MAX_NAME_CODE_POINTS } from './defs';
 import { findPlayerEntity, getCharacter } from './queries';
 
 describe('readCharacterName', () => {
@@ -153,7 +153,14 @@ describe('readCharacter', () => {
   it('keeps every gender and hairstyle at its index: browsers and the server remember looks by them', () => {
     // Append only (ADR 0018). Changing this list moves what remembered characters wear.
     expect(characterShapes.gender.map((shape) => shape.name)).toEqual(['male', 'female']);
-    expect(characterShapes.hairStyle.map((shape) => shape.name)).toEqual(['short', 'long', 'tied back']);
+    expect(characterShapes.hairStyle.map((shape) => shape.name)).toEqual(['short', 'long']);
+  });
+
+  it('starts a first visit as a legal look: male with his suggested short hair, honey skin, black hair, sky clothes', () => {
+    expect(readCharacter({ name: 'Ada', look: DEFAULT_LOOK })?.look).toEqual(DEFAULT_LOOK);
+    expect(characterShapes.gender[DEFAULT_LOOK.gender].name).toBe('male');
+    expect(DEFAULT_LOOK.hairStyle).toBe(characterShapes.gender[DEFAULT_LOOK.gender].defaultHairStyle);
+    expect([characterPalettes.skin[DEFAULT_LOOK.skin].name, characterPalettes.hair[DEFAULT_LOOK.hair].name, characterPalettes.clothes[DEFAULT_LOOK.clothes].name]).toEqual(['honey', 'black', 'sky']);
   });
 
   it('suggests a hairstyle for each gender that is one of the hairstyles, and still lets any hairstyle go with any gender', () => {
@@ -220,7 +227,7 @@ describe('readRememberedCharacter', () => {
   });
 
   it('reads a character remembered since then as it is, and refuses what readCharacter refuses', () => {
-    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 2, gender: 1, hairStyle: 2 } };
+    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 2, gender: 1, hairStyle: 1 } };
     expect(readRememberedCharacter(bea)).toEqual(bea);
     const refused: unknown[] = [
       undefined,
@@ -253,7 +260,7 @@ describe('sameCharacter', () => {
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hair: 0 } })).toBe(false);
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, clothes: 0 } })).toBe(false);
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, gender: 1 } })).toBe(false);
-    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hairStyle: 2 } })).toBe(false);
+    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hairStyle: 1 } })).toBe(false);
   });
 });
 
@@ -261,7 +268,7 @@ describe('player/join with a character', () => {
   it('spawns the player with the look and the name it joined with', async () => {
     const sim = await createSimInternal({ seed: 1 });
     const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, gender: 1, hairStyle: 0 } };
-    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, gender: 0, hairStyle: 2 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, gender: 0, hairStyle: 1 } };
     sim.step([join(0, ada), join(1, jose)]);
     expect(characterInSlot(sim, 0)).toEqual(ada);
     expect(characterInSlot(sim, 1)).toEqual(jose);
@@ -324,7 +331,7 @@ describe('player/join with a character', () => {
     expect(await run('Ada')).toBe(await run('Ada'));
     expect(await run('Ada')).not.toBe(await run('Bea'));
     expect(await run('Ada')).not.toBe(await run('Ada', { gender: 1, hairStyle: 0 }));
-    expect(await run('Ada')).not.toBe(await run('Ada', { gender: 0, hairStyle: 2 }));
+    expect(await run('Ada')).not.toBe(await run('Ada', { gender: 0, hairStyle: 1 }));
   });
 
   it('reads no character for something that has none, or for an id that is no entity', async () => {
@@ -343,7 +350,7 @@ describe('a character on a replica', () => {
   it('arrives with the join, in a full state and in a delta, as plain numbers', async () => {
     const sim = await createSimInternal({ seed: 2 });
     const replica = createReplica({ map: sim.map, capacity: sim.capacity });
-    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, gender: 1, hairStyle: 2 } };
+    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, gender: 1, hairStyle: 1 } };
     sim.step([join(0, ada)]);
     const first = worldState(sim);
     expect(applyWorldState(replica, overTheWire(first))).toBe('applied');

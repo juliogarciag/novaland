@@ -32,6 +32,7 @@ export {
   CHARACTER_SHAPE_PARTS,
   characterPalettes,
   characterShapes,
+  DEFAULT_LOOK,
   isPlayerDefId,
   LOOK_PARTS,
   MAX_NAME_CHARACTERS,

@@ -46,8 +46,14 @@ try {
   report.offered = offered;
   const shapes = Object.fromEntries(['gender', 'hairStyle'].map((part) => [part, offered[part].options.map((option) => ({ name: option.label?.replace(/^[^:]*: /, '') }))]));
   results.push(check('the creator offers at least two genders, by name', offered.gender.legend === 'Gender' && shapes.gender.length >= 2, JSON.stringify(offered.gender)));
-  results.push(check('the creator offers at least three hairstyles, by name, as a choice of its own', offered.hairStyle.legend === 'Hairstyle' && shapes.hairStyle.length >= 3, JSON.stringify(offered.hairStyle)));
+  results.push(check('the creator offers at least two hairstyles, by name, as a choice of its own', offered.hairStyle.legend === 'Hairstyle' && shapes.hairStyle.length >= 2, JSON.stringify(offered.hairStyle)));
   await page.screenshot({ path: path.join(PROOF, 'creator.png') });
+
+  // ---- A first visit starts from the default look, not a random one.
+  const startingLook = await page.evaluate(() => [...document.querySelectorAll('#creator input[type="radio"]:checked')].map((radio) => radio.getAttribute('aria-label')));
+  report.startingLook = startingLook;
+  const expectedStart = ['Gender: male', 'Hairstyle: short', 'Skin: honey', 'Hair: black', 'Clothes: sky'];
+  results.push(check('a first visit starts as male with short hair, honey skin, black hair and sky clothes', JSON.stringify(startingLook) === JSON.stringify(expectedStart), JSON.stringify(startingLook)));
 
   // ---- The keys that walk turn the figure in the preview, outside the name field.
   const previewState = () => page.evaluate(() => ({ facing: document.querySelector('#creator .creator-preview')?.dataset.facing, pixels: document.querySelector('#creator .creator-preview')?.toDataURL(), gender: document.querySelector('#creator input[name="gender"]:checked')?.value, name: document.querySelector('#creator input[name="name"]').value }));
@@ -72,12 +78,11 @@ try {
   results.push(check('typing W, A, S or D in the name field types it and leaves the figure as it faces', typing.name.endsWith('dw') && typing.facing === 'down', JSON.stringify({ name: typing.name, facing: typing.facing })));
   await page.fill('#creator input[name="name"]', '');
 
-  // ---- Picking a gender picks its suggested hairstyle. Start each time from another gender wearing the last hairstyle, so the pick is a real change.
+  // ---- Picking a gender picks its suggested hairstyle. Start each time from the other gender, which picked its own suggestion, so the pick is a real change.
   const hairStyleChecked = () => page.evaluate(() => Number(document.querySelector('#creator input[name="hairStyle"]:checked')?.value));
   const suggestedHairStyles = [];
   for (let gender = 0; gender < shapes.gender.length; gender += 1) {
     await page.check(`#creator input[name="gender"][value="${(gender + 1) % shapes.gender.length}"]`);
-    await page.check(`#creator input[name="hairStyle"][value="${shapes.hairStyle.length - 1}"]`);
     await page.check(`#creator input[name="gender"][value="${gender}"]`);
     suggestedHairStyles.push(await hairStyleChecked());
   }
@@ -104,9 +109,9 @@ try {
   results.push(check(`the preview follows both pickers through all ${pairings.length} pairings`, allShown, Object.keys(previews).join(', ')));
   results.push(check('every pairing of gender and hairstyle draws a different preview', allShown && new Set(pairings.map((preview) => preview.pixels)).size === pairings.length, `${new Set(pairings.filter(Boolean).map((preview) => preview.pixels)).size} distinct`));
 
-  // ---- Enter the world as the last gender with the last hairstyle.
+  // ---- Enter the world as the last gender wearing the first gender's suggested hairstyle, not its own.
   const lastGender = shapes.gender.length - 1;
-  const lastHairStyle = shapes.hairStyle.length - 1;
+  const lastHairStyle = suggestedHairStyles[0];
   await page.check(`#creator input[name="gender"][value="${lastGender}"]`);
   await page.check(`#creator input[name="hairStyle"][value="${lastHairStyle}"]`);
   await page.fill('#creator input[name="name"]', 'Bea');

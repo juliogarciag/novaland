@@ -48,7 +48,7 @@ describe('readJoinCharacter', () => {
       for (let index = next(6); index > 0; index -= 1) name += pieces[next(pieces.length)];
       // Mostly legal indexes, so a fair share of the options passes and the check on what passes means something.
       const index = (choices = 6): unknown => (next(5) === 0 ? values[next(values.length)] : next(choices));
-      const look: Record<string, unknown> = { skin: index(), hair: index(), clothes: index(), gender: index(2), hairStyle: index(3) };
+      const look: Record<string, unknown> = { skin: index(), hair: index(), clothes: index(), gender: index(2), hairStyle: index(2) };
       if (next(10) === 0) look['extra'] = 1;
       const character: Record<string, unknown> = { name: next(12) === 0 ? values[next(values.length)] : name, look };
       if (next(10) === 0) character['slot'] = 0;
@@ -109,7 +109,7 @@ describe('readChangeCharacterMessage', () => {
       let name = '';
       for (let index = next(6); index > 0; index -= 1) name += pieces[next(pieces.length)];
       const index = (choices = 6): unknown => (next(5) === 0 ? values[next(values.length)] : next(choices));
-      const look: Record<string, unknown> = { skin: index(), hair: index(), clothes: index(), gender: index(2), hairStyle: index(3) };
+      const look: Record<string, unknown> = { skin: index(), hair: index(), clothes: index(), gender: index(2), hairStyle: index(2) };
       if (next(10) === 0) look['extra'] = 1;
       const character: Record<string, unknown> = { name: next(12) === 0 ? values[next(values.length)] : name, look };
       const payload: Record<string, unknown> = { character };

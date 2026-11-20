@@ -1,4 +1,4 @@
-import { characterPalettes, characterShapes, DefId, getDef, sameCharacter, type Character, type CharacterLook } from '@novaland/sim';
+import { DEFAULT_LOOK, DefId, getDef, sameCharacter, type Character } from '@novaland/sim';
 import { spriteSheetUrl } from '../render/spriteUrl';
 import { changeCharacter, chooseCharacter, type PreviewSheet } from './creatorScreen';
 import { browserCharacterStorage, readRememberedCharacter, rememberCharacter } from './rememberedCharacter';
@@ -17,7 +17,7 @@ export async function characterForThisVisit(): Promise<Character> {
   const remembered = readRememberedCharacter(storage);
   const creatorAsked = window.location.hash === CREATOR_HASH;
   if (remembered && !creatorAsked) return remembered;
-  const character = await chooseCharacter(document.body, { initial: remembered ?? { name: '', look: randomLook() }, previewSheet: playerPreviewSheet() });
+  const character = await chooseCharacter(document.body, { initial: remembered ?? { name: '', look: DEFAULT_LOOK }, previewSheet: playerPreviewSheet() });
   rememberCharacter(storage, character);
   if (creatorAsked) forgetCreatorWasAsked();
   return character;
@@ -107,18 +107,6 @@ function playerPreviewSheet(): PreviewSheet {
   const directions = sprite?.directions;
   const idleFrames = { down: directions?.down.idle ?? 0, up: directions?.up.idle ?? 0, left: directions?.left.idle ?? 0, right: directions?.right.idle ?? 0 };
   return { frameWidth: sprite?.frameWidth ?? 32, frameHeight: sprite?.frameHeight ?? 48, idleFrames, urlOf: spriteSheetUrl };
-}
-
-/** A suggestion for a first visit, so two new players rarely start out looking the same. Only a starting point: the player picks. */
-function randomLook(): CharacterLook {
-  const randomIndexOf = (swatches: readonly unknown[]): number => Math.floor(Math.random() * swatches.length);
-  return {
-    skin: randomIndexOf(characterPalettes.skin),
-    hair: randomIndexOf(characterPalettes.hair),
-    clothes: randomIndexOf(characterPalettes.clothes),
-    gender: randomIndexOf(characterShapes.gender),
-    hairStyle: randomIndexOf(characterShapes.hairStyle),
-  };
 }
 
 /**

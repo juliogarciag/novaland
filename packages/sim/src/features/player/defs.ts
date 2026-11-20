@@ -104,13 +104,19 @@ export const characterShapes = {
   hairStyle: [
     { name: 'short', sheet: 'player-hair-short' },
     { name: 'long', sheet: 'player-hair-long' },
-    { name: 'tied back', sheet: 'player-hair-tied-back' },
   ],
 } as const satisfies { readonly gender: readonly GenderChoice[]; readonly hairStyle: readonly ShapeChoice[] };
 
 /** The parts of a character a player shapes, in the order the creator offers them. */
 export type CharacterShapePart = keyof typeof characterShapes;
 export const CHARACTER_SHAPE_PARTS: readonly CharacterShapePart[] = ['gender', 'hairStyle'];
+
+/**
+ * The look the creator starts from when a browser remembers no character:
+ * male with his suggested short hair, honey skin, black hair and sky-blue
+ * clothes. Indexes into the palettes and shape lists above.
+ */
+export const DEFAULT_LOOK = { skin: 2, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } as const satisfies Readonly<Record<'skin' | 'hair' | 'clothes' | 'gender' | 'hairStyle', number>>;
 
 /** Every part of a look: the colours, then the shapes. */
 export type LookPart = CharacterPart | CharacterShapePart;

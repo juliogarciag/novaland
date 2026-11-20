@@ -12,7 +12,7 @@ import { PROOF, ROOT, check, lastLinesOf, rememberCharacter, start, summarize, w
 const SERVER_PORT = 2966;
 const CLIENT_PORT = 5967;
 const VIEWPORT = { width: 960, height: 720 };
-const BEA = { name: 'Bea', look: { skin: 2, hair: 4, clothes: 1, gender: 1, hairStyle: 2 } };
+const BEA = { name: 'Bea', look: { skin: 2, hair: 4, clothes: 1, gender: 1, hairStyle: 0 } };
 const REMEMBERED_BEFORE_66 = { name: 'Old Timer', look: { skin: 5, hair: 0, clothes: 6 } };
 const results = [];
 const report = {};

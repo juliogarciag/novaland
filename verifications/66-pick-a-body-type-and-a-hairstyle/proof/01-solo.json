@@ -23,14 +23,17 @@
         {
           "value": 1,
           "label": "Hairstyle: long"
-        },
-        {
-          "value": 2,
-          "label": "Hairstyle: tied back"
         }
       ]
     }
   },
+  "startingLook": [
+    "Gender: male",
+    "Hairstyle: short",
+    "Skin: honey",
+    "Hair: black",
+    "Clothes: sky"
+  ],
   "turning": {
     "standing": "down",
     "turned": {
@@ -54,11 +57,11 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 1,
-        "hairStyle": 2
+        "hairStyle": 0
       }
     },
     "drawn": {
@@ -66,16 +69,16 @@
       "name": "Bea",
       "x": 208,
       "y": 426,
-      "textureKey": "player/look/1-2-0-1-2"
+      "textureKey": "player/look/2-0-0-1-0"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 1,
-        "hairStyle": 2
+        "hairStyle": 0
       }
     },
     "moveIntent": {
@@ -105,10 +108,6 @@
       {
         "name": "long",
         "sheet": "player-hair-long"
-      },
-      {
-        "name": "tied back",
-        "sheet": "player-hair-tied-back"
       }
     ]
   },
@@ -128,10 +127,6 @@
     {
       "sheet": "player-hair-long",
       "loaded": true
-    },
-    {
-      "sheet": "player-hair-tied-back",
-      "loaded": true
     }
   ],
   "changed": {
@@ -140,8 +135,8 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 0,
         "hairStyle": 1
@@ -152,13 +147,13 @@
       "name": "Bea",
       "x": 208,
       "y": 426,
-      "textureKey": "player/look/1-2-0-0-1"
+      "textureKey": "player/look/2-0-0-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 0,
         "hairStyle": 1
@@ -176,8 +171,8 @@
       "eid": 1,
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 0,
         "hairStyle": 1
@@ -188,13 +183,13 @@
       "name": "Bea",
       "x": 208,
       "y": 426,
-      "textureKey": "player/look/1-2-0-0-1"
+      "textureKey": "player/look/2-0-0-0-1"
     },
     "remembered": {
       "name": "Bea",
       "look": {
-        "skin": 1,
-        "hair": 2,
+        "skin": 2,
+        "hair": 0,
         "clothes": 0,
         "gender": 0,
         "hairStyle": 1
@@ -251,9 +246,14 @@
       "details": "{\"legend\":\"Gender\",\"options\":[{\"value\":0,\"label\":\"Gender: male\"},{\"value\":1,\"label\":\"Gender: female\"}]}"
     },
     {
-      "name": "the creator offers at least three hairstyles, by name, as a choice of its own",
+      "name": "the creator offers at least two hairstyles, by name, as a choice of its own",
       "pass": true,
-      "details": "{\"legend\":\"Hairstyle\",\"options\":[{\"value\":0,\"label\":\"Hairstyle: short\"},{\"value\":1,\"label\":\"Hairstyle: long\"},{\"value\":2,\"label\":\"Hairstyle: tied back\"}]}"
+      "details": "{\"legend\":\"Hairstyle\",\"options\":[{\"value\":0,\"label\":\"Hairstyle: short\"},{\"value\":1,\"label\":\"Hairstyle: long\"}]}"
+    },
+    {
+      "name": "a first visit starts as male with short hair, honey skin, black hair and sky clothes",
+      "pass": true,
+      "details": "[\"Gender: male\",\"Hairstyle: short\",\"Skin: honey\",\"Hair: black\",\"Clothes: sky\"]"
     },
     {
       "name": "W, A, S, D and the arrows turn the figure in the preview, with focus on a picker",
@@ -275,14 +275,14 @@
       "details": "{\"name\":\"dw\",\"facing\":\"down\"}"
     },
     {
-      "name": "the preview follows both pickers through all 6 pairings",
+      "name": "the preview follows both pickers through all 4 pairings",
       "pass": true,
-      "details": "0-0, 0-1, 0-2, 1-0, 1-1, 1-2"
+      "details": "0-0, 0-1, 1-0, 1-1"
     },
     {
       "name": "every pairing of gender and hairstyle draws a different preview",
       "pass": true,
-      "details": "6 distinct"
+      "details": "4 distinct"
     },
     {
       "name": "picking a gender in the creator picked the hairstyle the sim suggests for it",
@@ -296,27 +296,27 @@
     {
       "name": "the creator's choices are the sim's lists, in order",
       "pass": true,
-      "details": "{\"gender\":[{\"name\":\"male\",\"sheet\":\"player-body-male\",\"defaultHairStyle\":0},{\"name\":\"female\",\"sheet\":\"player-body-female\",\"defaultHairStyle\":1}],\"hairStyle\":[{\"name\":\"short\",\"sheet\":\"player-hair-short\"},{\"name\":\"long\",\"sheet\":\"player-hair-long\"},{\"name\":\"tied back\",\"sheet\":\"player-hair-tied-back\"}]}"
+      "details": "{\"gender\":[{\"name\":\"male\",\"sheet\":\"player-body-male\",\"defaultHairStyle\":0},{\"name\":\"female\",\"sheet\":\"player-body-female\",\"defaultHairStyle\":1}],\"hairStyle\":[{\"name\":\"short\",\"sheet\":\"player-hair-short\"},{\"name\":\"long\",\"sheet\":\"player-hair-long\"}]}"
     },
     {
       "name": "the player enters the world with the gender and hairstyle picked",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":2,\"clothes\":0,\"gender\":1,\"hairStyle\":2}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":1,\"hairStyle\":0}}"
     },
     {
       "name": "the game loaded every body sheet (one per gender) and hair layer sheet, so looks are laid from layers, not the plain sheet",
       "pass": true,
-      "details": "[{\"sheet\":\"player-body-male\",\"loaded\":true},{\"sheet\":\"player-body-female\",\"loaded\":true},{\"sheet\":\"player-hair-short\",\"loaded\":true},{\"sheet\":\"player-hair-long\",\"loaded\":true},{\"sheet\":\"player-hair-tied-back\",\"loaded\":true}]"
+      "details": "[{\"sheet\":\"player-body-male\",\"loaded\":true},{\"sheet\":\"player-body-female\",\"loaded\":true},{\"sheet\":\"player-hair-short\",\"loaded\":true},{\"sheet\":\"player-hair-long\",\"loaded\":true}]"
     },
     {
       "name": "the renderer draws the player from a texture made for that look",
       "pass": true,
-      "details": "player/look/1-2-0-1-2"
+      "details": "player/look/2-0-0-1-0"
     },
     {
       "name": "the browser remembers both choices",
       "pass": true,
-      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":2,\"clothes\":0,\"gender\":1,\"hairStyle\":2}}"
+      "details": "{\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":1,\"hairStyle\":0}}"
     },
     {
       "name": "the creator opened from the world starts from the gender and hairstyle worn",
@@ -330,7 +330,7 @@
     {
       "name": "changing character gives the same player the other gender and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":2,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
     },
     {
       "name": "and keeps the rest of the look and the name",
@@ -339,12 +339,12 @@
     {
       "name": "the renderer draws the player in the new look",
       "pass": true,
-      "details": "player/look/1-2-0-0-1"
+      "details": "player/look/2-0-0-0-1"
     },
     {
       "name": "after a reload the player goes straight in with the changed gender and hairstyle",
       "pass": true,
-      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":1,\"hair\":2,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":0,\"hairStyle\":1}}"
     },
     {
       "name": "a character remembered before genders existed skips the creator",
