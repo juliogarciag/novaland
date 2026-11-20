@@ -43,10 +43,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -245,10 +245,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -447,10 +447,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -649,10 +649,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -853,10 +853,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -1057,10 +1057,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -1261,10 +1261,10 @@
           "frameWidth": 48,
           "frameHeight": 64,
           "pixelsPerMetre": 32,
-          "variantCount": 8,
+          "variantCount": 3,
           "groundDefId": 200,
           "image": {
-            "width": 384,
+            "width": 144,
             "height": 64
           }
         },
@@ -1442,7 +1442,7 @@
     {
       "name": "the tree sheet is art at 32 pixels per metre, loaded at the size its def declares",
       "pass": true,
-      "details": "48x64 frames at 32 per metre; image 384x64"
+      "details": "48x64 frames at 32 per metre; image 144x64"
     },
     {
       "name": "the rock sheet is art at 32 pixels per metre, loaded at the size its def declares",
@@ -1497,7 +1497,7 @@
     {
       "name": "holding D walks the player east and its name goes with it",
       "pass": true,
-      "details": "name from x 208 to 365.33203125 world px"
+      "details": "name from x 208 to 266.6668701171875 world px"
     },
     {
       "name": "the nearest lake is drawn in the ground, coast and all",

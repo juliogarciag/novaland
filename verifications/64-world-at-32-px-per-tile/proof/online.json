@@ -66,8 +66,8 @@
       "minVisibleMetres": 20,
       "camera": {
         "zoom": 2,
-        "scrollX": -400,
-        "scrollY": 96,
+        "scrollX": -464,
+        "scrollY": 64,
         "width": 1280,
         "height": 800,
         "bounds": {
@@ -77,8 +77,8 @@
           "height": 2944
         },
         "worldView": {
-          "x": -80,
-          "y": 296,
+          "x": -144,
+          "y": 264,
           "width": 640,
           "height": 400
         },
@@ -127,7 +127,7 @@
     {
       "name": "room server and dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5265,\"roomId\":\"world\",\"seed\":977326928,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5265,\"roomId\":\"world\",\"seed\":1263211672,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
     },
     {
       "name": "both players are seated and each tab draws both of them",
