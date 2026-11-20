@@ -15,7 +15,7 @@ import { PROOF, ROOT, check, lastLinesOf, rememberCharacter, start, summarize, w
 const SERVER_PORT = 5265;
 const CLIENT_PORT = 5266;
 const VIEWPORT = { width: 1280, height: 800 };
-/** What the world's art was drawn at before this ticket: the scale the camera has to keep. */
+/** What the world's art was drawn at before this ticket: the scale the camera has to keep. This and the other "before" numbers here are measured on the base commit by before-after.mjs. */
 const PIXELS_PER_METRE_BEFORE = 16;
 /** The player's sheet stood 1 x 1.5 m at 16 pixels per metre (16x24 frames). */
 const PLAYER_METRES_BEFORE = { width: 1, height: 1.5 };

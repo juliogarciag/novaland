@@ -23,6 +23,7 @@ import {
   groundTilesetSlots,
 } from "./groundTiles";
 import { variantOfTile } from "./tileVariant";
+import { PIXELS_PER_METRE } from "./units";
 
 describe("groundTilesetSlots", () => {
   it("gives a def with a loaded ground sprite one tile per variant and every other def one flat tile, end to end in def order", () => {
@@ -67,6 +68,13 @@ describe("groundTilesetSlots", () => {
     for (const def of terrainDefs) {
       if (def.groundSprite)
         expect(def.groundSprite.tilePixels, def.name).toBe(GROUND_TILE_PIXELS);
+    }
+  });
+
+  it("every terrain sprite is art at the pixels per metre the world is drawn at", () => {
+    for (const def of terrainDefs) {
+      if (def.groundSprite) expect(def.groundSprite.tilePixels, def.name).toBe(PIXELS_PER_METRE);
+      if (def.standingSprite) expect(def.standingSprite.pixelsPerMetre, def.name).toBe(PIXELS_PER_METRE);
     }
   });
 

@@ -30,9 +30,13 @@ const baseCommit = git(['merge-base', 'HEAD', 'origin/main']);
 report.baseCommit = baseCommit;
 let before;
 let after;
+/** Whether this run added the baseline worktree: only then does it remove it, so a folder someone kept there is never touched. */
+let addedBaseline = false;
 let browser;
 try {
-  if (!existsSync(BASELINE)) git(['worktree', 'add', '--detach', BASELINE, baseCommit]);
+  if (existsSync(BASELINE)) throw new Error(`${BASELINE} already exists: remove it or keep it, this run will not reuse it`);
+  git(['worktree', 'add', '--detach', BASELINE, baseCommit]);
+  addedBaseline = true;
   execFileSync('pnpm', ['install', '--frozen-lockfile', '--prefer-offline'], { cwd: BASELINE, stdio: 'ignore' });
   before = start('pnpm', ['dev'], { cwd: BASELINE, env: { PORT: String(BEFORE_PORT) } });
   after = start('pnpm', ['dev'], { env: { PORT: String(AFTER_PORT) } });
@@ -71,10 +75,9 @@ try {
   await browser?.close();
   before?.stop();
   after?.stop();
-  try {
+  if (addedBaseline) {
     git(['worktree', 'remove', '--force', BASELINE]);
-  } catch {
-    /* never added */
+    git(['worktree', 'prune']);
   }
 }
 

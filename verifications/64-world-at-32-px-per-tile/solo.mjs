@@ -23,7 +23,7 @@ import path from 'node:path';
 import { PROOF, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 const PORT = 5264;
-/** What the world's art was drawn at before this ticket: the scale the camera has to keep. */
+/** What the world's art was drawn at before this ticket: the scale the camera has to keep. This and the other "before" numbers here are measured on the base commit by before-after.mjs. */
 const PIXELS_PER_METRE_BEFORE = 16;
 /**
  * Screens to open, in CSS pixels and device pixels per CSS pixel: 1x monitors
@@ -37,9 +37,9 @@ const SCREENS = [
   { name: '1440x900@2x', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 },
   { name: '1512x982@2x', viewport: { width: 1512, height: 982 }, deviceScaleFactor: 2 },
   { name: '1728x1117@2x', viewport: { width: 1728, height: 1117 }, deviceScaleFactor: 2 },
+  // The worst case: a window 960 to 1279 px wide had zoom 3, now 1, and sees half as much world again.
+  { name: '1024x768', viewport: { width: 1024, height: 768 }, deviceScaleFactor: 1 },
 ];
-/** Of every screen, how many more metres it may show than at 16 pixels per metre: none where the zoom halves exactly, one zoom step's worth where it was odd. */
-const MOST_EXTRA_WORLD = 1.15;
 /** The size the art stood in the world at 16 pixels per metre, in metres: frames of 24x32 (tree), 16x20 (rock) and 16x24 (player). What a player sees must not change. */
 const METRES_BEFORE = { tree: { width: 1.5, height: 2 }, rock: { width: 1, height: 1.25 }, player: { width: 1, height: 1.5 } };
 /** At 16 pixels per metre a pixel of a letter was this share of a pixel of the world (nameLabel.ts before #64), and the gap above the head one pixel. */
@@ -109,11 +109,13 @@ function checkScale(screen, seen) {
   const devicePixelsPerMetre = camera.zoom * pixelsPerMetre;
   const devicePixelsPerMetreBefore = zoomBefore * PIXELS_PER_METRE_BEFORE;
   const extraWorld = devicePixelsPerMetreBefore / devicePixelsPerMetre;
+  // Where the zoom at 16 was even it halves exactly; where it was odd, 2k + 1, it rounds down to k: (2k + 1) / 2k times the world.
+  const expectedExtraWorld = zoomBefore % 2 === 0 ? 1 : zoomBefore / (zoomBefore - 1);
   results.push(
     check(
-      `${screen.name}: a whole zoom showing at least ${minVisibleMetres} m, and about the world it showed at 16 px per metre`,
-      Number.isInteger(camera.zoom) && camera.visibleMetres.width >= minVisibleMetres && extraWorld >= 1 && extraWorld <= MOST_EXTRA_WORLD,
-      `${camera.width} device px: zoom ${camera.zoom} (${zoomBefore} before), ${devicePixelsPerMetre} device px per metre (${devicePixelsPerMetreBefore} before), ${camera.visibleMetres.width.toFixed(1)} m across`,
+      `${screen.name}: a whole zoom showing at least ${minVisibleMetres} m: the world it showed at 16 px per metre, or (2k + 1) / 2k of it where that zoom was odd`,
+      Number.isInteger(camera.zoom) && camera.visibleMetres.width >= minVisibleMetres && close(extraWorld, expectedExtraWorld),
+      `${camera.width} device px: zoom ${camera.zoom} (${zoomBefore} before), ${devicePixelsPerMetre} device px per metre (${devicePixelsPerMetreBefore} before), ${camera.visibleMetres.width.toFixed(1)} m across, ${extraWorld}x the world`,
     ),
   );
   for (const thing of ['tree', 'rock', 'player']) {
@@ -124,11 +126,13 @@ function checkScale(screen, seen) {
   }
   const name = names[0];
   const letterPixelBefore = Math.max(1, Math.round(zoomBefore * LETTER_PIXEL_SHARE_BEFORE));
+  // A name is sized against the world: where a metre takes the device pixels it took before, so does a letter; where the world draws smaller (an odd zoom before), the name draws smaller with it.
+  const letterPixelExpected = Math.max(1, Math.round((devicePixelsPerMetre / PIXELS_PER_METRE_BEFORE) * LETTER_PIXEL_SHARE_BEFORE));
   results.push(
     check(
-      `${screen.name}: the name is lettered in device pixels as big as before and sits ${NAME_GAP_METRES_BEFORE} m above the head`,
-      Boolean(name) && name.devicePixelsPerLetterPixel === letterPixelBefore && close(name.gapMetres, NAME_GAP_METRES_BEFORE) && close(name.x, name.headX),
-      name && `letter pixel ${name.devicePixelsPerLetterPixel} device px (${letterPixelBefore} before), ${name.devicePixelsTall} device px tall, gap ${name.gapMetres} m`,
+      `${screen.name}: the name is lettered as big against the world as before and sits ${NAME_GAP_METRES_BEFORE} m above the head`,
+      Boolean(name) && name.devicePixelsPerLetterPixel === letterPixelExpected && close(name.gapMetres, NAME_GAP_METRES_BEFORE) && close(name.x, name.headX),
+      name && `letter pixel ${name.devicePixelsPerLetterPixel} device px (${letterPixelExpected} expected, ${letterPixelBefore} before), ${name.devicePixelsTall} device px tall, gap ${name.gapMetres} m`,
     ),
   );
   results.push(check(`${screen.name}: the minimap paints the terrain around the player`, Boolean(minimap) && minimap.chunksDrawn.length > 0 && minimap.marks.length > 0, minimap && `${minimap.chunksDrawn.length} chunks, ${minimap.marks.length} marks, ${minimap.rect.width}x${minimap.rect.height} css px`));

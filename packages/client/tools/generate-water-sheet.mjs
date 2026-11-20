@@ -236,7 +236,9 @@ function edgeNear(isOutside, x, y) {
     across += outsidePixel.across / outsidePixel.distance;
     down += outsidePixel.down / outsidePixel.distance;
   }
-  return { distance, outsideToNorth: -down / Math.hypot(across, down) };
+  const length = Math.hypot(across, down);
+  // Outside pixels on opposite sides cancel out: the edge then lies neither north nor south.
+  return { distance, outsideToNorth: length === 0 ? 0 : -down / length };
 }
 
 /** Outside pixels this many pixels further than the nearest still count towards which way the edge lies. */
