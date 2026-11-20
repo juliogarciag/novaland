@@ -120,9 +120,9 @@ describe('readCharacterName', () => {
 
 describe('readCharacter', () => {
   it('gives back a fresh, normalised character for a legal one', () => {
-    const given = { name: ' Ada ', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } };
+    const given = { name: ' Ada ', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } };
     const read = readCharacter(given);
-    expect(read).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } });
+    expect(read).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } });
     expect(read?.look).not.toBe(given.look);
   });
 
@@ -136,13 +136,13 @@ describe('readCharacter', () => {
     }
   });
 
-  it('accepts every body type and hairstyle, in any pairing, and nothing outside the lists', () => {
-    for (let body = 0; body < characterShapes.body.length; body += 1) {
+  it('accepts every gender and hairstyle, in any pairing, and nothing outside the lists', () => {
+    for (let gender = 0; gender < characterShapes.gender.length; gender += 1) {
       for (let hairStyle = 0; hairStyle < characterShapes.hairStyle.length; hairStyle += 1) {
-        expect(readCharacter(withLook({ body, hairStyle }))?.look).toMatchObject({ body, hairStyle });
+        expect(readCharacter(withLook({ gender, hairStyle }))?.look).toMatchObject({ gender, hairStyle });
       }
     }
-    for (const part of ['body', 'hairStyle'] as const) {
+    for (const part of ['gender', 'hairStyle'] as const) {
       const size = characterShapes[part].length;
       for (const index of [-1, size, size + 1, 0.5, NaN, Infinity, 2 ** 32, '0', null, undefined, [0], {}]) {
         expect(readCharacter(withLook({ [part]: index })), `${part} ${String(index)}`).toBeUndefined();
@@ -150,17 +150,24 @@ describe('readCharacter', () => {
     }
   });
 
-  it('keeps every body type and hairstyle at its index: browsers and the server remember looks by them', () => {
+  it('keeps every gender and hairstyle at its index: browsers and the server remember looks by them', () => {
     // Append only (ADR 0017). Changing this list moves what remembered characters wear.
-    expect(characterShapes.body.map((shape) => shape.name)).toEqual(['straight', 'curvy']);
+    expect(characterShapes.gender.map((shape) => shape.name)).toEqual(['male', 'female']);
     expect(characterShapes.hairStyle.map((shape) => shape.name)).toEqual(['short', 'long', 'tied back']);
   });
 
-  it('refuses a look without a body type or a hairstyle: the join and the change carry both', () => {
-    const { skin, hair, clothes, body, hairStyle } = guestCharacter(0).look;
-    const withoutBody = { skin, hair, clothes, hairStyle };
-    const withoutHairStyle = { skin, hair, clothes, body };
-    expect(readCharacter({ name: 'Ada', look: withoutBody })).toBeUndefined();
+  it('suggests a hairstyle for each gender that is one of the hairstyles, and still lets any hairstyle go with any gender', () => {
+    for (const gender of characterShapes.gender) expect(isLookIndexOf(gender.defaultHairStyle, characterShapes.hairStyle.length), gender.name).toBe(true);
+    expect(characterShapes.gender.map((gender) => characterShapes.hairStyle[gender.defaultHairStyle]?.name)).toEqual(['short', 'long']);
+    expect(readCharacter(withLook({ gender: 0, hairStyle: 1 }))).toBeDefined();
+    expect(readCharacter(withLook({ gender: 1, hairStyle: 0 }))).toBeDefined();
+  });
+
+  it('refuses a look without a gender or a hairstyle: the join and the change carry both', () => {
+    const { skin, hair, clothes, gender, hairStyle } = guestCharacter(0).look;
+    const withoutGender = { skin, hair, clothes, hairStyle };
+    const withoutHairStyle = { skin, hair, clothes, gender };
+    expect(readCharacter({ name: 'Ada', look: withoutGender })).toBeUndefined();
     expect(readCharacter({ name: 'Ada', look: withoutHairStyle })).toBeUndefined();
     expect(readCharacter({ name: 'Ada', look: { skin: 0, hair: 0, clothes: 0 } })).toBeUndefined();
   });
@@ -208,21 +215,21 @@ describe('readCharacter', () => {
 });
 
 describe('readRememberedCharacter', () => {
-  it('reads a character remembered before body types and hairstyles existed with the first of each', () => {
-    expect(readRememberedCharacter({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } })).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } });
+  it('reads a character remembered before genders and hairstyles existed with the first of each', () => {
+    expect(readRememberedCharacter({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } })).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } });
   });
 
   it('reads a character remembered since then as it is, and refuses what readCharacter refuses', () => {
-    const curvy: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 2, body: 1, hairStyle: 2 } };
-    expect(readRememberedCharacter(curvy)).toEqual(curvy);
+    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 2, gender: 1, hairStyle: 2 } };
+    expect(readRememberedCharacter(bea)).toEqual(bea);
     const refused: unknown[] = [
       undefined,
       'Ada',
       { name: 'Ada', look: { skin: 99, hair: 0, clothes: 0 } },
       { name: '', look: { skin: 0, hair: 0, clothes: 0 } },
-      { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, body: 1 } },
+      { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, gender: 1 } },
       { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, hairStyle: 1 } },
-      { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, body: 9, hairStyle: 0 } },
+      { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, gender: 9, hairStyle: 0 } },
       { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0 }, slot: 1 },
     ];
     for (const value of refused) expect(readRememberedCharacter(value), JSON.stringify(value)).toBeUndefined();
@@ -237,7 +244,7 @@ describe('readRememberedCharacter', () => {
 
 describe('sameCharacter', () => {
   it('calls two characters the same when the name and every part of the look match', () => {
-    expect(sameCharacter(ADA, { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } })).toBe(true);
+    expect(sameCharacter(ADA, { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } })).toBe(true);
   });
 
   it('calls them different when the name or any one colour differs', () => {
@@ -245,7 +252,7 @@ describe('sameCharacter', () => {
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, skin: 0 } })).toBe(false);
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hair: 0 } })).toBe(false);
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, clothes: 0 } })).toBe(false);
-    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, body: 1 } })).toBe(false);
+    expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, gender: 1 } })).toBe(false);
     expect(sameCharacter(ADA, { ...ADA, look: { ...ADA.look, hairStyle: 2 } })).toBe(false);
   });
 });
@@ -253,8 +260,8 @@ describe('sameCharacter', () => {
 describe('player/join with a character', () => {
   it('spawns the player with the look and the name it joined with', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 1, hairStyle: 0 } };
-    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, body: 0, hairStyle: 2 } };
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, gender: 1, hairStyle: 0 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, gender: 0, hairStyle: 2 } };
     sim.step([join(0, ada), join(1, jose)]);
     expect(characterInSlot(sim, 0)).toEqual(ada);
     expect(characterInSlot(sim, 1)).toEqual(jose);
@@ -263,7 +270,7 @@ describe('player/join with a character', () => {
 
   it('stores the normalised name, never the one the command carried', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    sim.step([join(0, { name: '  Ada   Lovelace ', look: { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0 } })]);
+    sim.step([join(0, { name: '  Ada   Lovelace ', look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } })]);
     expect(characterInSlot(sim, 0)?.name).toBe('Ada Lovelace');
     sim.destroy();
   });
@@ -279,9 +286,9 @@ describe('player/join with a character', () => {
       join(0, { name: 21 as unknown as string, look: guestCharacter(0).look }),
       join(0, { name: '', look: guestCharacter(0).look }),
       join(0, { name: 'Ada\n', look: guestCharacter(0).look }),
-      join(0, { name: 'Ada', look: { skin: characterPalettes.skin.length, hair: 0, clothes: 0, body: 0, hairStyle: 0 } }),
-      join(0, { name: 'Ada', look: { skin: 0, hair: -1, clothes: 0, body: 0, hairStyle: 0 } }),
-      join(0, { name: 'Ada', look: { skin: 0, hair: 0, clothes: 1.5, body: 0, hairStyle: 0 } }),
+      join(0, { name: 'Ada', look: { skin: characterPalettes.skin.length, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } }),
+      join(0, { name: 'Ada', look: { skin: 0, hair: -1, clothes: 0, gender: 0, hairStyle: 0 } }),
+      join(0, { name: 'Ada', look: { skin: 0, hair: 0, clothes: 1.5, gender: 0, hairStyle: 0 } }),
     ];
     for (const command of malformed) {
       expect(() => sim.step([command as Command])).not.toThrow();
@@ -305,8 +312,8 @@ describe('player/join with a character', () => {
     sim.destroy();
   });
 
-  it('keeps the same seed and joins deterministic, and a different name, body type or hairstyle a different state', async () => {
-    const run = async (name: string, shape: { body: number; hairStyle: number } = { body: 0, hairStyle: 0 }): Promise<string> => {
+  it('keeps the same seed and joins deterministic, and a different name, gender or hairstyle a different state', async () => {
+    const run = async (name: string, shape: { gender: number; hairStyle: number } = { gender: 0, hairStyle: 0 }): Promise<string> => {
       const sim = await createSimInternal({ seed: 9 });
       sim.step([join(0, { name, look: { skin: 1, hair: 1, clothes: 1, ...shape } })]);
       for (let tick = 0; tick < 30; tick += 1) sim.step([]);
@@ -316,8 +323,8 @@ describe('player/join with a character', () => {
     };
     expect(await run('Ada')).toBe(await run('Ada'));
     expect(await run('Ada')).not.toBe(await run('Bea'));
-    expect(await run('Ada')).not.toBe(await run('Ada', { body: 1, hairStyle: 0 }));
-    expect(await run('Ada')).not.toBe(await run('Ada', { body: 0, hairStyle: 2 }));
+    expect(await run('Ada')).not.toBe(await run('Ada', { gender: 1, hairStyle: 0 }));
+    expect(await run('Ada')).not.toBe(await run('Ada', { gender: 0, hairStyle: 2 }));
   });
 
   it('reads no character for something that has none, or for an id that is no entity', async () => {
@@ -336,12 +343,12 @@ describe('a character on a replica', () => {
   it('arrives with the join, in a full state and in a delta, as plain numbers', async () => {
     const sim = await createSimInternal({ seed: 2 });
     const replica = createReplica({ map: sim.map, capacity: sim.capacity });
-    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, body: 1, hairStyle: 2 } };
+    const ada: Character = { name: 'Ada 🚀', look: { skin: 3, hair: 6, clothes: 2, gender: 1, hairStyle: 2 } };
     sim.step([join(0, ada)]);
     const first = worldState(sim);
     expect(applyWorldState(replica, overTheWire(first))).toBe('applied');
     expect(characterInSlot(replica, 0)).toEqual(ada);
-    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 5, body: 0, hairStyle: 1 } };
+    const bea: Character = { name: 'Bea', look: { skin: 0, hair: 1, clothes: 5, gender: 0, hairStyle: 1 } };
     sim.step([join(1, bea)]);
     const delta = diffWorldState(first, worldState(sim));
     // The name travels once: the delta carries the newcomer's and not a field of the player who was already there.
@@ -354,7 +361,7 @@ describe('a character on a replica', () => {
 
   it('shows a legal character whatever a server sends: an unreadable name is "?", a palette index out of range the first swatch', async () => {
     const sim = await createSimInternal({ seed: 2 });
-    sim.step([join(0, { name: 'Ada', look: { skin: 1, hair: 1, clothes: 1, body: 0, hairStyle: 0 } })]);
+    sim.step([join(0, { name: 'Ada', look: { skin: 1, hair: 1, clothes: 1, gender: 0, hairStyle: 0 } })]);
     const honest = worldState(sim);
     const eid = findPlayerEntity(sim, 0) as number;
     const hostileNames: Record<string, number>[] = [
@@ -372,8 +379,8 @@ describe('a character on a replica', () => {
       expect(getCharacter(replica, eid)?.name).toBe('?');
     }
     const replica = createReplica({ map: sim.map, capacity: sim.capacity });
-    expect(applyWorldState(replica, tampered(honest, eid, 'PlayerLook', { skin: 99, hair: 4_000_000_000, clothes: characterPalettes.clothes.length, body: characterShapes.body.length, hairStyle: 4_000_000_000 }))).toBe('applied');
-    expect(getCharacter(replica, eid)).toEqual({ name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0 } });
+    expect(applyWorldState(replica, tampered(honest, eid, 'PlayerLook', { skin: 99, hair: 4_000_000_000, clothes: characterPalettes.clothes.length, gender: characterShapes.gender.length, hairStyle: 4_000_000_000 }))).toBe('applied');
+    expect(getCharacter(replica, eid)).toEqual({ name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } });
     sim.destroy();
   });
 });
@@ -381,9 +388,9 @@ describe('a character on a replica', () => {
 describe('player/change-character', () => {
   it('gives the same entity another look and name where it stands, and touches nobody else', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 0, hairStyle: 0 } };
-    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, body: 0, hairStyle: 0 } };
-    const grace: Character = { name: 'Grace Hopper', look: { skin: 0, hair: 3, clothes: 2, body: 1, hairStyle: 1 } };
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, gender: 0, hairStyle: 0 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 1, gender: 0, hairStyle: 0 } };
+    const grace: Character = { name: 'Grace Hopper', look: { skin: 0, hair: 3, clothes: 2, gender: 1, hairStyle: 1 } };
     sim.step([join(0, ada), join(1, jose)]);
     // Walk away from the spawn first: a change that respawned the player would show.
     sim.step([{ type: 'player/move', slot: 0, x: 1, y: 0 }]);
@@ -413,7 +420,7 @@ describe('player/change-character', () => {
 
   it('ignores a change that is not legal, or for a seat nobody sits in: the world is exactly as it was', async () => {
     const sim = await createSimInternal({ seed: 1 });
-    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 0, hairStyle: 0 } };
+    const ada: Character = { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, gender: 0, hairStyle: 0 } };
     sim.step([join(0, ada)]);
     const ignored: unknown[] = [
       { type: 'player/change-character', slot: 0 },
@@ -439,10 +446,10 @@ describe('player/change-character', () => {
   it('reaches a replica as a delta of the same entity', async () => {
     const sim = await createSimInternal({ seed: 1 });
     const replica = createReplica({ capacity: sim.capacity });
-    sim.step([join(0, { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, body: 0, hairStyle: 0 } })]);
+    sim.step([join(0, { name: 'Ada', look: { skin: 2, hair: 5, clothes: 7, gender: 0, hairStyle: 0 } })]);
     const joined = worldState(sim);
     applyWorldState(replica, overTheWire(joined));
-    const grace: Character = { name: 'Grace 🚀', look: { skin: 0, hair: 3, clothes: 2, body: 1, hairStyle: 1 } };
+    const grace: Character = { name: 'Grace 🚀', look: { skin: 0, hair: 3, clothes: 2, gender: 1, hairStyle: 1 } };
     sim.step([change(0, grace)]);
     expect(applyWorldState(replica, overTheWire(diffWorldState(joined, worldState(sim))))).toBe('applied');
     expect(findPlayerEntity(replica, 0)).toBe(findPlayerEntity(sim, 0));
@@ -456,7 +463,7 @@ describe('player/change-character', () => {
       const sim = await createSimInternal({ seed: 9 });
       sim.step([join(0, guestCharacter(0))]);
       for (let tick = 0; tick < 10; tick += 1) sim.step([]);
-      sim.step([change(0, { name: 'Bea', look: { skin: 1, hair: 1, clothes: 1, body: 0, hairStyle: 0 } })]);
+      sim.step([change(0, { name: 'Bea', look: { skin: 1, hair: 1, clothes: 1, gender: 0, hairStyle: 0 } })]);
       for (let tick = 0; tick < 10; tick += 1) sim.step([]);
       const hash = hashSnapshot(sim.snapshot());
       sim.destroy();
@@ -539,7 +546,7 @@ describe('fuzzing player/join', () => {
 
 const { createSimInternal } = __testing__;
 
-const ADA: Character = { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, body: 0, hairStyle: 0 } };
+const ADA: Character = { name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } };
 
 function join(slot: number, character: Character): Command {
   return { type: 'player/join', slot, character };
@@ -556,7 +563,7 @@ function playerInSlot(sim: Sim, slot: number): unknown {
 }
 
 function withLook(overrides: Record<string, unknown>): unknown {
-  return { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0, ...overrides } };
+  return { name: 'Ada', look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0, ...overrides } };
 }
 
 /** What the receiving end holds after a trip through JSON, like a real connection. */
@@ -586,11 +593,15 @@ function expectLegalByTheTicket(character: Character): void {
     expect(character.look[part]).toBeGreaterThanOrEqual(0);
     expect(character.look[part]).toBeLessThan(characterPalettes[part].length);
   }
-  for (const part of ['body', 'hairStyle'] as const) {
+  for (const part of ['gender', 'hairStyle'] as const) {
     expect(Number.isInteger(character.look[part])).toBe(true);
     expect(character.look[part]).toBeGreaterThanOrEqual(0);
     expect(character.look[part]).toBeLessThan(characterShapes[part].length);
   }
+}
+
+function isLookIndexOf(index: number, choices: number): boolean {
+  return Number.isInteger(index) && index >= 0 && index < choices;
 }
 
 function characterInSlot(sim: SimHandle, slot: number): Character | undefined {
@@ -632,7 +643,7 @@ function hostileIndex(random: Random, choices = 6): unknown {
 function hostileCharacter(random: Random): unknown {
   const kind = random.nextInt(12);
   if (kind === 0) return pick(random, [undefined, null, 'Ada', 3, [], { name: 'Ada' }, { look: {} }]);
-  const look: Record<string, unknown> = { skin: hostileIndex(random), hair: hostileIndex(random), clothes: hostileIndex(random), body: hostileIndex(random, characterShapes.body.length), hairStyle: hostileIndex(random, characterShapes.hairStyle.length) };
+  const look: Record<string, unknown> = { skin: hostileIndex(random), hair: hostileIndex(random), clothes: hostileIndex(random), gender: hostileIndex(random, characterShapes.gender.length), hairStyle: hostileIndex(random, characterShapes.hairStyle.length) };
   if (kind === 1) look['hat'] = 1;
   if (kind === 2) delete look['hair'];
   const character: Record<string, unknown> = { name: hostileName(random), look };

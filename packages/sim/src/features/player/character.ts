@@ -199,7 +199,7 @@ export function guestCharacter(slot: number): Character {
       skin: seat % characterPalettes.skin.length,
       hair: (seat * 3 + 1) % characterPalettes.hair.length,
       clothes: seat % characterPalettes.clothes.length,
-      body: seat % characterShapes.body.length,
+      gender: seat % characterShapes.gender.length,
       hairStyle: seat % characterShapes.hairStyle.length,
     },
   };
@@ -212,15 +212,15 @@ export function codePointsOf(text: string): number[] {
 
 /**
  * The character a browser remembered, or undefined when it is not one. A
- * character remembered before body types and hairstyles existed (#66) has a
- * look without `body` and `hairStyle`: it reads with the first entry of each,
+ * character remembered before genders and hairstyles existed (#66) has a
+ * look without `gender` and `hairStyle`: it reads with the first entry of each,
  * what every player wore then, instead of sending the player back to the
  * creator. Anything else is judged by `readCharacter` as it is. Never throws.
  */
 export function readRememberedCharacter(value: unknown): Character | undefined {
   try {
     if (!hasExactlyKeys(value, ['look', 'name']) || !hasExactlyKeys(value['look'], [...CHARACTER_PARTS].sort())) return readCharacter(value);
-    return readCharacter({ name: value['name'], look: { ...value['look'], body: 0, hairStyle: 0 } });
+    return readCharacter({ name: value['name'], look: { ...value['look'], gender: 0, hairStyle: 0 } });
   } catch {
     return undefined;
   }
@@ -233,9 +233,9 @@ export function isLookIndex(part: LookPart, index: unknown): index is number {
 
 function readCharacterLook(value: unknown): CharacterLook | undefined {
   if (!hasExactlyKeys(value, [...LOOK_PARTS].sort())) return undefined;
-  const { skin, hair, clothes, body, hairStyle } = value;
-  if (!isLookIndex('skin', skin) || !isLookIndex('hair', hair) || !isLookIndex('clothes', clothes) || !isLookIndex('body', body) || !isLookIndex('hairStyle', hairStyle)) return undefined;
-  return { skin, hair, clothes, body, hairStyle };
+  const { skin, hair, clothes, gender, hairStyle } = value;
+  if (!isLookIndex('skin', skin) || !isLookIndex('hair', hair) || !isLookIndex('clothes', clothes) || !isLookIndex('gender', gender) || !isLookIndex('hairStyle', hairStyle)) return undefined;
+  return { skin, hair, clothes, gender, hairStyle };
 }
 
 /** True when `value` is a plain object whose own keys are exactly `sortedKeys`. */

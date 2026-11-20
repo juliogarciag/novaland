@@ -37,6 +37,7 @@ export {
   MAX_NAME_CHARACTERS,
   type CharacterPart,
   type CharacterShapePart,
+  type GenderChoice,
   type LookPart,
   type PaletteSwatch,
   type ShapeChoice,

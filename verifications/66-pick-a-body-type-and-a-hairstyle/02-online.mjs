@@ -1,6 +1,6 @@
 /* global window, document */
 /**
- * #66 online: against the real room server, a join carries the body type and
+ * #66 online: against the real room server, a join carries the gender and
  * hairstyle picked in the creator, every other player sees and draws them, a
  * change of character reaches everyone, a rejoin keeps it, and a character
  * remembered before #66 joins with the first of each.
@@ -12,7 +12,7 @@ import { PROOF, ROOT, check, lastLinesOf, rememberCharacter, start, summarize, w
 const SERVER_PORT = 2966;
 const CLIENT_PORT = 5967;
 const VIEWPORT = { width: 960, height: 720 };
-const BEA = { name: 'Bea', look: { skin: 2, hair: 4, clothes: 1, body: 1, hairStyle: 2 } };
+const BEA = { name: 'Bea', look: { skin: 2, hair: 4, clothes: 1, gender: 1, hairStyle: 2 } };
 const REMEMBERED_BEFORE_66 = { name: 'Old Timer', look: { skin: 5, hair: 0, clothes: 6 } };
 const results = [];
 const report = {};
@@ -30,21 +30,21 @@ try {
   if (!ready) throw new Error('nothing to open');
   browser = await chromium.launch();
 
-  // ---- A makes a character in the creator: the last body type, the second hairstyle.
+  // ---- A makes a character in the creator: the last gender, the second hairstyle.
   const contextA = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
   const tabA = await newPage(contextA, 'A');
   await tabA.goto(`http://localhost:${CLIENT_PORT}/`);
   await tabA.waitForSelector('#creator[data-screen="creator"]');
   // Before the game exists the choices are read off the creator (01-solo checks they are the sim's lists).
-  const shapes = await tabA.evaluate(() => Object.fromEntries(['body', 'hairStyle'].map((part) => [part, { length: document.querySelectorAll(`#creator input[name="${part}"]`).length }])));
-  const madeByA = { body: shapes.body.length - 1, hairStyle: 1 };
-  await tabA.check(`#creator input[name="body"][value="${madeByA.body}"]`);
+  const shapes = await tabA.evaluate(() => Object.fromEntries(['gender', 'hairStyle'].map((part) => [part, { length: document.querySelectorAll(`#creator input[name="${part}"]`).length }])));
+  const madeByA = { gender: shapes.gender.length - 1, hairStyle: 1 };
+  await tabA.check(`#creator input[name="gender"][value="${madeByA.gender}"]`);
   await tabA.check(`#creator input[name="hairStyle"][value="${madeByA.hairStyle}"]`);
   await tabA.fill('#creator input[name="name"]', 'Ada');
   await tabA.click('#creator button[type="submit"]');
   await waitUntilSeated(tabA);
 
-  // ---- B returns as Bea: another body type with another hairstyle.
+  // ---- B returns as Bea: another gender with another hairstyle.
   const contextB = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
   await rememberCharacter(contextB, BEA);
   const tabB = await newPage(contextB, 'B');
@@ -58,27 +58,27 @@ try {
   report.seen = seen;
   const adaIn = (characters) => characters?.find((character) => character.name === 'Ada');
   const beaIn = (characters) => characters?.find((character) => character.name === 'Bea');
-  results.push(check("the server seats A with the body type and hairstyle A picked, and B's replica holds them", adaIn(seen?.fromB)?.look.body === madeByA.body && adaIn(seen?.fromB)?.look.hairStyle === madeByA.hairStyle, JSON.stringify(adaIn(seen?.fromB)?.look)));
-  results.push(check("A's replica holds Bea's remembered body type and hairstyle", beaIn(seen?.fromA)?.look.body === BEA.look.body && beaIn(seen?.fromA)?.look.hairStyle === BEA.look.hairStyle, JSON.stringify(beaIn(seen?.fromA)?.look)));
-  const layersLoaded = await tabB.evaluate(() => [...window.__novaland.characterShapes.body, ...window.__novaland.characterShapes.hairStyle].every((shape) => window.__novaland.game.textures.exists(shape.sheet)));
-  results.push(check('the online client loaded every body and hair layer sheet', layersLoaded));
+  results.push(check("the server seats A with the gender and hairstyle A picked, and B's replica holds them", adaIn(seen?.fromB)?.look.gender === madeByA.gender && adaIn(seen?.fromB)?.look.hairStyle === madeByA.hairStyle, JSON.stringify(adaIn(seen?.fromB)?.look)));
+  results.push(check("A's replica holds Bea's remembered gender and hairstyle", beaIn(seen?.fromA)?.look.gender === BEA.look.gender && beaIn(seen?.fromA)?.look.hairStyle === BEA.look.hairStyle, JSON.stringify(beaIn(seen?.fromA)?.look)));
+  const layersLoaded = await tabB.evaluate(() => [...window.__novaland.characterShapes.gender, ...window.__novaland.characterShapes.hairStyle].every((shape) => window.__novaland.game.textures.exists(shape.sheet)));
+  results.push(check('the online client loaded every body sheet and hair layer sheet', layersLoaded));
   results.push(check('each tab draws the other player from a texture made for that look', drawnAsItsLook(adaIn(seen?.fromB)) && drawnAsItsLook(beaIn(seen?.fromA)), `${adaIn(seen?.fromB)?.drawn} | ${beaIn(seen?.fromA)?.drawn}`));
   await tabA.screenshot({ path: path.join(PROOF, 'online-A.png') });
   await tabB.screenshot({ path: path.join(PROOF, 'online-B.png') });
 
-  // ---- A changes body type and hairstyle in the world: B sees it.
+  // ---- A changes gender and hairstyle in the world: B sees it.
   await tabA.click('#change-character');
   await tabA.waitForSelector('#creator[data-screen="creator"]');
-  await tabA.check('#creator input[name="body"][value="0"]');
+  await tabA.check('#creator input[name="gender"][value="0"]');
   await tabA.check(`#creator input[name="hairStyle"][value="${shapes.hairStyle.length - 1}"]`);
   await tabA.click('#creator button[type="submit"]');
-  const changedLook = { body: 0, hairStyle: shapes.hairStyle.length - 1 };
+  const changedLook = { gender: 0, hairStyle: shapes.hairStyle.length - 1 };
   const afterChange = await waitFor("B sees A's change", {
     read: () => charactersOf(tabB),
-    until: (characters) => adaIn(characters)?.look.body === changedLook.body && adaIn(characters)?.look.hairStyle === changedLook.hairStyle && drawnAsItsLook(adaIn(characters)),
+    until: (characters) => adaIn(characters)?.look.gender === changedLook.gender && adaIn(characters)?.look.hairStyle === changedLook.hairStyle && drawnAsItsLook(adaIn(characters)),
   }).catch(() => undefined);
   report.afterChange = afterChange;
-  results.push(check("A's change of body type and hairstyle reaches B's replica and B draws it", afterChange !== undefined, JSON.stringify(adaIn(afterChange)?.look)));
+  results.push(check("A's change of gender and hairstyle reaches B's replica and B draws it", afterChange !== undefined, JSON.stringify(adaIn(afterChange)?.look)));
   await tabB.screenshot({ path: path.join(PROOF, 'online-B-after-change.png') });
 
   // ---- A rejoins (a reload): the server seats A as the changed character.
@@ -86,11 +86,11 @@ try {
   await waitUntilSeated(tabA);
   const afterRejoin = await waitFor('B sees A again after the rejoin', {
     read: () => charactersOf(tabB),
-    until: (characters) => characters.length === 2 && adaIn(characters)?.look.body === changedLook.body && adaIn(characters)?.look.hairStyle === changedLook.hairStyle,
+    until: (characters) => characters.length === 2 && adaIn(characters)?.look.gender === changedLook.gender && adaIn(characters)?.look.hairStyle === changedLook.hairStyle,
   }).catch(() => undefined);
   const creatorAfterRejoin = await tabA.evaluate(() => document.querySelector('#creator') !== null);
   report.afterRejoin = afterRejoin;
-  results.push(check('a rejoin keeps the changed body type and hairstyle, without the creator', afterRejoin !== undefined && !creatorAfterRejoin, JSON.stringify(adaIn(afterRejoin)?.look)));
+  results.push(check('a rejoin keeps the changed gender and hairstyle, without the creator', afterRejoin !== undefined && !creatorAfterRejoin, JSON.stringify(adaIn(afterRejoin)?.look)));
 
   // ---- A browser that remembered a character before #66 joins with the first of each.
   const contextC = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
@@ -101,7 +101,7 @@ try {
   const withC = await waitFor("B sees C's character", { read: () => charactersOf(tabB), until: (characters) => characters.some((character) => character.name === REMEMBERED_BEFORE_66.name) }).catch(() => undefined);
   const oldTimer = withC?.find((character) => character.name === REMEMBERED_BEFORE_66.name);
   report.rememberedBefore66 = oldTimer;
-  results.push(check('a character remembered before #66 joins without the creator, in its colours, with the first body type and hairstyle', oldTimer !== undefined && oldTimer.look.body === 0 && oldTimer.look.hairStyle === 0 && ['skin', 'hair', 'clothes'].every((part) => oldTimer.look[part] === REMEMBERED_BEFORE_66.look[part]), JSON.stringify(oldTimer?.look)));
+  results.push(check('a character remembered before #66 joins without the creator, in its colours, with the first gender and hairstyle', oldTimer !== undefined && oldTimer.look.gender === 0 && oldTimer.look.hairStyle === 0 && ['skin', 'hair', 'clothes'].every((part) => oldTimer.look[part] === REMEMBERED_BEFORE_66.look[part]), JSON.stringify(oldTimer?.look)));
   await tabC.screenshot({ path: path.join(PROOF, 'online-C-remembered-before-66.png') });
 
   results.push(check('no page errors', pageErrors.length === 0, pageErrors.join(' | ')));
@@ -140,6 +140,6 @@ function charactersOf(page) {
 }
 
 function drawnAsItsLook(character) {
-  const { skin, hair, clothes, body, hairStyle } = character?.look ?? {};
-  return character?.drawn?.endsWith(`/look/${skin}-${hair}-${clothes}-${body}-${hairStyle}`) ?? false;
+  const { skin, hair, clothes, gender, hairStyle } = character?.look ?? {};
+  return character?.drawn?.endsWith(`/look/${skin}-${hair}-${clothes}-${gender}-${hairStyle}`) ?? false;
 }

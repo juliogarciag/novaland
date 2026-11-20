@@ -19,7 +19,7 @@
  * with its eyebrows) and the hair above it. The skull under the hair is
  * painted whole in skin, so any hairstyle (HAIRSTYLES) can go over it; the
  * outline goes around both layers together. The eyebrows stay on the body,
- * in the hair's shade. Body types (BODY_TYPES) differ in build (shoulders,
+ * in the hair's shade. The genders (BUILDS) differ in build (shoulders,
  * waist, hips) and in lashes; the head sits in the same place on every one,
  * so any hairstyle goes on any body.
  *
@@ -103,24 +103,24 @@ const POSES = [
 ];
 
 /**
- * The body types and hairstyles, by the name the sim's `characterShapes`
+ * The genders and hairstyles, by the name the sim's `characterShapes`
  * gives them, each with the sprite key its layer sheet is written under (the
  * `sheet` of the sim's entry; the generator's test checks they agree).
  */
 const LAYER_SHEETS = {
-  body: { straight: 'player-body-straight', curvy: 'player-body-curvy' },
+  gender: { male: 'player-body-male', female: 'player-body-female' },
   hairstyle: { short: 'player-hair-short', long: 'player-hair-long', 'tied back': 'player-hair-tied-back' },
 };
 
 /**
- * The whole sheet as RGBA bytes, rows top to bottom: a body type wearing a
+ * The whole sheet as RGBA bytes, rows top to bottom: a gender's body wearing a
  * hairstyle, outlined together. The default is what `player.png` holds.
  */
-export function paintPlayerSheet({ body: bodyType = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+export function paintPlayerSheet({ gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      const { body, hair } = paintFrameLayers(direction, pose, { body: bodyType, hairstyle });
+      const { body, hair } = paintFrameLayers(direction, pose, { gender, hairstyle });
       const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
       blitOpaque(frame, body);
       blitOpaque(frame, hair);
@@ -141,11 +141,11 @@ const HEAD_LEFT = 7;
  * type's sheet (`layer` 'body') or a hairstyle's sheet ('hair') holds. The
  * client lays a hair sheet over a body sheet and outlines the two together.
  */
-function paintLayerSheet(layer, { body = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+function paintLayerSheet(layer, { gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      blit(sheet, paintFrameLayers(direction, pose, { body, hairstyle })[layer], column * FRAME_WIDTH, row * FRAME_HEIGHT);
+      blit(sheet, paintFrameLayers(direction, pose, { gender, hairstyle })[layer], column * FRAME_WIDTH, row * FRAME_HEIGHT);
     });
   });
   return sheet;
@@ -153,12 +153,12 @@ function paintLayerSheet(layer, { body = PLAYER_BODY, hairstyle = PLAYER_HAIRSTY
 
 /**
  * One frame's two layers, unoutlined, each the size of a frame: the body of
- * `body` (a key of BODY_TYPES), and the hair of `hairstyle` (a key of
+ * `gender` (a key of BUILDS), and the hair of `hairstyle` (a key of
  * HAIRSTYLES) that goes over it.
  */
-function paintFrameLayers(direction, pose, { body: bodyType = PLAYER_BODY, hairstyle = PLAYER_HAIRSTYLE } = {}) {
-  const build = BODY_TYPES[bodyType];
-  if (!build) throw new Error(`no body type '${bodyType}'`);
+function paintFrameLayers(direction, pose, { gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+  const build = BUILDS[gender];
+  if (!build) throw new Error(`no gender '${gender}'`);
   if (!HAIRSTYLES[hairstyle]) throw new Error(`no hairstyle '${hairstyle}'`);
   const colors = { ...FIXED_PALETTE, ...TEMPLATE_PALETTE };
   // First row of the head. The passing pose lifts it by two; the rows above it still hold the outline and a clear row.
@@ -471,12 +471,12 @@ const ARM_WIDTH = 2;
 const ARM_COLUMNS = { screenLeft: TORSO_LEFT - ARM_WIDTH, screenRight: TORSO_LEFT + TORSO_WIDTH, profile: TORSO_LEFT + TORSO_WIDTH / 2 - ARM_WIDTH / 2 };
 
 /**
- * The curvy torso, a column wider than the straight one on each side, from
- * CURVY_TORSO_LEFT: shoulders two pixels narrower on each side, a waist
+ * The female torso, a column wider than the male one on each side, from
+ * FEMALE_TORSO_LEFT: shoulders two pixels narrower on each side, a waist
  * narrower still, and hips that flare past the hands. Its middle is the
- * straight torso's, so the neck, the legs and the profile arm stay put.
+ * male torso's, so the neck, the legs and the profile arm stay put.
  */
-const CURVY_TORSO = [
+const FEMALE_TORSO = [
   '...LcsssScC...',
   '...LccsSccC...',
   '...LccccccC...',
@@ -489,27 +489,27 @@ const CURVY_TORSO = [
   'LccccccccccccC',
   'CCCCCCCCCCCCCC',
 ];
-const CURVY_TORSO_PLAIN = ['...LccccccC...', ...CURVY_TORSO.slice(1)];
-const CURVY_TORSO_LEFT = TORSO_LEFT - 1;
-/** Where the curvy shoulders start and end: the arms hang against them. */
-const CURVY_SHOULDERS = { left: CURVY_TORSO_LEFT + 3, width: 8 };
+const FEMALE_TORSO_PLAIN = ['...LccccccC...', ...FEMALE_TORSO.slice(1)];
+const FEMALE_TORSO_LEFT = TORSO_LEFT - 1;
+/** Where the female shoulders start and end: the arms hang against them. */
+const FEMALE_SHOULDERS = { left: FEMALE_TORSO_LEFT + 3, width: 8 };
 
 /**
- * The builds a player picks from: the torso from the front and from
+ * The build of each gender: the torso from the front and from
  * elsewhere and its first column, the columns the arms hang at in front and
  * back views (against the shoulders), and whether the face has lashes.
  */
-const BODY_TYPES = {
-  straight: { torso: TORSO, torsoPlain: TORSO_PLAIN, torsoLeft: TORSO_LEFT, armColumns: ARM_COLUMNS, lashes: false },
-  curvy: {
-    torso: CURVY_TORSO,
-    torsoPlain: CURVY_TORSO_PLAIN,
-    torsoLeft: CURVY_TORSO_LEFT,
-    armColumns: { screenLeft: CURVY_SHOULDERS.left - ARM_WIDTH, screenRight: CURVY_SHOULDERS.left + CURVY_SHOULDERS.width, profile: ARM_COLUMNS.profile },
+const BUILDS = {
+  male: { torso: TORSO, torsoPlain: TORSO_PLAIN, torsoLeft: TORSO_LEFT, armColumns: ARM_COLUMNS, lashes: false },
+  female: {
+    torso: FEMALE_TORSO,
+    torsoPlain: FEMALE_TORSO_PLAIN,
+    torsoLeft: FEMALE_TORSO_LEFT,
+    armColumns: { screenLeft: FEMALE_SHOULDERS.left - ARM_WIDTH, screenRight: FEMALE_SHOULDERS.left + FEMALE_SHOULDERS.width, profile: ARM_COLUMNS.profile },
     lashes: true,
   },
 };
-const PLAYER_BODY = 'straight';
+const PLAYER_GENDER = 'male';
 
 /** An arm, 2 wide: a short sleeve over the skin of the forearm and hand. In profile the sleeve is in shade, so it reads over the torso. */
 const ARM = ['cC', 'cC', 'cC', 'cC', 'sS', 'sS', 'sS', 'sS', 'sS', 'sS'];
@@ -587,7 +587,7 @@ function paintStencil(canvas, colors, { rows, left, top }) {
   });
 }
 
-export const __testing__ = { BODY_TYPES, HAIRSTYLES, LAYER_SHEETS, paintFrameLayers, paintLayerSheet, POSES };
+export const __testing__ = { BUILDS, HAIRSTYLES, LAYER_SHEETS, paintFrameLayers, paintLayerSheet, POSES };
 
 // ---- PNG encoder (8-bit RGBA, no filtering, one IDAT) ----
 
@@ -649,9 +649,9 @@ const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
 /** Writes the sheet into `directory` as `player.png` and returns its path. */
 /**
  * Writes the sheets into `directory` and returns their paths: `player.png`
- * (the first body type wearing the first hairstyle, outlined: what the def
+ * (the first gender's body wearing the first hairstyle, outlined: what the def
  * names, and what the client draws if it cannot lay the layers), then one
- * layer sheet per body type and per hairstyle.
+ * layer sheet per gender (its body) and per hairstyle.
  */
 export function writePlayerSheet(directory) {
   mkdirSync(directory, { recursive: true });
@@ -662,7 +662,7 @@ export function writePlayerSheet(directory) {
   };
   return [
     write(PLAYER_SHEET_KEY, paintPlayerSheet()),
-    ...Object.entries(LAYER_SHEETS.body).map(([body, key]) => write(key, paintLayerSheet('body', { body }))),
+    ...Object.entries(LAYER_SHEETS.gender).map(([gender, key]) => write(key, paintLayerSheet('body', { gender }))),
     ...Object.entries(LAYER_SHEETS.hairstyle).map(([hairstyle, key]) => write(key, paintLayerSheet('hair', { hairstyle }))),
   ];
 }

@@ -5,13 +5,13 @@
         "eid": 1,
         "name": "Ada",
         "look": {
-          "skin": 4,
-          "hair": 6,
-          "clothes": 2,
-          "body": 1,
+          "skin": 1,
+          "hair": 4,
+          "clothes": 3,
+          "gender": 1,
           "hairStyle": 1
         },
-        "drawn": "player/look/4-6-2-1-1"
+        "drawn": "player/look/1-4-3-1-1"
       },
       {
         "eid": 2,
@@ -20,7 +20,7 @@
           "skin": 2,
           "hair": 4,
           "clothes": 1,
-          "body": 1,
+          "gender": 1,
           "hairStyle": 2
         },
         "drawn": "player/look/2-4-1-1-2"
@@ -31,13 +31,13 @@
         "eid": 1,
         "name": "Ada",
         "look": {
-          "skin": 4,
-          "hair": 6,
-          "clothes": 2,
-          "body": 1,
+          "skin": 1,
+          "hair": 4,
+          "clothes": 3,
+          "gender": 1,
           "hairStyle": 1
         },
-        "drawn": "player/look/4-6-2-1-1"
+        "drawn": "player/look/1-4-3-1-1"
       },
       {
         "eid": 2,
@@ -46,7 +46,7 @@
           "skin": 2,
           "hair": 4,
           "clothes": 1,
-          "body": 1,
+          "gender": 1,
           "hairStyle": 2
         },
         "drawn": "player/look/2-4-1-1-2"
@@ -58,13 +58,13 @@
       "eid": 1,
       "name": "Ada",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 2,
-        "body": 0,
+        "skin": 1,
+        "hair": 4,
+        "clothes": 3,
+        "gender": 0,
         "hairStyle": 2
       },
-      "drawn": "player/look/4-6-2-0-2"
+      "drawn": "player/look/1-4-3-0-2"
     },
     {
       "eid": 2,
@@ -73,7 +73,7 @@
         "skin": 2,
         "hair": 4,
         "clothes": 1,
-        "body": 1,
+        "gender": 1,
         "hairStyle": 2
       },
       "drawn": "player/look/2-4-1-1-2"
@@ -84,10 +84,10 @@
       "eid": 1,
       "name": "Ada",
       "look": {
-        "skin": 4,
-        "hair": 6,
-        "clothes": 2,
-        "body": 0,
+        "skin": 1,
+        "hair": 4,
+        "clothes": 3,
+        "gender": 0,
         "hairStyle": 2
       }
     },
@@ -98,7 +98,7 @@
         "skin": 2,
         "hair": 4,
         "clothes": 1,
-        "body": 1,
+        "gender": 1,
         "hairStyle": 2
       },
       "drawn": "player/look/2-4-1-1-2"
@@ -111,7 +111,7 @@
       "skin": 5,
       "hair": 0,
       "clothes": 6,
-      "body": 0,
+      "gender": 0,
       "hairStyle": 0
     },
     "drawn": "player/look/5-0-6-0-0"
@@ -120,41 +120,41 @@
     {
       "name": "room server and dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":2966,\"roomId\":\"world\",\"seed\":1377789999,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":2966,\"roomId\":\"world\",\"seed\":344860592,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
     },
     {
-      "name": "the server seats A with the body type and hairstyle A picked, and B's replica holds them",
+      "name": "the server seats A with the gender and hairstyle A picked, and B's replica holds them",
       "pass": true,
-      "details": "{\"skin\":4,\"hair\":6,\"clothes\":2,\"body\":1,\"hairStyle\":1}"
+      "details": "{\"skin\":1,\"hair\":4,\"clothes\":3,\"gender\":1,\"hairStyle\":1}"
     },
     {
-      "name": "A's replica holds Bea's remembered body type and hairstyle",
+      "name": "A's replica holds Bea's remembered gender and hairstyle",
       "pass": true,
-      "details": "{\"skin\":2,\"hair\":4,\"clothes\":1,\"body\":1,\"hairStyle\":2}"
+      "details": "{\"skin\":2,\"hair\":4,\"clothes\":1,\"gender\":1,\"hairStyle\":2}"
     },
     {
-      "name": "the online client loaded every body and hair layer sheet",
+      "name": "the online client loaded every body sheet and hair layer sheet",
       "pass": true
     },
     {
       "name": "each tab draws the other player from a texture made for that look",
       "pass": true,
-      "details": "player/look/4-6-2-1-1 | player/look/2-4-1-1-2"
+      "details": "player/look/1-4-3-1-1 | player/look/2-4-1-1-2"
     },
     {
-      "name": "A's change of body type and hairstyle reaches B's replica and B draws it",
+      "name": "A's change of gender and hairstyle reaches B's replica and B draws it",
       "pass": true,
-      "details": "{\"skin\":4,\"hair\":6,\"clothes\":2,\"body\":0,\"hairStyle\":2}"
+      "details": "{\"skin\":1,\"hair\":4,\"clothes\":3,\"gender\":0,\"hairStyle\":2}"
     },
     {
-      "name": "a rejoin keeps the changed body type and hairstyle, without the creator",
+      "name": "a rejoin keeps the changed gender and hairstyle, without the creator",
       "pass": true,
-      "details": "{\"skin\":4,\"hair\":6,\"clothes\":2,\"body\":0,\"hairStyle\":2}"
+      "details": "{\"skin\":1,\"hair\":4,\"clothes\":3,\"gender\":0,\"hairStyle\":2}"
     },
     {
-      "name": "a character remembered before #66 joins without the creator, in its colours, with the first body type and hairstyle",
+      "name": "a character remembered before #66 joins without the creator, in its colours, with the first gender and hairstyle",
       "pass": true,
-      "details": "{\"skin\":5,\"hair\":0,\"clothes\":6,\"body\":0,\"hairStyle\":0}"
+      "details": "{\"skin\":5,\"hair\":0,\"clothes\":6,\"gender\":0,\"hairStyle\":0}"
     },
     {
       "name": "no page errors",

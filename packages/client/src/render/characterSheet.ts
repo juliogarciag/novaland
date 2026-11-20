@@ -60,7 +60,7 @@ function mapChannels(color: number, map: (channel: number) => number): number {
 
 /** One name per look, for texture and animation keys: two players with the same look share a texture. */
 export function lookKey(look: CharacterLook): string {
-  return `${look.skin}-${look.hair}-${look.clothes}-${look.body}-${look.hairStyle}`;
+  return `${look.skin}-${look.hair}-${look.clothes}-${look.gender}-${look.hairStyle}`;
 }
 
 /**
@@ -85,9 +85,9 @@ export function paintLook(pixels: Uint8ClampedArray, look: CharacterLook): void 
 /** The colour of the figure's edge, as 0xRRGGBB: FIXED_PALETTE.outline in tools/generate-player-sheet.mjs (the generator's test checks it). */
 const OUTLINE_COLOR = 0x1f1a17;
 
-/** The sprite keys of the two layer sheets a look is drawn from: its body type's and its hairstyle's (ADR 0017). Undefined for an index outside the lists. */
+/** The sprite keys of the two layer sheets a look is drawn from: its gender's and its hairstyle's (ADR 0017). Undefined for an index outside the lists. */
 export function layerSheetsOf(look: CharacterLook): { readonly body: string; readonly hair: string } | undefined {
-  const body = characterShapes.body[look.body]?.sheet;
+  const body = characterShapes.gender[look.gender]?.sheet;
   const hair = characterShapes.hairStyle[look.hairStyle]?.sheet;
   return body && hair ? { body, hair } : undefined;
 }

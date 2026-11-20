@@ -11,7 +11,7 @@ export type CharacterStorage = Pick<Storage, 'getItem' | 'setItem'>;
  * or what it holds is no longer a legal character (edited by hand, or made
  * for palettes that have changed since): the sim's own rule decides, so a
  * remembered character is never one the world would refuse. One remembered
- * before body types and hairstyles existed reads with the first of each
+ * before genders and hairstyles existed reads with the first of each
  * (`readRememberedCharacter` in the sim). A browser that denies storage
  * remembers nothing.
  */

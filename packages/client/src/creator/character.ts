@@ -114,7 +114,7 @@ function randomLook(): CharacterLook {
     skin: randomIndexOf(characterPalettes.skin),
     hair: randomIndexOf(characterPalettes.hair),
     clothes: randomIndexOf(characterPalettes.clothes),
-    body: randomIndexOf(characterShapes.body),
+    gender: randomIndexOf(characterShapes.gender),
     hairStyle: randomIndexOf(characterShapes.hairStyle),
   };
 }

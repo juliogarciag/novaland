@@ -35,7 +35,7 @@ export interface NovalandDebugApi {
   readonly defs: readonly EntityDef[];
   /** The palettes a character's look indexes into, so checks derive colours from content. */
   readonly characterPalettes: typeof characterPalettes;
-  /** The body types and hairstyles a character's look indexes into. */
+  /** The genders and hairstyles a character's look indexes into. */
   readonly characterShapes: typeof characterShapes;
   /** Every character in the sim right now (name and look), by entity id. */
   characters(): (Character & { readonly eid: number })[];

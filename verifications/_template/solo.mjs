@@ -17,7 +17,7 @@ const PORT = 5901;
 /** CSS pixels; the page opens at a pixel ratio of 1 so screen, device and CSS pixels agree. */
 const VIEWPORT = { width: 960, height: 720 };
 /** Who the page plays as: the browser remembers this character, so the creator screen does not show. Palette and shape indexes, as the sim's `characterPalettes` and `characterShapes` list them. */
-const CHARACTER = { name: 'Template', look: { skin: 0, hair: 0, clothes: 0, body: 0, hairStyle: 0 } };
+const CHARACTER = { name: 'Template', look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } };
 const results = [];
 const report = {};
 const pageErrors = [];

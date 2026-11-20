@@ -106,8 +106,8 @@ describe('WorldRoom over a real connection', () => {
 
   it('seats two players as two different characters, and shows both to each of them', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
-    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6, body: 0, hairStyle: 1 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, gender: 1, hairStyle: 2 } };
+    const jose: Character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6, gender: 0, hairStyle: 1 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, jose));
     const [first, second] = players as [Player, Player];
@@ -122,14 +122,14 @@ describe('WorldRoom over a real connection', () => {
 
   it('normalises the name at the gate: the world holds what the rule made of it, not what the client sent', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    players.push(await join(server.port, { name: '  Ada   Lovelace ', look: { skin: 1, hair: 1, clothes: 1, body: 0, hairStyle: 0 } }));
+    players.push(await join(server.port, { name: '  Ada   Lovelace ', look: { skin: 1, hair: 1, clothes: 1, gender: 0, hairStyle: 0 } }));
     expect(characterInSeat((players[0] as Player).replica, 0)?.name).toBe('Ada Lovelace');
   });
 
   it('changes a seated player into another character where it stands, for every player, on the same entity', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
-    const grace: Character = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4, body: 0, hairStyle: 1 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, gender: 1, hairStyle: 2 } };
+    const grace: Character = { name: 'Grace Hopper', look: { skin: 5, hair: 7, clothes: 4, gender: 0, hairStyle: 1 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, guestCharacter(1)));
     const [changer, watcher] = players as [Player, Player];
@@ -157,7 +157,7 @@ describe('WorldRoom over a real connection', () => {
 
   it('drops a character change that is malformed, oversized or names another seat, and changes nobody', async () => {
     server = await startWorldServer({ port: 0, seed: 54 });
-    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, body: 1, hairStyle: 2 } };
+    const ada: Character = { name: 'Ada', look: { skin: 0, hair: 3, clothes: 1, gender: 1, hairStyle: 2 } };
     players.push(await join(server.port, ada));
     players.push(await join(server.port, guestCharacter(1)));
     const [sender, other] = players as [Player, Player];
@@ -215,11 +215,11 @@ describe('WorldRoom over a real connection', () => {
       { ...legal, name: 'a'.repeat(21) },
       { ...legal, name: '   ' },
       { ...legal, name: 'Ada\nLovelace' },
-      { ...legal, look: { skin: 99, hair: 0, clothes: 0, body: 0, hairStyle: 0 } },
-      { ...legal, look: { skin: 0, hair: -1, clothes: 0, body: 0, hairStyle: 0 } },
-      // A look as a page from before body types and hairstyles sends it: the server never fills them in.
+      { ...legal, look: { skin: 99, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } },
+      { ...legal, look: { skin: 0, hair: -1, clothes: 0, gender: 0, hairStyle: 0 } },
+      // A look as a page from before genders and hairstyles sends it: the server never fills them in.
       { ...legal, look: { skin: 0, hair: 0, clothes: 0 } },
-      { ...legal, look: { skin: 0, hair: 0, clothes: 0, body: 2, hairStyle: 0 } },
+      { ...legal, look: { skin: 0, hair: 0, clothes: 0, gender: 2, hairStyle: 0 } },
       { ...legal, look: { skin: 0, hair: 0 } },
       { ...legal, slot: 0 },
     ];

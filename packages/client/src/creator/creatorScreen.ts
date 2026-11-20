@@ -31,12 +31,13 @@ export interface CreatorScreenOptions {
 /** Screen pixels per sheet pixel in the preview. */
 const PREVIEW_SCALE = 3;
 
-const PART_LABELS: Readonly<Record<LookPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes', body: 'Body type', hairStyle: 'Hairstyle' };
+const PART_LABELS: Readonly<Record<LookPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes', gender: 'Gender', hairStyle: 'Hairstyle' };
 
 /**
- * The creator: the screen where a player picks a body type, a hairstyle, a
- * skin, hair and clothes colour and a name before entering the world. Body
- * and hairstyle are two separate choices: any hairstyle goes on any body. Plain DOM over the page, like
+ * The creator: the screen where a player picks a gender, a hairstyle, a
+ * skin, hair and clothes colour and a name before entering the world.
+ * Picking a gender also picks the hairstyle the sim suggests for it
+ * (`defaultHairStyle`); the player may pick another one after. Plain DOM over the page, like
  * the connection screens, because it shows before the game exists. It decides
  * nothing: the palettes come from the sim and so does the verdict on the
  * name (`readCharacter`), which is the same rule the server applies. The
@@ -117,6 +118,15 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
     paintPreview(look);
   };
   const shapes = CHARACTER_SHAPE_PARTS.map((part) => shapePicker(part, look[part], pickHandlerFor(part)));
+  // A gender comes with the hairstyle the sim suggests for it, shown as picked so the player sees it and can pick another.
+  // The fieldset hears the change after the gender's own radio has stored it in the look.
+  shapes[CHARACTER_SHAPE_PARTS.indexOf('gender')]?.addEventListener('change', () => {
+    const suggested = characterShapes.gender[look.gender]?.defaultHairStyle;
+    const radio = form.querySelector<HTMLInputElement>(`input[name="hairStyle"][value="${String(suggested)}"]`);
+    if (suggested === undefined || !radio) return;
+    radio.checked = true;
+    pickHandlerFor('hairStyle')(suggested);
+  });
   const palettes = CHARACTER_PARTS.map((part) => swatchPicker(part, look[part], pickHandlerFor(part)));
 
   const submit = document.createElement('button');
@@ -213,7 +223,7 @@ function swatchPicker(part: CharacterPart, selected: number, onPick: (index: num
   return fieldset;
 }
 
-/** One row of named choices for a part's shape (a body type, a hairstyle): radio buttons, like the swatches. */
+/** One row of named choices for a part's shape (a gender, a hairstyle): radio buttons, like the swatches. */
 function shapePicker(part: CharacterShapePart, selected: number, onPick: (index: number) => void): HTMLFieldSetElement {
   const fieldset = document.createElement('fieldset');
   fieldset.dataset['part'] = part;
@@ -243,7 +253,7 @@ function shapePicker(part: CharacterShapePart, selected: number, onPick: (index:
 
 /**
  * Draws the character standing, facing the player, in a look: the first
- * frame of its body type's sheet with its hairstyle's over it, outlined and
+ * frame of its gender's sheet with its hairstyle's over it, outlined and
  * recoloured the way the game draws it (`paintFigure`). Returns the function
  * that paints a look; until both sheets have loaded (or if they never do)
  * the preview keeps what it showed and the creator works without it.
@@ -296,7 +306,7 @@ function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (loo
     preview.dataset['look'] = lookKey(shown);
   };
   // Every choice is a click away: fetch all the layer sheets now, so a pick draws at once.
-  for (const shape of [...characterShapes.body, ...characterShapes.hairStyle]) imageOf(shape.sheet);
+  for (const shape of [...characterShapes.gender, ...characterShapes.hairStyle]) imageOf(shape.sheet);
   return (look) => {
     shown = { ...look };
     paint();

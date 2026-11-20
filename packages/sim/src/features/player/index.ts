@@ -152,7 +152,7 @@ function writeCharacter(sim: Sim, eid: number, character: Character): void {
   look.skin[eid] = character.look.skin;
   look.hair[eid] = character.look.hair;
   look.clothes[eid] = character.look.clothes;
-  look.body[eid] = character.look.body;
+  look.gender[eid] = character.look.gender;
   look.hairStyle[eid] = character.look.hairStyle;
   writePlayerName(sim, eid, character.name);
 }

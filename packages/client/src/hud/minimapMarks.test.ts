@@ -64,7 +64,7 @@ describe('minimapMarks', () => {
     const ownColor = getDef(DefId.Player).minimap?.color;
     expect(minimapMarks({ ...NEARBY, renderables })[0]).toMatchObject({ color: ownColor });
     for (const clothes of [-1, 99, 1.5, Number.NaN]) {
-      expect(minimapMarks({ ...NEARBY, renderables, characters: new Map([[7, { name: 'x', look: { skin: 0, hair: 0, clothes, body: 0, hairStyle: 0 } }]]) })[0], String(clothes)).toMatchObject({ color: ownColor });
+      expect(minimapMarks({ ...NEARBY, renderables, characters: new Map([[7, { name: 'x', look: { skin: 0, hair: 0, clothes, gender: 0, hairStyle: 0 } }]]) })[0], String(clothes)).toMatchObject({ color: ownColor });
     }
   });
 

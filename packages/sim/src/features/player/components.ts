@@ -26,7 +26,7 @@ export const PlayerLook = defineComponent('PlayerLook', (capacity) => ({
   skin: u32(capacity),
   hair: u32(capacity),
   clothes: u32(capacity),
-  body: u32(capacity),
+  gender: u32(capacity),
   hairStyle: u32(capacity),
 }));
 

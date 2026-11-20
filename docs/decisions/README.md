@@ -18,4 +18,4 @@ One file per decision, numbered, never edited after the fact (write a new one th
 - [0014 - Returning players: a token the browser keeps, positions in SQLite on a volume, and a join command that says where](0014-returning-players.md)
 - [0015 - The player's character: a look as palette indexes, a name as code points, both chosen by the player and judged by the sim](0015-player-character.md)
 - [0016 - Edge tiles: a ground texture may end with an edge drawn inside its own tiles](0016-edge-tiles.md)
-- [0017 - Body type and hairstyle: two shape choices in the look, drawn as layers, with old remembered characters read with defaults](0017-body-type-and-hairstyle.md)
+- [0017 - Gender and hairstyle: two shape choices in the look, drawn as layers, with old remembered characters read with defaults](0017-gender-and-hairstyle.md)

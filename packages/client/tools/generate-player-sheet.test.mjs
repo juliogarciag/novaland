@@ -66,32 +66,32 @@ describe('player sheet generator', () => {
     expect(looks).toBe(characterPalettes.skin.length * characterPalettes.hair.length * characterPalettes.clothes.length);
   });
 
-  it('writes a layer sheet for every body type and hairstyle the sim lists, under the key the sim gives it', () => {
-    expect(Object.entries(generator.LAYER_SHEETS.body)).toEqual(characterShapes.body.map((shape) => [shape.name, shape.sheet]));
+  it('writes a layer sheet for every gender and hairstyle the sim lists, under the key the sim gives it', () => {
+    expect(Object.entries(generator.LAYER_SHEETS.gender)).toEqual(characterShapes.gender.map((shape) => [shape.name, shape.sheet]));
     expect(Object.entries(generator.LAYER_SHEETS.hairstyle)).toEqual(characterShapes.hairStyle.map((shape) => [shape.name, shape.sheet]));
-    expect(Object.keys(generator.BODY_TYPES)).toEqual(Object.keys(generator.LAYER_SHEETS.body));
+    expect(Object.keys(generator.BUILDS)).toEqual(Object.keys(generator.LAYER_SHEETS.gender));
     expect(Object.keys(generator.HAIRSTYLES)).toEqual(Object.keys(generator.LAYER_SHEETS.hairstyle));
   });
 
-  it('lays a hairstyle over a body type in the client exactly as the generator paints the pair, for every pairing', () => {
+  it('lays a hairstyle over the body of a gender in the client exactly as the generator paints the pair, for every pairing', () => {
     expect(characterSheet.OUTLINE_COLOR).toBe(rgb(FIXED_PALETTE.outline));
     const colorChoices = [
       { skin: 0, hair: 0, clothes: 0 },
       { skin: 5, hair: 6, clothes: 3 },
     ];
-    for (const [bodyIndex, bodyShape] of characterShapes.body.entries()) {
+    for (const [genderIndex, genderShape] of characterShapes.gender.entries()) {
       for (const [hairIndex, hairShape] of characterShapes.hairStyle.entries()) {
-        const pair = { body: bodyShape.name, hairstyle: hairShape.name };
-        // Each layer as writePlayerSheet ships it: a body sheet knows no hairstyle, a hair sheet no body type.
-        const body = generator.paintLayerSheet('body', { body: bodyShape.name });
+        const pair = { gender: genderShape.name, hairstyle: hairShape.name };
+        // Each layer as writePlayerSheet ships it: a body sheet knows no hairstyle, a hair sheet no gender.
+        const body = generator.paintLayerSheet('body', { gender: genderShape.name });
         const hair = generator.paintLayerSheet('hair', { hairstyle: hairShape.name });
         for (const colors of colorChoices) {
-          const look = { ...colors, body: bodyIndex, hairStyle: hairIndex };
-          expect(layerSheetsOf(look)).toEqual({ body: bodyShape.sheet, hair: hairShape.sheet });
+          const look = { ...colors, gender: genderIndex, hairStyle: hairIndex };
+          expect(layerSheetsOf(look)).toEqual({ body: genderShape.sheet, hair: hairShape.sheet });
           const expected = new Uint8ClampedArray(paintPlayerSheet(pair).data);
           paintLook(expected, look);
           const drawn = paintFigure({ body: new Uint8ClampedArray(body.data), hair: new Uint8ClampedArray(hair.data), width: body.width, height: body.height }, look);
-          expect(Buffer.from(drawn).equals(Buffer.from(expected)), `${bodyShape.name} wearing ${hairShape.name} hair`).toBe(true);
+          expect(Buffer.from(drawn).equals(Buffer.from(expected)), `${genderShape.name} wearing ${hairShape.name} hair`).toBe(true);
         }
       }
     }
@@ -99,35 +99,35 @@ describe('player sheet generator', () => {
 
   it('has the committed layer sheets the generator paints today, so a stencil edit cannot ship without its sheets', () => {
     const committed = (key) => readFileSync(new URL(`../public/sprites/${key}.png`, import.meta.url));
-    for (const [body, key] of Object.entries(generator.LAYER_SHEETS.body)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('body', { body })))), key).toBe(true);
+    for (const [gender, key] of Object.entries(generator.LAYER_SHEETS.gender)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('body', { gender })))), key).toBe(true);
     for (const [hairstyle, key] of Object.entries(generator.LAYER_SHEETS.hairstyle)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('hair', { hairstyle })))), key).toBe(true);
   });
 
-  it('keeps player.png as the first body type wearing the first hairstyle', () => {
-    const first = { body: characterShapes.body[0].name, hairstyle: characterShapes.hairStyle[0].name };
+  it('keeps player.png as the first gender wearing the first hairstyle', () => {
+    const first = { gender: characterShapes.gender[0].name, hairstyle: characterShapes.hairStyle[0].name };
     expect(Buffer.from(paintPlayerSheet().data).equals(Buffer.from(paintPlayerSheet(first).data))).toBe(true);
   });
 
-  it('gives each body type its own silhouette from every side, and only the curvy one lashes', () => {
+  it('gives each gender its own silhouette from every side, and only the female one lashes', () => {
     const eyes = rgb(FIXED_PALETTE.eye);
     const standing = generator.POSES[0];
     for (const direction of DIRECTIONS) {
-      const [straight, curvy] = ['straight', 'curvy'].map((body) => generator.paintFrameLayers(direction, standing, { body }).body);
-      expect(maskOf(curvy), direction).not.toEqual(maskOf(straight));
-      if (direction !== 'up') expect(countOf(curvy, eyes), direction).toBeGreaterThan(countOf(straight, eyes));
+      const [male, female] = ['male', 'female'].map((gender) => generator.paintFrameLayers(direction, standing, { gender }).body);
+      expect(maskOf(female), direction).not.toEqual(maskOf(male));
+      if (direction !== 'up') expect(countOf(female, eyes), direction).toBeGreaterThan(countOf(male, eyes));
     }
-    // From the front: narrower shoulders than the straight build's, and hips wider than the curvy waist.
-    const [straight, curvy] = ['straight', 'curvy'].map((body) => generator.paintFrameLayers('down', standing, { body }).body);
-    const shoulderRow = firstRowWith(curvy, rgb(TEMPLATE_PALETTE.clothes));
-    expect(widthOfRow(curvy, shoulderRow)).toBeLessThan(widthOfRow(straight, shoulderRow));
-    expect(widthOfRow(curvy, shoulderRow + 9)).toBeGreaterThan(widthOfRow(curvy, shoulderRow + 3));
+    // From the front: narrower shoulders than the male build's, and hips wider than the female waist.
+    const [male, female] = ['male', 'female'].map((gender) => generator.paintFrameLayers('down', standing, { gender }).body);
+    const shoulderRow = firstRowWith(female, rgb(TEMPLATE_PALETTE.clothes));
+    expect(widthOfRow(female, shoulderRow)).toBeLessThan(widthOfRow(male, shoulderRow));
+    expect(widthOfRow(female, shoulderRow + 9)).toBeGreaterThan(widthOfRow(female, shoulderRow + 3));
   });
 
-  it('gives each hairstyle its own shape from every side, on any body', () => {
-    for (const body of Object.keys(generator.BODY_TYPES)) {
+  it('gives each hairstyle its own shape from every side, on either gender', () => {
+    for (const gender of Object.keys(generator.BUILDS)) {
       for (const direction of DIRECTIONS) {
-        const masks = Object.keys(generator.HAIRSTYLES).map((hairstyle) => maskOf(generator.paintFrameLayers(direction, generator.POSES[0], { body, hairstyle }).hair).join(''));
-        expect(new Set(masks).size, `${body}, ${direction}`).toBe(masks.length);
+        const masks = Object.keys(generator.HAIRSTYLES).map((hairstyle) => maskOf(generator.paintFrameLayers(direction, generator.POSES[0], { gender, hairstyle }).hair).join(''));
+        expect(new Set(masks).size, `${gender}, ${direction}`).toBe(masks.length);
       }
     }
   });
@@ -182,9 +182,9 @@ function rgb([r, g, b]) {
   return (r << 16) | (g << 8) | b;
 }
 
-/** Every body type with every hairstyle, as the generator names them. */
+/** Every gender with every hairstyle, as the generator names them. */
 function everyPairing() {
-  return Object.keys(generator.BODY_TYPES).flatMap((body) => Object.keys(generator.HAIRSTYLES).map((hairstyle) => ({ body, hairstyle })));
+  return Object.keys(generator.BUILDS).flatMap((gender) => Object.keys(generator.HAIRSTYLES).map((hairstyle) => ({ gender, hairstyle })));
 }
 
 /** Which pixels of a canvas are painted, row by row. */

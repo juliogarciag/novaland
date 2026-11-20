@@ -70,7 +70,7 @@ export function getCharacter(handle: SimHandle, eid: number): Character | undefi
   };
   return {
     name: readStoredName(playerName, eid),
-    look: { skin: readIndex('skin'), hair: readIndex('hair'), clothes: readIndex('clothes'), body: readIndex('body'), hairStyle: readIndex('hairStyle') },
+    look: { skin: readIndex('skin'), hair: readIndex('hair'), clothes: readIndex('clothes'), gender: readIndex('gender'), hairStyle: readIndex('hairStyle') },
   };
 }
 
