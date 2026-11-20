@@ -25,7 +25,7 @@ export interface CreatorScreenOptions {
 }
 
 /** Screen pixels per sheet pixel in the preview. */
-const PREVIEW_SCALE = 6;
+const PREVIEW_SCALE = 3;
 
 const PART_LABELS: Readonly<Record<CharacterPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes' };
 
