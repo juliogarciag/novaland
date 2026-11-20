@@ -5,9 +5,14 @@ import { __testing__, readRememberedCharacter, rememberCharacter, type Character
 describe('the remembered character', () => {
   it('comes back as it was remembered', () => {
     const storage = fakeStorage();
-    const character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6 } };
+    const character = { name: 'José 🚀', look: { skin: 4, hair: 0, clothes: 6, gender: 0, hairStyle: 0 } };
     rememberCharacter(storage, character);
     expect(readRememberedCharacter(storage)).toEqual(character);
+  });
+
+  it('comes back with the first gender and hairstyle when it was remembered before those existed, instead of asking again', () => {
+    const storage = fakeStorage({ [CHARACTER_STORAGE_KEY]: JSON.stringify({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3 } }) });
+    expect(readRememberedCharacter(storage)).toEqual({ name: 'Ada', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } });
   });
 
   it('is nothing on a first visit', () => {

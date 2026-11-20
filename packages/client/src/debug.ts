@@ -1,5 +1,5 @@
 import type { Character, Command, EntityDef, MapTiles, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
-import { characterPalettes, CHUNK_SIZE, entityDefs, getCharacter, getRenderables, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
+import { characterPalettes, characterShapes, CHUNK_SIZE, entityDefs, getCharacter, getRenderables, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
 import type Phaser from 'phaser';
 import type { MinimapReport } from './hud/minimap';
 import type { ConnectionStatus } from './online/connection';
@@ -35,6 +35,8 @@ export interface NovalandDebugApi {
   readonly defs: readonly EntityDef[];
   /** The palettes a character's look indexes into, so checks derive colours from content. */
   readonly characterPalettes: typeof characterPalettes;
+  /** The genders and hairstyles a character's look indexes into. */
+  readonly characterShapes: typeof characterShapes;
   /** Every character in the sim right now (name and look), by entity id. */
   characters(): (Character & { readonly eid: number })[];
   /** The names the renderer draws above characters right now, with where each sits and the texture its character is drawn from. Empty until the world scene runs. */
@@ -100,6 +102,7 @@ export function exposeDebugApi({ world, game, online }: DebugApiOptions): void {
     minimap: () => (game.scene.isActive('hud') ? (game.scene.getScene('hud') as HudScene).minimapReport() : undefined),
     defs: entityDefs,
     characterPalettes,
+    characterShapes,
     characters: () =>
       getRenderables(sim).flatMap((renderable) => {
         const character = getCharacter(sim, renderable.eid);

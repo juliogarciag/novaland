@@ -1,6 +1,8 @@
 /**
- * Generates the character sheet at public/sprites/player.png, the sprite of
- * the player def in packages/sim/src/features/player/defs.ts.
+ * Generates the character sheets in public/sprites/: player.png, the sprite
+ * of the player def in packages/sim/src/features/player/defs.ts, and the
+ * layer sheets the client builds each look from: one body sheet per gender
+ * and one hair sheet per hairstyle (LAYER_SHEETS, ADR 0018).
  *
  * The sheet is painted in the template colours of TEMPLATE_PALETTE: the
  * client swaps each of them for a colour it derives from the skin, hair and
@@ -17,7 +19,8 @@
  * with its eyebrows) and the hair above it. The skull under the hair is
  * painted whole in skin, so any hairstyle (HAIRSTYLES) can go over it; the
  * outline goes around both layers together. The eyebrows stay on the body,
- * in the hair's shade.
+ * in the hair's shade. The genders (GENDERS) share one body and differ only
+ * in lashes on the face, so any hairstyle goes with either.
  *
  * Every part is drawn as a stencil, one character per pixel (see
  * STENCIL_KEYS), so the art reads as it looks. Light comes from the left: every material is
@@ -98,12 +101,25 @@ const POSES = [
   { bob: 0, forwardLeg: 'right' },
 ];
 
-/** The whole sheet as RGBA bytes, rows top to bottom. */
-export function paintPlayerSheet() {
+/**
+ * The genders and hairstyles, by the name the sim's `characterShapes` gives
+ * them, each with the sprite key its layer sheet is written under (the
+ * `sheet` of the sim's entry; the generator's test checks they agree).
+ */
+const LAYER_SHEETS = {
+  gender: { male: 'player-body-male', female: 'player-body-female' },
+  hairstyle: { short: 'player-hair-short', long: 'player-hair-long' },
+};
+
+/**
+ * The whole sheet as RGBA bytes, rows top to bottom: a gender's body wearing
+ * a hairstyle, outlined together. The default is what `player.png` holds.
+ */
+export function paintPlayerSheet({ gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
   const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
   DIRECTIONS.forEach((direction, row) => {
     POSES.forEach((pose, column) => {
-      const { body, hair } = paintFrameLayers(direction, pose);
+      const { body, hair } = paintFrameLayers(direction, pose, { gender, hairstyle });
       const frame = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
       blitOpaque(frame, body);
       blitOpaque(frame, hair);
@@ -120,10 +136,28 @@ const FEET_ROW = 45;
 const HEAD_LEFT = 7;
 
 /**
- * One frame's two layers, unoutlined, each the size of a frame: the body,
- * and the hair of `hairstyle` (a key of HAIRSTYLES) that goes over it.
+ * One layer of every frame, unoutlined, in the sheet's layout: what a
+ * gender's body sheet (`layer` 'body') or a hairstyle's sheet ('hair') holds.
+ * The client lays a hair sheet over a body sheet and outlines the two together.
  */
-function paintFrameLayers(direction, pose, hairstyle = PLAYER_HAIRSTYLE) {
+function paintLayerSheet(layer, { gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+  const sheet = createCanvas(FRAME_WIDTH * FRAMES_PER_DIRECTION, FRAME_HEIGHT * DIRECTIONS.length);
+  DIRECTIONS.forEach((direction, row) => {
+    POSES.forEach((pose, column) => {
+      blit(sheet, paintFrameLayers(direction, pose, { gender, hairstyle })[layer], column * FRAME_WIDTH, row * FRAME_HEIGHT);
+    });
+  });
+  return sheet;
+}
+
+/**
+ * One frame's two layers, unoutlined, each the size of a frame: the body of
+ * `gender` (a key of GENDERS), and the hair of `hairstyle` (a key of
+ * HAIRSTYLES) that goes over it.
+ */
+function paintFrameLayers(direction, pose, { gender = PLAYER_GENDER, hairstyle = PLAYER_HAIRSTYLE } = {}) {
+  if (!GENDERS[gender]) throw new Error(`no gender '${gender}'`);
+  if (!HAIRSTYLES[hairstyle]) throw new Error(`no hairstyle '${hairstyle}'`);
   const colors = { ...FIXED_PALETTE, ...TEMPLATE_PALETTE };
   // First row of the head. The passing pose lifts it by two; the rows above it still hold the outline and a clear row.
   const top = 4 + pose.bob;
@@ -131,7 +165,7 @@ function paintFrameLayers(direction, pose, hairstyle = PLAYER_HAIRSTYLE) {
   const body = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   paintLegs(body, colors, { direction, pose, top: torsoTop + TORSO.length });
   paintTorsoAndArms(body, colors, { direction, pose, top: torsoTop });
-  paintStencil(body, colors, { rows: FACE_STENCILS[direction], left: HEAD_LEFT, top });
+  paintStencil(body, colors, { rows: GENDERS[gender].lashes ? withLashes(FACE_STENCILS[direction], direction) : FACE_STENCILS[direction], left: HEAD_LEFT, top });
   const hair = createCanvas(FRAME_WIDTH, FRAME_HEIGHT);
   paintStencil(hair, colors, { rows: HAIRSTYLES[hairstyle][direction], left: HEAD_LEFT, top });
   return { body, hair };
@@ -316,7 +350,114 @@ const HAIRSTYLES = {
     ],
   },
 };
+
+/**
+ * The mirror of a profile's hair, for the other profile. A row the same
+ * shape both ways is kept as it is, highlights included (the light comes from
+ * the left in both). Any other row is reversed and shaded again: plain hair,
+ * with the shade on the right end of every run.
+ */
+function mirrored(rows) {
+  return rows.map((row) => {
+    const mask = [...row].map((character) => character !== '.');
+    if (mask.every((painted, index) => painted === mask[mask.length - 1 - index])) return row;
+    const flipped = [...row].reverse().map((character) => (character === '.' ? '.' : 'h'));
+    return flipped.map((character, index) => (character === 'h' && flipped[index + 1] !== 'h' ? 'H' : character)).join('');
+  });
+}
+
+/**
+ * Long hair in profile, rows from the head's first: the short hair's crown
+ * and fringe, then one lock that keeps the back of the head's width past the
+ * skull and falls straight down behind the neck and the back of the
+ * shoulders, ending at the shoulder blades. It never pinches at the nape.
+ */
+const LONG_HAIR_LEFT = [
+  ...HAIRSTYLES.short.left.slice(0, 15),
+  '.........hhhhhhhH.',
+  '..........hhhhhhH.',
+  '..........hhhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '...........hhhhhH.',
+  '............hhhhH.',
+  '.............hh.H.',
+]
+
+/** Long hair: framing the face, over the shoulders from the front, down the back from behind. */
+HAIRSTYLES.long = {
+  down: [
+    ...HAIRSTYLES.short.down.slice(0, 8),
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hh............hH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hhh..........hhH.',
+    '.hh............hH.',
+    '.h..............H.',
+  ],
+  up: [
+    ...HAIRSTYLES.short.up.slice(0, 17),
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '..hhhhhhhhhhhhhH..',
+    '...hhhhhhhhhhhH...',
+    '....hh.hhhh.hhH...',
+  ],
+  left: LONG_HAIR_LEFT,
+  // The rows the short hair has its own right profile for come from it; only what differs from the short hair is mirrored.
+  right: [...HAIRSTYLES.short.right.slice(0, 15), ...mirrored(LONG_HAIR_LEFT.slice(15))],
+};
+
 const PLAYER_HAIRSTYLE = 'short';
+
+/**
+ * The genders. They share one body; the female face has lashes. Which
+ * hairstyle each suggests is the sim's (`defaultHairStyle`), not the art's.
+ */
+const GENDERS = {
+  male: { lashes: false },
+  female: { lashes: true },
+};
+const PLAYER_GENDER = 'male';
+
+/**
+ * Lashes: one pixel of the eyes' colour flicking up from the outer corner of
+ * each eye, on the row above it, as columns and rows of FACE_STENCILS.
+ */
+const LASHES = {
+  down: [
+    [3, 9],
+    [14, 9],
+  ],
+  up: [],
+  left: [[2, 9]],
+  right: [[15, 9]],
+};
+
+function withLashes(face, direction) {
+  const rows = face.map((row) => [...row]);
+  for (const [column, row] of LASHES[direction]) rows[row][column] = 'e';
+  return rows.map((row) => row.join(''));
+}
 
 /** The neck, centred under the head on the row above the torso. */
 const NECK = ['sssS'];
@@ -405,7 +546,7 @@ function paintStencil(canvas, colors, { rows, left, top }) {
   });
 }
 
-export const __testing__ = { HAIRSTYLES, paintFrameLayers, POSES };
+export const __testing__ = { GENDERS, HAIRSTYLES, LAYER_SHEETS, paintFrameLayers, paintLayerSheet, POSES };
 
 // ---- PNG encoder (8-bit RGBA, no filtering, one IDAT) ----
 
@@ -465,16 +606,29 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_OUTPUT_DIR = path.resolve(here, '../public/sprites');
 
 /** Writes the sheet into `directory` as `player.png` and returns its path. */
+/**
+ * Writes the sheets into `directory` and returns their paths: `player.png`
+ * (the first gender wearing the first hairstyle, outlined: what the def
+ * names, and what the client draws if it cannot lay the layers), then one
+ * layer sheet per gender (its body) and per hairstyle.
+ */
 export function writePlayerSheet(directory) {
   mkdirSync(directory, { recursive: true });
-  const file = path.join(directory, `${PLAYER_SHEET_KEY}.png`);
-  writeFileSync(file, encodePng(paintPlayerSheet()));
-  return file;
+  const write = (key, canvas) => {
+    const file = path.join(directory, `${key}.png`);
+    writeFileSync(file, encodePng(canvas));
+    return file;
+  };
+  return [
+    write(PLAYER_SHEET_KEY, paintPlayerSheet()),
+    ...Object.entries(LAYER_SHEETS.gender).map(([gender, key]) => write(key, paintLayerSheet('body', { gender }))),
+    ...Object.entries(LAYER_SHEETS.hairstyle).map(([hairstyle, key]) => write(key, paintLayerSheet('hair', { hairstyle }))),
+  ];
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const outFlag = process.argv.indexOf('--out');
   if (outFlag >= 0 && !process.argv[outFlag + 1]) throw new Error('--out needs a directory; without the flag the sheet goes to public/sprites');
   const directory = outFlag >= 0 ? path.resolve(process.argv[outFlag + 1]) : DEFAULT_OUTPUT_DIR;
-  console.log(`wrote ${writePlayerSheet(directory)}`);
+  for (const file of writePlayerSheet(directory)) console.log(`wrote ${file}`);
 }

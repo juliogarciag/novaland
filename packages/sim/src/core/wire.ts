@@ -12,11 +12,13 @@ import type { WorldState } from './worldState';
  * names the map by its checksum instead of a level name, and world states no
  * longer hold terrain (ADR 0013). 4: a join carries the player's character
  * and is refused without a legal one, and `player/change-character` changes
- * it afterwards (ADR 0015). Not counted up for `JoinOptions.playerToken`
+ * it afterwards (ADR 0015). 5: a character's look carries a gender and a
+ * hairstyle (ADR 0018), so a page from before would send looks the server
+ * refuses. Not counted up for `JoinOptions.playerToken`
  * (ADR 0014): a join without it and a server that ignores it both still work,
  * so no page has to reload for it.
  */
-export const WIRE_PROTOCOL = 4;
+export const WIRE_PROTOCOL = 5;
 
 /**
  * The messages between a browser and the world server, as ADR 0004 and 0012

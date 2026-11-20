@@ -69,8 +69,8 @@ process.exit(summarize(results) ? 0 : 1);
 /** A tab of its own browser context (its own player, a character named after the tab), open on the client and seated in the world. */
 async function openTab(name) {
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
-  // The browser remembers a character, so the creator screen does not show. Palette indexes, as the sim's `characterPalettes` lists them.
-  await rememberCharacter(context, { name: `Tab ${name}`, look: { skin: 0, hair: 0, clothes: 0 } });
+  // The browser remembers a character, so the creator screen does not show. Palette and shape indexes, as the sim's `characterPalettes` and `characterShapes` list them.
+  await rememberCharacter(context, { name: `Tab ${name}`, look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } });
   const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(`${name}: ${error}`));
   page.on('console', (message) => message.type() === 'error' && pageErrors.push(`${name}: ${message.text()}`));

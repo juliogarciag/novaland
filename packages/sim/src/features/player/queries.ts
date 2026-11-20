@@ -2,9 +2,9 @@ import { hasComponent, query } from 'bitecs';
 import { asEntityWorld } from '../../core/entityWorld';
 import type { SimHandle } from '../../core/sim';
 import { Position } from '../../core/transform';
-import { holdsOnlyNameCharacters, isPaletteIndex, showsSomething, type Character } from './character';
+import { holdsOnlyNameCharacters, isLookIndex, showsSomething, type Character } from './character';
 import { Facing, MoveIntent, nameCodePointField, PlayerLook, PlayerName, Player } from './components';
-import { MAX_NAME_CODE_POINTS } from './defs';
+import { MAX_NAME_CODE_POINTS, type LookPart } from './defs';
 
 /** Entity id of the player in `slot`, or undefined if nobody is in it. */
 export function findPlayerEntity(handle: SimHandle, slot: number): number | undefined {
@@ -55,8 +55,8 @@ const UNREADABLE_NAME = '?';
  * The character of entity `eid`: the name to draw above it and the swatches
  * it wears, or undefined if it has none (today only players do). What comes
  * back is always legal, on a replica too: a replica is fed from the network,
- * so a name that is not one reads as "?" and a palette index out of range as
- * the first swatch, instead of reaching the view.
+ * so a name that is not one reads as "?" and an index out of range as
+ * the first swatch or shape, instead of reaching the view.
  */
 export function getCharacter(handle: SimHandle, eid: number): Character | undefined {
   const sim = asEntityWorld(handle);
@@ -64,16 +64,13 @@ export function getCharacter(handle: SimHandle, eid: number): Character | undefi
   const playerName = sim.store(PlayerName);
   if (!Number.isInteger(eid) || eid < 1 || eid > sim.capacity) return undefined;
   if (!hasComponent(sim.world, eid, look) || !hasComponent(sim.world, eid, playerName)) return undefined;
-  const skin = look.skin[eid];
-  const hair = look.hair[eid];
-  const clothes = look.clothes[eid];
+  const readIndex = (part: LookPart): number => {
+    const index = (look[part] as Uint32Array)[eid];
+    return isLookIndex(part, index) ? index : 0;
+  };
   return {
     name: readStoredName(playerName, eid),
-    look: {
-      skin: isPaletteIndex('skin', skin) ? skin : 0,
-      hair: isPaletteIndex('hair', hair) ? hair : 0,
-      clothes: isPaletteIndex('clothes', clothes) ? clothes : 0,
-    },
+    look: { skin: readIndex('skin'), hair: readIndex('hair'), clothes: readIndex('clothes'), gender: readIndex('gender'), hairStyle: readIndex('hairStyle') },
   };
 }
 

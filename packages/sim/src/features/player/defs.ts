@@ -73,6 +73,64 @@ export const characterPalettes = {
 export type CharacterPart = keyof typeof characterPalettes;
 export const CHARACTER_PARTS: readonly CharacterPart[] = ['skin', 'hair', 'clothes'];
 
+/** One shape a player may pick for a part of their character: a gender or a hairstyle. */
+export interface ShapeChoice {
+  readonly name: string;
+  /** The sheet the client draws this choice from, under `sprites/`: one body sheet per gender, one hair layer per hairstyle (ADR 0018). */
+  readonly sheet: string;
+}
+
+/** A gender: the body sheet it is drawn with (the same body, with or without lashes), and the hairstyle the creator suggests when it is picked. */
+export interface GenderChoice extends ShapeChoice {
+  /** Index into `characterShapes.hairStyle`. Only a suggestion: the player may pick any hairstyle afterwards. */
+  readonly defaultHairStyle: number;
+}
+
+/**
+ * The shapes a player picks their character from: a gender and a hairstyle.
+ * Both genders have the same body; the female face has lashes.
+ * Picking a gender in the creator suggests its `defaultHairStyle`, but any
+ * hairstyle goes with any gender (ADR 0018). A look holds an index into each.
+ * Indexes are forever, like the palettes': add a choice at the end, never
+ * reorder or remove one. The first entry of each is what a character
+ * remembered before these choices existed wears (`readRememberedCharacter`),
+ * so it must stay what players had then.
+ */
+export const characterShapes = {
+  gender: [
+    { name: 'male', sheet: 'player-body-male', defaultHairStyle: 0 },
+    { name: 'female', sheet: 'player-body-female', defaultHairStyle: 1 },
+  ],
+  hairStyle: [
+    { name: 'short', sheet: 'player-hair-short' },
+    { name: 'long', sheet: 'player-hair-long' },
+  ],
+} as const satisfies { readonly gender: readonly GenderChoice[]; readonly hairStyle: readonly ShapeChoice[] };
+
+/** The parts of a character a player shapes, in the order the creator offers them. */
+export type CharacterShapePart = keyof typeof characterShapes;
+export const CHARACTER_SHAPE_PARTS: readonly CharacterShapePart[] = ['gender', 'hairStyle'];
+
+/**
+ * The look the creator starts from when a browser remembers no character:
+ * male with his suggested short hair, honey skin, black hair and sky-blue
+ * clothes. Indexes into the palettes and shape lists above.
+ */
+export const DEFAULT_LOOK = { skin: 2, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } as const satisfies Readonly<Record<'skin' | 'hair' | 'clothes' | 'gender' | 'hairStyle', number>>;
+
+/** Every part of a look: the colours, then the shapes. */
+export type LookPart = CharacterPart | CharacterShapePart;
+export const LOOK_PARTS: readonly LookPart[] = [...CHARACTER_PARTS, ...CHARACTER_SHAPE_PARTS];
+
+/** How many choices a look part has: swatches of a palette or entries of a shape list. */
+export function choiceCount(part: LookPart): number {
+  return isShapePart(part) ? characterShapes[part].length : characterPalettes[part].length;
+}
+
+function isShapePart(part: LookPart): part is CharacterShapePart {
+  return (CHARACTER_SHAPE_PARTS as readonly LookPart[]).includes(part);
+}
+
 /** A name is at most this many user-visible characters (grapheme clusters: an accented letter or an emoji counts once). */
 export const MAX_NAME_CHARACTERS = 20;
 /**
@@ -83,7 +141,9 @@ export const MAX_NAME_CHARACTERS = 20;
 export const MAX_NAME_CODE_POINTS = 40;
 
 /**
- * The character is one sheet, `sprites/player.png`: four rows (down, up,
+ * The character's sheet, `sprites/player.png` (the first gender wearing
+ * the first hairstyle; the client lays each look from one body sheet and one
+ * hair sheet in the same layout, ADR 0018): four rows (down, up,
  * left, right) of four 32x48 frames, frame 0 of a row being the idle pose and
  * the whole row the walk cycle. It is painted in fixed template colours by
  * packages/client/tools/generate-player-sheet.mjs and the client swaps them

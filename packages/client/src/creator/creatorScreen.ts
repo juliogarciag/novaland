@@ -1,6 +1,8 @@
 import {
   CHARACTER_PARTS,
+  CHARACTER_SHAPE_PARTS,
   characterPalettes,
+  characterShapes,
   MAX_NAME_CHARACTERS,
   readCharacter,
   readCharacterName,
@@ -8,14 +10,19 @@ import {
   type CharacterLook,
   type CharacterNameProblem,
   type CharacterPart,
+  type CharacterShapePart,
+  type LookPart,
+  type SpriteDirection,
 } from '@novaland/sim';
-import { cssColor, paintLook } from '../render/characterSheet';
+import { cssColor, layerSheetsOf, lookKey, paintFigure } from '../render/characterSheet';
+import { facingOfKeyPress } from './facingKeys';
 
-/** What the preview needs of the character's sheet: where it is and the size of one frame. */
+/** What the preview needs of the character's sheets: the size of one frame, the frame a figure stands in facing each way, and where the sheet under a sprite key is (the layer sheets a look is drawn from). */
 export interface PreviewSheet {
-  readonly url: string;
   readonly frameWidth: number;
   readonly frameHeight: number;
+  readonly idleFrames: Readonly<Record<SpriteDirection, number>>;
+  urlOf(sheetKey: string): string;
 }
 
 export interface CreatorScreenOptions {
@@ -27,11 +34,13 @@ export interface CreatorScreenOptions {
 /** Screen pixels per sheet pixel in the preview. */
 const PREVIEW_SCALE = 3;
 
-const PART_LABELS: Readonly<Record<CharacterPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes' };
+const PART_LABELS: Readonly<Record<LookPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes', gender: 'Gender', hairStyle: 'Hairstyle' };
 
 /**
- * The creator: the screen where a player picks a skin, hair and clothes
- * colour and a name before entering the world. Plain DOM over the page, like
+ * The creator: the screen where a player picks a gender, a hairstyle, a
+ * skin, hair and clothes colour and a name before entering the world.
+ * Picking a gender also picks the hairstyle the sim suggests for it
+ * (`defaultHairStyle`); the player may pick another one after. Plain DOM over the page, like
  * the connection screens, because it shows before the game exists. It decides
  * nothing: the palettes come from the sim and so does the verdict on the
  * name (`readCharacter`), which is the same rule the server applies. The
@@ -66,7 +75,7 @@ interface CreatorScreenUse {
 }
 
 function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScreenOptions, { title: titleText, submitLabel, onSubmit, onDismiss }: CreatorScreenUse): void {
-  const look: Record<CharacterPart, number> = { ...initial.look };
+  const look: Record<LookPart, number> = { ...initial.look };
 
   const form = document.createElement('form');
   form.id = 'creator';
@@ -80,7 +89,8 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
   preview.className = 'creator-preview';
   preview.width = previewSheet.frameWidth * PREVIEW_SCALE;
   preview.height = previewSheet.frameHeight * PREVIEW_SCALE;
-  const paintPreview = characterPreview(preview, previewSheet);
+  const characterView = characterPreview(preview, previewSheet);
+  const paintPreview = characterView.show;
 
   const nameInput = document.createElement('input');
   nameInput.name = 'name';
@@ -107,21 +117,40 @@ function showCreator(parent: HTMLElement, { initial, previewSheet }: CreatorScre
   // A problem shown by a submit goes away as soon as the player types; it is only ever raised by a submit.
   nameInput.addEventListener('input', () => showProblem(undefined));
 
-  const palettes = CHARACTER_PARTS.map((part) =>
-    swatchPicker(part, look[part], (index) => {
-      look[part] = index;
-      paintPreview(look);
-    }),
-  );
+  const pickHandlerFor = (part: LookPart) => (index: number) => {
+    look[part] = index;
+    paintPreview(look);
+  };
+  const shapes = CHARACTER_SHAPE_PARTS.map((part) => shapePicker(part, look[part], pickHandlerFor(part)));
+  // A gender comes with the hairstyle the sim suggests for it, shown as picked so the player sees it and can pick another.
+  // The fieldset hears the change after the gender's own radio has stored it in the look.
+  shapes[CHARACTER_SHAPE_PARTS.indexOf('gender')]?.addEventListener('change', () => {
+    const suggested = characterShapes.gender[look.gender]?.defaultHairStyle;
+    const radio = form.querySelector<HTMLInputElement>(`input[name="hairStyle"][value="${String(suggested)}"]`);
+    if (suggested === undefined || !radio) return;
+    radio.checked = true;
+    pickHandlerFor('hairStyle')(suggested);
+  });
+  const palettes = CHARACTER_PARTS.map((part) => swatchPicker(part, look[part], pickHandlerFor(part)));
 
   const submit = document.createElement('button');
   submit.type = 'submit';
   submit.textContent = submitLabel;
 
-  form.append(title, preview, nameField, problem, ...palettes, submit);
+  form.append(title, preview, nameField, problem, ...shapes, ...palettes, submit);
 
+  // The keys that walk in the game turn the figure, while the player is not typing.
+  const onFacingKey = (event: KeyboardEvent): void => {
+    const facing = facingOfKeyPress(event);
+    if (!facing) return;
+    // An arrow on a picker would otherwise pick the next choice, and on the page scroll it.
+    event.preventDefault();
+    characterView.face(facing);
+  };
+  document.addEventListener('keydown', onFacingKey);
   let stopListeningForEscape = (): void => {};
   const close = (): void => {
+    document.removeEventListener('keydown', onFacingKey);
     stopListeningForEscape();
     form.remove();
   };
@@ -208,37 +237,111 @@ function swatchPicker(part: CharacterPart, selected: number, onPick: (index: num
   return fieldset;
 }
 
+/** One row of named choices for a part's shape (a gender, a hairstyle): radio buttons, like the swatches. */
+function shapePicker(part: CharacterShapePart, selected: number, onPick: (index: number) => void): HTMLFieldSetElement {
+  const fieldset = document.createElement('fieldset');
+  fieldset.dataset['part'] = part;
+  fieldset.className = 'creator-shapes';
+  const legend = document.createElement('legend');
+  legend.textContent = PART_LABELS[part];
+  fieldset.append(legend);
+  characterShapes[part].forEach((shape, index) => {
+    const option = document.createElement('label');
+    option.className = 'creator-shape';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = part;
+    radio.value = String(index);
+    radio.checked = index === selected;
+    radio.setAttribute('aria-label', `${PART_LABELS[part]}: ${shape.name}`);
+    radio.addEventListener('change', () => {
+      if (radio.checked) onPick(index);
+    });
+    const caption = document.createElement('span');
+    caption.textContent = shape.name;
+    option.append(radio, caption);
+    fieldset.append(option);
+  });
+  return fieldset;
+}
+
+/** The creator's preview: shows a look, and turns the figure to face a way. */
+interface CharacterView {
+  show(look: CharacterLook): void;
+  face(facing: SpriteDirection): void;
+}
+
 /**
- * Draws the character standing, facing the player, in a look's colours: the
- * first frame of the sheet, repainted the way the game repaints it. Returns
- * the function that paints a look; until the sheet has loaded (or if it never
- * does) the preview stays empty and the creator works without it.
+ * Draws the character standing in a look, facing the player until it is
+ * turned: the idle frame of its gender's sheet for the way it faces, with its
+ * hairstyle's over it, outlined and recoloured the way the game draws it
+ * (`paintFigure`). Until both sheets have loaded (or if they never do) the
+ * preview keeps what it showed and the creator works without it.
  */
-function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): (look: CharacterLook) => void {
+function characterPreview(preview: HTMLCanvasElement, sheet: PreviewSheet): CharacterView {
   const context = preview.getContext('2d');
   const frame = document.createElement('canvas');
   frame.width = sheet.frameWidth;
   frame.height = sheet.frameHeight;
   const frameContext = frame.getContext('2d', { willReadFrequently: true });
-  const image = new Image();
+  const images = new Map<string, HTMLImageElement>();
+  const imageOf = (sheetKey: string): HTMLImageElement => {
+    let image = images.get(sheetKey);
+    if (!image) {
+      image = new Image();
+      image.addEventListener('load', () => paint());
+      // A sheet that cannot load must not leave the figure of an earlier pick on show.
+      image.addEventListener('error', () => {
+        if (shown && Object.values(layerSheetsOf(shown) ?? {}).includes(sheetKey)) clearPreview();
+      });
+      image.src = sheet.urlOf(sheetKey);
+      images.set(sheetKey, image);
+    }
+    return image;
+  };
+  const loaded = (image: HTMLImageElement): boolean => image.complete && image.naturalWidth > 0;
   let shown: CharacterLook | undefined;
+  let facing: SpriteDirection = 'down';
+  const clearPreview = (): void => {
+    context?.clearRect(0, 0, preview.width, preview.height);
+    delete preview.dataset['look'];
+  };
   const paint = (): void => {
-    if (!context || !frameContext || !shown || !image.complete || image.naturalWidth === 0) return;
-    frameContext.clearRect(0, 0, frame.width, frame.height);
-    frameContext.drawImage(image, 0, 0, frame.width, frame.height, 0, 0, frame.width, frame.height);
-    const pixels = frameContext.getImageData(0, 0, frame.width, frame.height);
-    paintLook(pixels.data, shown);
+    const layers = shown && layerSheetsOf(shown);
+    if (!context || !frameContext || !shown || !layers) return;
+    const body = imageOf(layers.body);
+    const hair = imageOf(layers.hair);
+    if (!loaded(body) || !loaded(hair)) return;
+    const standingFrame = sheet.idleFrames[facing];
+    const standingFrameOf = (image: HTMLImageElement): Uint8ClampedArray => {
+      const columns = Math.max(1, Math.floor(image.naturalWidth / frame.width));
+      const left = (standingFrame % columns) * frame.width;
+      const top = Math.floor(standingFrame / columns) * frame.height;
+      frameContext.clearRect(0, 0, frame.width, frame.height);
+      frameContext.drawImage(image, left, top, frame.width, frame.height, 0, 0, frame.width, frame.height);
+      return frameContext.getImageData(0, 0, frame.width, frame.height).data;
+    };
+    const figure = paintFigure({ body: standingFrameOf(body), hair: standingFrameOf(hair), width: frame.width, height: frame.height }, shown);
+    const pixels = frameContext.createImageData(frame.width, frame.height);
+    pixels.data.set(figure);
     frameContext.putImageData(pixels, 0, 0);
     context.imageSmoothingEnabled = false;
     context.clearRect(0, 0, preview.width, preview.height);
     context.drawImage(frame, 0, 0, preview.width, preview.height);
-    preview.dataset['look'] = `${shown.skin}-${shown.hair}-${shown.clothes}`;
+    preview.dataset['look'] = lookKey(shown);
+    preview.dataset['facing'] = facing;
   };
-  image.addEventListener('load', paint);
-  image.src = sheet.url;
-  return (look) => {
-    shown = { ...look };
-    paint();
+  // Every choice is a click away: fetch all the layer sheets now, so a pick draws at once.
+  for (const shape of [...characterShapes.gender, ...characterShapes.hairStyle]) imageOf(shape.sheet);
+  return {
+    show(look) {
+      shown = { ...look };
+      paint();
+    },
+    face(way) {
+      facing = way;
+      paint();
+    },
   };
 }
 

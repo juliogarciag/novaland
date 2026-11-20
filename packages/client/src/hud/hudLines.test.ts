@@ -48,7 +48,7 @@ describe('hudLines', () => {
 
 // ---- Helpers ----
 
-const CHARACTER: Character = { name: 'Ada Lovelace', look: { skin: 1, hair: 2, clothes: 3 } };
+const CHARACTER: Character = { name: 'Ada Lovelace', look: { skin: 1, hair: 2, clothes: 3, gender: 0, hairStyle: 0 } };
 
 /** A solo world whose local player has joined. */
 async function seatedSoloWorld(): Promise<LocalWorld> {
