@@ -1,5 +1,5 @@
-Preparing worktree (detached HEAD c466e78)
-PASS  both clients up: c466e78 (before) and this branch (after)
+Preparing worktree (detached HEAD 7506d11)
+PASS  both clients up: 7506d11 (before) and this branch (after)
 PASS  the art went from 16 to 32 pixels per metre  (16 -> 32)
 PASS  a metre takes as many device pixels on screen  (64 before, 64 after)
 PASS  the camera shows as many metres across  ({"width":20,"height":12.5} before, {"width":20,"height":12.5} after)

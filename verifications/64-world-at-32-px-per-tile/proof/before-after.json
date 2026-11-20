@@ -1,5 +1,5 @@
 {
-  "baseCommit": "c466e787553b2c0b6501da8e81ebe9c8146cacc3",
+  "baseCommit": "7506d11e34092b2b5c951c7ff0b660ecbe7f14db",
   "before": {
     "pixelsPerMetre": 16,
     "devicePixelsPerMetre": 64,
@@ -52,7 +52,7 @@
   },
   "results": [
     {
-      "name": "both clients up: c466e78 (before) and this branch (after)",
+      "name": "both clients up: 7506d11 (before) and this branch (after)",
       "pass": true
     },
     {

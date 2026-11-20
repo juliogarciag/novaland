@@ -5,7 +5,7 @@
  * Starts the room server and a client pointed at it and opens two players,
  * each in a browser context of its own. Both join the same world, and each
  * tab draws it at 32 pixels per metre at the zoom the solo check expects,
- * with both characters on the 16x24 sheet scaled 2x and every name sitting
+ * with both characters on the 32x48 sheet at 1:1 and every name sitting
  * just above its character's head. Screenshots keep both tabs.
  */
 import { chromium } from 'playwright';
@@ -54,8 +54,8 @@ try {
         `zoom ${camera.zoom} (${zoomBefore} before), ${camera.visibleMetres.width} m across, ${terrain.chunksDrawn.length} chunks and ${terrain.standingImages} trees and rocks drawn`,
       ),
     );
-    const playersAsBefore = players.length === 2 && players.every((player) => close(player.width, PLAYER_METRES_BEFORE.width) && close(player.height, PLAYER_METRES_BEFORE.height));
-    results.push(check(`tab ${tabName}: both characters stand ${PLAYER_METRES_BEFORE.width} x ${PLAYER_METRES_BEFORE.height} m`, playersAsBefore, players.map((player) => `${player.width} x ${player.height} m at ${player.scale}x`).join(', ')));
+    const playersAsBefore = players.length === 2 && players.every((player) => player.scale === 1 && close(player.width, PLAYER_METRES_BEFORE.width) && close(player.height, PLAYER_METRES_BEFORE.height));
+    results.push(check(`tab ${tabName}: both characters stand ${PLAYER_METRES_BEFORE.width} x ${PLAYER_METRES_BEFORE.height} m, drawn at 1:1`, playersAsBefore, players.map((player) => `${player.width} x ${player.height} m at ${player.scale}x`).join(', ')));
     const namesAbove = names.every((name) => name.overHead && close(name.gapMetres, NAME_GAP_METRES_BEFORE));
     results.push(check(`tab ${tabName}: every name sits ${NAME_GAP_METRES_BEFORE} m above its own character's head`, namesAbove, names.map((name) => `${name.name}: gap ${name.gapMetres} m`).join(', ')));
   }

@@ -117,7 +117,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -319,7 +319,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -521,7 +521,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -723,7 +723,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -927,7 +927,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -1131,7 +1131,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -1335,7 +1335,7 @@
         "player": {
           "width": 1,
           "height": 1.5,
-          "scale": 2,
+          "scale": 1,
           "count": 1
         }
       },
@@ -1480,9 +1480,9 @@
       "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
     },
     {
-      "name": "1280x800: players stand 1 x 1.5 m, as before",
+      "name": "1280x800: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1280x800: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1497,7 +1497,7 @@
     {
       "name": "holding D walks the player east and its name goes with it",
       "pass": true,
-      "details": "name from x 208 to 266.6668701171875 world px"
+      "details": "name from x 208 to 365.33203125 world px"
     },
     {
       "name": "the nearest lake is drawn in the ground, coast and all",
@@ -1520,9 +1520,9 @@
       "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
     },
     {
-      "name": "1920x1080: players stand 1 x 1.5 m, as before",
+      "name": "1920x1080: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1920x1080: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1550,9 +1550,9 @@
       "details": "1 x 1.25 m, 19 drawn, sheet scaled 1x"
     },
     {
-      "name": "2560x1440: players stand 1 x 1.5 m, as before",
+      "name": "2560x1440: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "2560x1440: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1580,9 +1580,9 @@
       "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
     },
     {
-      "name": "1440x900@2x: players stand 1 x 1.5 m, as before",
+      "name": "1440x900@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1440x900@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1610,9 +1610,9 @@
       "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
     },
     {
-      "name": "1512x982@2x: players stand 1 x 1.5 m, as before",
+      "name": "1512x982@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1512x982@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1640,9 +1640,9 @@
       "details": "1 x 1.25 m, 21 drawn, sheet scaled 1x"
     },
     {
-      "name": "1728x1117@2x: players stand 1 x 1.5 m, as before",
+      "name": "1728x1117@2x: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1728x1117@2x: the name is lettered as big against the world as before and sits 0.0625 m above the head",
@@ -1670,9 +1670,9 @@
       "details": "1 x 1.25 m, 46 drawn, sheet scaled 1x"
     },
     {
-      "name": "1024x768: players stand 1 x 1.5 m, as before",
+      "name": "1024x768: players stand 1 x 1.5 m, as before, the sheet at 1:1",
       "pass": true,
-      "details": "1 x 1.5 m, 1 drawn, sheet scaled 2x"
+      "details": "1 x 1.5 m, 1 drawn, sheet scaled 1x"
     },
     {
       "name": "1024x768: the name is lettered as big against the world as before and sits 0.0625 m above the head",

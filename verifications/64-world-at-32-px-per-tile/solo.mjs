@@ -11,7 +11,7 @@
  *   - the camera shows as many metres as the same rule did with 16-pixel
  *     art, so a metre takes as many device pixels on screen as before;
  *   - trees, rocks and the player stand as many metres tall and wide as
- *     before, and the 16x24 player sheet is drawn twice its size;
+ *     before, and the player's 32x48 sheet is drawn at 1:1;
  *   - names keep their size on screen and sit just above the head;
  *   - the minimap still paints the terrain around the player.
  *
@@ -122,7 +122,8 @@ function checkScale(screen, seen) {
     const size = drawn[thing];
     const expected = METRES_BEFORE[thing];
     const same = size && close(size.width, expected.width) && close(size.height, expected.height);
-    results.push(check(`${screen.name}: ${thing}s stand ${expected.width} x ${expected.height} m, as before`, Boolean(same), size && `${size.width} x ${size.height} m, ${size.count} drawn${size.scale ? `, sheet scaled ${size.scale}x` : ''}`));
+    const atOneToOne = thing !== 'player' || size?.scale === 1;
+    results.push(check(`${screen.name}: ${thing}s stand ${expected.width} x ${expected.height} m, as before${thing === 'player' ? ', the sheet at 1:1' : ''}`, Boolean(same) && atOneToOne, size && `${size.width} x ${size.height} m, ${size.count} drawn${size.scale ? `, sheet scaled ${size.scale}x` : ''}`));
   }
   const name = names[0];
   const letterPixelBefore = Math.max(1, Math.round(zoomBefore * LETTER_PIXEL_SHARE_BEFORE));
