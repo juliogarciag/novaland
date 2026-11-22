@@ -113,6 +113,15 @@ export const TerrainDefId = {
   Rock: 203,
   Water: 204,
   Shallows: 205,
+  Forest: 206,
+  MountainForest: 207,
+  Upland: 208,
+  AlpineMeadow: 209,
+  Scree: 210,
+  Summit: 211,
+  Glacier: 212,
+  Marsh: 213,
+  River: 214,
 } as const;
 
 /**
@@ -131,6 +140,16 @@ export const TerrainDefId = {
  * top of that bank. Both
  * blues are far from every other tile's colour, so a view that draws tiles
  * by colour alone (a minimap) shows where the lakes are.
+ *
+ * The tiles from forest on are the ground of a region of the real Earth
+ * (content/world/regions), where one tile is about a kilometre: a tile of
+ * forest is a whole wood, not a tree, so it is flat ground a player walks
+ * over. They have placeholder colours only. Height is read from them as
+ * bands, the way an atlas tints it: open ground goes grass, upland, alpine
+ * meadow, scree as it climbs, forest has a lowland and a mountain shade,
+ * and the top is summit (bare rock) or glacier (ice), the only two that
+ * stop a player. A river is drawn darker than a lake and can be waded
+ * across; lakes and the sea are water and shallows, as above.
  */
 export const terrainDefs: readonly TileDef[] = [
   { id: TerrainDefId.Grass, name: 'grass', shape: 'box', color: 0x5c9e4a, solid: false, groundSprite: { key: 'grass', tilePixels: 32, variantCount: 24 } },
@@ -167,6 +186,15 @@ export const terrainDefs: readonly TileDef[] = [
     solid: true,
     groundSprite: { key: 'shallows', tilePixels: 32, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Shallows, TerrainDefId.Water] } },
   },
+  { id: TerrainDefId.Forest, name: 'forest', shape: 'box', color: 0x3c7a3a, solid: false },
+  { id: TerrainDefId.MountainForest, name: 'mountain forest', shape: 'box', color: 0x2b5a48, solid: false },
+  { id: TerrainDefId.Upland, name: 'upland', shape: 'box', color: 0x93b35c, solid: false },
+  { id: TerrainDefId.AlpineMeadow, name: 'alpine meadow', shape: 'box', color: 0xc2b876, solid: false },
+  { id: TerrainDefId.Scree, name: 'scree', shape: 'box', color: 0xa69f94, solid: false },
+  { id: TerrainDefId.Summit, name: 'summit', shape: 'box', color: 0x6c6a73, solid: true },
+  { id: TerrainDefId.Glacier, name: 'glacier', shape: 'box', color: 0xecf3f7, solid: true },
+  { id: TerrainDefId.Marsh, name: 'marsh', shape: 'box', color: 0x7a9a5e, solid: false },
+  { id: TerrainDefId.River, name: 'river', shape: 'box', color: 0x1b3f8f, solid: false },
 ];
 
 const tileDefsById: ReadonlyMap<number, TileDef> = new Map(terrainDefs.map((def) => [def.id, def]));

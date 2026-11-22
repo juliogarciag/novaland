@@ -1,0 +1,77 @@
+{
+  "region": "alps",
+  "grid": {
+    "columns": 448,
+    "rows": 320,
+    "north": 47.75,
+    "west": 5.85,
+    "degreesPerColumn": 0.015542018,
+    "degreesPerRow": 0.010791844,
+    "standardParallel": 46.02330496,
+    "kilometresPerTile": 1.2
+  },
+  "bounds": {
+    "north": 47.75,
+    "west": 5.85,
+    "south": 44.29660992,
+    "east": 12.812824063999999
+  },
+  "spawn": {
+    "column": 207,
+    "row": 180
+  },
+  "tilesByKind": {
+    "grass": 34327,
+    "forest": 30091,
+    "mountainForest": 28887,
+    "upland": 11532,
+    "alpineMeadow": 13100,
+    "scree": 10384,
+    "summit": 1279,
+    "glacier": 2435,
+    "marsh": 38,
+    "river": 4459,
+    "water": 4605,
+    "shallows": 2223
+  },
+  "highestTileMetres": 4494,
+  "lakeTilesAdded": 235,
+  "riverTiles": {
+    "Aare": 213,
+    "Adda": 223,
+    "Adige": 511,
+    "Arc": 169,
+    "Dora Baltea": 145,
+    "Doubs": 299,
+    "Drau": 46,
+    "Durance": 105,
+    "Ill": 47,
+    "Inn": 306,
+    "Isar": 69,
+    "Limmat": 58,
+    "Mincio": 58,
+    "Oglio": 205,
+    "Piave": 204,
+    "Po": 558,
+    "Reno": 136,
+    "Reuss": 62,
+    "Rhein": 169,
+    "Rhin": 152,
+    "Rhne": 2,
+    "Rhône": 198,
+    "Salzach": 63,
+    "Saône": 28,
+    "Tanaro": 142,
+    "Thielle": 8,
+    "Ticino": 189,
+    "Varaita": 94
+  },
+  "walkableReachFromSpawn": {
+    "reachedCount": 132774,
+    "walkableCount": 132818
+  },
+  "filesWithNoData": {
+    "elevation": [],
+    "landCover": []
+  }
+}

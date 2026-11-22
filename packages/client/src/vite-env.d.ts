@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_PREDICTION?: string;
   /** Dev builds, solo only: a size such as `400x300` plays a generated map of that size instead of the world, to measure big maps. */
   readonly VITE_GENERATED_MAP?: string;
+  /** Dev builds, solo only: the name of a region of the real Earth, such as `alps`, played instead of the world. Adding `?at=46.2,6.15` (a latitude and a longitude) to the address starts the walk on the walkable tile nearest to that place. */
+  readonly VITE_REGION_MAP?: string;
 }
 
 interface ImportMeta {

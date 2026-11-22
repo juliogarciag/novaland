@@ -1,0 +1,10 @@
+PASS  the script ran and wrote the region
+PASS  the committed map is exactly what the script makes from the public data  (150124 characters)
+PASS  the map is about 400x300 tiles at 1.2 km a tile  (448x320, 538 km by 384 km)
+PASS  it runs from west of Geneva to east of Venice  (44.30N to 47.75N, 5.85E to 12.81E)
+PASS  every dataset had a file for every part of the region
+PASS  every kind of tile the script knows is on the map  (grass 34327, forest 30091, mountainForest 28887, upland 11532, alpineMeadow 13100, scree 10384, summit 1279, glacier 2435, marsh 38, river 4459, water 4605, shallows 2223)
+PASS  the big rivers are drawn, each more than 20 tiles long  (Po 558, Rhône 198, Rhein 169, Inn 306, Adige 511, Aare 213, Ticino 189, Adda 223)
+PASS  more than 99% of the walkable ground can be walked to from the spawn  (99.97%: 132774 of 132818 tiles)
+
+ALL 8 CHECKS PASSED

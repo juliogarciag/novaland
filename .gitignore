@@ -15,3 +15,6 @@ dist/
 
 # saved positions of a local world server started with DATA_DIRECTORY="$PWD/.data" (ADR 0014)
 /.data/
+
+# public datasets downloaded by `pnpm region:build` (scripts/region/README.md)
+/scripts/region/.cache/

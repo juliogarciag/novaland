@@ -42,6 +42,15 @@ describe("groundTilesetSlots", () => {
       ["rock", 1],
       ["water", 8 + EDGE_SHAPES.length],
       ["shallows", 8 + EDGE_SHAPES.length],
+      ["forest", 1],
+      ["mountain forest", 1],
+      ["upland", 1],
+      ["alpine meadow", 1],
+      ["scree", 1],
+      ["summit", 1],
+      ["glacier", 1],
+      ["marsh", 1],
+      ["river", 1],
     ]);
     expect(slots.map((slot) => [slot.def.name, slot.variantCount])).toEqual([
       ["grass", 24],
@@ -50,6 +59,15 @@ describe("groundTilesetSlots", () => {
       ["rock", 1],
       ["water", 8],
       ["shallows", 8],
+      ["forest", 1],
+      ["mountain forest", 1],
+      ["upland", 1],
+      ["alpine meadow", 1],
+      ["scree", 1],
+      ["summit", 1],
+      ["glacier", 1],
+      ["marsh", 1],
+      ["river", 1],
     ]);
   });
 

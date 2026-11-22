@@ -1,4 +1,4 @@
-import { createSim, findPlayerEntity, guestCharacter, MAX_PLAYER_SLOTS, readMapTiles, worldMap } from '@novaland/sim';
+import { createSim, findPlayerEntity, generatedWorldMap, guestCharacter, MAX_PLAYER_SLOTS, worldMap } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { LOCAL_SLOT } from '../seats';
 import { createLocalWorld, LocalWorld } from './LocalWorld';
@@ -35,14 +35,10 @@ describe('LocalWorld', () => {
 });
 
 describe('createLocalWorld', () => {
-  it('plays the world unless a generated map is asked for by size', async () => {
+  it('plays the world unless it is handed another map', async () => {
     expect((await createLocalWorld({ character: guestCharacter(LOCAL_SLOT) })).sim.map).toBe(worldMap);
-    const big = await createLocalWorld({ character: guestCharacter(LOCAL_SLOT), generatedMap: '400x300' });
-    expect(readMapTiles(big.sim.map).bounds).toEqual({ column: 0, row: 0, width: 400, height: 300 });
-  });
-
-  it('refuses a size it cannot read instead of quietly playing the world', async () => {
-    for (const size of ['', 'big', '400', '400x', '400x300x2', '-4x30', '4.5x30']) await expect(createLocalWorld({ character: guestCharacter(LOCAL_SLOT), generatedMap: size }), size).rejects.toThrow(/VITE_GENERATED_MAP/);
+    const map = generatedWorldMap({ columns: 40, rows: 30 });
+    expect((await createLocalWorld({ character: guestCharacter(LOCAL_SLOT), map })).sim.map).toBe(map);
   });
 });
 

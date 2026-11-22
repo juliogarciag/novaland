@@ -21,6 +21,8 @@ export type { DirectionalFrames, FrameRange, SpriteDef, SpriteDirection } from '
 export { worldMap } from './content/world';
 export { mapLandmarks, type Landmark } from './content/world/landmarks';
 export { generatedWorldMap, type GeneratedMapOptions } from './content/world/generated';
+export { regionMapSpawningNear, regions, tileOfCoordinates } from './content/world/regions';
+export type { EarthCoordinates, Region, RegionGrid, RegionSource } from './content/world/regions/types';
 export type { AreaData, MapChunk, MapTiles, TileCoordinate, TileRectangle, WorldMap } from './content/world/types';
 export { CHUNK_SIZE, NO_TILE, WORLD_LIMIT_TILES, chunkCoordinateOf, findChunk, readMapTiles, spawnPoint, tileAt, tileCentre, tileDefIdAt } from './content/world/tiles';
 export { EDGE_SHAPES, EdgeNeighbour, edgeShapeOf, getTileDef, terrainDefs, TILE_SIZE, type GroundTileSprite, type StandingTileSprite, type TileDef } from './features/terrain/defs';

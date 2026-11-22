@@ -11,6 +11,7 @@ import { loadNameFont } from './render/nameLabel';
 import { keepCanvasAtWindowSize, windowViewportConfig } from './render/viewport';
 import { HudScene } from './scenes/HudScene';
 import { WorldScene } from './scenes/WorldScene';
+import { devMapFromSettings } from './worlds/devMap';
 import { createLocalWorld } from './worlds/LocalWorld';
 import type { PlayableWorld } from './worlds/PlayableWorld';
 
@@ -27,13 +28,15 @@ import type { PlayableWorld } from './worlds/PlayableWorld';
 async function boot(): Promise<void> {
   const serverUrl = worldServerUrl({ configured: import.meta.env.VITE_SERVER_URL, isProduction: import.meta.env.PROD, pageOrigin: window.location.origin });
   // A measurement on the wrong map is worse than none: online the map is the server's, so the two settings do not go together.
-  if (import.meta.env.DEV && serverUrl && import.meta.env.VITE_GENERATED_MAP) throw new Error('VITE_GENERATED_MAP only works solo: unset VITE_SERVER_URL');
+  if (import.meta.env.DEV && serverUrl && (import.meta.env.VITE_GENERATED_MAP || import.meta.env.VITE_REGION_MAP)) throw new Error('VITE_GENERATED_MAP and VITE_REGION_MAP only work solo: unset VITE_SERVER_URL');
+  // Only a dev build plays anything but the world, and only there do the other maps get bundled.
+  const devMap = import.meta.env.DEV ? devMapFromSettings({ generatedMap: import.meta.env.VITE_GENERATED_MAP, regionMap: import.meta.env.VITE_REGION_MAP, regionSpawn: new URLSearchParams(window.location.search).get('at') ?? undefined }) : undefined;
   const character = await characterForThisVisit();
   // From here on, also while a connection screen is up, adding #creator to the address opens the creator.
   openCreatorWhenAddressAsks();
   const { world, online } = serverUrl
     ? await joinSharedWorld(serverUrl, character)
-    : { world: await createLocalWorld({ character, generatedMap: import.meta.env.DEV ? import.meta.env.VITE_GENERATED_MAP : undefined }), online: undefined };
+    : { world: await createLocalWorld({ character, map: devMap }), online: undefined };
   // Labels are measured when they are made: the font they are drawn in has to be there first.
   await loadNameFont();
   const worldScene = new WorldScene(world);

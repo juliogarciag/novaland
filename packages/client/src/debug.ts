@@ -1,5 +1,5 @@
-import type { Character, Command, EntityDef, MapTiles, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
-import { characterPalettes, characterShapes, CHUNK_SIZE, entityDefs, getCharacter, getRenderables, hashSnapshot, readMapTiles, tileAt, tileCentre, tileDefIdAt } from '@novaland/sim';
+import type { Character, Command, EarthCoordinates, EntityDef, MapTiles, Region, SimHandle, SimSnapshot, TileCoordinate, WorldMap } from '@novaland/sim';
+import { characterPalettes, characterShapes, CHUNK_SIZE, entityDefs, getCharacter, getRenderables, hashSnapshot, readMapTiles, regions, tileAt, tileCentre, tileDefIdAt, tileOfCoordinates } from '@novaland/sim';
 import type Phaser from 'phaser';
 import type { MinimapReport } from './hud/minimap';
 import type { ConnectionStatus } from './online/connection';
@@ -28,6 +28,10 @@ export interface NovalandDebugApi {
   readonly tileCentre: typeof tileCentre;
   /** The tile def id at a world tile, or undefined where no area put a tile. */
   tileDefIdAt(tile: TileCoordinate): number | undefined;
+  /** The region of the real Earth being played (`VITE_REGION_MAP`): its name, where its tiles sit on the Earth and its sources. Undefined on any other map. */
+  readonly region: Region | undefined;
+  /** On a region: the tile a latitude and a longitude fall in, so checks find real places. Undefined outside the region and on any other map. */
+  tileOfCoordinates(coordinates: EarthCoordinates): TileCoordinate | undefined;
   /** How much terrain is drawn right now: which chunks, how many ground tiles and standing images. Undefined until the world scene runs. */
   terrain(): TerrainReport | undefined;
   /** What the minimap shows right now: where it is on screen, its centre, which chunks it has painted and every marker. Undefined until the HUD scene has drawn it. */
@@ -89,6 +93,8 @@ export interface DebugApiOptions {
 export function exposeDebugApi({ world, game, online }: DebugApiOptions): void {
   const { sim } = world;
   const tiles = readMapTiles(sim.map);
+  // A region played from another spawn is a new map object with the region's own areas.
+  const region = Object.values(regions).find((candidate) => candidate.map.areas === sim.map.areas);
   window.__novaland = {
     sim,
     game,
@@ -98,6 +104,8 @@ export function exposeDebugApi({ world, game, online }: DebugApiOptions): void {
     tileAt,
     tileCentre,
     tileDefIdAt: (tile) => tileDefIdAt(tiles, tile),
+    region,
+    tileOfCoordinates: (coordinates) => (region ? tileOfCoordinates(region, coordinates) : undefined),
     terrain: () => (game.scene.isActive('world') ? (game.scene.getScene('world') as WorldScene).terrainReport() : undefined),
     minimap: () => (game.scene.isActive('hud') ? (game.scene.getScene('hud') as HudScene).minimapReport() : undefined),
     defs: entityDefs,

@@ -1,0 +1,7 @@
+PASS  dev server up with VITE_REGION_MAP=alps, started by this run
+FAIL  run completed (page.waitForFunction: TypeError: Cannot read properties of undefined (reading 'length')
+    at eval (eval at predicate (eval at evaluate (:370:30)), <anonymous>:1:98)
+    at predicate (eval at evaluate (:370:30), <anonymous>:7:27)
+    at next (eval at evaluate (:370:30), <anonymous>:29:33))
+
+1 OF 2 CHECKS FAILED

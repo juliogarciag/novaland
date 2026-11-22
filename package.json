@@ -18,12 +18,15 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check": "pnpm test && pnpm typecheck && pnpm lint",
-    "sim:headless": "pnpm --filter @novaland/server headless"
+    "sim:headless": "pnpm --filter @novaland/server headless",
+    "region:build": "node scripts/region/build-region.mjs"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
+    "@novaland/sim": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "geotiff": "catalog:",
     "globals": "catalog:",
     "railway": "catalog:",
     "typescript": "catalog:",

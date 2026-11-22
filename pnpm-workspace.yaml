@@ -17,6 +17,7 @@ catalog:
   compression: ^1.8.2
   eslint: ^10.14.0
   express: ^5.1.0
+  geotiff: 3.0.5
   globals: ^16.0.0
   helmet: ^8.3.0
   phaser: 4.2.1
