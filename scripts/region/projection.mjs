@@ -36,13 +36,6 @@ export function gridPositionOf(grid, { latitude, longitude }) {
   return { column: (longitude - grid.west) / grid.degreesPerColumn, row: (grid.north - latitude) / grid.degreesPerRow };
 }
 
-/** The tile a point of the Earth falls in, or undefined when it is outside the grid. */
-export function tileOfCoordinates(grid, coordinates) {
-  const position = gridPositionOf(grid, coordinates);
-  const tile = { column: Math.floor(position.column), row: Math.floor(position.row) };
-  return tile.column >= 0 && tile.column < grid.columns && tile.row >= 0 && tile.row < grid.rows ? tile : undefined;
-}
-
 function roundToNineDecimals(value) {
   return Math.round(value * 1e9) / 1e9;
 }

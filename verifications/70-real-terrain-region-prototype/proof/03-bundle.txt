@@ -1,5 +1,5 @@
 PASS  the region module holds 320 rows to look for  (looking for "FassaFFasssssAaaasAGGGGA...")
 PASS  the client bundle does not carry the region  (4 files, 5202531 bytes)
-PASS  the server bundle does not carry the region  (2 files, 3829329 bytes)
+PASS  the server bundle does not carry the region  (2 files, 3829338 bytes)
 
 ALL 3 CHECKS PASSED

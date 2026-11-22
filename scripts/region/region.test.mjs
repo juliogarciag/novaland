@@ -1,11 +1,11 @@
 import { regions, terrainDefs } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
-import { boundsOfGrid, gridOfRegion, gridPositionOf, tileOfCoordinates } from './projection.mjs';
+import { boundsOfGrid, gridOfRegion, gridPositionOf } from './projection.mjs';
 import { alps } from './regions/alps.mjs';
 import { addElevationSample, addLandCoverSample, drawRivers, emptyTallies, fillLakes, kindsFromTallies, ringWaterWithShallows, tallyRaster, walkableReach, walkableTileNearest } from './regionTiles.mjs';
 import { isInsidePolygon, tilesAlongSegment } from './shapes.mjs';
 import { elevationSource, filesCovering, LandCover, landCoverSource } from './sources.mjs';
-import { COVER_GROUPS, HeightBand, kindIndexByName, kindOfTile, TILE_KINDS } from './tileKinds.mjs';
+import { __testing__, COVER_GROUPS, kindIndexByName, kindOfTile, TILE_KINDS } from './tileKinds.mjs';
 import { regionModuleText } from './writeRegion.mjs';
 
 describe('gridOfRegion', () => {
@@ -20,24 +20,18 @@ describe('gridOfRegion', () => {
     expect(kilometresBetween({ latitude: south, longitude: 8 }, { latitude: south, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(1.2 * 1.031, 2);
   });
 
+  it('places a point of the Earth in tiles and fractions of a tile, columns east from the west edge and rows south from the north edge', () => {
+    const grid = gridOfRegion({ kilometresPerTile: 1.2, columns: 10, rows: 5, north: 46, west: 8 });
+    expect(gridPositionOf(grid, { latitude: 46, longitude: 8 })).toEqual({ column: 0, row: 0 });
+    expect(gridPositionOf(grid, { latitude: 46 - grid.degreesPerRow * 1.5, longitude: 8 + grid.degreesPerColumn * 2.25 })).toEqual({ column: expect.closeTo(2.25, 6), row: expect.closeTo(1.5, 6) });
+    expect(gridPositionOf(grid, { latitude: 46.5, longitude: 7 }).row).toBeLessThan(0);
+  });
+
   it('is the grid the committed region was written with', () => {
     const { columns, rows, ...grid } = gridOfRegion(alps);
     expect(regions.alps.grid).toEqual(grid);
     expect(regions.alps.map.areas[0].rows).toHaveLength(rows);
     expect(regions.alps.map.areas[0].rows[0]).toHaveLength(columns);
-  });
-});
-
-describe('tileOfCoordinates', () => {
-  it('counts columns east from the west edge and rows south from the north edge, and knows the edges', () => {
-    const grid = gridOfRegion({ kilometresPerTile: 1.2, columns: 10, rows: 5, north: 46, west: 8 });
-    const { south, east } = boundsOfGrid(grid);
-    expect(tileOfCoordinates(grid, { latitude: 46, longitude: 8 })).toEqual({ column: 0, row: 0 });
-    expect(tileOfCoordinates(grid, { latitude: south + 1e-6, longitude: east - 1e-6 })).toEqual({ column: 9, row: 4 });
-    expect(tileOfCoordinates(grid, { latitude: 46.001, longitude: 8 })).toBeUndefined();
-    expect(tileOfCoordinates(grid, { latitude: south - 1e-6, longitude: 8 })).toBeUndefined();
-    expect(tileOfCoordinates(grid, { latitude: 46, longitude: east + 1e-6 })).toBeUndefined();
-    expect(gridPositionOf(grid, { latitude: 46 - grid.degreesPerRow * 1.5, longitude: 8 + grid.degreesPerColumn * 2.25 })).toEqual({ column: expect.closeTo(2.25, 6), row: expect.closeTo(1.5, 6) });
   });
 });
 
@@ -110,6 +104,8 @@ describe('tilesAlongSegment', () => {
   it('lists every tile a line crosses, both ends included, each sharing a side with the next', () => {
     expect(tilesAlongSegment({ column: 0.5, row: 0.5 }, { column: 3.5, row: 0.5 })).toEqual([0, 1, 2, 3].map((column) => ({ column, row: 0 })));
     expect(tilesAlongSegment({ column: 2.2, row: 3.9 }, { column: 2.8, row: 3.1 })).toEqual([{ column: 2, row: 3 }]);
+    // A shallow diagonal stays beside the line: it never runs along one axis and then the other.
+    expect(tilesAlongSegment({ column: 0.5, row: 0.5 }, { column: 4.5, row: 2.5 })).toEqual([[0, 0], [1, 0], [1, 1], [2, 1], [3, 1], [3, 2], [4, 2]].map(([column, row]) => ({ column, row })));
     for (const [from, to] of [[{ column: 0.5, row: 0.5 }, { column: 5.5, row: 5.5 }], [{ column: 7.9, row: 1.1 }, { column: -2.3, row: 4.7 }], [{ column: 3.2, row: 9.9 }, { column: 3.9, row: -4.1 }], [{ column: -1.5, row: -1.5 }, { column: 6.25, row: 2.75 }]]) {
       const tiles = tilesAlongSegment(from, to);
       expect(tiles[0]).toEqual({ column: Math.floor(from.column), row: Math.floor(from.row) });
@@ -139,7 +135,10 @@ describe('the water of a region', () => {
     expect(fillLakes({ grid, kinds, lakes: [lake] })).toBe(9);
     // A river along the top row from the glacier, then down the first column, then east along row 2 into the lake.
     const river = { properties: { name: 'Test' }, geometry: { type: 'MultiLineString', coordinates: [[[0.5, 5.5], [2.5, 5.5]], [[2.5, 5.5], [2.5, 3.5], [5.5, 3.5]]] } };
-    expect(drawRivers({ grid, kinds, rivers: [river, { properties: {}, geometry: { type: 'LineString', coordinates: [[100, 50], [101, 51]] } }] })).toEqual({ Test: 5 });
+    const elsewhere = { properties: {}, geometry: { type: 'LineString', coordinates: [[100, 50], [101, 51]] } };
+    // A line with a point that is nowhere on the Earth is left out whole instead of being walked to the end of the numbers.
+    const broken = { properties: { name: 'Broken' }, geometry: { type: 'LineString', coordinates: [[1.5, 0.5], [1e300, 0.5]] } };
+    expect(drawRivers({ grid, kinds, rivers: [river, elsewhere, broken] })).toEqual({ Test: 5 });
     ringWaterWithShallows({ grid, kinds });
     expect(rowsOf(grid, kinds)).toEqual(['Grr.....', '..r.---.', '..rr-~-.', '....---.', '........', '........']);
   });
@@ -183,6 +182,8 @@ describe('regionModuleText', () => {
 });
 
 // ---- Helpers ----
+
+const { HeightBand } = __testing__;
 
 function cover(counts) {
   return COVER_GROUPS.map((group) => counts[group] ?? 0);

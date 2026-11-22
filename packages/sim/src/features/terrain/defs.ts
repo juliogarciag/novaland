@@ -147,8 +147,8 @@ export const TerrainDefId = {
  * over. They have placeholder colours only. Height is read from them as
  * bands, the way an atlas tints it: open ground goes grass, upland, alpine
  * meadow, scree as it climbs, forest has a lowland and a mountain shade,
- * and the top is summit (bare rock) or glacier (ice), the only two that
- * stop a player. A river is drawn darker than a lake and can be waded
+ * and the top is summit (bare rock) or glacier (ice), the only two of
+ * these that stop a player. A river is drawn darker than a lake and can be waded
  * across; lakes and the sea are water and shallows, as above.
  */
 export const terrainDefs: readonly TileDef[] = [

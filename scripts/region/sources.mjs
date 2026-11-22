@@ -9,12 +9,11 @@ export const elevationSource = {
   name: 'Copernicus DEM GLO-90',
   licence: 'Copernicus DEM licence: free of charge for any use, derived works included, with the credit line',
   credit: '© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved',
-  homepage: 'https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM',
   degreesPerFile: 1,
   /** Width in pixels of the overview read: 600 across a degree is about 185 m, six to nine samples across a 1.2 km tile. */
   overviewWidth: 600,
   urlOfFile({ south, west }) {
-    const name = `Copernicus_DSM_COG_30_${hemisphere(south, 'N', 'S', 2)}_00_${hemisphere(west, 'E', 'W', 3)}_00_DEM`;
+    const name = `Copernicus_DSM_COG_30_${latitudeLabel(south)}_00_${longitudeLabel(west)}_00_DEM`;
     return `https://copernicus-dem-90m.s3.amazonaws.com/${name}/${name}.tif`;
   },
 };
@@ -24,12 +23,11 @@ export const landCoverSource = {
   name: 'ESA WorldCover 10 m 2021 v200',
   licence: 'CC BY 4.0',
   credit: '© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium',
-  homepage: 'https://esa-worldcover.org',
   degreesPerFile: 3,
   /** Width in pixels of the overview read: 2250 across three degrees is about 150 m, eight to eleven samples across a 1.2 km tile. */
   overviewWidth: 2250,
   urlOfFile({ south, west }) {
-    return `https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_${hemisphere(south, 'N', 'S', 2)}${hemisphere(west, 'E', 'W', 3)}_Map.tif`;
+    return `https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_${latitudeLabel(south)}${longitudeLabel(west)}_Map.tif`;
   },
 };
 
@@ -38,7 +36,6 @@ export const waterSource = {
   name: 'Natural Earth 1:10m rivers, lake centerlines and lakes, with the Europe supplements (v5.1.2)',
   licence: 'Public domain',
   credit: 'Made with Natural Earth',
-  homepage: 'https://www.naturalearthdata.com',
   riverFiles: ['ne_10m_rivers_lake_centerlines', 'ne_10m_rivers_europe'],
   lakeFiles: ['ne_10m_lakes', 'ne_10m_lakes_europe'],
   urlOfFile(file) {
@@ -62,6 +59,12 @@ function floorTo(value, step) {
   return Math.floor(value / step) * step;
 }
 
-function hemisphere(degrees, positive, negative, digits) {
-  return `${degrees >= 0 ? positive : negative}${String(Math.abs(degrees)).padStart(digits, '0')}`;
+/** A whole latitude the way both datasets name their files: N46, S03. */
+function latitudeLabel(degrees) {
+  return `${degrees >= 0 ? 'N' : 'S'}${String(Math.abs(degrees)).padStart(2, '0')}`;
+}
+
+/** A whole longitude the way both datasets name their files: E007, W070. */
+function longitudeLabel(degrees) {
+  return `${degrees >= 0 ? 'E' : 'W'}${String(Math.abs(degrees)).padStart(3, '0')}`;
 }

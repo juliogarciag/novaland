@@ -28,17 +28,20 @@ export function emptyTallies(grid) {
  * `addSample(tileIndex, sample)` does the adding.
  */
 export function tallyRaster({ grid, file, degreesPerFile, raster, addSample }) {
-  const columnOfX = new Int32Array(raster.width);
-  for (let x = 0; x < raster.width; x += 1) {
-    const { column } = gridPositionOf(grid, { latitude: 0, longitude: file.west + ((x + 0.5) * degreesPerFile) / raster.width });
-    columnOfX[x] = column >= 0 && column < grid.columns ? Math.floor(column) : -1;
+  // A sample is taken to sit at the centre of its pixel. The elevation files centre theirs on the pixel's corner instead,
+  // half a pixel away: tens of metres at the overview read, nothing at a kilometre a tile, but a much finer region should shift it.
+  const tileColumnOfSampleColumn = new Int32Array(raster.width);
+  for (let sampleColumn = 0; sampleColumn < raster.width; sampleColumn += 1) {
+    const { column } = gridPositionOf(grid, { latitude: 0, longitude: file.west + ((sampleColumn + 0.5) * degreesPerFile) / raster.width });
+    tileColumnOfSampleColumn[sampleColumn] = column >= 0 && column < grid.columns ? Math.floor(column) : -1;
   }
-  for (let y = 0; y < raster.height; y += 1) {
-    const { row } = gridPositionOf(grid, { latitude: file.south + degreesPerFile - ((y + 0.5) * degreesPerFile) / raster.height, longitude: 0 });
+  for (let sampleRow = 0; sampleRow < raster.height; sampleRow += 1) {
+    const { row } = gridPositionOf(grid, { latitude: file.south + degreesPerFile - ((sampleRow + 0.5) * degreesPerFile) / raster.height, longitude: 0 });
     if (row < 0 || row >= grid.rows) continue;
     const firstTileOfRow = Math.floor(row) * grid.columns;
-    for (let x = 0; x < raster.width; x += 1) {
-      if (columnOfX[x] >= 0) addSample(firstTileOfRow + columnOfX[x], raster.samples[y * raster.width + x]);
+    for (let sampleColumn = 0; sampleColumn < raster.width; sampleColumn += 1) {
+      const tileColumn = tileColumnOfSampleColumn[sampleColumn];
+      if (tileColumn >= 0) addSample(firstTileOfRow + tileColumn, raster.samples[sampleRow * raster.width + sampleColumn]);
     }
   }
 }
@@ -117,6 +120,8 @@ export function drawRivers({ grid, kinds, rivers }) {
       for (let index = 1; index < line.length; index += 1) {
         const [startLongitude, startLatitude] = line[index - 1];
         const [endLongitude, endLatitude] = line[index];
+        // The data is downloaded: a point that is nowhere on the Earth would otherwise be walked to, tile by tile.
+        if (![startLongitude, endLongitude].every((longitude) => Math.abs(longitude) <= 180) || ![startLatitude, endLatitude].every((latitude) => Math.abs(latitude) <= 90)) continue;
         const isOutside =
           Math.max(startLongitude, endLongitude) < bounds.west || Math.min(startLongitude, endLongitude) > bounds.east || Math.max(startLatitude, endLatitude) < bounds.south || Math.min(startLatitude, endLatitude) > bounds.north;
         if (isOutside) continue;

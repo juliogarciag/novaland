@@ -13,7 +13,7 @@
     {
       "name": "the server bundle does not carry the region",
       "pass": true,
-      "details": "2 files, 3829329 bytes"
+      "details": "2 files, 3829338 bytes"
     }
   ],
   "report": {
@@ -23,7 +23,7 @@
     },
     "server": {
       "files": 2,
-      "bytes": 3829329
+      "bytes": 3829338
     }
   }
 }

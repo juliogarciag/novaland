@@ -506,12 +506,12 @@
     },
     "southBank": {
       "x": 247.5,
-      "y": 267.0028076171875,
+      "y": 266.91943359375,
       "tile": {
         "column": 247,
-        "row": 267
+        "row": 266
       },
-      "kind": "grass",
+      "kind": "forest",
       "solid": false
     },
     "kindsWalked": [
@@ -698,7 +698,7 @@
     {
       "name": "walking south from north of Piacenza wades across the Po and carries on",
       "pass": true,
-      "details": "from row 245 to row 267, over grass, river, forest"
+      "details": "from row 245 to row 266, over grass, river, forest"
     },
     {
       "name": "the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second",

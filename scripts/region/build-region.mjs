@@ -22,9 +22,9 @@ import { elevationSource, filesCovering, landCoverSource, waterSource } from './
 import { TILE_KINDS } from './tileKinds.mjs';
 import { regionModuleText } from './writeRegion.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const CACHE_DIRECTORY = path.join(here, '.cache');
-const REGIONS_DIRECTORY = path.resolve(here, '../../packages/sim/src/content/world/regions');
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+const CACHE_DIRECTORY = path.join(scriptDirectory, '.cache');
+const REGIONS_DIRECTORY = path.resolve(scriptDirectory, '../../packages/sim/src/content/world/regions');
 const regions = { alps };
 
 /** How many files are fetched at once. */
@@ -32,10 +32,10 @@ const DOWNLOADS_AT_ONCE = 6;
 
 async function main() {
   const flags = process.argv.slice(2);
-  const reportFlag = flags.indexOf('--report');
-  const reportFile = reportFlag >= 0 ? flags[reportFlag + 1] : undefined;
-  if (reportFlag >= 0 && !reportFile) throw new Error('--report needs a file');
-  const regionName = flags.find((flag, index) => !flag.startsWith('--') && index !== reportFlag + 1) ?? 'alps';
+  const reportFlagIndex = flags.indexOf('--report');
+  const reportFile = reportFlagIndex >= 0 ? flags[reportFlagIndex + 1] : undefined;
+  if (reportFlagIndex >= 0 && !reportFile) throw new Error('--report needs a file');
+  const regionName = flags.find((flag, index) => !flag.startsWith('--') && (reportFlagIndex < 0 || index !== reportFlagIndex + 1)) ?? 'alps';
   const region = regions[regionName];
   if (!region) throw new Error(`No region is called "${regionName}". There is: ${Object.keys(regions).join(', ')}`);
 

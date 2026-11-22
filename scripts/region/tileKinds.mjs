@@ -13,7 +13,7 @@ import { LandCover } from './sources.mjs';
  * Every kind of tile, with the character it is written as in the map's rows
  * and the name of its def in `TerrainDefId` (packages/sim/src/features/terrain/defs.ts).
  * `solid` repeats the def's flag, which the script needs to place rivers
- * and the spawn; a sim test fails if the two disagree.
+ * and the spawn; a test of the script (region.test.mjs) fails if the two disagree.
  */
 export const TILE_KINDS = [
   { name: 'grass', character: '.', defName: 'Grass', solid: false },
@@ -33,7 +33,7 @@ export const TILE_KINDS = [
 export const kindIndexByName = Object.fromEntries(TILE_KINDS.map((kind, index) => [kind.name, index]));
 
 /** Where each band of height starts, in metres above the sea. */
-export const HeightBand = {
+const HeightBand = {
   /** Open ground below this is grass: the plains and the floors of the big valleys. */
   Upland: 500,
   /** Forest from here up is mountain forest. */
@@ -91,3 +91,5 @@ export function kindOfTile({ coverCounts, meanElevation }) {
   if (meanElevation >= HeightBand.AlpineMeadow) return 'alpineMeadow';
   return meanElevation >= HeightBand.Upland ? 'upland' : 'grass';
 }
+
+export const __testing__ = { HeightBand };
