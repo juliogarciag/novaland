@@ -47,7 +47,7 @@ async function boot(): Promise<void> {
     // Nearest-neighbour textures and whole-pixel positions: pixel art stays crisp at any zoom.
     pixelArt: true,
     // In this order: the HUD's minimap shows the frame the world scene drew in the same tick of the game loop.
-    scene: [worldScene, new HudScene(world, () => worldScene.drawnFrame)],
+    scene: [worldScene, new HudScene(world, () => worldScene.drawnFrame, () => worldScene.tilesInView())],
     scale: windowViewportConfig(),
   });
   keepCanvasAtWindowSize(game);

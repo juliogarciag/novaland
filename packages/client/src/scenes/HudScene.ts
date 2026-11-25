@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { findPlayerEntity } from '@novaland/sim';
-import { hudLines } from '../hud/hudLines';
+import { hudLines, type HudViewFacts } from '../hud/hudLines';
 import { HUD_MARGIN } from '../hud/layout';
 import { Minimap, type MinimapReport } from '../hud/minimap';
 import { minimapPlacement } from '../hud/minimapPlacement';
@@ -37,10 +37,11 @@ export class HudScene extends Phaser.Scene {
   private widestLinesRight = 0;
   private readonly frameRate = new RenderedFrameRate();
 
-  /** `readDrawnFrame` gives the frame the world scene drew last, or undefined before its first. */
+  /** `readDrawnFrame` gives the frame the world scene drew last and `readTilesInView` how much of the map its camera shows; both undefined before its first frame. */
   constructor(
     private readonly world: PlayableWorld,
     private readonly readDrawnFrame: () => ViewFrame | undefined,
+    private readonly readTilesInView: () => HudViewFacts['tilesInView'],
   ) {
     super({ key: 'hud', active: true });
   }
@@ -59,7 +60,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   override update(): void {
-    this.text.setText(hudLines(this.world, { framesPerSecond: this.frameRate.framesPerSecond }));
+    this.text.setText(hudLines(this.world, { framesPerSecond: this.frameRate.framesPerSecond, tilesInView: this.readTilesInView() }));
     // After the text: in a narrow window the minimap sits below the lines, whatever they say now.
     this.widestLinesRight = Math.max(this.widestLinesRight, this.text.x + this.text.width);
     this.minimap.place(minimapPlacement({ canvasWidth: this.scale.width, pixelRatio: 1 / this.scale.zoom, hudLines: { right: this.widestLinesRight, bottom: this.text.y + this.text.height } }));

@@ -1,0 +1,98 @@
+{
+  "graphics": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version)",
+  "window": {
+    "width": 1920,
+    "height": 1080,
+    "pixelRatio": 1
+  },
+  "levels": [
+    {
+      "stepsOut": 0,
+      "zoom": 6,
+      "tilesAcross": 20,
+      "tilesDown": 11.25,
+      "chunksDrawn": 2,
+      "chunksInMap": 560,
+      "groundTiles": 2048,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 1,
+      "zoom": 3,
+      "tilesAcross": 40,
+      "tilesDown": 22.5,
+      "chunksDrawn": 4,
+      "chunksInMap": 560,
+      "groundTiles": 4096,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 2,
+      "zoom": 1,
+      "tilesAcross": 120,
+      "tilesDown": 67.5,
+      "chunksDrawn": 12,
+      "chunksInMap": 560,
+      "groundTiles": 12288,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 3,
+      "zoom": 0.5,
+      "tilesAcross": 240,
+      "tilesDown": 135,
+      "chunksDrawn": 40,
+      "chunksInMap": 560,
+      "groundTiles": 40960,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 4,
+      "zoom": 0.25,
+      "tilesAcross": 480,
+      "tilesDown": 270,
+      "chunksDrawn": 144,
+      "chunksInMap": 560,
+      "groundTiles": 0,
+      "standingImages": 0,
+      "detail": "colours",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 5,
+      "zoom": 0.10546875,
+      "tilesAcross": 1137.7777777777778,
+      "tilesDown": 640,
+      "chunksDrawn": 560,
+      "chunksInMap": 560,
+      "groundTiles": 0,
+      "standingImages": 0,
+      "detail": "colours",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    }
+  ],
+  "backIn": {
+    "longestFrameMs": 117,
+    "zoom": 6
+  }
+}

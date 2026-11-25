@@ -28,6 +28,12 @@ describe('hudLines', () => {
     expect(hudLines(asOnlineWorld(world, { latencyMs: 20 }), { framesPerSecond: 60 })).toHaveLength(2);
   });
 
+  it('says how many tiles of the map are on screen and that the wheel changes it, once the world is drawn', async () => {
+    const world = await seatedSoloWorld();
+    expect(hudLines(world, { framesPerSecond: 60, tilesInView: { across: 896, down: 559.6 } }).at(-1)).toBe('view: 896 x 560 tiles   wheel: zoom (dev)');
+    expect(hudLines(world, { framesPerSecond: 60, tilesInView: undefined }).join('\n')).not.toMatch(/view:/);
+  });
+
   it('keeps the first line the same length whatever the digits, so the backdrop does not jitter', async () => {
     const world = await seatedSoloWorld();
     const lengths = [undefined, 9, 10, 99, 100, 999].map((latencyMs) => hudLines(asOnlineWorld(world, { latencyMs }), { framesPerSecond: latencyMs })[0]!.length);

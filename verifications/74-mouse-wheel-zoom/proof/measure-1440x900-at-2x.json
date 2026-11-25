@@ -1,0 +1,112 @@
+{
+  "graphics": "ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version)",
+  "window": {
+    "width": 1440,
+    "height": 900,
+    "pixelRatio": 2
+  },
+  "levels": [
+    {
+      "stepsOut": 0,
+      "zoom": 9,
+      "tilesAcross": 20,
+      "tilesDown": 12.5,
+      "chunksDrawn": 2,
+      "chunksInMap": 560,
+      "groundTiles": 2048,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 1,
+      "zoom": 4,
+      "tilesAcross": 45,
+      "tilesDown": 28.125,
+      "chunksDrawn": 4,
+      "chunksInMap": 560,
+      "groundTiles": 4096,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 2,
+      "zoom": 2,
+      "tilesAcross": 90,
+      "tilesDown": 56.25,
+      "chunksDrawn": 12,
+      "chunksInMap": 560,
+      "groundTiles": 12288,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 3,
+      "zoom": 1,
+      "tilesAcross": 180,
+      "tilesDown": 112.5,
+      "chunksDrawn": 30,
+      "chunksInMap": 560,
+      "groundTiles": 30720,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 4,
+      "zoom": 0.5,
+      "tilesAcross": 360,
+      "tilesDown": 225,
+      "chunksDrawn": 96,
+      "chunksInMap": 560,
+      "groundTiles": 98304,
+      "standingImages": 0,
+      "detail": "art",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 5,
+      "zoom": 0.25,
+      "tilesAcross": 720,
+      "tilesDown": 450,
+      "chunksDrawn": 360,
+      "chunksInMap": 560,
+      "groundTiles": 0,
+      "standingImages": 0,
+      "detail": "colours",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    },
+    {
+      "stepsOut": 6,
+      "zoom": 0.17578125,
+      "tilesAcross": 1024,
+      "tilesDown": 640,
+      "chunksDrawn": 560,
+      "chunksInMap": 560,
+      "groundTiles": 0,
+      "standingImages": 0,
+      "detail": "colours",
+      "longestFrameAfterStepMs": 17,
+      "framesPerSecond": 60,
+      "slowestSettledFrameMs": 17
+    }
+  ],
+  "backIn": {
+    "longestFrameMs": 33,
+    "zoom": 9
+  }
+}

@@ -29,6 +29,75 @@ describe('MapCamera.view', () => {
   });
 });
 
+describe('MapCamera zoom', () => {
+  it('opens at the normal view and steps out to the whole map and back, stopping at both ends', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    const { levels } = mapCamera.zoomReport();
+    expect(camera.zoom).toBe(6);
+    expect(levels[0]).toBe(6);
+    mapCamera.zoomOut(1);
+    expect(camera.zoom).toBe(levels[1]);
+    mapCamera.zoomOut(100);
+    expect(mapCamera.zoomReport().stepsOut).toBe(levels.length - 1);
+    // The whole map is on screen: 400x300 tiles in 1920x1080 is limited by the height.
+    expect(camera.zoom).toBeCloseTo(1080 / (300 * PIXELS_PER_METRE), 9);
+    expect(mapCamera.tilesInView()).toEqual({ across: 400, down: 300 });
+    mapCamera.zoomOut(-100);
+    expect(camera.zoom).toBe(6);
+    expect(mapCamera.zoomReport().stepsOut).toBe(0);
+  });
+
+  it('ignores a number of steps that makes no sense', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    mapCamera.zoomOut(2);
+    for (const steps of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) mapCamera.zoomOut(steps);
+    expect(mapCamera.zoomReport().stepsOut).toBe(2);
+  });
+
+  it('stays as many steps out when the canvas changes size', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    mapCamera.zoomOut(2);
+    mapCamera.fitZoomTo({ width: 2880, height: 1800 });
+    expect(mapCamera.zoomReport().stepsOut).toBe(2);
+    expect(camera.zoom).toBe(mapCamera.zoomReport().levels[2]);
+  });
+
+  it('puts the map in the middle of a view that shows more than the map', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    mapCamera.zoomOut(100);
+    // Wherever the player stands, the map's corner included.
+    mapCamera.lookAt(0, 0);
+    const view = mapCamera.view();
+    const mapWidth = 400 * PIXELS_PER_METRE;
+    expect(view.width).toBeGreaterThan(mapWidth);
+    expect(view.x + view.width / 2).toBeCloseTo(mapWidth / 2, 0);
+    expect(view.y).toBeCloseTo(0, 0);
+  });
+});
+
+describe('boundsAlongAxis', () => {
+  it('is the map while the map is longer than the view', () => {
+    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 400 })).toEqual({ start: -64, length: 1000 });
+    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 1000 })).toEqual({ start: -64, length: 1000 });
+  });
+
+  it('is the view with the map in its middle when the view is the longer one', () => {
+    expect(boundsAlongAxis({ mapStart: 100, mapLength: 1000, viewLength: 1600 })).toEqual({ start: -200, length: 1600 });
+  });
+
+  it('is the map for a view that makes no sense', () => {
+    expect(boundsAlongAxis({ mapStart: 0, mapLength: 1000, viewLength: Number.NaN })).toEqual({ start: 0, length: 1000 });
+  });
+});
+
 describe('snapViewToDevicePixels', () => {
   it('puts the top-left corner of the view on a whole device pixel', () => {
     // Phaser zooms around the canvas centre, so this is where the view's top-left corner sits.
@@ -72,20 +141,26 @@ describe('snapViewToDevicePixels', () => {
 
 // ---- Helpers (below the tests so the behaviour reads first) ----
 
-const { snapViewToDevicePixels } = __testing__;
+const { snapViewToDevicePixels, boundsAlongAxis } = __testing__;
+
+/** 400x300 tiles from the origin: far too large for a window at the normal zoom. */
+const LARGE_MAP = generatedWorldMap({ columns: 400, rows: 300 });
 
 /** The parts of a Phaser camera `MapCamera` uses, clamping the way Phaser's `clampX` and `clampY` do. */
-function fakeCamera({ width, height, zoom }: { width: number; height: number; zoom: number }): Phaser.Cameras.Scene2D.Camera {
+function fakeCamera({ width, height, zoom: openingZoom }: { width: number; height: number; zoom: number }): Phaser.Cameras.Scene2D.Camera {
   const bounds = { x: 0, y: 0, width: 0, height: 0 };
   const clamp = ({ scroll, size, start, length }: { scroll: number; size: number; start: number; length: number }): number => {
-    const displaySize = size / zoom;
+    const displaySize = size / camera.zoom;
     const lowest = start + (displaySize - size) / 2;
     return Math.min(Math.max(scroll, lowest), Math.max(lowest, lowest + length - displaySize));
   };
   const camera = {
     width,
     height,
-    zoom,
+    zoom: openingZoom,
+    setZoom(zoom: number) {
+      camera.zoom = zoom;
+    },
     scrollX: 0,
     scrollY: 0,
     useBounds: false,
