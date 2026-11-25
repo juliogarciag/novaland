@@ -5,9 +5,11 @@
  * Runs on three maps: the Alps region of #70 (896x640 tiles, no trees), which
  * is what the ticket is for; the world itself, small enough that its
  * furthest zoom still draws the art; and a generated 400x300 map with trees
- * and rocks, so standing images go from art to colours and back. Every
- * expected number comes from the page: the zoom levels, the map's bounds,
- * the tile colours.
+ * and rocks, so standing images go from art to colours and back. What is
+ * expected comes from the page: the zoom levels, the zoom below which the
+ * ground is colours, the map's bounds, the tile colours. The two things
+ * typed in here are named where they are: the wait between wheel turns and
+ * the parts of the screen the HUD covers.
  */
 import { chromium } from 'playwright';
 import path from 'node:path';
@@ -23,7 +25,7 @@ const MAPS = [
 const VIEWPORT = { width: 1440, height: 900 };
 const PIXEL_RATIO = 2;
 const CHARACTER = { name: 'Zoomer', look: { skin: 0, hair: 0, clothes: 0, gender: 0, hairStyle: 0 } };
-/** Longer than the wheel's step interval (input/wheel.ts), so every turn of the wheel is a step. */
+/** Longer than the wheel's step interval (200 ms, input/wheel.ts; the page does not expose it), so every turn of the wheel is a step. */
 const BETWEEN_WHEEL_TURNS_MS = 300;
 const results = [];
 const report = {};
@@ -66,11 +68,11 @@ for (const map of MAPS) {
       await page.mouse.wheel(0, 100);
       await page.waitForTimeout(BETWEEN_WHEEL_TURNS_MS);
       const view = await viewOf(page);
-      const expectedDetail = view.camera.zoom < view.nearestZoomDrawnAsArt ? 'colours' : 'art';
+      const expectedDetail = view.camera.zoom < view.nearestZoomDrawnAsArt ? 'colors' : 'art';
       results.push(check(`${map.name}: wheel down ${stepsOut}: zoom ${label(levels[stepsOut])}, more of the map on screen`, view.camera.zoom === levels[stepsOut] && view.zoom.stepsOut === stepsOut && view.tilesAcross > previous.tilesAcross, `${Math.round(view.tilesAcross)} x ${Math.round(view.tilesDown)} tiles, was ${Math.round(previous.tilesAcross)} across`));
       results.push(check(`${map.name}: wheel down ${stepsOut}: the camera is still on the player, as far as the map's edges allow`, isOnPlayer(view), `view x ${view.camera.worldView.x.toFixed(1)}, expected ${expectedViewStart(view, 'x').toFixed(1)}; y ${view.camera.worldView.y.toFixed(1)}, expected ${expectedViewStart(view, 'y').toFixed(1)}`));
       results.push(check(`${map.name}: wheel down ${stepsOut}: every chunk the view touches is drawn, as ${expectedDetail}`, view.terrain.detail === expectedDetail && view.chunksInViewNotDrawn.length === 0, `${view.terrain.chunksDrawn.length} of ${view.terrain.chunksInMap} chunks drawn, ${view.terrain.groundTiles} tilemap tiles, ${view.terrain.standingImages} standing images`));
-      if (expectedDetail === 'colours') results.push(check(`${map.name}: wheel down ${stepsOut}: drawn as colours, a chunk is one image: no tilemap tile and no standing image is alive`, view.terrain.groundTiles === 0 && view.terrain.standingImages === 0));
+      if (expectedDetail === 'colors') results.push(check(`${map.name}: wheel down ${stepsOut}: drawn as colours, a chunk is one image: no tilemap tile and no standing image is alive`, view.terrain.groundTiles === 0 && view.terrain.standingImages === 0));
       await page.screenshot({ path: path.join(PROOF, `${map.name}-${stepsOut}-zoom-${label(levels[stepsOut])}.png`) });
       report[map.name].steps.push(summaryOf(view));
       previous = view;
@@ -87,7 +89,7 @@ for (const map of MAPS) {
     results.push(check(`${map.name}: at the furthest zoom the map sits in the middle of the window`, Math.abs(mapPixels.x - worldView.x - emptyEachSide.x) <= 1 / furthest.camera.zoom && Math.abs(mapPixels.y - worldView.y - emptyEachSide.y) <= 1 / furthest.camera.zoom, `empty each side: ${Math.round(emptyEachSide.x * furthest.camera.zoom)} px across, ${Math.round(emptyEachSide.y * furthest.camera.zoom)} px down`));
 
     // What is on the screen is the map: tiles all over it have their def's colour where they should be. Only where the ground is drawn as colours; art is not one colour.
-    if (furthest.terrain.detail === 'colours') {
+    if (furthest.terrain.detail === 'colors') {
       const painted = await tilesPaintedRight(page, furthest);
       results.push(check(`${map.name}: at the furthest zoom, tiles sampled all over the map are on screen in the right place and colour`, painted.sampled >= 40 && painted.right / painted.sampled >= 0.97, `${painted.right} of ${painted.sampled} sampled tiles`));
       report[map.name].tilesSampled = painted;
@@ -103,6 +105,9 @@ for (const map of MAPS) {
     await page.waitForTimeout(BETWEEN_WHEEL_TURNS_MS);
     const pastTheEnd = await viewOf(page);
     results.push(check(`${map.name}: one more turn down at the furthest zoom changes nothing`, pastTheEnd.camera.zoom === furthest.camera.zoom && pastTheEnd.zoom.stepsOut === levels.length - 1));
+
+    // ---- The sim heard nothing: after six and more wheel turns the local player's components are what they were ----
+    results.push(check(`${map.name}: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out`, pastTheEnd.simPlayer !== undefined && pastTheEnd.simPlayer === opening.simPlayer, `${pastTheEnd.simPlayer?.length} bytes of components compared`));
 
     // ---- Zoomed out, the game goes on: the player walks and the camera follows ----
     await page.mouse.wheel(0, -100);
@@ -123,7 +128,7 @@ for (const map of MAPS) {
     const back = await viewOf(page);
     results.push(check(`${map.name}: wheel up returns to the normal view and stops there`, back.camera.zoom === levels[0] && back.zoom.stepsOut === 0 && Math.abs(back.tilesAcross - opening.tilesAcross) < 0.01, `zoom ${back.camera.zoom}, ${back.tilesAcross} tiles across`));
     results.push(check(`${map.name}: back in the normal view the ground is its art again and only the chunks near the view are alive`, back.terrain.detail === 'art' && back.chunksInViewNotDrawn.length === 0 && back.terrain.chunksDrawn.length <= back.mostChunksNearView, `${back.terrain.chunksDrawn.length} chunks drawn, at most ${back.mostChunksNearView} near this view`));
-    results.push(check(`${map.name}: zooming sent the sim nothing: the player only moved by the walk`, Math.abs(back.player.y - opening.player.y) < 1 && back.player.x >= opening.player.x, `player moved ${((back.player.x - opening.player.x) / back.pixelsPerMetre).toFixed(1)} tiles east, ${((back.player.y - opening.player.y) / back.pixelsPerMetre).toFixed(2)} south`));
+    results.push(check(`${map.name}: zooming back in moved nobody: the player only moved by the walk`, Math.abs(back.player.y - opening.player.y) < 1 && back.player.x >= opening.player.x, `player moved ${((back.player.x - opening.player.x) / back.pixelsPerMetre).toFixed(1)} tiles east, ${((back.player.y - opening.player.y) / back.pixelsPerMetre).toFixed(2)} south`));
     await page.screenshot({ path: path.join(PROOF, `${map.name}-back-in-zoom-${label(levels[0])}.png`) });
     results.push(check(`${map.name}: no page errors`, pageErrors.length === 0, pageErrors.join(' | ')));
   } catch (error) {
@@ -142,7 +147,7 @@ process.exit(summarize(results) ? 0 : 1);
 
 /** Everything a check needs about what is on screen, read from the page in one go. */
 function viewOf(page) {
-  return page.evaluate(() => {
+  return page.evaluate((characterName) => {
     const api = window.__novaland;
     const camera = api.camera();
     const terrain = api.terrain();
@@ -158,7 +163,7 @@ function viewOf(page) {
       .map((chunk) => `${chunk.column},${chunk.row}`)
       .filter((key) => !drawn.has(key));
     const kept = (length) => Math.ceil((length + 2 * terrain.keepMarginTiles * pixelsPerMetre) / chunkPixels) + 1;
-    const localName = api.characters().find((character) => character.name === 'Zoomer');
+    const localName = api.characters().find((character) => character.name === characterName);
     const drawnName = api.drawnNames().find((name) => name.eid === localName?.eid);
     return {
       camera,
@@ -167,16 +172,17 @@ function viewOf(page) {
       mapTiles: bounds,
       mapPixels,
       pixelsPerMetre,
-      // render/terrainDetail.ts: the art is drawn down to a zoom of 1/2. The one number here the page does not expose.
-      nearestZoomDrawnAsArt: 0.5,
+      nearestZoomDrawnAsArt: api.zoom().nearestZoomDrawnAsArt,
       tilesAcross: camera.visibleMetres.width,
       tilesDown: camera.visibleMetres.height,
       chunksInViewNotDrawn,
       mostChunksNearView: kept(worldView.width) * kept(worldView.height),
       // The name is drawn above the player, at the player's x.
       player: { x: drawnName.x, y: drawnName.y },
+      // The local player as the sim has it, to tell whether the sim was touched.
+      simPlayer: JSON.stringify(api.snapshot().entities.find((entity) => entity.components.Player?.slot === api.localSlot())?.components),
     };
-  });
+  }, CHARACTER.name);
 }
 
 function summaryOf(view) {
@@ -221,7 +227,7 @@ async function tilesPaintedRight(page, view) {
       const covered = [...document.querySelectorAll('button')].map((button) => button.getBoundingClientRect()).map((rect) => ({ x: rect.x, y: rect.y, width: rect.width, height: rect.height }));
       const minimap = api.minimap();
       if (minimap) covered.push({ x: minimap.rect.x - 4, y: minimap.rect.y - 4, width: minimap.rect.width + 8, height: minimap.rect.height + 8 });
-      // The HUD lines: the top-left corner. The player and their name: the middle of what the camera looks at is found below.
+      // The HUD lines, in CSS pixels: the page does not say where they are, so this is a generous box around the top-left corner. The player and their name are left out below, with room to spare.
       covered.push({ x: 0, y: 0, width: 420, height: 130 });
       const names = api.drawnNames();
       const { bounds } = api.tiles;

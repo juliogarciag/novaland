@@ -44,7 +44,8 @@ export class WorldScene extends Phaser.Scene {
     // Dev builds seat extra players with J so one browser can see several characters; only a world that picks its own seats offers it.
     if (import.meta.env.DEV && this.world.joinAnotherSeat) this.input.keyboard?.on('keydown-J', () => this.world.joinAnotherSeat?.());
     // Dev builds zoom with the mouse wheel, to look at how big the map is. A view fact: the sim never hears of it.
-    if (import.meta.env.DEV) this.zoomWithMouseWheel();
+    // Only with WebGL: far out the ground is drawn from textures made of bytes (render/terrain.ts), which the canvas renderer cannot make.
+    if (import.meta.env.DEV && this.game.renderer.type === Phaser.WEBGL) this.zoomWithMouseWheel();
     this.entityRenderer.sync(this.world.sim);
     this.followLocalPlayer();
   }
@@ -88,7 +89,7 @@ export class WorldScene extends Phaser.Scene {
       const step = wheelStepOf({ deltaY: pointer.deltaY, timeMs: pointer.event.timeStamp, lastStep });
       if (!step) return;
       lastStep = step;
-      this.mapCamera.zoomOut(step.steps);
+      this.mapCamera.zoomOut(step.stepsOut);
       // Now, not at the next frame: what the camera shows has to match its zoom before anything is drawn with it.
       this.followLocalPlayer();
     });
@@ -99,7 +100,6 @@ export class WorldScene extends Phaser.Scene {
     const drawnAt = eid === undefined ? undefined : this.entityRenderer.pixelPositionOf(eid);
     if (drawnAt) this.mapCamera.lookAt(drawnAt.x, drawnAt.y);
     // After the camera moved: the terrain near what it shows now is what gets drawn this frame.
-    // One colour per tile is a texture made from bytes, which only WebGL can do; the canvas renderer keeps the art.
-    this.terrainRenderer.show(this.mapCamera.view(), this.game.renderer.type === Phaser.WEBGL ? terrainDetailAt(this.cameras.main.zoom) : 'art');
+    this.terrainRenderer.show(this.mapCamera.view(), terrainDetailAt(this.cameras.main.zoom));
   }
 }

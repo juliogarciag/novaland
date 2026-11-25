@@ -49,6 +49,19 @@ describe('MapCamera zoom', () => {
     expect(mapCamera.zoomReport().stepsOut).toBe(0);
   });
 
+  it('counts the tiles of the map on screen: the view in the normal view, less what lies past an edge when the view is the larger', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    mapCamera.lookAt(200 * PIXELS_PER_METRE, 150 * PIXELS_PER_METRE);
+    expect(mapCamera.tilesInView()).toEqual({ across: 1920 / 6 / PIXELS_PER_METRE, down: 1080 / 6 / PIXELS_PER_METRE });
+    mapCamera.zoomOut(100);
+    const view = mapCamera.view();
+    // The window is wider than the map at this zoom, and exactly as tall.
+    expect(view.width / PIXELS_PER_METRE).toBeGreaterThan(400);
+    expect(mapCamera.tilesInView()).toEqual({ across: 400, down: 300 });
+  });
+
   it('ignores a number of steps that makes no sense', () => {
     const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
     const mapCamera = new MapCamera(camera, LARGE_MAP);
@@ -68,6 +81,17 @@ describe('MapCamera zoom', () => {
     expect(camera.zoom).toBe(mapCamera.zoomReport().levels[2]);
   });
 
+  it('keeps its zoom through a canvas that has no size for a moment, as a hidden tab has', () => {
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
+    const mapCamera = new MapCamera(camera, LARGE_MAP);
+    mapCamera.fitZoomTo({ width: 1920, height: 1080 });
+    mapCamera.zoomOut(2);
+    const before = mapCamera.zoomReport();
+    mapCamera.fitZoomTo({ width: 0, height: 0 });
+    expect(mapCamera.zoomReport()).toEqual(before);
+    expect(camera.zoom).toBe(before.levels[2]);
+  });
+
   it('puts the map in the middle of a view that shows more than the map', () => {
     const camera = fakeCamera({ width: 1920, height: 1080, zoom: 1 });
     const mapCamera = new MapCamera(camera, LARGE_MAP);
@@ -85,16 +109,23 @@ describe('MapCamera zoom', () => {
 
 describe('boundsAlongAxis', () => {
   it('is the map while the map is longer than the view', () => {
-    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 400 })).toEqual({ start: -64, length: 1000 });
-    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 1000 })).toEqual({ start: -64, length: 1000 });
+    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 400, zoom: 1 })).toEqual({ start: -64, length: 1000 });
+    expect(boundsAlongAxis({ mapStart: -64, mapLength: 1000, viewLength: 1000, zoom: 1 })).toEqual({ start: -64, length: 1000 });
   });
 
   it('is the view with the map in its middle when the view is the longer one', () => {
-    expect(boundsAlongAxis({ mapStart: 100, mapLength: 1000, viewLength: 1600 })).toEqual({ start: -200, length: 1600 });
+    expect(boundsAlongAxis({ mapStart: 100, mapLength: 1000, viewLength: 1600, zoom: 1 })).toEqual({ start: -200, length: 1600 });
+  });
+
+  it('starts the longer view on a whole device pixel, so a small map in the middle of the window keeps its art crisp', () => {
+    // A 1001 px canvas at zoom 2 shows 500.5 px of a 320 px map: the exact middle would start a quarter of a world pixel off the grid.
+    const { start } = boundsAlongAxis({ mapStart: 0, mapLength: 320, viewLength: 1001 / 2, zoom: 2 });
+    expect(Number.isInteger(start * 2)).toBe(true);
+    expect(Math.abs(start - -(1001 / 2 - 320) / 2)).toBeLessThanOrEqual(0.25);
   });
 
   it('is the map for a view that makes no sense', () => {
-    expect(boundsAlongAxis({ mapStart: 0, mapLength: 1000, viewLength: Number.NaN })).toEqual({ start: 0, length: 1000 });
+    expect(boundsAlongAxis({ mapStart: 0, mapLength: 1000, viewLength: Number.NaN, zoom: 1 })).toEqual({ start: 0, length: 1000 });
   });
 });
 

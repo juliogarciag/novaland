@@ -20,12 +20,12 @@ export function wholeZoomFor(canvasWidth: number): number {
  * out a tile would be less than a pixel, and what is on screen would grow
  * with the size of the world instead of with the size of the window.
  */
-export const FURTHEST_ZOOM = 1 / PIXELS_PER_METRE;
+const FURTHEST_ZOOM = 1 / PIXELS_PER_METRE;
 
 /** A level this close above the last one is left out, so the last two wheel steps never look the same. */
 const SMALLEST_STEP = 1.25;
 
-export interface ZoomLevelsOptions {
+interface ZoomLevelsOptions {
   /** The canvas, in device pixels. */
   readonly canvasWidth: number;
   readonly canvasHeight: number;
@@ -50,13 +50,13 @@ export interface ZoomLevelsOptions {
  * still drawn gets the nearest crisp zoom that shows all of it instead.
  */
 export function zoomLevels({ canvasWidth, canvasHeight, mapWidth, mapHeight }: ZoomLevelsOptions): number[] {
-  const normal = wholeZoomFor(canvasWidth);
-  if (![canvasWidth, canvasHeight, mapWidth, mapHeight].every((length) => Number.isFinite(length) && length > 0)) return [normal];
-  const furthest = furthestZoom(Math.min(canvasWidth / mapWidth, canvasHeight / mapHeight));
-  const levels = [normal];
-  if (furthest >= normal) return levels;
-  for (let zoom = halfOf(normal); zoom >= furthest * SMALLEST_STEP; zoom = halfOf(zoom)) levels.push(zoom);
-  levels.push(furthest);
+  const normalZoom = wholeZoomFor(canvasWidth);
+  if (![canvasWidth, canvasHeight, mapWidth, mapHeight].every((length) => Number.isFinite(length) && length > 0)) return [normalZoom];
+  const furthestLevel = furthestZoom(Math.min(canvasWidth / mapWidth, canvasHeight / mapHeight));
+  const levels = [normalZoom];
+  if (furthestLevel >= normalZoom) return levels;
+  for (let zoom = halfOf(normalZoom); zoom >= furthestLevel * SMALLEST_STEP; zoom = halfOf(zoom)) levels.push(zoom);
+  levels.push(furthestLevel);
   return levels;
 }
 
@@ -71,3 +71,5 @@ function furthestZoom(wholeMap: number): number {
 function halfOf(zoom: number): number {
   return zoom > 1 ? Math.max(1, Math.floor(zoom / 2)) : zoom / 2;
 }
+
+export const __testing__ = { FURTHEST_ZOOM };

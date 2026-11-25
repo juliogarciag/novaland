@@ -1,9 +1,9 @@
 /**
  * How the ground is drawn. `art` is the tiles' textures and the standing
- * images (trees, rocks), `colours` is one flat colour per tile, the way the
+ * images (trees, rocks), `colors` is one flat colour per tile, the way the
  * minimap paints it.
  */
-export type TerrainDetail = 'art' | 'colours';
+export type TerrainDetail = 'art' | 'colors';
 
 /**
  * Below this camera zoom the ground is drawn as colours. At half size a tile
@@ -16,5 +16,5 @@ export type TerrainDetail = 'art' | 'colours';
 export const NEAREST_ZOOM_DRAWN_AS_ART = 0.5;
 
 export function terrainDetailAt(cameraZoom: number): TerrainDetail {
-  return cameraZoom < NEAREST_ZOOM_DRAWN_AS_ART ? 'colours' : 'art';
+  return cameraZoom < NEAREST_ZOOM_DRAWN_AS_ART ? 'colors' : 'art';
 }

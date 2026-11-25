@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NEAREST_ZOOM_DRAWN_AS_ART, terrainDetailAt } from './terrainDetail';
+import { PIXELS_PER_METRE } from './units';
 import { zoomLevels } from './zoom';
 
 describe('terrainDetailAt', () => {
@@ -8,15 +9,20 @@ describe('terrainDetailAt', () => {
   });
 
   it('is colours further out than that', () => {
-    for (const zoom of [0.49, 0.25, 0.1758, 1 / 16]) expect(terrainDetailAt(zoom)).toBe('colours');
+    for (const zoom of [NEAREST_ZOOM_DRAWN_AS_ART - 0.01, 0.25, 0.1758, 1 / PIXELS_PER_METRE]) expect(terrainDetailAt(zoom)).toBe('colors');
   });
 
-  it('is colours wherever the zoom is any fraction: only the last level of the wheel is, and it lies below the art', () => {
+  it('never draws the art at a zoom the wheel reaches that is not crisp, on maps and windows of many sizes', () => {
+    let artLevels = 0;
     for (const canvasWidth of [960, 1920, 2880, 3840]) {
-      const levels = zoomLevels({ canvasWidth, canvasHeight: canvasWidth * 0.625, mapWidth: 896 * 16, mapHeight: 640 * 16 });
-      for (const zoom of levels) {
-        if (terrainDetailAt(zoom) === 'art') expect(Number.isInteger(zoom) || zoom === 0.5).toBe(true);
+      for (const mapTiles of [40, 150, 400, 896, 5000]) {
+        const levels = zoomLevels({ canvasWidth, canvasHeight: canvasWidth * 0.625, mapWidth: mapTiles * PIXELS_PER_METRE, mapHeight: mapTiles * 0.7 * PIXELS_PER_METRE });
+        for (const zoom of levels.filter((level) => terrainDetailAt(level) === 'art')) {
+          artLevels += 1;
+          expect(Number.isInteger(zoom) || zoom === NEAREST_ZOOM_DRAWN_AS_ART, `zoom ${zoom}`).toBe(true);
+        }
       }
     }
+    expect(artLevels).toBeGreaterThan(20);
   });
 });

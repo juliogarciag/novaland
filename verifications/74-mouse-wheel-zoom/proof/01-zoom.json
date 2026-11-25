@@ -71,7 +71,7 @@
         "zoom": 0.25,
         "tilesAcross": 720,
         "tilesDown": 450,
-        "detail": "colours",
+        "detail": "colors",
         "chunksDrawn": 360,
         "chunksInMap": 560,
         "tilemapTiles": 0,
@@ -81,7 +81,7 @@
         "zoom": 0.17578125,
         "tilesAcross": 1024,
         "tilesDown": 640,
-        "detail": "colours",
+        "detail": "colors",
         "chunksDrawn": 560,
         "chunksInMap": 560,
         "tilemapTiles": 0,
@@ -238,7 +238,7 @@
         "zoom": 0.375,
         "tilesAcross": 480,
         "tilesDown": 300,
-        "detail": "colours",
+        "detail": "colors",
         "chunksDrawn": 130,
         "chunksInMap": 130,
         "tilemapTiles": 0,
@@ -350,7 +350,7 @@
       "details": "view x 872.0, expected 872.0; y 2184.0, expected 2165.0"
     },
     {
-      "name": "region: wheel down 5: every chunk the view touches is drawn, as colours",
+      "name": "region: wheel down 5: every chunk the view touches is drawn, as colors",
       "pass": true,
       "details": "360 of 560 chunks drawn, 0 tilemap tiles, 0 standing images"
     },
@@ -369,7 +369,7 @@
       "details": "view x -1024.0, expected -1024.0; y 0.0, expected 0.0"
     },
     {
-      "name": "region: wheel down 6: every chunk the view touches is drawn, as colours",
+      "name": "region: wheel down 6: every chunk the view touches is drawn, as colors",
       "pass": true,
       "details": "560 of 560 chunks drawn, 0 tilemap tiles, 0 standing images"
     },
@@ -407,6 +407,11 @@
       "pass": true
     },
     {
+      "name": "region: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out",
+      "pass": true,
+      "details": "942 bytes of components compared"
+    },
+    {
       "name": "region: zoomed out, holding D still walks the player east and the camera stays on them",
       "pass": true,
       "details": "player went 6.0 tiles east at zoom 1-4"
@@ -422,7 +427,7 @@
       "details": "9 chunks drawn, at most 9 near this view"
     },
     {
-      "name": "region: zooming sent the sim nothing: the player only moved by the walk",
+      "name": "region: zooming back in moved nobody: the player only moved by the walk",
       "pass": true,
       "details": "player moved 6.0 tiles east, 0.00 south"
     },
@@ -520,9 +525,14 @@
       "pass": true
     },
     {
+      "name": "world: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out",
+      "pass": true,
+      "details": "938 bytes of components compared"
+    },
+    {
       "name": "world: zoomed out, holding D still walks the player east and the camera stays on them",
       "pass": true,
-      "details": "player went 5.9 tiles east at zoom 2"
+      "details": "player went 6.0 tiles east at zoom 2"
     },
     {
       "name": "world: wheel up returns to the normal view and stops there",
@@ -535,9 +545,9 @@
       "details": "9 chunks drawn, at most 9 near this view"
     },
     {
-      "name": "world: zooming sent the sim nothing: the player only moved by the walk",
+      "name": "world: zooming back in moved nobody: the player only moved by the walk",
       "pass": true,
-      "details": "player moved 5.9 tiles east, 0.00 south"
+      "details": "player moved 6.0 tiles east, 0.00 south"
     },
     {
       "name": "world: no page errors",
@@ -634,7 +644,7 @@
       "details": "view x -640.0, expected -640.0; y 0.0, expected 0.0"
     },
     {
-      "name": "generated: wheel down 5: every chunk the view touches is drawn, as colours",
+      "name": "generated: wheel down 5: every chunk the view touches is drawn, as colors",
       "pass": true,
       "details": "130 of 130 chunks drawn, 0 tilemap tiles, 0 standing images"
     },
@@ -672,6 +682,11 @@
       "pass": true
     },
     {
+      "name": "generated: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out",
+      "pass": true,
+      "details": "941 bytes of components compared"
+    },
+    {
       "name": "generated: zoomed out, holding D still walks the player east and the camera stays on them",
       "pass": true,
       "details": "player went 6.1 tiles east at zoom 1-2"
@@ -687,7 +702,7 @@
       "details": "9 chunks drawn, at most 9 near this view"
     },
     {
-      "name": "generated: zooming sent the sim nothing: the player only moved by the walk",
+      "name": "generated: zooming back in moved nobody: the player only moved by the walk",
       "pass": true,
       "details": "player moved 6.1 tiles east, 0.00 south"
     },

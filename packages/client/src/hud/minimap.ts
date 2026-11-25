@@ -4,7 +4,8 @@ import { chunkKey, chunkRangeOfTiles, chunksToDropAndBuild, sameChunkRange, type
 import type { ViewFrame } from '../render/viewFrame';
 import { minimapCentre, minimapMarks, type MinimapMark } from './minimapMarks';
 import { MINIMAP_TILES_ACROSS, sameMinimapPlacement, type MinimapPlacement } from './minimapPlacement';
-import { chunkColorBytes, minimapChunkRanges } from './minimapTerrain';
+import { chunkColorBytes } from '../render/chunkColors';
+import { minimapChunkRanges } from './minimapTerrain';
 
 /** Behind the terrain, where no area put a tile: the colour of the HUD lines' backdrop, opaque so the world behind does not read as terrain. */
 const BACKDROP_COLOR = 0x0b0f14;

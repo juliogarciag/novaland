@@ -6,11 +6,12 @@
  * steps are counted by time instead of by travel: a swipe steps about five
  * times a second for as long as it lasts.
  */
-export const WHEEL_STEP_INTERVAL_MS = 200;
+const WHEEL_STEP_INTERVAL_MS = 200;
 
-/** A zoom step the wheel made: 1 is a step out (wheel down), -1 a step in (wheel up). */
+/** A zoom step the wheel made. */
 export interface WheelStep {
-  readonly steps: 1 | -1;
+  /** 1 is a step out (wheel down), -1 a step back in (wheel up). */
+  readonly stepsOut: 1 | -1;
   /** When the event that made it happened, in milliseconds on any clock that only goes forward. */
   readonly timeMs: number;
 }
@@ -23,7 +24,9 @@ export interface WheelStep {
  */
 export function wheelStepOf({ deltaY, timeMs, lastStep }: { deltaY: number; timeMs: number; lastStep: WheelStep | undefined }): WheelStep | undefined {
   if (!Number.isFinite(deltaY) || deltaY === 0 || !Number.isFinite(timeMs)) return undefined;
-  const steps = deltaY > 0 ? 1 : -1;
-  if (lastStep && lastStep.steps === steps && timeMs - lastStep.timeMs < WHEEL_STEP_INTERVAL_MS) return undefined;
-  return { steps, timeMs };
+  const stepsOut = deltaY > 0 ? 1 : -1;
+  if (lastStep && lastStep.stepsOut === stepsOut && timeMs - lastStep.timeMs < WHEEL_STEP_INTERVAL_MS) return undefined;
+  return { stepsOut, timeMs };
 }
+
+export const __testing__ = { WHEEL_STEP_INTERVAL_MS };

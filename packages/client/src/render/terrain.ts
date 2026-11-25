@@ -1,6 +1,6 @@
 import { CHUNK_SIZE, findChunk, readMapTiles, terrainDefs, tileDefIdAt, TILE_SIZE, type GroundTileSprite, type MapChunk, type MapTiles, type StandingTileSprite, type WorldMap } from '@novaland/sim';
 import Phaser from 'phaser';
-import { chunkColorBytes } from '../hud/minimapTerrain';
+import { chunkColorBytes } from './chunkColors';
 import { chunkKey, chunkRangeAround, chunkRangeOfTiles, chunkRangeWithin, chunksToDropAndBuild, DRAW_MARGIN_TILES, KEEP_MARGIN_TILES, sameChunkRange, type ChunkRange, type PixelRect } from './chunkRange';
 import { GROUND_TILE_PIXELS, groundTileIndexRows, groundTilesetSlots, type GroundTilesetSlot } from './groundTiles';
 import { spriteSheetUrl } from './spriteUrl';
@@ -10,7 +10,7 @@ import { PIXELS_PER_METRE, toPixels } from './units';
 
 const TILESET_TEXTURE_KEY = 'terrain-ground-tiles';
 const TILESET_NAME = 'terrain';
-const COLOURS_TEXTURE_KEY_PREFIX = 'terrain-colours:';
+const COLORS_TEXTURE_KEY_PREFIX = 'terrain-colors:';
 
 /**
  * Draws below every entity. Entities are depth-sorted by their bottom edge in
@@ -74,7 +74,7 @@ interface DrawnChunk {
  * A sheet that failed to load is not fatal: its def is drawn flat in its
  * own colour instead.
  *
- * Zoomed far out (`TerrainDetail` 'colours', render/terrainDetail.ts says
+ * Zoomed far out (`TerrainDetail` 'colors', render/terrainDetail.ts says
  * when) a chunk is one image instead: a texture of one pixel per tile in the
  * tile's own colour, stretched over the chunk, and no standing images. A
  * chunk then costs one quad whatever is on it, so the whole of a large map
@@ -101,6 +101,11 @@ export class TerrainRenderer {
     }
     this.slots = groundTilesetSlots(terrainDefs, (key) => this.isTextureLoaded(key));
     buildGroundTileset(scene, this.slots);
+    // A chunk drawn as colours owns a texture, and textures outlive the scene that made them.
+    scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      for (const key of [...this.drawnChunks.keys()]) this.dropChunk(key);
+      this.lastView = undefined;
+    });
   }
 
   /**
@@ -123,7 +128,7 @@ export class TerrainRenderer {
     for (const key of drop) this.dropChunk(key);
     for (const coordinate of build) {
       const chunk = findChunk(this.tiles, coordinate);
-      if (chunk) this.drawnChunks.set(chunkKey(coordinate), detail === 'art' ? this.drawChunkAsArt(chunk) : this.drawChunkAsColours(chunk));
+      if (chunk) this.drawnChunks.set(chunkKey(coordinate), detail === 'art' ? this.drawChunkAsArt(chunk) : this.drawChunkAsColors(chunk));
     }
   }
 
@@ -162,8 +167,8 @@ export class TerrainRenderer {
     return { ground: tilemap, standingImages };
   }
 
-  private drawChunkAsColours(chunk: MapChunk): DrawnChunk {
-    const textureKey = `${COLOURS_TEXTURE_KEY_PREFIX}${chunkKey(chunk)}`;
+  private drawChunkAsColors(chunk: MapChunk): DrawnChunk {
+    const textureKey = `${COLORS_TEXTURE_KEY_PREFIX}${chunkKey(chunk)}`;
     if (this.scene.textures.exists(textureKey)) this.scene.textures.remove(textureKey);
     const texture = this.scene.textures.addUint8Array(textureKey, new Uint8Array(chunkColorBytes(chunk).buffer), CHUNK_SIZE, CHUNK_SIZE);
     if (!texture) throw new Error('Could not create a terrain colours texture');

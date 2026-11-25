@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { WHEEL_STEP_INTERVAL_MS, wheelStepOf } from './wheel';
+import { __testing__, wheelStepOf } from './wheel';
 
 describe('wheelStepOf', () => {
   it('steps out when the wheel goes down and in when it goes up, however far the browser says it travelled', () => {
     for (const travel of [0.5, 4, 100, 5000]) {
-      expect(wheelStepOf({ deltaY: travel, timeMs: 1000, lastStep: undefined })).toEqual({ steps: 1, timeMs: 1000 });
-      expect(wheelStepOf({ deltaY: -travel, timeMs: 1000, lastStep: undefined })).toEqual({ steps: -1, timeMs: 1000 });
+      expect(wheelStepOf({ deltaY: travel, timeMs: 1000, lastStep: undefined })).toEqual({ stepsOut: 1, timeMs: 1000 });
+      expect(wheelStepOf({ deltaY: -travel, timeMs: 1000, lastStep: undefined })).toEqual({ stepsOut: -1, timeMs: 1000 });
     }
   });
 
@@ -24,7 +24,7 @@ describe('wheelStepOf', () => {
 
   it('steps at once when the wheel turns the other way', () => {
     const out = wheelStepOf({ deltaY: 100, timeMs: 0, lastStep: undefined });
-    expect(wheelStepOf({ deltaY: -100, timeMs: 1, lastStep: out })).toEqual({ steps: -1, timeMs: 1 });
+    expect(wheelStepOf({ deltaY: -100, timeMs: 1, lastStep: out })).toEqual({ stepsOut: -1, timeMs: 1 });
   });
 
   it('makes no step of an event that did not go up or down, or that makes no sense', () => {
@@ -32,3 +32,7 @@ describe('wheelStepOf', () => {
     expect(wheelStepOf({ deltaY: 100, timeMs: Number.NaN, lastStep: undefined })).toBeUndefined();
   });
 });
+
+// ---- Helpers ----
+
+const { WHEEL_STEP_INTERVAL_MS } = __testing__;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PIXELS_PER_METRE } from './units';
-import { FURTHEST_ZOOM, MIN_VISIBLE_METRES, wholeZoomFor, zoomLevels } from './zoom';
+import { __testing__, MIN_VISIBLE_METRES, wholeZoomFor, zoomLevels } from './zoom';
 
 describe('wholeZoomFor', () => {
   it('is the largest whole zoom that still shows the minimum metres', () => {
@@ -83,6 +83,8 @@ describe('zoomLevels', () => {
 });
 
 // ---- Helpers (below the tests so the behaviour reads first) ----
+
+const { FURTHEST_ZOOM } = __testing__;
 
 /** Canvas width at which exactly the minimum metres are visible at zoom 1. */
 const ONE_ZOOM_WIDTH = PIXELS_PER_METRE * MIN_VISIBLE_METRES;

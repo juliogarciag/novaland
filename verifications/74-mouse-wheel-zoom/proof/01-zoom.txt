@@ -16,11 +16,11 @@ PASS  region: wheel down 4: the camera is still on the player, as far as the map
 PASS  region: wheel down 4: every chunk the view touches is drawn, as art  (96 of 560 chunks drawn, 98304 tilemap tiles, 0 standing images)
 PASS  region: wheel down 5: zoom 1-4, more of the map on screen  (720 x 450 tiles, was 360 across)
 PASS  region: wheel down 5: the camera is still on the player, as far as the map's edges allow  (view x 872.0, expected 872.0; y 2184.0, expected 2165.0)
-PASS  region: wheel down 5: every chunk the view touches is drawn, as colours  (360 of 560 chunks drawn, 0 tilemap tiles, 0 standing images)
+PASS  region: wheel down 5: every chunk the view touches is drawn, as colors  (360 of 560 chunks drawn, 0 tilemap tiles, 0 standing images)
 PASS  region: wheel down 5: drawn as colours, a chunk is one image: no tilemap tile and no standing image is alive
 PASS  region: wheel down 6: zoom 0.176, more of the map on screen  (1024 x 640 tiles, was 720 across)
 PASS  region: wheel down 6: the camera is still on the player, as far as the map's edges allow  (view x -1024.0, expected -1024.0; y 0.0, expected 0.0)
-PASS  region: wheel down 6: every chunk the view touches is drawn, as colours  (560 of 560 chunks drawn, 0 tilemap tiles, 0 standing images)
+PASS  region: wheel down 6: every chunk the view touches is drawn, as colors  (560 of 560 chunks drawn, 0 tilemap tiles, 0 standing images)
 PASS  region: wheel down 6: drawn as colours, a chunk is one image: no tilemap tile and no standing image is alive
 PASS  region: at the furthest zoom the whole map is on screen  (map 896 x 640 tiles, view 1024 x 640)
 PASS  region: at the furthest zoom every chunk of the map is drawn  (560 of 560)
@@ -28,10 +28,11 @@ PASS  region: at the furthest zoom the map sits in the middle of the window  (em
 PASS  region: at the furthest zoom, tiles sampled all over the map are on screen in the right place and colour  (180 of 180 sampled tiles)
 PASS  region: the furthest zoom holds a playable frame rate  (60 fps, slowest frame 17 ms, on ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version))
 PASS  region: one more turn down at the furthest zoom changes nothing
+PASS  region: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out  (942 bytes of components compared)
 PASS  region: zoomed out, holding D still walks the player east and the camera stays on them  (player went 6.0 tiles east at zoom 1-4)
 PASS  region: wheel up returns to the normal view and stops there  (zoom 9, 20 tiles across)
 PASS  region: back in the normal view the ground is its art again and only the chunks near the view are alive  (9 chunks drawn, at most 9 near this view)
-PASS  region: zooming sent the sim nothing: the player only moved by the walk  (player moved 6.0 tiles east, 0.00 south)
+PASS  region: zooming back in moved nobody: the player only moved by the walk  (player moved 6.0 tiles east, 0.00 south)
 PASS  region: no page errors
 PASS  world: dev server up, started by this run
 PASS  world: opens at the normal view, a whole-number zoom  (zoom 9, levels 9, 4, 2, 1)
@@ -51,10 +52,11 @@ PASS  world: at the furthest zoom every chunk of the map is drawn  (15 of 15)
 PASS  world: at the furthest zoom the map sits in the middle of the window  (empty each side: 400 px across, 164 px down)
 PASS  world: the furthest zoom holds a playable frame rate  (60 fps, slowest frame 17 ms, on ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version))
 PASS  world: one more turn down at the furthest zoom changes nothing
-PASS  world: zoomed out, holding D still walks the player east and the camera stays on them  (player went 5.9 tiles east at zoom 2)
+PASS  world: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out  (938 bytes of components compared)
+PASS  world: zoomed out, holding D still walks the player east and the camera stays on them  (player went 6.0 tiles east at zoom 2)
 PASS  world: wheel up returns to the normal view and stops there  (zoom 9, 20 tiles across)
 PASS  world: back in the normal view the ground is its art again and only the chunks near the view are alive  (9 chunks drawn, at most 9 near this view)
-PASS  world: zooming sent the sim nothing: the player only moved by the walk  (player moved 5.9 tiles east, 0.00 south)
+PASS  world: zooming back in moved nobody: the player only moved by the walk  (player moved 6.0 tiles east, 0.00 south)
 PASS  world: no page errors
 PASS  generated: dev server up, started by this run
 PASS  generated: opens at the normal view, a whole-number zoom  (zoom 9, levels 9, 4, 2, 1, 0.5, 0.375)
@@ -74,7 +76,7 @@ PASS  generated: wheel down 4: the camera is still on the player, as far as the 
 PASS  generated: wheel down 4: every chunk the view touches is drawn, as art  (96 of 130 chunks drawn, 98304 tilemap tiles, 3415 standing images)
 PASS  generated: wheel down 5: zoom 0.375, more of the map on screen  (480 x 300 tiles, was 360 across)
 PASS  generated: wheel down 5: the camera is still on the player, as far as the map's edges allow  (view x -640.0, expected -640.0; y 0.0, expected 0.0)
-PASS  generated: wheel down 5: every chunk the view touches is drawn, as colours  (130 of 130 chunks drawn, 0 tilemap tiles, 0 standing images)
+PASS  generated: wheel down 5: every chunk the view touches is drawn, as colors  (130 of 130 chunks drawn, 0 tilemap tiles, 0 standing images)
 PASS  generated: wheel down 5: drawn as colours, a chunk is one image: no tilemap tile and no standing image is alive
 PASS  generated: at the furthest zoom the whole map is on screen  (map 400 x 300 tiles, view 480 x 300)
 PASS  generated: at the furthest zoom every chunk of the map is drawn  (130 of 130)
@@ -82,10 +84,11 @@ PASS  generated: at the furthest zoom the map sits in the middle of the window  
 PASS  generated: at the furthest zoom, tiles sampled all over the map are on screen in the right place and colour  (177 of 177 sampled tiles)
 PASS  generated: the furthest zoom holds a playable frame rate  (60 fps, slowest frame 17 ms, on ANGLE (Apple, ANGLE Metal Renderer: Apple M1 Max, Unspecified Version))
 PASS  generated: one more turn down at the furthest zoom changes nothing
+PASS  generated: zooming sent the sim nothing: the local player's components are unchanged after zooming all the way out  (941 bytes of components compared)
 PASS  generated: zoomed out, holding D still walks the player east and the camera stays on them  (player went 6.1 tiles east at zoom 1-2)
 PASS  generated: wheel up returns to the normal view and stops there  (zoom 9, 20 tiles across)
 PASS  generated: back in the normal view the ground is its art again and only the chunks near the view are alive  (9 chunks drawn, at most 9 near this view)
-PASS  generated: zooming sent the sim nothing: the player only moved by the walk  (player moved 6.1 tiles east, 0.00 south)
+PASS  generated: zooming back in moved nobody: the player only moved by the walk  (player moved 6.1 tiles east, 0.00 south)
 PASS  generated: no page errors
 
-ALL 89 CHECKS PASSED
+ALL 92 CHECKS PASSED

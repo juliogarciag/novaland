@@ -19,7 +19,7 @@ export interface CameraView {
   readonly visibleMetres: { readonly width: number; readonly height: number };
 }
 
-/** Where the mouse wheel has the camera. Read by the HUD, dev tooling and end-to-end checks. */
+/** Where the mouse wheel has the camera. Read by dev tooling and end-to-end checks. */
 export interface ZoomReport {
   /** Every zoom the wheel steps through, nearest first: the normal view, then each step out. */
   readonly levels: readonly number[];
@@ -53,16 +53,15 @@ export class MapCamera {
 
   /** Picks the zooms for a canvas of this size in device pixels, and stays as many steps out as it was. Call again whenever the canvas changes size. */
   fitZoomTo({ width, height }: { width: number; height: number }): void {
+    // A hidden tab can be laid out at 0x0 for a moment (render/viewport.ts): that is no size to pick zooms for, and picking them would lose how far out the camera is.
+    if (!(width > 0 && height > 0)) return;
     this.levels = zoomLevels({ canvasWidth: width, canvasHeight: height, mapWidth: this.map.width, mapHeight: this.map.height });
-    this.zoomOut(0);
+    this.showLevel(this.stepsOut);
   }
 
   /** Steps the zoom out by `steps` levels, or in when negative, stopping at the normal view and at the furthest one. */
   zoomOut(steps: number): void {
-    const wanted = Number.isFinite(steps) ? this.stepsOut + Math.trunc(steps) : this.stepsOut;
-    this.stepsOut = Math.min(Math.max(0, wanted), this.levels.length - 1);
-    this.camera.setZoom(this.levels[this.stepsOut] ?? 1);
-    this.keepInsideMap();
+    if (Number.isFinite(steps)) this.showLevel(this.stepsOut + Math.trunc(steps));
   }
 
   zoomReport(): ZoomReport {
@@ -101,11 +100,18 @@ export class MapCamera {
     );
   }
 
+  /** Puts the camera at the level `stepsOut` steps out of the normal view, or at the nearest one there is. */
+  private showLevel(stepsOut: number): void {
+    this.stepsOut = Math.min(Math.max(0, stepsOut), this.levels.length - 1);
+    this.camera.setZoom(this.levels[this.stepsOut] ?? 1);
+    this.keepInsideMap();
+  }
+
   /** Tells Phaser what the camera may not look past, for the zoom and the canvas as they are now. */
   private keepInsideMap(): void {
     const { width, height, zoom } = this.camera;
-    const across = boundsAlongAxis({ mapStart: this.map.x, mapLength: this.map.width, viewLength: width / zoom });
-    const down = boundsAlongAxis({ mapStart: this.map.y, mapLength: this.map.height, viewLength: height / zoom });
+    const across = boundsAlongAxis({ mapStart: this.map.x, mapLength: this.map.width, viewLength: width / zoom, zoom });
+    const down = boundsAlongAxis({ mapStart: this.map.y, mapLength: this.map.height, viewLength: height / zoom, zoom });
     this.camera.setBounds(across.start, down.start, across.length, down.length);
   }
 }
@@ -141,11 +147,13 @@ function snapViewToDevicePixels(scroll: number, size: number, zoom: number): num
  * The stretch a camera is kept inside along one axis. That is the map, while
  * the map is longer than the view. A view longer than the map would be
  * pinned to the map's start by Phaser, leaving all the empty space on one
- * side; the stretch is then as long as the view, with the map in its middle.
+ * side; the stretch is then as long as the view, with the map in its middle,
+ * as near as whole device pixels allow: the view starts on one at this
+ * `zoom`, or the art would straddle two.
  */
-function boundsAlongAxis({ mapStart, mapLength, viewLength }: { mapStart: number; mapLength: number; viewLength: number }): { start: number; length: number } {
+function boundsAlongAxis({ mapStart, mapLength, viewLength, zoom }: { mapStart: number; mapLength: number; viewLength: number; zoom: number }): { start: number; length: number } {
   if (!(viewLength > mapLength)) return { start: mapStart, length: mapLength };
-  return { start: mapStart - (viewLength - mapLength) / 2, length: viewLength };
+  return { start: Math.round((mapStart - (viewLength - mapLength) / 2) * zoom) / zoom, length: viewLength };
 }
 
 export const __testing__ = { snapViewToDevicePixels, boundsAlongAxis };

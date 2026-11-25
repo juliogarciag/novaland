@@ -6,7 +6,7 @@ export interface HudViewFacts {
   /** Frames drawn per second; undefined until a first second has been counted. */
   readonly framesPerSecond: number | undefined;
   /** How much of the map the world camera shows, in tiles; undefined until the world is drawn. */
-  readonly tilesInView?: { readonly across: number; readonly down: number } | undefined;
+  readonly tilesInView: { readonly across: number; readonly down: number } | undefined;
 }
 
 /**
