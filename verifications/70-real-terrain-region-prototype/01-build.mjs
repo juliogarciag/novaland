@@ -28,8 +28,8 @@ try {
   const emptyKinds = Object.entries(tilesByKind).filter(([, count]) => count === 0).map(([kind]) => kind);
   results.push(check('every kind of tile the script knows is on the map', emptyKinds.length === 0, emptyKinds.length === 0 ? Object.entries(tilesByKind).map(([kind, count]) => `${kind} ${count}`).join(', ') : `none of: ${emptyKinds.join(', ')}`));
   const bigRivers = ['Po', 'Rhône', 'Rhein', 'Inn', 'Adige', 'Aare', 'Ticino', 'Adda'];
-  const missingRivers = bigRivers.filter((river) => !(riverTiles[river] > 40));
-  results.push(check('the big rivers are drawn, each over more than 40 tiles', missingRivers.length === 0, missingRivers.length === 0 ? bigRivers.map((river) => `${river} ${riverTiles[river]}`).join(', ') : `missing: ${missingRivers.join(', ')}`));
+  const missingRivers = bigRivers.filter((river) => !(riverTiles[river] > 100));
+  results.push(check('the big rivers are drawn, each over more than 100 tiles', missingRivers.length === 0, missingRivers.length === 0 ? bigRivers.map((river) => `${river} ${riverTiles[river]}`).join(', ') : `missing: ${missingRivers.join(', ')}`));
   const reach = walkableReachFromSpawn.reachedCount / walkableReachFromSpawn.walkableCount;
   results.push(check('more than 99% of the walkable ground can be walked to from the spawn', reach > 0.99, `${(reach * 100).toFixed(2)}%: ${walkableReachFromSpawn.reachedCount} of ${walkableReachFromSpawn.walkableCount} tiles`));
 } catch (error) {

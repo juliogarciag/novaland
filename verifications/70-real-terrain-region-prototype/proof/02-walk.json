@@ -450,10 +450,10 @@
   "tilesByKind": {
     "grass": 138675,
     "forest": 118967,
-    "river": 16599,
+    "river": 16526,
     "upland": 50382,
     "mountain forest": 111638,
-    "shallows": 6150,
+    "shallows": 6223,
     "water": 21288,
     "alpine meadow": 51694,
     "scree": 41232,
@@ -487,7 +487,7 @@
       },
       "kind": "forest",
       "solid": false,
-      "seconds": 2.85
+      "seconds": 2.8666666666666667
     },
     "stillAtTheWater": {
       "x": 85.5,
@@ -498,7 +498,7 @@
       },
       "kind": "forest",
       "solid": false,
-      "seconds": 3.55
+      "seconds": 3.5833333333333335
     }
   },
   "river": {
@@ -515,21 +515,21 @@
     },
     "southBank": {
       "x": 495.5,
-      "y": 521.08447265625,
+      "y": 522.25,
       "tile": {
         "column": 495,
-        "row": 521
+        "row": 522
       },
       "kind": "grass",
       "solid": false,
-      "seconds": 6.116666666666666
+      "seconds": 6.383333333333333
     },
     "kindsWalked": [
       "grass",
       "river",
       "forest"
     ],
-    "tilesASecond": 5.000201584002293
+    "tilesASecond": 5.000007117802478
   },
   "results": [
     {
@@ -694,7 +694,7 @@
     {
       "name": "every tile of the map is a tile the game knows",
       "pass": true,
-      "details": "grass 138675, forest 118967, river 16599, upland 50382, mountain forest 111638, shallows 6150, water 21288, alpine meadow 51694, scree 41232, glacier 10297, summit 6296, marsh 222"
+      "details": "grass 138675, forest 118967, river 16526, upland 50382, mountain forest 111638, shallows 6223, water 21288, alpine meadow 51694, scree 41232, glacier 10297, summit 6296, marsh 222"
     },
     {
       "name": "a walker who starts in the middle of Lake Geneva is put on its shore",
@@ -709,7 +709,7 @@
     {
       "name": "walking south from north of Piacenza wades across the Po and carries on",
       "pass": true,
-      "details": "from row 491 to row 521, over grass, river, forest"
+      "details": "from row 491 to row 522, over grass, river, forest"
     },
     {
       "name": "the walk covers ground at the speed of the player def: 5 tiles of 0.6 km a second",

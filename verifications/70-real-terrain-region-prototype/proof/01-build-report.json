@@ -30,13 +30,13 @@
     "summit": 6296,
     "glacier": 10297,
     "marsh": 222,
-    "river": 16599,
+    "river": 16526,
     "water": 21288,
-    "shallows": 6150
+    "shallows": 6223
   },
   "highestTileMetres": 4669,
   "lakeTilesAdded": 1062,
-  "riverPoolTiles": 628,
+  "riverPoolTiles": 555,
   "riverTiles": {
     "Aare": 418,
     "Adda": 440,
@@ -68,8 +68,8 @@
     "Varaita": 187
   },
   "walkableReachFromSpawn": {
-    "reachedCount": 529166,
-    "walkableCount": 529409
+    "reachedCount": 529093,
+    "walkableCount": 529336
   },
   "filesWithNoData": {
     "elevation": [],

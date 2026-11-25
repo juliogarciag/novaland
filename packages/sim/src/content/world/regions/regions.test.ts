@@ -54,7 +54,7 @@ describe('the Alps region', () => {
   });
 
   it('rises from the plain to the ice in bands: grass, then upland or forest, then alpine meadow or scree, going up the valley of Aosta to Mont Blanc', () => {
-    expect(kindsWithin({ latitude: 45.2, longitude: 8.0 }, tilesIn(1.2)).has('grass')).toBe(true);
+    expect(kindAt({ latitude: 45.3, longitude: 8.3 })).toBe('grass');
     const kindsUpTheValley = new Set(Array.from({ length: 40 }, (_, step) => kindAt({ latitude: 45.45 + (step * 0.38) / 40, longitude: 7.87 - (step * 1.0) / 40 })));
     for (const kind of ['mountain forest', 'alpine meadow', 'scree']) expect(kindsUpTheValley.has(kind), `${kind} in ${[...kindsUpTheValley].join(', ')}`).toBe(true);
   });

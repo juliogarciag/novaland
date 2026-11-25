@@ -152,19 +152,27 @@ describe('the water of a region', () => {
     // Rank 6 along the middle row: the row itself and one each side, but not the ice in its way.
     expect(drawRivers({ grid, kinds: great, rivers: [along(6, 2.5)] })).toEqual({ 'rank 6': 20 });
     expect(rowsOf(grid, great)).toEqual(['.......', 'rrrrrrr', 'rrrGrrr', 'rrrrrrr', '.......']);
-    // Rank 8 along the top row: the row itself and the one south of it; the row north of the map does not exist.
+    // Rank 8 along the top row: an even width leans south, so the row itself and the one south of it.
     const main = new Uint8Array(grid.columns * grid.rows).fill(kindIndexByName.grass);
     expect(drawRivers({ grid, kinds: main, rivers: [along(8, 4.5)] })).toEqual({ 'rank 8': 14 });
     expect(rowsOf(grid, main)).toEqual(['rrrrrrr', 'rrrrrrr', '.......', '.......', '.......']);
+    // Rank 6 along the top row and down the last column: the rows north of the map and the columns east of it do not exist.
+    const corner = new Uint8Array(grid.columns * grid.rows).fill(kindIndexByName.grass);
+    const aroundTheCorner = { properties: { name: 'corner', scalerank: 6 }, geometry: { type: 'LineString', coordinates: [[0.5, 4.5], [6.5, 4.5], [6.5, 0.5]] } };
+    expect(drawRivers({ grid, kinds: corner, rivers: [aroundTheCorner] })).toEqual({ corner: 20 });
+    expect(rowsOf(grid, corner)).toEqual(['rrrrrrr', 'rrrrrrr', '.....rr', '.....rr', '.....rr']);
   });
 
   it('makes the water a river shows of itself part of the river, and leaves a lake on the river and a pond away from it as they are', () => {
     const grid = { columns: 12, rows: 7, north: 7, west: 0, degreesPerColumn: 1, degreesPerRow: 1 };
-    const before = ['............', '.~......~~~~', 'rr~~rrrr~~~~', '.~......~~~~', '........~~~~', '........~~~~', '~~......~~~~'];
+    const before = ['............', '.~......~~~~', 'rr~~rrrr~~~~', '.~.~....~~~~', '...~....~~~~', '.......~~~~.', '...........~', 'r...........'];
+    const tall = { ...grid, rows: before.length };
     const kinds = Uint8Array.from(before.join(''), (character) => TILE_KINDS.findIndex((kind) => kind.character === character));
-    // The four tiles joined around the river's line become river; the lake it runs into is five tiles deep and the pond in the corner is far from it.
-    expect(riverPoolsToRiver({ grid, kinds })).toBe(4);
-    expect(rowsOf(grid, kinds)).toEqual(['............', '.r......~~~~', 'rrrrrrrr~~~~', '.r......~~~~', '........~~~~', '........~~~~', '~~......~~~~']);
+    // The two single tiles beside the river's line become river. The pond in the line stays whole, because its far end
+    // touches no river; so does the lake the river runs into; and so does the tile at the end of a row, which is beside
+    // the river at the start of the next row only in the array.
+    expect(riverPoolsToRiver({ grid: tall, kinds })).toBe(2);
+    expect(rowsOf(tall, kinds)).toEqual(['............', '.r......~~~~', 'rr~~rrrr~~~~', '.r.~....~~~~', '...~....~~~~', '.......~~~~.', '...........~', 'r...........']);
   });
 
   it('leaves the sea deep where it runs off the map', () => {

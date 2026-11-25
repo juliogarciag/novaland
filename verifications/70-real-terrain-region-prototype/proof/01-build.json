@@ -26,17 +26,17 @@
     {
       "name": "every kind of tile the script knows is on the map",
       "pass": true,
-      "details": "grass 138675, forest 118967, mountainForest 111638, upland 50382, alpineMeadow 51694, scree 41232, summit 6296, glacier 10297, marsh 222, river 16599, water 21288, shallows 6150"
+      "details": "grass 138675, forest 118967, mountainForest 111638, upland 50382, alpineMeadow 51694, scree 41232, summit 6296, glacier 10297, marsh 222, river 16526, water 21288, shallows 6223"
     },
     {
-      "name": "the big rivers are drawn, each over more than 40 tiles",
+      "name": "the big rivers are drawn, each over more than 100 tiles",
       "pass": true,
       "details": "Po 3085, Rhône 1179, Rhein 1000, Inn 1216, Adige 1823, Aare 418, Ticino 756, Adda 440"
     },
     {
       "name": "more than 99% of the walkable ground can be walked to from the spawn",
       "pass": true,
-      "details": "99.95%: 529166 of 529409 tiles"
+      "details": "99.95%: 529093 of 529336 tiles"
     }
   ],
   "report": {
@@ -71,13 +71,13 @@
       "summit": 6296,
       "glacier": 10297,
       "marsh": 222,
-      "river": 16599,
+      "river": 16526,
       "water": 21288,
-      "shallows": 6150
+      "shallows": 6223
     },
     "highestTileMetres": 4669,
     "lakeTilesAdded": 1062,
-    "riverPoolTiles": 628,
+    "riverPoolTiles": 555,
     "riverTiles": {
       "Aare": 418,
       "Adda": 440,
@@ -109,8 +109,8 @@
       "Varaita": 187
     },
     "walkableReachFromSpawn": {
-      "reachedCount": 529166,
-      "walkableCount": 529409
+      "reachedCount": 529093,
+      "walkableCount": 529336
     },
     "filesWithNoData": {
       "elevation": [],

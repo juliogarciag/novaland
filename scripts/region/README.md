@@ -24,7 +24,7 @@ The credit lines are written into every generated region, as comments and as its
 
 The projection is equirectangular (equidistant cylindrical) on a sphere of radius 6371.0088 km, with the region's middle latitude as its standard parallel. A column is a fixed step of longitude and a row a fixed step of latitude, so a tile is `kilometresPerTile` tall everywhere and `kilometresPerTile` wide at the middle latitude. For the Alps that is 0.6 km at 46.02°N; at the north edge a tile covers 3% less ground east to west and at the south edge 3% more.
 
-This is not the projection a whole globe of 32,768 by 16,384 tiles would have. That globe is equirectangular with the equator as its standard parallel: 1.22 km a tile at the equator, but at 46°N a tile is still 1.22 km tall and only 0.85 km wide, so the Alps would come out 1.44 times wider than tall for the same ground. The Alps region is twice as fine as that globe: 0.6 km a tile.
+This is not the projection a whole globe of 32,768 by 16,384 tiles would have. That globe is equirectangular with the equator as its standard parallel: 1.22 km a tile at the equator, but at 46°N a tile is still 1.22 km tall and only 0.85 km wide, so that globe stretches the Alps 1.44 times from east to west. The Alps region is twice as fine as that globe: 0.6 km a tile.
 
 ## How a tile is decided
 
@@ -36,7 +36,7 @@ Each raster is read several times finer than a tile (height at about 90 m, the f
 4. Otherwise trees are forest below 1,000 m and mountain forest above; bare ground is scree; wetland is marsh.
 5. Otherwise it is open ground, read by height: grass below 500 m, upland to 1,500 m, alpine meadow to 2,300 m, scree above.
 
-Then the vector data (`regionTiles.mjs`): a tile whose centre is inside a Natural Earth lake becomes water, which keeps narrow lake arms in one piece; every river is drawn along its line, over walkable ground only, each tile of the line sharing a side with the next, and one, two or three tiles wide by the rank Natural Earth gives the river (`riverWidthInTiles`: rank 6 or better is three, 7 to 9 two, the rest one). No river here is as wide as a tile, so the width is a sign of the river's size, as on an atlas, and a river keeps it from source to mouth; water the land cover saw along a river (a wide river shows as a string of ponds) becomes river too, when every tile of it is within two tiles of the river; and every water tile that touches land becomes shallows, where the coast is drawn (ADR 0016).
+Then the vector data (`regionTiles.mjs`): a tile whose centre is inside a Natural Earth lake becomes water, which keeps narrow lake arms in one piece; every river is drawn along its line, over walkable ground only, each tile of the line sharing a side with the next, and one, two or three tiles wide by the rank Natural Earth gives the river (`riverWidthInTiles`: rank 6 or better is three, 7 to 9 two, the rest one). No river here is as wide as a tile, so the width is a sign of the river's size, as on an atlas, and a river keeps it from source to mouth; water the land cover saw along a river (a wide river shows as a string of ponds) becomes river too, when every tile of it touches a river tile (a lake a tile or two wide with the river drawn along its banks goes with it); and every water tile that touches land becomes shallows, where the coast is drawn (ADR 0016).
 
 Summit, glacier, water and shallows stop a player. Rivers do not: there are no boats or bridges yet, and a river that stopped a walker would cut the map into strips.
 

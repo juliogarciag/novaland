@@ -152,7 +152,7 @@ export function drawRivers({ grid, kinds, rivers }) {
 }
 
 /** How near a river tile every tile of a stretch of water has to be, in tiles and counting corners, for the stretch to be the river's own water. */
-const RIVER_REACH_TILES = 2;
+const RIVER_REACH_TILES = 1;
 
 /**
  * Makes the water a river shows of itself part of the river. Where a river
@@ -160,8 +160,10 @@ const RIVER_REACH_TILES = 2;
  * come out as water: a string of ponds that would stop a walker in the
  * middle of a river that does not. A stretch of water (tiles joined by
  * their sides) whose every tile is within `RIVER_REACH_TILES` of a river
- * tile becomes river. A lake on a river keeps its water: its middle is
- * further from the river than that. Returns how many tiles it changed.
+ * tile becomes river. A lake on a river keeps its water when it is wide
+ * enough to have a tile that touches no river tile; a lake only a tile or
+ * two wide with the river drawn along its banks is taken for the river and
+ * can be waded. Returns how many tiles it changed.
  */
 export function riverPoolsToRiver({ grid, kinds }) {
   const isNearRiver = (tileIndex) => {
