@@ -2,22 +2,22 @@ import { regions, terrainDefs } from '@novaland/sim';
 import { describe, expect, it } from 'vitest';
 import { boundsOfGrid, gridOfRegion, gridPositionOf } from './projection.mjs';
 import { alps } from './regions/alps.mjs';
-import { addElevationSample, addLandCoverSample, drawRivers, emptyTallies, fillLakes, kindsFromTallies, ringWaterWithShallows, tallyRaster, walkableReach, walkableTileNearest } from './regionTiles.mjs';
+import { addElevationSample, addLandCoverSample, drawRivers, emptyTallies, fillLakes, kindsFromTallies, ringWaterWithShallows, riverPoolsToRiver, tallyRaster, walkableReach, walkableTileNearest } from './regionTiles.mjs';
 import { isInsidePolygon, tilesAlongSegment } from './shapes.mjs';
 import { elevationSource, filesCovering, LandCover, landCoverSource } from './sources.mjs';
-import { __testing__, COVER_GROUPS, kindIndexByName, kindOfTile, TILE_KINDS } from './tileKinds.mjs';
+import { __testing__, COVER_GROUPS, kindIndexByName, kindOfTile, riverWidthInTiles, TILE_KINDS } from './tileKinds.mjs';
 import { regionModuleText } from './writeRegion.mjs';
 
 describe('gridOfRegion', () => {
   it('makes a tile as tall as asked everywhere and as wide as asked at the middle latitude', () => {
     const grid = gridOfRegion(alps);
     const { north, south } = boundsOfGrid(grid);
-    expect(kilometresBetween({ latitude: north, longitude: 8 }, { latitude: north - grid.degreesPerRow, longitude: 8 })).toBeCloseTo(1.2, 4);
+    expect(kilometresBetween({ latitude: north, longitude: 8 }, { latitude: north - grid.degreesPerRow, longitude: 8 })).toBeCloseTo(0.6, 4);
     expect(grid.standardParallel).toBeCloseTo((north + south) / 2, 6);
-    expect(kilometresBetween({ latitude: grid.standardParallel, longitude: 8 }, { latitude: grid.standardParallel, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(1.2, 4);
+    expect(kilometresBetween({ latitude: grid.standardParallel, longitude: 8 }, { latitude: grid.standardParallel, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(0.6, 4);
     // At the north edge the same step of longitude covers less ground, at the south edge more: about three percent each way.
-    expect(kilometresBetween({ latitude: north, longitude: 8 }, { latitude: north, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(1.2 * 0.968, 2);
-    expect(kilometresBetween({ latitude: south, longitude: 8 }, { latitude: south, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(1.2 * 1.031, 2);
+    expect(kilometresBetween({ latitude: north, longitude: 8 }, { latitude: north, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(0.6 * 0.968, 2);
+    expect(kilometresBetween({ latitude: south, longitude: 8 }, { latitude: south, longitude: 8 + grid.degreesPerColumn })).toBeCloseTo(0.6 * 1.031, 2);
   });
 
   it('places a point of the Earth in tiles and fractions of a tile, columns east from the west edge and rows south from the north edge', () => {
@@ -141,6 +141,30 @@ describe('the water of a region', () => {
     expect(drawRivers({ grid, kinds, rivers: [river, elsewhere, broken] })).toEqual({ Test: 5 });
     ringWaterWithShallows({ grid, kinds });
     expect(rowsOf(grid, kinds)).toEqual(['Grr.....', '..r.---.', '..rr-~-.', '....---.', '........', '........']);
+  });
+
+  it('draws a river two or three tiles wide when Natural Earth ranks it as important, and never over a lake, ice or the edge of the map', () => {
+    expect([undefined, 11, 10, 9, 7, 6, 4].map(riverWidthInTiles)).toEqual([1, 1, 1, 2, 2, 3, 3]);
+    const grid = { columns: 7, rows: 5, north: 5, west: 0, degreesPerColumn: 1, degreesPerRow: 1 };
+    const along = (scalerank, latitude) => ({ properties: { name: `rank ${scalerank}`, scalerank }, geometry: { type: 'LineString', coordinates: [[0.5, latitude], [6.5, latitude]] } });
+    const great = new Uint8Array(grid.columns * grid.rows).fill(kindIndexByName.grass);
+    great[2 * grid.columns + 3] = kindIndexByName.glacier;
+    // Rank 6 along the middle row: the row itself and one each side, but not the ice in its way.
+    expect(drawRivers({ grid, kinds: great, rivers: [along(6, 2.5)] })).toEqual({ 'rank 6': 20 });
+    expect(rowsOf(grid, great)).toEqual(['.......', 'rrrrrrr', 'rrrGrrr', 'rrrrrrr', '.......']);
+    // Rank 8 along the top row: the row itself and the one south of it; the row north of the map does not exist.
+    const main = new Uint8Array(grid.columns * grid.rows).fill(kindIndexByName.grass);
+    expect(drawRivers({ grid, kinds: main, rivers: [along(8, 4.5)] })).toEqual({ 'rank 8': 14 });
+    expect(rowsOf(grid, main)).toEqual(['rrrrrrr', 'rrrrrrr', '.......', '.......', '.......']);
+  });
+
+  it('makes the water a river shows of itself part of the river, and leaves a lake on the river and a pond away from it as they are', () => {
+    const grid = { columns: 12, rows: 7, north: 7, west: 0, degreesPerColumn: 1, degreesPerRow: 1 };
+    const before = ['............', '.~......~~~~', 'rr~~rrrr~~~~', '.~......~~~~', '........~~~~', '........~~~~', '~~......~~~~'];
+    const kinds = Uint8Array.from(before.join(''), (character) => TILE_KINDS.findIndex((kind) => kind.character === character));
+    // The four tiles joined around the river's line become river; the lake it runs into is five tiles deep and the pond in the corner is far from it.
+    expect(riverPoolsToRiver({ grid, kinds })).toBe(4);
+    expect(rowsOf(grid, kinds)).toEqual(['............', '.r......~~~~', 'rrrrrrrr~~~~', '.r......~~~~', '........~~~~', '........~~~~', '~~......~~~~']);
   });
 
   it('leaves the sea deep where it runs off the map', () => {

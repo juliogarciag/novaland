@@ -10,8 +10,8 @@ export const elevationSource = {
   licence: 'Copernicus DEM licence: free of charge for any use, derived works included, with the credit line',
   credit: '© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved',
   degreesPerFile: 1,
-  /** Width in pixels of the overview read: 600 across a degree is about 185 m, six to nine samples across a 1.2 km tile. */
-  overviewWidth: 600,
+  /** Width in pixels of the image read: 1200 across a degree is the file itself, about 90 m, six to nine samples across a 0.6 km tile. */
+  overviewWidth: 1200,
   urlOfFile({ south, west }) {
     const name = `Copernicus_DSM_COG_30_${latitudeLabel(south)}_00_${longitudeLabel(west)}_00_DEM`;
     return `https://copernicus-dem-90m.s3.amazonaws.com/${name}/${name}.tif`;
@@ -24,8 +24,8 @@ export const landCoverSource = {
   licence: 'CC BY 4.0',
   credit: '© ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium',
   degreesPerFile: 3,
-  /** Width in pixels of the overview read: 2250 across three degrees is about 150 m, eight to eleven samples across a 1.2 km tile. */
-  overviewWidth: 2250,
+  /** Width in pixels of the overview read: 4500 across three degrees is about 75 m, eight to eleven samples across a 0.6 km tile. */
+  overviewWidth: 4500,
   urlOfFile({ south, west }) {
     return `https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_${latitudeLabel(south)}${longitudeLabel(west)}_Map.tif`;
   },

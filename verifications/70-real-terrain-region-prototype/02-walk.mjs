@@ -33,7 +33,7 @@ const OPEN_WATER = {
   'the Adriatic off Venice': [45.3, 12.6],
   'the Gulf of Genoa': [44.33, 8.95],
 };
-/** Summits: the tile at the place must stop a player, and there is ice or summit within a tile of it. */
+/** Summits: the tile at the place must stop a player, and there is ice or summit within 1.2 km of it. */
 const HIGH_PEAKS = {
   'Mont Blanc': [45.833, 6.865],
   'Monte Rosa': [45.937, 7.867],
@@ -44,7 +44,7 @@ const HIGH_PEAKS = {
 };
 /** The plain: the tile at the place must be grass. */
 const ON_THE_PLAIN = { Milan: [45.46, 9.19], Turin: [45.07, 7.69], 'south of Lake Garda': [45.2, 10.5] };
-/** Rivers: there must be a river tile within two tiles of the town. */
+/** Rivers: there must be a river tile within 2.4 km of the town. */
 const RIVERS_AT_TOWNS = {
   'the Po at Piacenza': [45.06, 9.7],
   'the Po at Turin': [45.06, 7.7],
@@ -92,10 +92,12 @@ try {
     return { name: api.region?.name, grid: api.region?.grid, sources: api.region?.sources, bounds: api.tiles.bounds, spawn: api.map.spawn, playerSpeed: api.defs.find((def) => def.speed)?.speed };
   });
   report.region = region;
+  /** How many tiles cover a distance on the ground, at the region's scale. */
+  const tilesIn = (kilometres) => Math.round(kilometres / region.grid.kilometresPerTile);
   results.push(check('the page plays the region "alps", not the world', region.name === 'alps', `${region.bounds.width}x${region.bounds.height} tiles of ${region.grid?.kilometresPerTile} km`));
   results.push(check('the region names its three sources with a licence each', region.sources?.length === 3 && region.sources.every((source) => source.licence && source.credit), region.sources?.map((source) => `${source.name} (${source.licence.split(':')[0]})`).join('; ')));
   const start0 = await playerOf(page);
-  results.push(check('the player stands on the spawn tile, at the south end of Lake Como', start0.tile.column === region.spawn.column && start0.tile.row === region.spawn.row && (await kindsWithin(page, [45.8, 9.07], 3)).includes('shallows'), `tile (${start0.tile.column}, ${start0.tile.row})`));
+  results.push(check('the player stands on the spawn tile, at the south end of Lake Como', start0.tile.column === region.spawn.column && start0.tile.row === region.spawn.row && (await kindsWithin(page, [45.8, 9.07], tilesIn(3.6))).includes('shallows'), `tile (${start0.tile.column}, ${start0.tile.row})`));
   await page.screenshot({ path: path.join(PROOF, '02-view-spawn-lake-como.png') });
 
   // ---- Real places are where an atlas says ----
@@ -106,9 +108,9 @@ try {
   }
   for (const [name, coordinates] of Object.entries(HIGH_PEAKS)) {
     const place = await placeAt(page, coordinates);
-    const near = await kindsWithin(page, coordinates, 1);
+    const near = await kindsWithin(page, coordinates, tilesIn(1.2));
     report.places[name] = { ...place, near };
-    results.push(check(`${name} is ice or summit, and stops a walker`, place.solid === true && (near.includes('glacier') || near.includes('summit')), `${describe(place)}; within a tile: ${near.join(', ')}`));
+    results.push(check(`${name} is ice or summit, and stops a walker`, place.solid === true && (near.includes('glacier') || near.includes('summit')), `${describe(place)}; within 1.2 km: ${near.join(', ')}`));
   }
   for (const [name, coordinates] of Object.entries(ON_THE_PLAIN)) {
     const place = await placeAt(page, coordinates);
@@ -116,9 +118,9 @@ try {
     results.push(check(`${name} is open grass on the plain`, place.kind === 'grass', describe(place)));
   }
   for (const [name, coordinates] of Object.entries(RIVERS_AT_TOWNS)) {
-    const near = await kindsWithin(page, coordinates, 2);
+    const near = await kindsWithin(page, coordinates, tilesIn(2.4));
     report.places[name] = { ...(await placeAt(page, coordinates)), near };
-    results.push(check(`${name}: a river runs within two tiles`, near.includes('river'), near.join(', ')));
+    results.push(check(`${name}: a river runs within 2.4 km`, near.includes('river'), near.join(', ')));
   }
 
   // ---- The whole map, one square per tile, in each tile def's colour ----
@@ -164,15 +166,21 @@ try {
   const northBank = await playerOf(page);
   const kindsWalked = new Set();
   await page.keyboard.down('KeyS');
+  await page.waitForTimeout(300);
+  const firstSample = await playerOf(page);
+  let lastSample = firstSample;
   for (let sample = 0; sample < 40; sample += 1) {
-    kindsWalked.add((await playerOf(page)).kind);
+    lastSample = await playerOf(page);
+    kindsWalked.add(lastSample.kind);
     await page.waitForTimeout(100);
   }
   await page.keyboard.up('KeyS');
   const southBank = await playerOf(page);
-  report.river = { northBank, southBank, kindsWalked: [...kindsWalked] };
+  // The key is down from the first sample to the last, so the walk is timed between those two, on the sim's clock.
+  const tilesASecond = (lastSample.y - firstSample.y) / (lastSample.seconds - firstSample.seconds);
+  report.river = { northBank, southBank, kindsWalked: [...kindsWalked], tilesASecond };
   results.push(check('walking south from north of Piacenza wades across the Po and carries on', kindsWalked.has('river') && southBank.kind !== 'river' && southBank.tile.row - northBank.tile.row > 8, `from row ${northBank.tile.row} to row ${southBank.tile.row}, over ${[...kindsWalked].join(', ')}`));
-  results.push(check('the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second', Math.abs((southBank.y - northBank.y) / 4 - region.playerSpeed) < region.playerSpeed * 0.35, `${((southBank.y - northBank.y) / 4).toFixed(1)} tiles a second against a speed of ${region.playerSpeed}`));
+  results.push(check(`the walk covers ground at the speed of the player def: ${region.playerSpeed} tiles of ${region.grid.kilometresPerTile} km a second`, Math.abs(tilesASecond - region.playerSpeed) < region.playerSpeed * 0.15, `${tilesASecond.toFixed(2)} tiles a second by the sim's clock against a speed of ${region.playerSpeed}: ${(tilesASecond * region.grid.kilometresPerTile).toFixed(1)} km a second on the ground`));
 
   // ---- What a player sees at a handful of places ----
   for (const [name, coordinates] of Object.entries(VIEWS)) {
@@ -185,7 +193,7 @@ try {
     await page.screenshot({ path: path.join(PROOF, `02-view-${name}.png`) });
     report.views[name] = { asked: asked.tile, player: player.tile, kind: player.kind, chunksDrawn: terrain.chunksDrawn.length, zoom: camera?.zoom, visibleMetres: camera?.visibleMetres };
     const tilesAway = Math.max(Math.abs(player.tile.column - asked.tile.column), Math.abs(player.tile.row - asked.tile.row));
-    results.push(check(`?at=${coordinates.join(',')} (${name}) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn`, tilesAway <= 6 && player.solid === false, `${tilesAway} tiles away on ${player.kind}, ${terrain.chunksDrawn.length} chunks drawn, ${Math.round(camera.visibleMetres.width)}x${Math.round(camera.visibleMetres.height)} tiles on screen`));
+    results.push(check(`?at=${coordinates.join(',')} (${name}) starts the walk within 7 km of the place, on walkable ground, with terrain drawn`, tilesAway <= tilesIn(7.2) && player.solid === false, `${tilesAway} tiles away on ${player.kind}, ${terrain.chunksDrawn.length} chunks drawn, ${Math.round(camera.visibleMetres.width)}x${Math.round(camera.visibleMetres.height)} tiles on screen`));
   }
 
   results.push(check('no page errors', pageErrors.length === 0, pageErrors.join(' | ')));
@@ -240,7 +248,7 @@ function kindsWithin(page, [latitude, longitude], radius) {
   );
 }
 
-/** Where the local player is, in metres and as a tile, and what that tile is. */
+/** Where the local player is, in metres and as a tile, what that tile is, and the sim's own clock in seconds. */
 function playerOf(page) {
   return page.evaluate(() => {
     const api = window.__novaland;
@@ -248,7 +256,7 @@ function playerOf(page) {
     const { x, y } = api.snapshot().entities.find((entity) => entity.components.Player?.slot === slot).components.Position;
     const tile = api.tileAt(x, y);
     const def = api.defs.find((candidate) => candidate.id === api.tileDefIdAt(tile));
-    return { x, y, tile, kind: def?.name, solid: def?.solid };
+    return { x, y, tile, kind: def?.name, solid: def?.solid, seconds: api.sim.tick * api.sim.dt };
   });
 }
 

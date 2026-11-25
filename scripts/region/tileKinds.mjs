@@ -46,6 +46,20 @@ const HeightBand = {
   Summit: 2800,
 };
 
+/**
+ * How many tiles wide a river is drawn, from the rank Natural Earth gives it
+ * (`scalerank`: the lower, the more important the river). No river of a
+ * region is as wide as a tile, so the width is a sign of the river's size,
+ * as on an atlas, and not a measure: the great rivers are three tiles, the
+ * main rivers of a country two, the rest one. A river keeps one rank from
+ * its source to its mouth, so it does not grow as it flows.
+ */
+export function riverWidthInTiles(scalerank) {
+  if (!Number.isFinite(scalerank)) return 1;
+  if (scalerank <= 6) return 3;
+  return scalerank <= 9 ? 2 : 1;
+}
+
 /** The groups of land cover a tile is decided by. Each sample of the land cover raster falls in one. */
 export const COVER_GROUPS = ['water', 'trees', 'snowAndIce', 'bare', 'wetland', 'open'];
 

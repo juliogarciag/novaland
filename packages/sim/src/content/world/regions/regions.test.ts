@@ -10,21 +10,21 @@ import { regionMapSpawningNear, regions, tileOfCoordinates } from './index';
 import type { EarthCoordinates, Region } from './types';
 
 describe('the Alps region', () => {
-  it('is a map of 448 by 320 tiles of 1.2 km that the sim can read, from Geneva to Venice', () => {
+  it('is a map of 896 by 640 tiles of 0.6 km that the sim can read, from Geneva to Venice', () => {
     const tiles = readMapTiles(alps.map);
-    expect(tiles.bounds).toEqual({ column: 0, row: 0, width: 448, height: 320 });
-    expect(alps.grid.kilometresPerTile).toBe(1.2);
+    expect(tiles.bounds).toEqual({ column: 0, row: 0, width: 896, height: 640 });
+    expect(alps.grid.kilometresPerTile).toBe(0.6);
     expect(tileOfCoordinates(alps, GENEVA)).toBeDefined();
     expect(tileOfCoordinates(alps, VENICE)).toBeDefined();
-    expect(tileOfCoordinates(alps, GENEVA)!.column).toBeLessThan(tileOfCoordinates(alps, VENICE)!.column - 350);
+    expect(tileOfCoordinates(alps, GENEVA)!.column).toBeLessThan(tileOfCoordinates(alps, VENICE)!.column - 700);
   });
 
-  it('covers the ground it says: a tile is 1.2 km tall, and 1.2 km wide at the standard parallel', () => {
+  it('covers the ground it says: a tile is 0.6 km tall, and 0.6 km wide at the standard parallel', () => {
     const kilometresPerDegree = (Math.PI * 6371.0088) / 180;
-    expect(alps.grid.degreesPerRow * kilometresPerDegree).toBeCloseTo(1.2, 5);
-    expect(alps.grid.degreesPerColumn * kilometresPerDegree * Math.cos((alps.grid.standardParallel * Math.PI) / 180)).toBeCloseTo(1.2, 5);
+    expect(alps.grid.degreesPerRow * kilometresPerDegree).toBeCloseTo(0.6, 5);
+    expect(alps.grid.degreesPerColumn * kilometresPerDegree * Math.cos((alps.grid.standardParallel * Math.PI) / 180)).toBeCloseTo(0.6, 5);
     // The standard parallel is the middle row, so the map is as much too wide in the north as too narrow in the south.
-    expect(alps.grid.standardParallel).toBeCloseTo(alps.grid.north - 160 * alps.grid.degreesPerRow, 6);
+    expect(alps.grid.standardParallel).toBeCloseTo(alps.grid.north - 320 * alps.grid.degreesPerRow, 6);
   });
 
   it('names what it was made from, each with a licence and a credit line', () => {
@@ -38,23 +38,23 @@ describe('the Alps region', () => {
 
   it('has ice or bare summit, which nobody walks on, on the highest massifs', () => {
     for (const [name, coordinates] of Object.entries(HIGH_PEAKS)) {
-      const kinds = kindsWithin(coordinates, 1);
+      const kinds = kindsWithin(coordinates, tilesIn(1.2));
       expect(kinds.has('glacier') || kinds.has('summit'), `${name}: ${[...kinds].join(', ')}`).toBe(true);
       expect(getTileDef(tileDefIdAt(readMapTiles(alps.map), tileOfCoordinates(alps, coordinates)!)!).solid, name).toBe(true);
     }
-    expect(kindsWithin(ALETSCH_GLACIER, 1).has('glacier')).toBe(true);
+    expect(kindsWithin(ALETSCH_GLACIER, tilesIn(1.2)).has('glacier')).toBe(true);
   });
 
   it('has the plain of the Po as open grass, and the towns on it as the ground they stand on', () => {
     for (const [name, coordinates] of Object.entries(ON_THE_PLAIN)) expect(kindAt(coordinates), name).toBe('grass');
   });
 
-  it('has the main rivers running through the towns they run through, one tile wide', () => {
-    for (const [name, coordinates] of Object.entries(RIVERS_AT_TOWNS)) expect(kindsWithin(coordinates, 2).has('river'), name).toBe(true);
+  it('has the main rivers running through the towns they run through', () => {
+    for (const [name, coordinates] of Object.entries(RIVERS_AT_TOWNS)) expect(kindsWithin(coordinates, tilesIn(2.4)).has('river'), name).toBe(true);
   });
 
   it('rises from the plain to the ice in bands: grass, then upland or forest, then alpine meadow or scree, going up the valley of Aosta to Mont Blanc', () => {
-    expect(kindAt({ latitude: 45.2, longitude: 8.0 })).toBe('grass');
+    expect(kindsWithin({ latitude: 45.2, longitude: 8.0 }, tilesIn(1.2)).has('grass')).toBe(true);
     const kindsUpTheValley = new Set(Array.from({ length: 40 }, (_, step) => kindAt({ latitude: 45.45 + (step * 0.38) / 40, longitude: 7.87 - (step * 1.0) / 40 })));
     for (const kind of ['mountain forest', 'alpine meadow', 'scree']) expect(kindsUpTheValley.has(kind), `${kind} in ${[...kindsUpTheValley].join(', ')}`).toBe(true);
   });
@@ -72,7 +72,7 @@ describe('the Alps region', () => {
         }
       }
     }
-    expect(deepTiles).toBeGreaterThan(1000);
+    expect(deepTiles).toBeGreaterThan(4000);
   });
 
   it('can be walked: from the spawn, all but a few pockets of the walkable ground are reached without crossing water, ice or summit', () => {
@@ -190,6 +190,11 @@ const RIVERS_AT_TOWNS: Record<string, EarthCoordinates> = {
   'the Adda at Sondrio': { latitude: 46.17, longitude: 9.87 },
   'the Ticino at Pavia': { latitude: 45.18, longitude: 9.15 },
 };
+
+/** How many tiles cover a distance on the ground: a town is not a point, so places are looked for within a distance, whatever the scale. */
+function tilesIn(kilometres: number): number {
+  return Math.round(kilometres / alps.grid.kilometresPerTile);
+}
 
 /** The name of the tile def at a place, with the shallows counted as the water they ring. */
 function kindAt(coordinates: EarthCoordinates): string {

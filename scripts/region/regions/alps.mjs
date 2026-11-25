@@ -6,10 +6,10 @@
 export const alps = {
   name: 'alps',
   /** How much real ground one tile covers, along both axes at the middle of the region. */
-  kilometresPerTile: 1.2,
-  /** Whole chunks of 32 tiles: 14 by 10. */
-  columns: 448,
-  rows: 320,
+  kilometresPerTile: 0.6,
+  /** Whole chunks of 32 tiles: 28 by 20. */
+  columns: 896,
+  rows: 640,
   /** The north-west corner of the map: the top-left corner of tile (0, 0). */
   north: 47.75,
   west: 5.85,

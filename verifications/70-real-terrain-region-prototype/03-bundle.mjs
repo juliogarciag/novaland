@@ -16,8 +16,8 @@ try {
   const regionRows = readFileSync(path.join(ROOT, 'packages/sim/src/content/world/regions/alps.ts'), 'utf8')
     .split('\n')
     .filter((line) => /^\s+"[^"]{400,}",$/.test(line));
-  const needle = regionRows[150].trim().slice(100, 180);
-  results.push(check('the region module holds 320 rows to look for', regionRows.length === 320, `looking for "${needle.slice(0, 24)}..."`));
+  const needle = regionRows[300].trim().slice(100, 180);
+  results.push(check('the region module holds 640 rows to look for', regionRows.length === 640, `looking for "${needle.slice(0, 24)}..."`));
 
   execFileSync('pnpm', ['build'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   for (const [name, directory] of [['client', 'packages/client/dist'], ['server', 'packages/server/dist']]) {

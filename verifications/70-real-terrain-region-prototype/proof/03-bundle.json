@@ -1,9 +1,9 @@
 {
   "results": [
     {
-      "name": "the region module holds 320 rows to look for",
+      "name": "the region module holds 640 rows to look for",
       "pass": true,
-      "details": "looking for \"FassaFFasssssAaaasAGGGGA...\""
+      "details": "looking for \"FFFFFFFaaaaaaaFaaaaaaaaa...\""
     },
     {
       "name": "the client bundle does not carry the region",
@@ -13,7 +13,7 @@
     {
       "name": "the server bundle does not carry the region",
       "pass": true,
-      "details": "2 files, 3829239 bytes"
+      "details": "2 files, 3829293 bytes"
     }
   ],
   "report": {
@@ -23,7 +23,7 @@
     },
     "server": {
       "files": 2,
-      "bytes": 3829239
+      "bytes": 3829293
     }
   }
 }

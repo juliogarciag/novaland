@@ -8,7 +8,7 @@
  */
 import { boundsOfGrid, gridPositionOf } from './projection.mjs';
 import { isInsidePolygon, tilesAlongSegment } from './shapes.mjs';
-import { COVER_GROUPS, coverGroupIndexOf, kindIndexByName, kindOfTile, TILE_KINDS } from './tileKinds.mjs';
+import { COVER_GROUPS, coverGroupIndexOf, kindIndexByName, kindOfTile, riverWidthInTiles, TILE_KINDS } from './tileKinds.mjs';
 
 /** Empty tallies for a grid: what the samples of the rasters add up to in each tile. */
 export function emptyTallies(grid) {
@@ -29,7 +29,7 @@ export function emptyTallies(grid) {
  */
 export function tallyRaster({ grid, file, degreesPerFile, raster, addSample }) {
   // A sample is taken to sit at the centre of its pixel. The elevation files centre theirs on the pixel's corner instead,
-  // half a pixel away: tens of metres at the overview read, nothing at a kilometre a tile, but a much finer region should shift it.
+  // half a pixel away: 45 m in the files themselves, little against a tile of 600 m, but a much finer region should shift it.
   const tileColumnOfSampleColumn = new Int32Array(raster.width);
   for (let sampleColumn = 0; sampleColumn < raster.width; sampleColumn += 1) {
     const { column } = gridPositionOf(grid, { latitude: 0, longitude: file.west + ((sampleColumn + 0.5) * degreesPerFile) / raster.width });
@@ -105,8 +105,11 @@ export function fillLakes({ grid, kinds, lakes }) {
 }
 
 /**
- * Draws every river one tile wide along its line, so a river far narrower
- * than a tile still exists. A river tile replaces walkable ground only:
+ * Draws every river along its line, so a river far narrower than a tile
+ * still exists: one tile wide, or two or three for the rivers Natural Earth
+ * ranks as important (`riverWidthInTiles`). The tiles along the line each
+ * share a side with the next; a wider river is a square of tiles around each
+ * of them. A river tile replaces walkable ground only:
  * where the line crosses a lake, the sea, a glacier or a summit, that tile
  * stays. `rivers` are GeoJSON features with LineString or MultiLineString
  * geometry. Returns, by river name, how many tiles each one got.
@@ -116,6 +119,9 @@ export function drawRivers({ grid, kinds, rivers }) {
   const tilesByRiver = new Map();
   for (const river of rivers) {
     const name = river.properties?.name || 'unnamed';
+    const width = riverWidthInTiles(river.properties?.scalerank);
+    // A square of `width` tiles around each tile of the line; an even width leans south-east.
+    const firstOffset = -Math.floor((width - 1) / 2);
     for (const line of linesOf(river)) {
       for (let index = 1; index < line.length; index += 1) {
         const [startLongitude, startLatitude] = line[index - 1];
@@ -126,17 +132,70 @@ export function drawRivers({ grid, kinds, rivers }) {
           Math.max(startLongitude, endLongitude) < bounds.west || Math.min(startLongitude, endLongitude) > bounds.east || Math.max(startLatitude, endLatitude) < bounds.south || Math.min(startLatitude, endLatitude) > bounds.north;
         if (isOutside) continue;
         const tiles = tilesAlongSegment(gridPositionOf(grid, { latitude: startLatitude, longitude: startLongitude }), gridPositionOf(grid, { latitude: endLatitude, longitude: endLongitude }));
-        for (const { column, row } of tiles) {
-          if (column < 0 || column >= grid.columns || row < 0 || row >= grid.rows) continue;
-          const tileIndex = row * grid.columns + column;
-          if (kinds[tileIndex] === kindIndexByName.river || TILE_KINDS[kinds[tileIndex]].solid) continue;
-          kinds[tileIndex] = kindIndexByName.river;
-          tilesByRiver.set(name, (tilesByRiver.get(name) ?? 0) + 1);
+        for (const centre of tiles) {
+          for (let rowOffset = firstOffset; rowOffset < firstOffset + width; rowOffset += 1) {
+            for (let columnOffset = firstOffset; columnOffset < firstOffset + width; columnOffset += 1) {
+              const column = centre.column + columnOffset;
+              const row = centre.row + rowOffset;
+              if (column < 0 || column >= grid.columns || row < 0 || row >= grid.rows) continue;
+              const tileIndex = row * grid.columns + column;
+              if (kinds[tileIndex] === kindIndexByName.river || TILE_KINDS[kinds[tileIndex]].solid) continue;
+              kinds[tileIndex] = kindIndexByName.river;
+              tilesByRiver.set(name, (tilesByRiver.get(name) ?? 0) + 1);
+            }
+          }
         }
       }
     }
   }
   return Object.fromEntries([...tilesByRiver].sort(([first], [second]) => first.localeCompare(second)));
+}
+
+/** How near a river tile every tile of a stretch of water has to be, in tiles and counting corners, for the stretch to be the river's own water. */
+const RIVER_REACH_TILES = 2;
+
+/**
+ * Makes the water a river shows of itself part of the river. Where a river
+ * is wide enough for the land cover to see it, some tiles along its line
+ * come out as water: a string of ponds that would stop a walker in the
+ * middle of a river that does not. A stretch of water (tiles joined by
+ * their sides) whose every tile is within `RIVER_REACH_TILES` of a river
+ * tile becomes river. A lake on a river keeps its water: its middle is
+ * further from the river than that. Returns how many tiles it changed.
+ */
+export function riverPoolsToRiver({ grid, kinds }) {
+  const isNearRiver = (tileIndex) => {
+    const column = tileIndex % grid.columns;
+    const row = (tileIndex - column) / grid.columns;
+    for (let nearRow = Math.max(0, row - RIVER_REACH_TILES); nearRow <= Math.min(grid.rows - 1, row + RIVER_REACH_TILES); nearRow += 1) {
+      for (let nearColumn = Math.max(0, column - RIVER_REACH_TILES); nearColumn <= Math.min(grid.columns - 1, column + RIVER_REACH_TILES); nearColumn += 1) {
+        if (kinds[nearRow * grid.columns + nearColumn] === kindIndexByName.river) return true;
+      }
+    }
+    return false;
+  };
+  const visited = new Uint8Array(kinds.length);
+  const pools = [];
+  for (let firstTile = 0; firstTile < kinds.length; firstTile += 1) {
+    if (visited[firstTile] || kinds[firstTile] !== kindIndexByName.water) continue;
+    const stretch = [firstTile];
+    visited[firstTile] = 1;
+    let isRiverWater = true;
+    for (let next = 0; next < stretch.length; next += 1) {
+      const tileIndex = stretch[next];
+      isRiverWater &&= isNearRiver(tileIndex);
+      const column = tileIndex % grid.columns;
+      for (const neighbour of [column > 0 ? tileIndex - 1 : -1, column < grid.columns - 1 ? tileIndex + 1 : -1, tileIndex - grid.columns, tileIndex + grid.columns]) {
+        if (neighbour < 0 || neighbour >= kinds.length || visited[neighbour] || kinds[neighbour] !== kindIndexByName.water) continue;
+        visited[neighbour] = 1;
+        stretch.push(neighbour);
+      }
+    }
+    if (isRiverWater) pools.push(stretch);
+  }
+  // Changed only now: a pool turned into river must not make the next stretch of water count as near a river.
+  for (const tileIndex of pools.flat()) kinds[tileIndex] = kindIndexByName.river;
+  return pools.flat().length;
 }
 
 /**

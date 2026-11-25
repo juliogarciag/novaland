@@ -7,7 +7,7 @@
  *   pnpm region:build                      # the Alps
  *   pnpm region:build alps --report <file> # also writes what it measured as JSON
  *
- * The first run downloads the overviews it needs (the cache ends at about 100 MB) into `scripts/region/.cache/` (not
+ * The first run downloads the overviews it needs (the cache ends at about 430 MB) into `scripts/region/.cache/` (not
  * committed); later runs read from there. The same inputs always write the
  * same file. See `scripts/region/README.md` for the sources and their licences.
  */
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { readJsonFile, readRasterOverview } from './downloads.mjs';
 import { boundsOfGrid, gridOfRegion } from './projection.mjs';
 import { alps } from './regions/alps.mjs';
-import { addElevationSample, addLandCoverSample, drawRivers, emptyTallies, fillLakes, kindsFromTallies, meanElevations, ringWaterWithShallows, tallyRaster, walkableReach, walkableTileNearest } from './regionTiles.mjs';
+import { addElevationSample, addLandCoverSample, drawRivers, emptyTallies, fillLakes, kindsFromTallies, meanElevations, ringWaterWithShallows, riverPoolsToRiver, tallyRaster, walkableReach, walkableTileNearest } from './regionTiles.mjs';
 import { elevationSource, filesCovering, landCoverSource, waterSource } from './sources.mjs';
 import { TILE_KINDS } from './tileKinds.mjs';
 import { regionModuleText } from './writeRegion.mjs';
@@ -51,6 +51,7 @@ async function main() {
   const lakes = (await readFeatures(waterSource.lakeFiles)).filter((feature) => feature.properties?.featurecla !== 'Playa');
   const lakeTilesAdded = fillLakes({ grid, kinds, lakes });
   const riverTiles = drawRivers({ grid, kinds, rivers: await readFeatures(waterSource.riverFiles) });
+  const riverPoolTiles = riverPoolsToRiver({ grid, kinds });
   ringWaterWithShallows({ grid, kinds });
 
   const spawn = walkableTileNearest({ grid, kinds, coordinates: region.spawn });
@@ -69,6 +70,7 @@ async function main() {
     tilesByKind: Object.fromEntries(TILE_KINDS.map((kind, index) => [kind.name, kinds.reduce((count, value) => count + (value === index ? 1 : 0), 0)])),
     highestTileMetres: Math.round(meanElevations(tallies).reduce((highest, metres) => Math.max(highest, metres), 0)),
     lakeTilesAdded,
+    riverPoolTiles,
     riverTiles,
     walkableReachFromSpawn: walkableReach({ grid, kinds, from: spawn }),
     filesWithNoData: { elevation: missingElevationFiles, landCover: missingLandCoverFiles },

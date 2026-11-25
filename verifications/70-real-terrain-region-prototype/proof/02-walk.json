@@ -2,102 +2,104 @@
   "places": {
     "Lake Geneva": {
       "tile": {
-        "column": 45,
-        "row": 120
+        "column": 90,
+        "row": 240
       },
       "kind": "water",
       "solid": true
     },
     "Lake Neuchâtel": {
       "tile": {
-        "column": 64,
-        "row": 78
+        "column": 128,
+        "row": 157
       },
       "kind": "water",
       "solid": true
     },
     "Lake Constance": {
       "tile": {
-        "column": 231,
-        "row": 13
+        "column": 463,
+        "row": 27
       },
       "kind": "water",
       "solid": true
     },
     "Lake Zurich": {
       "tile": {
-        "column": 180,
-        "row": 46
+        "column": 360,
+        "row": 92
       },
       "kind": "shallows",
       "solid": true
     },
     "Lake Maggiore": {
       "tile": {
-        "column": 178,
-        "row": 166
+        "column": 357,
+        "row": 333
       },
-      "kind": "shallows",
+      "kind": "water",
       "solid": true
     },
     "Lake Como": {
       "tile": {
-        "column": 220,
-        "row": 159
+        "column": 440,
+        "row": 318
       },
-      "kind": "shallows",
+      "kind": "water",
       "solid": true
     },
     "Lake Garda": {
       "tile": {
-        "column": 307,
-        "row": 199
+        "column": 615,
+        "row": 398
       },
       "kind": "water",
       "solid": true
     },
     "the Adriatic off Venice": {
       "tile": {
-        "column": 434,
-        "row": 227
+        "column": 868,
+        "row": 454
       },
       "kind": "water",
       "solid": true
     },
     "the Gulf of Genoa": {
       "tile": {
-        "column": 199,
-        "row": 316
+        "column": 398,
+        "row": 633
       },
       "kind": "water",
       "solid": true
     },
     "Mont Blanc": {
       "tile": {
-        "column": 65,
-        "row": 177
+        "column": 130,
+        "row": 355
       },
       "kind": "glacier",
       "solid": true,
       "near": [
-        "glacier"
+        "glacier",
+        "summit"
       ]
     },
     "Monte Rosa": {
       "tile": {
-        "column": 129,
-        "row": 167
+        "column": 259,
+        "row": 335
       },
       "kind": "glacier",
       "solid": true,
       "near": [
-        "glacier"
+        "glacier",
+        "summit"
       ]
     },
     "the Aletsch glacier": {
       "tile": {
-        "column": 140,
-        "row": 115
+        "column": 280,
+        "row": 231
       },
       "kind": "glacier",
       "solid": true,
@@ -107,8 +109,8 @@
     },
     "Piz Bernina": {
       "tile": {
-        "column": 261,
-        "row": 126
+        "column": 522,
+        "row": 253
       },
       "kind": "glacier",
       "solid": true,
@@ -118,67 +120,57 @@
     },
     "Ortler": {
       "tile": {
-        "column": 302,
-        "row": 114
+        "column": 604,
+        "row": 229
       },
       "kind": "glacier",
       "solid": true,
       "near": [
         "glacier",
-        "mountain forest"
+        "alpine meadow",
+        "scree"
       ]
     },
     "Grossglockner": {
       "tile": {
-        "column": 440,
-        "row": 62
+        "column": 880,
+        "row": 125
       },
       "kind": "glacier",
       "solid": true,
       "near": [
-        "glacier"
+        "glacier",
+        "summit"
       ]
     },
     "Milan": {
       "tile": {
-        "column": 214,
-        "row": 212
+        "column": 429,
+        "row": 424
       },
       "kind": "grass",
       "solid": false
     },
     "Turin": {
       "tile": {
-        "column": 118,
-        "row": 248
+        "column": 236,
+        "row": 496
       },
       "kind": "grass",
       "solid": false
     },
     "south of Lake Garda": {
       "tile": {
-        "column": 299,
-        "row": 236
+        "column": 598,
+        "row": 472
       },
       "kind": "grass",
       "solid": false
     },
     "the Po at Piacenza": {
       "tile": {
-        "column": 247,
-        "row": 249
-      },
-      "kind": "grass",
-      "solid": false,
-      "near": [
-        "river",
-        "grass"
-      ]
-    },
-    "the Po at Turin": {
-      "tile": {
-        "column": 119,
-        "row": 249
+        "column": 495,
+        "row": 498
       },
       "kind": "forest",
       "solid": false,
@@ -188,25 +180,38 @@
         "forest"
       ]
     },
+    "the Po at Turin": {
+      "tile": {
+        "column": 238,
+        "row": 498
+      },
+      "kind": "grass",
+      "solid": false,
+      "near": [
+        "river",
+        "grass",
+        "forest"
+      ]
+    },
     "the Rhône at Sion": {
       "tile": {
-        "column": 97,
-        "row": 140
+        "column": 194,
+        "row": 281
       },
       "kind": "river",
       "solid": false,
       "near": [
-        "mountain forest",
         "upland",
         "forest",
         "river",
-        "grass"
+        "grass",
+        "mountain forest"
       ]
     },
     "the Rhine at Chur": {
       "tile": {
-        "column": 236,
-        "row": 83
+        "column": 472,
+        "row": 166
       },
       "kind": "upland",
       "solid": false,
@@ -219,10 +224,10 @@
     },
     "the Inn at Innsbruck": {
       "tile": {
-        "column": 356,
-        "row": 44
+        "column": 712,
+        "row": 88
       },
-      "kind": "upland",
+      "kind": "river",
       "solid": false,
       "near": [
         "mountain forest",
@@ -233,10 +238,10 @@
     },
     "the Adige at Trento": {
       "tile": {
-        "column": 338,
-        "row": 155
+        "column": 676,
+        "row": 311
       },
-      "kind": "river",
+      "kind": "forest",
       "solid": false,
       "near": [
         "forest",
@@ -247,21 +252,21 @@
     },
     "the Adige at Verona": {
       "tile": {
-        "column": 330,
-        "row": 214
+        "column": 661,
+        "row": 428
       },
       "kind": "grass",
       "solid": false,
       "near": [
-        "grass",
         "river",
-        "forest"
+        "forest",
+        "grass"
       ]
     },
     "the Aare at Bern": {
       "tile": {
-        "column": 102,
-        "row": 74
+        "column": 205,
+        "row": 148
       },
       "kind": "river",
       "solid": false,
@@ -273,8 +278,8 @@
     },
     "the Adda at Sondrio": {
       "tile": {
-        "column": 258,
-        "row": 146
+        "column": 517,
+        "row": 292
       },
       "kind": "grass",
       "solid": false,
@@ -287,10 +292,10 @@
     },
     "the Ticino at Pavia": {
       "tile": {
-        "column": 212,
-        "row": 238
+        "column": 424,
+        "row": 476
       },
-      "kind": "forest",
+      "kind": "river",
       "solid": false,
       "near": [
         "river",
@@ -302,15 +307,15 @@
   "views": {
     "geneva": {
       "asked": {
-        "column": 19,
-        "row": 142
+        "column": 39,
+        "row": 285
       },
       "player": {
-        "column": 18,
-        "row": 141
+        "column": 38,
+        "row": 284
       },
       "kind": "river",
-      "chunksDrawn": 1,
+      "chunksDrawn": 4,
       "zoom": 3,
       "visibleMetres": {
         "width": 20,
@@ -319,12 +324,12 @@
     },
     "mont-blanc": {
       "asked": {
-        "column": 65,
-        "row": 169
+        "column": 131,
+        "row": 339
       },
       "player": {
-        "column": 65,
-        "row": 169
+        "column": 131,
+        "row": 339
       },
       "kind": "upland",
       "chunksDrawn": 2,
@@ -336,15 +341,15 @@
     },
     "aletsch": {
       "asked": {
-        "column": 146,
-        "row": 125
+        "column": 293,
+        "row": 250
       },
       "player": {
-        "column": 146,
-        "row": 125
+        "column": 293,
+        "row": 250
       },
-      "kind": "upland",
-      "chunksDrawn": 2,
+      "kind": "river",
+      "chunksDrawn": 4,
       "zoom": 3,
       "visibleMetres": {
         "width": 20,
@@ -353,15 +358,15 @@
     },
     "lake-maggiore": {
       "asked": {
-        "column": 173,
-        "row": 169
+        "column": 347,
+        "row": 339
       },
       "player": {
-        "column": 171,
-        "row": 167
+        "column": 346,
+        "row": 336
       },
       "kind": "forest",
-      "chunksDrawn": 4,
+      "chunksDrawn": 2,
       "zoom": 3,
       "visibleMetres": {
         "width": 20,
@@ -370,15 +375,15 @@
     },
     "po-at-piacenza": {
       "asked": {
-        "column": 247,
-        "row": 245
+        "column": 495,
+        "row": 491
       },
       "player": {
-        "column": 247,
-        "row": 245
+        "column": 495,
+        "row": 491
       },
       "kind": "grass",
-      "chunksDrawn": 2,
+      "chunksDrawn": 1,
       "zoom": 3,
       "visibleMetres": {
         "width": 20,
@@ -387,15 +392,15 @@
     },
     "venice-lagoon": {
       "asked": {
-        "column": 411,
-        "row": 209
+        "column": 823,
+        "row": 418
       },
       "player": {
-        "column": 411,
-        "row": 209
+        "column": 823,
+        "row": 418
       },
       "kind": "grass",
-      "chunksDrawn": 2,
+      "chunksDrawn": 4,
       "zoom": 3,
       "visibleMetres": {
         "width": 20,
@@ -408,10 +413,10 @@
     "grid": {
       "north": 47.75,
       "west": 5.85,
-      "degreesPerColumn": 0.015542018,
-      "degreesPerRow": 0.010791844,
+      "degreesPerColumn": 0.007771009,
+      "degreesPerRow": 0.005395922,
       "standardParallel": 46.02330496,
-      "kilometresPerTile": 1.2
+      "kilometresPerTile": 0.6
     },
     "sources": [
       {
@@ -433,92 +438,98 @@
     "bounds": {
       "column": 0,
       "row": 0,
-      "width": 448,
-      "height": 320
+      "width": 896,
+      "height": 640
     },
     "spawn": {
-      "column": 207,
-      "row": 180
+      "column": 414,
+      "row": 361
     },
     "playerSpeed": 5
   },
   "tilesByKind": {
-    "grass": 34327,
-    "forest": 30091,
-    "river": 4459,
-    "upland": 11532,
-    "mountain forest": 28887,
-    "shallows": 2223,
-    "water": 4605,
-    "alpine meadow": 13100,
-    "scree": 10384,
-    "glacier": 2435,
-    "summit": 1279,
-    "marsh": 38
+    "grass": 138675,
+    "forest": 118967,
+    "river": 16599,
+    "upland": 50382,
+    "mountain forest": 111638,
+    "shallows": 6150,
+    "water": 21288,
+    "alpine meadow": 51694,
+    "scree": 41232,
+    "glacier": 10297,
+    "summit": 6296,
+    "marsh": 222
   },
   "lake": {
     "shore": {
-      "x": 41.5,
-      "y": 125.5,
+      "x": 85.5,
+      "y": 249.5,
       "tile": {
-        "column": 41,
-        "row": 125
+        "column": 85,
+        "row": 249
       },
       "kind": "forest",
-      "solid": false
+      "solid": false,
+      "seconds": 0.18333333333333332
     },
     "lake": {
-      "column": 45,
-      "row": 120
+      "column": 90,
+      "row": 240
     },
     "key": "KeyW",
     "atTheWater": {
-      "x": 41.5,
-      "y": 125.39994812011719,
+      "x": 85.5,
+      "y": 249.3998565673828,
       "tile": {
-        "column": 41,
-        "row": 125
+        "column": 85,
+        "row": 249
       },
       "kind": "forest",
-      "solid": false
+      "solid": false,
+      "seconds": 2.85
     },
     "stillAtTheWater": {
-      "x": 41.5,
-      "y": 125.39989471435547,
+      "x": 85.5,
+      "y": 249.3998565673828,
       "tile": {
-        "column": 41,
-        "row": 125
+        "column": 85,
+        "row": 249
       },
       "kind": "forest",
-      "solid": false
+      "solid": false,
+      "seconds": 3.55
     }
   },
   "river": {
     "northBank": {
-      "x": 247.5,
-      "y": 245.5,
+      "x": 495.5,
+      "y": 491.5,
       "tile": {
-        "column": 247,
-        "row": 245
+        "column": 495,
+        "row": 491
       },
       "kind": "grass",
-      "solid": false
+      "solid": false,
+      "seconds": 0.18333333333333332
     },
     "southBank": {
-      "x": 247.5,
-      "y": 266.8360595703125,
+      "x": 495.5,
+      "y": 521.08447265625,
       "tile": {
-        "column": 247,
-        "row": 266
+        "column": 495,
+        "row": 521
       },
-      "kind": "forest",
-      "solid": false
+      "kind": "grass",
+      "solid": false,
+      "seconds": 6.116666666666666
     },
     "kindsWalked": [
       "grass",
       "river",
       "forest"
-    ]
+    ],
+    "tilesASecond": 5.000201584002293
   },
   "results": [
     {
@@ -528,7 +539,7 @@
     {
       "name": "the page plays the region \"alps\", not the world",
       "pass": true,
-      "details": "448x320 tiles of 1.2 km"
+      "details": "896x640 tiles of 0.6 km"
     },
     {
       "name": "the region names its three sources with a licence each",
@@ -538,202 +549,202 @@
     {
       "name": "the player stands on the spawn tile, at the south end of Lake Como",
       "pass": true,
-      "details": "tile (207, 180)"
+      "details": "tile (414, 361)"
     },
     {
       "name": "Lake Geneva is water",
       "pass": true,
-      "details": "tile (45, 120): water"
+      "details": "tile (90, 240): water"
     },
     {
       "name": "Lake Neuchâtel is water",
       "pass": true,
-      "details": "tile (64, 78): water"
+      "details": "tile (128, 157): water"
     },
     {
       "name": "Lake Constance is water",
       "pass": true,
-      "details": "tile (231, 13): water"
+      "details": "tile (463, 27): water"
     },
     {
       "name": "Lake Zurich is water",
       "pass": true,
-      "details": "tile (180, 46): shallows"
+      "details": "tile (360, 92): shallows"
     },
     {
       "name": "Lake Maggiore is water",
       "pass": true,
-      "details": "tile (178, 166): shallows"
+      "details": "tile (357, 333): water"
     },
     {
       "name": "Lake Como is water",
       "pass": true,
-      "details": "tile (220, 159): shallows"
+      "details": "tile (440, 318): water"
     },
     {
       "name": "Lake Garda is water",
       "pass": true,
-      "details": "tile (307, 199): water"
+      "details": "tile (615, 398): water"
     },
     {
       "name": "the Adriatic off Venice is water",
       "pass": true,
-      "details": "tile (434, 227): water"
+      "details": "tile (868, 454): water"
     },
     {
       "name": "the Gulf of Genoa is water",
       "pass": true,
-      "details": "tile (199, 316): water"
+      "details": "tile (398, 633): water"
     },
     {
       "name": "Mont Blanc is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (65, 177): glacier; within a tile: glacier"
+      "details": "tile (130, 355): glacier; within 1.2 km: glacier, summit"
     },
     {
       "name": "Monte Rosa is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (129, 167): glacier; within a tile: glacier"
+      "details": "tile (259, 335): glacier; within 1.2 km: glacier, summit"
     },
     {
       "name": "the Aletsch glacier is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (140, 115): glacier; within a tile: glacier"
+      "details": "tile (280, 231): glacier; within 1.2 km: glacier"
     },
     {
       "name": "Piz Bernina is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (261, 126): glacier; within a tile: glacier"
+      "details": "tile (522, 253): glacier; within 1.2 km: glacier"
     },
     {
       "name": "Ortler is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (302, 114): glacier; within a tile: glacier, mountain forest"
+      "details": "tile (604, 229): glacier; within 1.2 km: glacier, alpine meadow, scree"
     },
     {
       "name": "Grossglockner is ice or summit, and stops a walker",
       "pass": true,
-      "details": "tile (440, 62): glacier; within a tile: glacier"
+      "details": "tile (880, 125): glacier; within 1.2 km: glacier, summit"
     },
     {
       "name": "Milan is open grass on the plain",
       "pass": true,
-      "details": "tile (214, 212): grass"
+      "details": "tile (429, 424): grass"
     },
     {
       "name": "Turin is open grass on the plain",
       "pass": true,
-      "details": "tile (118, 248): grass"
+      "details": "tile (236, 496): grass"
     },
     {
       "name": "south of Lake Garda is open grass on the plain",
       "pass": true,
-      "details": "tile (299, 236): grass"
+      "details": "tile (598, 472): grass"
     },
     {
-      "name": "the Po at Piacenza: a river runs within two tiles",
-      "pass": true,
-      "details": "river, grass"
-    },
-    {
-      "name": "the Po at Turin: a river runs within two tiles",
+      "name": "the Po at Piacenza: a river runs within 2.4 km",
       "pass": true,
       "details": "river, grass, forest"
     },
     {
-      "name": "the Rhône at Sion: a river runs within two tiles",
+      "name": "the Po at Turin: a river runs within 2.4 km",
       "pass": true,
-      "details": "mountain forest, upland, forest, river, grass"
+      "details": "river, grass, forest"
     },
     {
-      "name": "the Rhine at Chur: a river runs within two tiles",
+      "name": "the Rhône at Sion: a river runs within 2.4 km",
+      "pass": true,
+      "details": "upland, forest, river, grass, mountain forest"
+    },
+    {
+      "name": "the Rhine at Chur: a river runs within 2.4 km",
       "pass": true,
       "details": "river, upland, forest, mountain forest"
     },
     {
-      "name": "the Inn at Innsbruck: a river runs within two tiles",
+      "name": "the Inn at Innsbruck: a river runs within 2.4 km",
       "pass": true,
       "details": "mountain forest, forest, river, upland"
     },
     {
-      "name": "the Adige at Trento: a river runs within two tiles",
+      "name": "the Adige at Trento: a river runs within 2.4 km",
       "pass": true,
       "details": "forest, grass, river, mountain forest"
     },
     {
-      "name": "the Adige at Verona: a river runs within two tiles",
+      "name": "the Adige at Verona: a river runs within 2.4 km",
       "pass": true,
-      "details": "grass, river, forest"
+      "details": "river, forest, grass"
     },
     {
-      "name": "the Aare at Bern: a river runs within two tiles",
+      "name": "the Aare at Bern: a river runs within 2.4 km",
       "pass": true,
       "details": "forest, river, upland"
     },
     {
-      "name": "the Adda at Sondrio: a river runs within two tiles",
+      "name": "the Adda at Sondrio: a river runs within 2.4 km",
       "pass": true,
       "details": "mountain forest, forest, river, grass"
     },
     {
-      "name": "the Ticino at Pavia: a river runs within two tiles",
+      "name": "the Ticino at Pavia: a river runs within 2.4 km",
       "pass": true,
       "details": "river, grass, forest"
     },
     {
       "name": "every tile of the map is a tile the game knows",
       "pass": true,
-      "details": "grass 34327, forest 30091, river 4459, upland 11532, mountain forest 28887, shallows 2223, water 4605, alpine meadow 13100, scree 10384, glacier 2435, summit 1279, marsh 38"
+      "details": "grass 138675, forest 118967, river 16599, upland 50382, mountain forest 111638, shallows 6150, water 21288, alpine meadow 51694, scree 41232, glacier 10297, summit 6296, marsh 222"
     },
     {
       "name": "a walker who starts in the middle of Lake Geneva is put on its shore",
       "pass": true,
-      "details": "tile (41, 125): forest"
+      "details": "tile (85, 249): forest"
     },
     {
       "name": "walking towards the lake (KeyW) ends on dry ground at the water's edge, and pushing on moves nobody",
       "pass": true,
-      "details": "stopped on (41, 125): forest"
+      "details": "stopped on (85, 249): forest"
     },
     {
       "name": "walking south from north of Piacenza wades across the Po and carries on",
       "pass": true,
-      "details": "from row 245 to row 266, over grass, river, forest"
+      "details": "from row 491 to row 521, over grass, river, forest"
     },
     {
-      "name": "the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second",
+      "name": "the walk covers ground at the speed of the player def: 5 tiles of 0.6 km a second",
       "pass": true,
-      "details": "5.3 tiles a second against a speed of 5"
+      "details": "5.00 tiles a second by the sim's clock against a speed of 5: 3.0 km a second on the ground"
     },
     {
-      "name": "?at=46.21,6.16 (geneva) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
+      "name": "?at=46.21,6.16 (geneva) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "1 tiles away on river, 1 chunks drawn, 20x15 tiles on screen"
+      "details": "1 tiles away on river, 4 chunks drawn, 20x15 tiles on screen"
     },
     {
-      "name": "?at=45.92,6.87 (mont-blanc) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
-      "pass": true,
-      "details": "0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen"
-    },
-    {
-      "name": "?at=46.4,8.13 (aletsch) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
+      "name": "?at=45.92,6.87 (mont-blanc) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
       "pass": true,
       "details": "0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
-      "name": "?at=45.92,8.55 (lake-maggiore) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
+      "name": "?at=46.4,8.13 (aletsch) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "2 tiles away on forest, 4 chunks drawn, 20x15 tiles on screen"
+      "details": "0 tiles away on river, 4 chunks drawn, 20x15 tiles on screen"
     },
     {
-      "name": "?at=45.1,9.7 (po-at-piacenza) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
+      "name": "?at=45.92,8.55 (lake-maggiore) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen"
+      "details": "3 tiles away on forest, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
-      "name": "?at=45.49,12.25 (venice-lagoon) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
+      "name": "?at=45.1,9.7 (po-at-piacenza) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen"
+      "details": "0 tiles away on grass, 1 chunks drawn, 20x15 tiles on screen"
+    },
+    {
+      "name": "?at=45.49,12.25 (venice-lagoon) starts the walk within 7 km of the place, on walkable ground, with terrain drawn",
+      "pass": true,
+      "details": "0 tiles away on grass, 4 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "no page errors",
