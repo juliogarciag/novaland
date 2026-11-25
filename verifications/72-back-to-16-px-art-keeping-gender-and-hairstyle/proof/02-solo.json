@@ -1,0 +1,319 @@
+{
+  "sideBySide": {
+    "before": {
+      "pixelsPerMetre": 16,
+      "zoom": 3,
+      "visibleMetres": {
+        "width": 20,
+        "height": 15
+      },
+      "look": {
+        "skin": 2,
+        "hair": 0,
+        "clothes": 0
+      }
+    },
+    "now": {
+      "pixelsPerMetre": 16,
+      "zoom": 3,
+      "visibleMetres": {
+        "width": 20,
+        "height": 15
+      },
+      "look": {
+        "skin": 2,
+        "hair": 0,
+        "clothes": 0,
+        "gender": 0,
+        "hairStyle": 0
+      }
+    },
+    "middle": {
+      "x": 320,
+      "y": 240,
+      "width": 320,
+      "height": 240,
+      "differingPixels": 0,
+      "wholeScreenDifferingPixels": 120
+    }
+  },
+  "looks": [
+    {
+      "look": "male, short",
+      "directions": {
+        "down": {
+          "textureKey": "player/look/2-0-0-0-0",
+          "frame": 0,
+          "idleFrame": 0,
+          "frameSize": "16x24"
+        },
+        "up": {
+          "textureKey": "player/look/2-0-0-0-0",
+          "frame": 4,
+          "idleFrame": 4,
+          "frameSize": "16x24"
+        },
+        "left": {
+          "textureKey": "player/look/2-0-0-0-0",
+          "frame": 8,
+          "idleFrame": 8,
+          "frameSize": "16x24"
+        },
+        "right": {
+          "textureKey": "player/look/2-0-0-0-0",
+          "frame": 12,
+          "idleFrame": 12,
+          "frameSize": "16x24"
+        }
+      }
+    },
+    {
+      "look": "male, long",
+      "directions": {
+        "down": {
+          "textureKey": "player/look/2-0-0-0-1",
+          "frame": 0,
+          "idleFrame": 0,
+          "frameSize": "16x24"
+        },
+        "up": {
+          "textureKey": "player/look/2-0-0-0-1",
+          "frame": 4,
+          "idleFrame": 4,
+          "frameSize": "16x24"
+        },
+        "left": {
+          "textureKey": "player/look/2-0-0-0-1",
+          "frame": 8,
+          "idleFrame": 8,
+          "frameSize": "16x24"
+        },
+        "right": {
+          "textureKey": "player/look/2-0-0-0-1",
+          "frame": 12,
+          "idleFrame": 12,
+          "frameSize": "16x24"
+        }
+      }
+    },
+    {
+      "look": "female, short",
+      "directions": {
+        "down": {
+          "textureKey": "player/look/2-0-0-1-0",
+          "frame": 0,
+          "idleFrame": 0,
+          "frameSize": "16x24"
+        },
+        "up": {
+          "textureKey": "player/look/2-0-0-1-0",
+          "frame": 4,
+          "idleFrame": 4,
+          "frameSize": "16x24"
+        },
+        "left": {
+          "textureKey": "player/look/2-0-0-1-0",
+          "frame": 8,
+          "idleFrame": 8,
+          "frameSize": "16x24"
+        },
+        "right": {
+          "textureKey": "player/look/2-0-0-1-0",
+          "frame": 12,
+          "idleFrame": 12,
+          "frameSize": "16x24"
+        }
+      }
+    },
+    {
+      "look": "female, long",
+      "directions": {
+        "down": {
+          "textureKey": "player/look/2-0-0-1-1",
+          "frame": 0,
+          "idleFrame": 0,
+          "frameSize": "16x24"
+        },
+        "up": {
+          "textureKey": "player/look/2-0-0-1-1",
+          "frame": 4,
+          "idleFrame": 4,
+          "frameSize": "16x24"
+        },
+        "left": {
+          "textureKey": "player/look/2-0-0-1-1",
+          "frame": 8,
+          "idleFrame": 8,
+          "frameSize": "16x24"
+        },
+        "right": {
+          "textureKey": "player/look/2-0-0-1-1",
+          "frame": 12,
+          "idleFrame": 12,
+          "frameSize": "16x24"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "name": "dev server up, started by this run",
+      "pass": true
+    },
+    {
+      "name": "16 pixels per metre, as at c466e78",
+      "pass": true,
+      "details": "16 then, 16 now"
+    },
+    {
+      "name": "the same zoom and the same metres on screen as c466e78",
+      "pass": true,
+      "details": "zoom 3 / 3, {\"width\":20,\"height\":15}"
+    },
+    {
+      "name": "a character remembered before genders and hairstyles plays as the first of each",
+      "pass": true,
+      "details": "{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":0,\"hairStyle\":0}"
+    },
+    {
+      "name": "the middle of the screen is drawn pixel for pixel as at c466e78",
+      "pass": true,
+      "details": "0 of 76800 differ (whole screen: 120, HUD text included)"
+    },
+    {
+      "name": "male, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-0 frame 0"
+    },
+    {
+      "name": "male, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-0 frame 4"
+    },
+    {
+      "name": "male, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-0 frame 8"
+    },
+    {
+      "name": "male, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-0 frame 12"
+    },
+    {
+      "name": "male, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-1 frame 0"
+    },
+    {
+      "name": "male, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-1 frame 4"
+    },
+    {
+      "name": "male, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-1 frame 8"
+    },
+    {
+      "name": "male, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-0-1 frame 12"
+    },
+    {
+      "name": "female, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-0 frame 0"
+    },
+    {
+      "name": "female, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-0 frame 4"
+    },
+    {
+      "name": "female, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-0 frame 8"
+    },
+    {
+      "name": "female, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-0 frame 12"
+    },
+    {
+      "name": "female, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-1 frame 0"
+    },
+    {
+      "name": "female, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-1 frame 4"
+    },
+    {
+      "name": "female, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-1 frame 8"
+    },
+    {
+      "name": "female, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-1 frame 12"
+    },
+    {
+      "name": "facing down, the four looks are 4 different figures",
+      "pass": true,
+      "details": "4 distinct"
+    },
+    {
+      "name": "facing up, the four looks are 2 different figures",
+      "pass": true,
+      "details": "2 distinct"
+    },
+    {
+      "name": "facing left, the four looks are 4 different figures",
+      "pass": true,
+      "details": "4 distinct"
+    },
+    {
+      "name": "facing right, the four looks are 4 different figures",
+      "pass": true,
+      "details": "4 distinct"
+    },
+    {
+      "name": "the creator previews the 16x24 frame at 6x, as at c466e78",
+      "pass": true,
+      "details": "96x144"
+    },
+    {
+      "name": "the creator offers gender and hairstyle",
+      "pass": true,
+      "details": "Gender, Hairstyle, Skin, Hair, Clothes"
+    },
+    {
+      "name": "picking female suggests long hair",
+      "pass": true,
+      "details": "hairStyle 1"
+    },
+    {
+      "name": "the turning keys show the preview from all four sides",
+      "pass": true,
+      "details": "4 different previews"
+    },
+    {
+      "name": "the creator's character plays as a woman with long hair",
+      "pass": true,
+      "details": "{\"eid\":1,\"name\":\"Bea\",\"look\":{\"skin\":2,\"hair\":0,\"clothes\":0,\"gender\":1,\"hairStyle\":1}}"
+    },
+    {
+      "name": "a character saved by the 32 px version goes straight into the world with its look",
+      "pass": true,
+      "details": "{\"look\":{\"skin\":4,\"hair\":3,\"clothes\":5,\"gender\":1,\"hairStyle\":0},\"texture\":\"player/look/4-3-5-1-0\"}"
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "details": ""
+    }
+  ]
+}
