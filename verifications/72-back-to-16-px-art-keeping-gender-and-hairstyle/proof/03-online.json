@@ -53,7 +53,7 @@
     {
       "name": "room server and dev server up, both started by this run",
       "pass": true,
-      "details": "{\"event\":\"world-room-listening\",\"port\":5974,\"roomId\":\"world\",\"seed\":1156958735,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
+      "details": "{\"event\":\"world-room-listening\",\"port\":5974,\"roomId\":\"world\",\"seed\":1858569194,\"seats\":5,\"tickRate\":60,\"sendRate\":20,\"idleTimeoutSeconds\":600,\"clientDirectory\":null,\"savedPositions\":\"memory\",\"dataDirectory\":null,\"savedPlayers\":0,\"allowedOrigins\":[],\"loopbackOrigins\":true}"
     },
     {
       "name": "tab A draws Ada from Ada's own look (gender 1, hairstyle 1)",

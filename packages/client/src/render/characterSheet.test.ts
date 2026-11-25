@@ -43,6 +43,10 @@ describe('painting a look over the template sheet', () => {
     expect(layerSheetsOf({ ...look, hairStyle: -1 })).toBeUndefined();
   });
 
+  it('gives every clothes swatch a shade darker than itself, so the arms and the back keep their shading in every look', () => {
+    for (const { color } of characterPalettes.clothes) expect(brightness(shadeOf(color))).toBeLessThan(brightness(color));
+  });
+
   it('shades the clothes darker and writes colours the way CSS reads them', () => {
     expect(shadeOf(0xffffff)).toBe(0xbfbfbf);
     expect(shadeOf(0x000000)).toBe(0x000000);
@@ -63,4 +67,8 @@ function colorsOf(pixels: Uint8ClampedArray): number[] {
   const colors: number[] = [];
   for (let offset = 0; offset < pixels.length; offset += 4) colors.push(((pixels[offset] as number) << 16) | ((pixels[offset + 1] as number) << 8) | (pixels[offset + 2] as number));
   return colors;
+}
+
+function brightness(color: number): number {
+  return ((color >> 16) & 0xff) + ((color >> 8) & 0xff) + (color & 0xff);
 }

@@ -20,6 +20,7 @@ import {
   groundTilesetSlots,
 } from "./groundTiles";
 import { variantOfTile } from "./tileVariant";
+import { PIXELS_PER_METRE } from "./units";
 
 describe("groundTilesetSlots", () => {
   it("gives a def with a loaded ground sprite one tile per variant and every other def one flat tile, end to end in def order", () => {
@@ -67,15 +68,29 @@ describe("groundTilesetSlots", () => {
     }
   });
 
+  it("every terrain sprite is art at the pixels per metre the world is drawn at", () => {
+    for (const def of terrainDefs) {
+      if (def.groundSprite) expect(def.groundSprite.tilePixels, def.name).toBe(PIXELS_PER_METRE);
+      if (def.standingSprite) expect(def.standingSprite.pixelsPerMetre, def.name).toBe(PIXELS_PER_METRE);
+    }
+  });
+
   it("refuses a ground sprite whose tiles are another size", () => {
     const grass = getTileDef(idOf("grass"));
     const oversized: TileDef = {
       ...grass,
-      groundSprite: { ...grass.groundSprite!, tilePixels: 32 },
+      groundSprite: { ...grass.groundSprite!, tilePixels: GROUND_TILE_PIXELS * 2 },
     };
     expect(() => groundTilesetSlots([oversized], everythingLoaded)).toThrow(
-      /32-pixel tiles/,
+      new RegExp(`${GROUND_TILE_PIXELS * 2}-pixel tiles`),
     );
+  });
+
+  // The tileset is one row of tiles (ADR 0016, 0019); a texture wider than 4096 pixels does not load on every WebGL device.
+  it("fits every tile of the terrain defs in one row no wider than 4096 pixels", () => {
+    const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
+    const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
+    expect(tileCount * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
   });
 });
 

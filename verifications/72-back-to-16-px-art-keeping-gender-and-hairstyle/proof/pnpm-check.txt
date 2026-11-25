@@ -9,21 +9,21 @@
 
  RUN  v5.1.0 <repo>
 
-(node:95227) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:1705) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:95228) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:1706) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:95229) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:1707) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:95237) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:1713) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:95234) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:1714) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
  Test Files  70 passed (70)
-      Tests  620 passed (620)
-   Start at  22:19:15
-   Duration  17.54s (tests 86%, import 11%, transform 2%, worker 1%)
+      Tests  623 passed (623)
+   Start at  22:24:31
+   Duration  17.46s (tests 86%, import 10%, transform 4%, worker 1%)
 
 
 > novaland@0.0.0 typecheck <repo>
@@ -32,8 +32,8 @@
 Scope: 3 of 4 workspace projects
 packages/sim typecheck$ tsc -p tsconfig.json
 packages/sim typecheck: Done
-packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/client typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
+packages/server typecheck$ tsc -p tsconfig.json && tsc -p tsconfig.node.json
 packages/server typecheck: Done
 packages/client typecheck: Done
 

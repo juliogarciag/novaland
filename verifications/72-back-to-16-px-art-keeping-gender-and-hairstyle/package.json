@@ -1,8 +1,8 @@
 {
-  "name": "verification-template",
+  "name": "verification-72-back-to-16-px-art",
   "private": true,
   "type": "module",
-  "description": "Starting point for a ticket's verification scripts. Not part of the workspace; install with: pnpm install --ignore-workspace",
+  "description": "#72's verification scripts: the art against c466e78, solo side by side and every look, online",
   "scripts": {
     "verify": "bash run.sh"
   },

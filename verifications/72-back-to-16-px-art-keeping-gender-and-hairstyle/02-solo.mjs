@@ -21,7 +21,7 @@
 import { chromium } from 'playwright';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { PROOF, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
+import { PROOF, ROOT, check, lastLinesOf, rememberCharacter, start, summarize, waitFor, waitForPort, writeProof } from './lib.mjs';
 
 /** A port no other session uses, and not the 5172 of the dev server left running for the human. */
 const PORT = 5973;
@@ -34,6 +34,8 @@ const DIRECTIONS = [
   ['left', 'KeyA'],
   ['right', 'KeyD'],
 ];
+/** The order the looks turn in: a player spawns facing down, so down comes last and every turn is a real one. */
+const TURN_ORDER = ['up', 'left', 'right', 'down'].map((direction) => DIRECTIONS.find(([name]) => name === direction));
 const LOOKS = [
   { label: 'male, short', gender: 0, hairStyle: 0 },
   { label: 'male, long', gender: 0, hairStyle: 1 },
@@ -45,6 +47,7 @@ const DISTINCT_LOOKS_FACING = { down: 4, up: 2, left: 4, right: 4 };
 const results = [];
 const report = {};
 const pageErrors = [];
+const generator = await import(path.join(ROOT, 'packages/client/tools/generate-player-sheet.mjs'));
 
 const devServer = start('pnpm', ['dev'], { env: { PORT: String(PORT) } });
 let browser;
@@ -105,7 +108,9 @@ async function everyLookInEveryDirection() {
     const page = await openPlaying(`http://localhost:${PORT}/`, character, { label: look.label });
     const lookKey = `2-0-0-${look.gender}-${look.hairStyle}`;
     const entry = { look: look.label, directions: {} };
-    for (const [direction, key] of DIRECTIONS) {
+    const palettes = await page.evaluate(() => window.__novaland.characterPalettes);
+    const painted = generator.paintPlayerSheet({ gender: ['male', 'female'][look.gender], hairstyle: ['short', 'long'][look.hairStyle] });
+    for (const [direction, key] of TURN_ORDER) {
       await page.keyboard.down(key);
       await page.waitForTimeout(150);
       await page.keyboard.up(key);
@@ -114,6 +119,8 @@ async function everyLookInEveryDirection() {
       framesByDirection[direction].push(texture.pixels);
       entry.directions[direction] = { textureKey: shown.textureKey, frame: shown.frame, idleFrame: shown.idleFrames[direction], frameSize: texture.size };
       results.push(check(`${look.label} facing ${direction}: drawn from its own look's texture, idle frame of that direction, 16x24`, shown.textureKey === `player/look/${lookKey}` && shown.frame === shown.idleFrames[direction] && texture.size === '16x24', `${shown.textureKey} frame ${shown.frame}`));
+      const expected = recolouredFrame(painted, shown.idleFrames[direction], { skin: palettes.skin[2].color, hair: palettes.hair[0].color, clothes: palettes.clothes[0].color });
+      results.push(check(`${look.label} facing ${direction}: the texture the client built is the generator's figure for that pair, pixel for pixel`, texture.pixels === expected));
       crops.push(await page.screenshot({ clip: await playerClip(page) }));
     }
     report.looks.push(entry);
@@ -123,7 +130,7 @@ async function everyLookInEveryDirection() {
     const distinct = new Set(framesByDirection[direction]).size;
     results.push(check(`facing ${direction}, the four looks are ${DISTINCT_LOOKS_FACING[direction]} different figures`, distinct === DISTINCT_LOOKS_FACING[direction], `${distinct} distinct`));
   }
-  const grid = await joinGrid(crops, { columns: DIRECTIONS.length, scale: 3 });
+  const grid = await joinGrid(crops, { columns: TURN_ORDER.length, scale: 3 });
   writeFileSync(path.join(PROOF, '02-every-look-every-direction.png'), Buffer.from(grid, 'base64'));
 }
 
@@ -168,6 +175,36 @@ async function savedBy32PixelVersion() {
 }
 
 // ---- Helpers ----
+
+/**
+ * One 16x24 frame of a sheet the generator painted, in a look's colours, as
+ * the same string `textureFrameOf` gives: the four template colours swapped
+ * (the clothes' shade derived as the client derives it), everything else
+ * kept.
+ */
+function recolouredFrame(sheet, frameIndex, { skin, hair, clothes }) {
+  const rgb = ([r, g, b]) => (r << 16) | (g << 8) | b;
+  const shade = (color) => [16, 8, 0].reduce((total, shift) => total | (Math.round(((color >> shift) & 0xff) * 0.75) << shift), 0);
+  const swaps = new Map([
+    [rgb(generator.TEMPLATE_PALETTE.skin), skin],
+    [rgb(generator.TEMPLATE_PALETTE.hair), hair],
+    [rgb(generator.TEMPLATE_PALETTE.clothes), clothes],
+    [rgb(generator.TEMPLATE_PALETTE.clothesShade), shade(clothes)],
+  ]);
+  const { FRAME_WIDTH: width, FRAME_HEIGHT: height, FRAMES_PER_DIRECTION: perRow } = generator;
+  const left = (frameIndex % perRow) * width;
+  const top = Math.floor(frameIndex / perRow) * height;
+  const bytes = [];
+  for (let y = top; y < top + height; y += 1) {
+    for (let x = left; x < left + width; x += 1) {
+      const offset = (y * sheet.width + x) * 4;
+      const pixel = [...sheet.data.subarray(offset, offset + 4)];
+      const swap = pixel[3] === 255 ? swaps.get(rgb(pixel)) : undefined;
+      bytes.push(...(swap === undefined ? pixel : [(swap >> 16) & 0xff, (swap >> 8) & 0xff, swap & 0xff, 255]));
+    }
+  }
+  return bytes.join(',');
+}
 
 async function newContext() {
   return browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });

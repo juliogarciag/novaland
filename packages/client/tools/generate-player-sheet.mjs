@@ -56,7 +56,7 @@ export const TEMPLATE_PALETTE = {
   skin: [0xf1, 0xc2, 0x7d],
   hair: [0x6b, 0x3e, 0x1e],
   clothes: [0x3b, 0x82, 0xf6],
-  clothesShade: [0x2a, 0x5f, 0xc0],
+  clothesShade: [0x2a, 0x5f, 0xc0], // hand-picked at c466e78, not derived, so player.png stays that sheet byte for byte
 };
 
 /** How the body is posed in each of the four frames of a row. `forwardLeg` is from the character's point of view. */
@@ -159,11 +159,7 @@ const EYES = {
   right: [[10, 5]],
 };
 
-/**
- * Lashes: one pixel of the eyes' colour on top of each eye, so the eye reads
- * taller and open. (A pixel off the outer corner, as at 32 pixels, reads as a
- * frown at this size.)
- */
+/** Lashes: one pixel of the eyes' colour on top of each eye, so the eye reads taller and open. */
 const LASHES = {
   down: [
     [6, 4],

@@ -1,0 +1,50 @@
+PASS  dev server up, started by this run
+PASS  16 pixels per metre, as at c466e78  (16 then, 16 now)
+PASS  the same zoom and the same metres on screen as c466e78  (zoom 3 / 3, {"width":20,"height":15})
+PASS  a character remembered before genders and hairstyles plays as the first of each  ({"skin":2,"hair":0,"clothes":0,"gender":0,"hairStyle":0})
+PASS  the middle of the screen is drawn pixel for pixel as at c466e78  (0 of 76800 differ (whole screen: 108, HUD text included))
+PASS  male, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-0 frame 4)
+PASS  male, short facing up: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-0 frame 8)
+PASS  male, short facing left: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-0 frame 12)
+PASS  male, short facing right: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-0 frame 0)
+PASS  male, short facing down: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-1 frame 4)
+PASS  male, long facing up: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-1 frame 8)
+PASS  male, long facing left: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-1 frame 12)
+PASS  male, long facing right: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  male, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-0-1 frame 0)
+PASS  male, long facing down: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-0 frame 4)
+PASS  female, short facing up: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-0 frame 8)
+PASS  female, short facing left: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-0 frame 12)
+PASS  female, short facing right: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-0 frame 0)
+PASS  female, short facing down: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-1 frame 4)
+PASS  female, long facing up: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-1 frame 8)
+PASS  female, long facing left: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-1 frame 12)
+PASS  female, long facing right: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  female, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24  (player/look/2-0-0-1-1 frame 0)
+PASS  female, long facing down: the texture the client built is the generator's figure for that pair, pixel for pixel
+PASS  facing down, the four looks are 4 different figures  (4 distinct)
+PASS  facing up, the four looks are 2 different figures  (2 distinct)
+PASS  facing left, the four looks are 4 different figures  (4 distinct)
+PASS  facing right, the four looks are 4 different figures  (4 distinct)
+PASS  the creator previews the 16x24 frame at 6x, as at c466e78  (96x144)
+PASS  the creator offers gender and hairstyle  (Gender, Hairstyle, Skin, Hair, Clothes)
+PASS  picking female suggests long hair  (hairStyle 1)
+PASS  the turning keys show the preview from all four sides  (4 different previews)
+PASS  the creator's character plays as a woman with long hair  ({"eid":1,"name":"Bea","look":{"skin":2,"hair":0,"clothes":0,"gender":1,"hairStyle":1}})
+PASS  a character saved by the 32 px version goes straight into the world with its look  ({"look":{"skin":4,"hair":3,"clothes":5,"gender":1,"hairStyle":0},"texture":"player/look/4-3-5-1-0"})
+PASS  no page errors
+
+ALL 48 CHECKS PASSED

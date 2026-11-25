@@ -10,6 +10,7 @@ const TEMPLATE_COLORS = {
   skin: 0xf1c27d,
   hair: 0x6b3e1e,
   clothes: 0x3b82f6,
+  // Hand-picked in c466e78's sheet, not shadeOf(clothes): keeping it keeps player.png that sheet byte for byte (ADR 0019). A look's shade is derived.
   clothesShade: 0x2a5fc0,
 } as const;
 

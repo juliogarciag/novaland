@@ -34,19 +34,13 @@
       "width": 320,
       "height": 240,
       "differingPixels": 0,
-      "wholeScreenDifferingPixels": 120
+      "wholeScreenDifferingPixels": 108
     }
   },
   "looks": [
     {
       "look": "male, short",
       "directions": {
-        "down": {
-          "textureKey": "player/look/2-0-0-0-0",
-          "frame": 0,
-          "idleFrame": 0,
-          "frameSize": "16x24"
-        },
         "up": {
           "textureKey": "player/look/2-0-0-0-0",
           "frame": 4,
@@ -63,6 +57,12 @@
           "textureKey": "player/look/2-0-0-0-0",
           "frame": 12,
           "idleFrame": 12,
+          "frameSize": "16x24"
+        },
+        "down": {
+          "textureKey": "player/look/2-0-0-0-0",
+          "frame": 0,
+          "idleFrame": 0,
           "frameSize": "16x24"
         }
       }
@@ -70,12 +70,6 @@
     {
       "look": "male, long",
       "directions": {
-        "down": {
-          "textureKey": "player/look/2-0-0-0-1",
-          "frame": 0,
-          "idleFrame": 0,
-          "frameSize": "16x24"
-        },
         "up": {
           "textureKey": "player/look/2-0-0-0-1",
           "frame": 4,
@@ -92,6 +86,12 @@
           "textureKey": "player/look/2-0-0-0-1",
           "frame": 12,
           "idleFrame": 12,
+          "frameSize": "16x24"
+        },
+        "down": {
+          "textureKey": "player/look/2-0-0-0-1",
+          "frame": 0,
+          "idleFrame": 0,
           "frameSize": "16x24"
         }
       }
@@ -99,12 +99,6 @@
     {
       "look": "female, short",
       "directions": {
-        "down": {
-          "textureKey": "player/look/2-0-0-1-0",
-          "frame": 0,
-          "idleFrame": 0,
-          "frameSize": "16x24"
-        },
         "up": {
           "textureKey": "player/look/2-0-0-1-0",
           "frame": 4,
@@ -121,6 +115,12 @@
           "textureKey": "player/look/2-0-0-1-0",
           "frame": 12,
           "idleFrame": 12,
+          "frameSize": "16x24"
+        },
+        "down": {
+          "textureKey": "player/look/2-0-0-1-0",
+          "frame": 0,
+          "idleFrame": 0,
           "frameSize": "16x24"
         }
       }
@@ -128,12 +128,6 @@
     {
       "look": "female, long",
       "directions": {
-        "down": {
-          "textureKey": "player/look/2-0-0-1-1",
-          "frame": 0,
-          "idleFrame": 0,
-          "frameSize": "16x24"
-        },
         "up": {
           "textureKey": "player/look/2-0-0-1-1",
           "frame": 4,
@@ -150,6 +144,12 @@
           "textureKey": "player/look/2-0-0-1-1",
           "frame": 12,
           "idleFrame": 12,
+          "frameSize": "16x24"
+        },
+        "down": {
+          "textureKey": "player/look/2-0-0-1-1",
+          "frame": 0,
+          "idleFrame": 0,
           "frameSize": "16x24"
         }
       }
@@ -178,12 +178,7 @@
     {
       "name": "the middle of the screen is drawn pixel for pixel as at c466e78",
       "pass": true,
-      "details": "0 of 76800 differ (whole screen: 120, HUD text included)"
-    },
-    {
-      "name": "male, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
-      "pass": true,
-      "details": "player/look/2-0-0-0-0 frame 0"
+      "details": "0 of 76800 differ (whole screen: 108, HUD text included)"
     },
     {
       "name": "male, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -191,9 +186,17 @@
       "details": "player/look/2-0-0-0-0 frame 4"
     },
     {
+      "name": "male, short facing up: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
       "name": "male, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
       "details": "player/look/2-0-0-0-0 frame 8"
+    },
+    {
+      "name": "male, short facing left: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "male, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -201,9 +204,17 @@
       "details": "player/look/2-0-0-0-0 frame 12"
     },
     {
-      "name": "male, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "name": "male, short facing right: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
+      "name": "male, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
-      "details": "player/look/2-0-0-0-1 frame 0"
+      "details": "player/look/2-0-0-0-0 frame 0"
+    },
+    {
+      "name": "male, short facing down: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "male, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -211,9 +222,17 @@
       "details": "player/look/2-0-0-0-1 frame 4"
     },
     {
+      "name": "male, long facing up: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
       "name": "male, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
       "details": "player/look/2-0-0-0-1 frame 8"
+    },
+    {
+      "name": "male, long facing left: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "male, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -221,9 +240,17 @@
       "details": "player/look/2-0-0-0-1 frame 12"
     },
     {
-      "name": "female, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "name": "male, long facing right: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
+      "name": "male, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
-      "details": "player/look/2-0-0-1-0 frame 0"
+      "details": "player/look/2-0-0-0-1 frame 0"
+    },
+    {
+      "name": "male, long facing down: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "female, short facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -231,9 +258,17 @@
       "details": "player/look/2-0-0-1-0 frame 4"
     },
     {
+      "name": "female, short facing up: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
       "name": "female, short facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
       "details": "player/look/2-0-0-1-0 frame 8"
+    },
+    {
+      "name": "female, short facing left: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "female, short facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -241,9 +276,17 @@
       "details": "player/look/2-0-0-1-0 frame 12"
     },
     {
-      "name": "female, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "name": "female, short facing right: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
+      "name": "female, short facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
-      "details": "player/look/2-0-0-1-1 frame 0"
+      "details": "player/look/2-0-0-1-0 frame 0"
+    },
+    {
+      "name": "female, short facing down: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "female, long facing up: drawn from its own look's texture, idle frame of that direction, 16x24",
@@ -251,14 +294,35 @@
       "details": "player/look/2-0-0-1-1 frame 4"
     },
     {
+      "name": "female, long facing up: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
       "name": "female, long facing left: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
       "details": "player/look/2-0-0-1-1 frame 8"
     },
     {
+      "name": "female, long facing left: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
       "name": "female, long facing right: drawn from its own look's texture, idle frame of that direction, 16x24",
       "pass": true,
       "details": "player/look/2-0-0-1-1 frame 12"
+    },
+    {
+      "name": "female, long facing right: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
+    },
+    {
+      "name": "female, long facing down: drawn from its own look's texture, idle frame of that direction, 16x24",
+      "pass": true,
+      "details": "player/look/2-0-0-1-1 frame 0"
+    },
+    {
+      "name": "female, long facing down: the texture the client built is the generator's figure for that pair, pixel for pixel",
+      "pass": true
     },
     {
       "name": "facing down, the four looks are 4 different figures",

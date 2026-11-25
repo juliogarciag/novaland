@@ -8,11 +8,11 @@ Tickets #65, #64 and #66 doubled the art: a 32x48 player, 32-pixel tiles, and a 
 
 ## Decision
 
-- **One metre is 16 texture pixels again.** `PIXELS_PER_METRE` (`client/src/render/units.ts`), every terrain sprite's `tilePixels` and `pixelsPerMetre` (`features/terrain/defs.ts`) and the player's sprite def are 16. The terrain sheets, their generators, the ground tileset (one row again, as 0016 describes: 16-pixel tiles keep it well under 4096 pixels), the name labels and the camera's zoom are what they were at `c466e78`, file for file. The zoom rule never changed: it is in metres, so at 16 pixels a screen gets twice the zoom it got at 32 and sees the same metres, or less where 0017 had to round down.
+- **One metre is 16 texture pixels again.** `PIXELS_PER_METRE` (`client/src/render/units.ts`), every terrain sprite's `tilePixels` and `pixelsPerMetre` (`features/terrain/defs.ts`) and the player's sprite def are 16. The terrain sheets, their generators, the ground tileset (one row again, as 0016 describes: 135 tiles, 2160 pixels), the name labels and the camera's zoom are what they were at `c466e78`, file for file. The zoom rule never changed: it is in metres, so at 16 pixels a screen gets twice the zoom it got at 32 and sees the same metres, or less where 0017 had to round down.
 - **The player is 16x24 again, in the style of the generator at `c466e78`:** the same rectangles, one-pixel eyes, one colour per material and a shade only for the clothes. `player.png` (male, short hair) is that sheet, byte for byte.
 - **Gender and hairstyle stay, as 0018 describes them, redrawn at 16x24.** The generator still writes one body sheet per gender and one hair sheet per hairstyle, and the client still lays the hair over the body, outlines them together and recolours them (`paintFigure`). `PlayerLook`, `characterShapes`, `DEFAULT_LOOK`, `readCharacter`, the remembered characters, the creator and its turning keys and `WIRE_PROTOCOL` (5) do not change. At this size a difference is a pixel or two:
   - The skull is painted whole in skin on the body layer, so taking the hair away leaves a bald head and any hairstyle goes on any body.
-  - Short hair is the hair of `c466e78`. Long hair is that plus the sides falling past the jaw to the shoulders from the front, and, from behind and in profile, the back of the head's width carried down past the nape into the first two rows of the shirt.
+  - Short hair is the hair of `c466e78`. Long hair is that plus the sides falling past the jaw to the shoulders from the front, and, from behind and in profile, most of the back of the head's width carried down past the nape into the first two rows of the shirt.
   - Both genders have the same body. The female eyes have a lash: one pixel of the eyes' colour on top of each eye, so the eye reads taller. A pixel off the outer corner, as at 32, reads as a frown at 16.
 - **Recolouring goes back to four template colours:** skin, hair, clothes and the clothes' shade, which the client still derives from the picked clothes colour (`shadeOf`). The skin and hair shades and the hair and clothes highlights of 0018's sheets are gone, and with them `highlightOf`.
 
@@ -25,7 +25,9 @@ Tickets #65, #64 and #66 doubled the art: a 32x48 player, 32-pixel tiles, and a 
 
 ## Consequences
 
-- New art is drawn at 16 pixels per metre. A sprite at another density still draws at the right size, scaled by `PIXELS_PER_METRE / pixelsPerMetre`, but looks out of place.
+- New art is drawn at 16 pixels per metre. A character sprite at another density still draws at the right size, scaled by `PIXELS_PER_METRE / pixelsPerMetre`, but looks out of place.
+- The one-row tileset has 0016's ceiling again: past 256 ground tiles it is wider than the 4096 pixels every WebGL device can hold. A test (`groundTiles.test.ts`) fails before that happens; the rows layout of 0017 is the way out, and it does not depend on the pixels per metre.
+- A test keeps every terrain sprite at `PIXELS_PER_METRE`, so a def drawn at another density fails rather than drawing at the wrong size.
 - A character saved by the 32-pixel version is the same five indexes and loads unchanged; only how it is drawn changed.
 - A new hairstyle is a list of rectangles per direction in the generator (the right profile is the left one mirrored), an entry at the end of `characterShapes.hairStyle`, and the generated sheet.
 - If finer art comes back, 0017 is the map: the constants, the sheets and a camera that halves its zoom.
