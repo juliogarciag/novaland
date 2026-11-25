@@ -1,5 +1,4 @@
 import type Phaser from 'phaser';
-import { PIXELS_PER_METRE, toPixels } from './units';
 
 /** The pixel font names are drawn in: the same blocky letters as the world's art. Other scripts and emoji fall back to the system's font. */
 const NAME_FONT_FAMILY = 'Tiny5';
@@ -7,13 +6,11 @@ const NAME_FONT_STACK = `"${NAME_FONT_FAMILY}", system-ui, sans-serif`;
 /** The grid the font was drawn on: at a font size of this many pixels, one pixel of a letter is one pixel. */
 const NAME_FONT_GRID = 8;
 /**
- * How big one pixel of a letter is, in metres. Letters as coarse as the
- * world's first art, a sixteenth of a metre, made names too big next to a
+ * How big one pixel of a letter is, as a share of one pixel of the world.
+ * Letters as coarse as the art (a share of 1) made names too big next to a
  * character; a little finer keeps them blocky and lets them sit quietly.
- * In metres, so a name stays the size it is on screen whatever the pixels
- * per metre of the art.
  */
-const LETTER_PIXEL_METRES = 0.6 / 16;
+const LETTER_PIXEL_SHARE = 0.6;
 /** Dark edge around the letters, in pixels of a letter, so a name reads over grass, rock and other names. */
 const NAME_EDGE = 1;
 /**
@@ -22,9 +19,8 @@ const NAME_EDGE = 1;
  * a window wide over everyone near it; such a name is drawn smaller instead.
  */
 const MAX_NAME_WIDTH = 128;
-/** Clear space between the top of a character and its name, in metres, and in pixels of the world. */
-const NAME_GAP_METRES = 1 / 16;
-export const NAME_GAP_PIXELS = toPixels(NAME_GAP_METRES);
+/** Clear pixels of the world between the top of a character and its name. */
+export const NAME_GAP_PIXELS = 1;
 /** Names are drawn over everything in the world: entities are depth-sorted by their feet, in pixels, far below this. */
 const NAME_DEPTH = 1_000_000_000;
 
@@ -65,7 +61,7 @@ export function fitNameLabel(label: Phaser.GameObjects.Text, cameraZoom: number)
 
 /** Device pixels one pixel of a letter covers at a camera zoom: a whole number, so every letter pixel is the same crisp square. */
 function letterPixelFor(cameraZoom: number): number {
-  return Math.max(1, Math.round(cameraZoom * PIXELS_PER_METRE * LETTER_PIXEL_METRES));
+  return Math.max(1, Math.round(cameraZoom * LETTER_PIXEL_SHARE));
 }
 
 /** The scale that keeps something `width` wide within `widest`: 1 when it fits, the fraction that shrinks it to `widest` when it does not. */

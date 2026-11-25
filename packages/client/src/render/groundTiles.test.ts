@@ -16,10 +16,7 @@ import { describe, expect, it } from "vitest";
 import {
   EMPTY_GROUND_TILE,
   GROUND_TILE_PIXELS,
-  GROUND_TILESET_COLUMNS,
   groundTileIndexRows,
-  groundTilesetCellOf,
-  groundTilesetSizeOf,
   groundTilesetSlots,
 } from "./groundTiles";
 import { variantOfTile } from "./tileVariant";
@@ -80,45 +77,20 @@ describe("groundTilesetSlots", () => {
 
   it("refuses a ground sprite whose tiles are another size", () => {
     const grass = getTileDef(idOf("grass"));
-    const otherSize: TileDef = {
+    const oversized: TileDef = {
       ...grass,
-      groundSprite: { ...grass.groundSprite!, tilePixels: GROUND_TILE_PIXELS / 2 },
+      groundSprite: { ...grass.groundSprite!, tilePixels: GROUND_TILE_PIXELS * 2 },
     };
-    expect(() => groundTilesetSlots([otherSize], everythingLoaded)).toThrow(
-      new RegExp(`${GROUND_TILE_PIXELS / 2}-pixel tiles`),
+    expect(() => groundTilesetSlots([oversized], everythingLoaded)).toThrow(
+      new RegExp(`${GROUND_TILE_PIXELS * 2}-pixel tiles`),
     );
   });
-});
 
-describe("the ground tileset's rows", () => {
-  it("holds every tile of the terrain defs in a texture no side of which passes 4096 pixels", () => {
+  // The tileset is one row of tiles (ADR 0016, 0019); a texture wider than 4096 pixels does not load on every WebGL device.
+  it("fits every tile of the terrain defs in one row no wider than 4096 pixels", () => {
     const slots = groundTilesetSlots(terrainDefs, everythingLoaded);
     const tileCount = slots.reduce((count, slot) => count + slot.tileCount, 0);
-    const { columns, rows } = groundTilesetSizeOf(tileCount);
-    expect(columns * rows).toBeGreaterThanOrEqual(tileCount);
-    expect(columns * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
-    expect(rows * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
-  });
-
-  it("puts tiles left to right, then on the next row, the order a tileset counts them in, each in a cell of its own", () => {
-    expect(groundTilesetCellOf(0)).toEqual({ column: 0, row: 0 });
-    expect(groundTilesetCellOf(GROUND_TILESET_COLUMNS - 1)).toEqual({ column: GROUND_TILESET_COLUMNS - 1, row: 0 });
-    expect(groundTilesetCellOf(GROUND_TILESET_COLUMNS)).toEqual({ column: 0, row: 1 });
-    const tileCount = 3 * GROUND_TILESET_COLUMNS + 5;
-    const { columns, rows } = groundTilesetSizeOf(tileCount);
-    const cells = new Set<string>();
-    for (let tileIndex = 0; tileIndex < tileCount; tileIndex += 1) {
-      const { column, row } = groundTilesetCellOf(tileIndex);
-      expect(row * columns + column).toBe(tileIndex);
-      expect(row).toBeLessThan(rows);
-      cells.add(`${column},${row}`);
-    }
-    expect(cells.size).toBe(tileCount);
-  });
-
-  it("is one row, no wider than its tiles, while they fit in one", () => {
-    expect(groundTilesetSizeOf(5)).toEqual({ columns: 5, rows: 1 });
-    expect(groundTilesetSizeOf(GROUND_TILESET_COLUMNS)).toEqual({ columns: GROUND_TILESET_COLUMNS, rows: 1 });
+    expect(tileCount * GROUND_TILE_PIXELS).toBeLessThanOrEqual(4096);
   });
 });
 

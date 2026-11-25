@@ -1,0 +1,12 @@
+PASS  room server and dev server up, both started by this run  ({"event":"world-room-listening","port":5974,"roomId":"world","seed":1858569194,"seats":5,"tickRate":60,"sendRate":20,"idleTimeoutSeconds":600,"clientDirectory":null,"savedPositions":"memory","dataDirectory":null,"savedPlayers":0,"allowedOrigins":[],"loopbackOrigins":true})
+PASS  tab A draws Ada from Ada's own look (gender 1, hairstyle 1)  (player/look/3-2-4-1-1)
+PASS  tab A draws Ben from Ben's own look (gender 0, hairstyle 0)  (player/look/1-0-6-0-0)
+PASS  tab B draws Ada from Ada's own look (gender 1, hairstyle 1)  (player/look/3-2-4-1-1)
+PASS  tab B draws Ben from Ben's own look (gender 0, hairstyle 0)  (player/look/1-0-6-0-0)
+PASS  B sees Ada turn down: her look's idle frame for that side  (player/look/3-2-4-1-1 frame 0, 16x24)
+PASS  B sees Ada turn up: her look's idle frame for that side  (player/look/3-2-4-1-1 frame 4, 16x24)
+PASS  B sees Ada turn left: her look's idle frame for that side  (player/look/3-2-4-1-1 frame 8, 16x24)
+PASS  B sees Ada turn right: her look's idle frame for that side  (player/look/3-2-4-1-1 frame 12, 16x24)
+PASS  no page errors
+
+ALL 10 CHECKS PASSED

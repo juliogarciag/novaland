@@ -144,20 +144,19 @@ export const MAX_NAME_CODE_POINTS = 40;
  * The character's sheet, `sprites/player.png` (the first gender wearing
  * the first hairstyle; the client lays each look from one body sheet and one
  * hair sheet in the same layout, ADR 0018): four rows (down, up,
- * left, right) of four 32x48 frames, frame 0 of a row being the idle pose and
- * the whole row the walk cycle. It is painted in fixed template colours by
+ * left, right) of four 16x24 frames, frame 0 of a row being the idle pose and
+ * the whole row the walk cycle, at 16 pixels per metre like the tiles (ADR
+ * 0019). It is painted in fixed template colours by
  * packages/client/tools/generate-player-sheet.mjs and the client swaps them
- * for the colours of each player's look. It is drawn at 32 pixels per metre,
- * two pixels of the sheet to a pixel of today's 16-pixel tiles, until the
- * world's tiles are 32 pixels too (#64). `color` is for views that draw a
+ * for the colours of each player's look. `color` is for views that draw a
  * flat shape instead of the sheet.
  */
 function playerSprite(key: string): SpriteDef {
   return {
     key,
-    frameWidth: 32,
-    frameHeight: 48,
-    pixelsPerMetre: 32,
+    frameWidth: 16,
+    frameHeight: 24,
+    pixelsPerMetre: 16,
     origin: { x: 0.5, y: 0.75 },
     frameRate: 8,
     directions: {

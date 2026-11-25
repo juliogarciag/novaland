@@ -12,31 +12,18 @@ describe('player sheet generator', () => {
   it('paints in the template colours the client swaps, and uses them for nothing else', () => {
     expect(characterSheet.TEMPLATE_COLORS).toEqual({
       skin: rgb(TEMPLATE_PALETTE.skin),
-      skinShade: rgb(TEMPLATE_PALETTE.skinShade),
       hair: rgb(TEMPLATE_PALETTE.hair),
-      hairShade: rgb(TEMPLATE_PALETTE.hairShade),
-      hairLight: rgb(TEMPLATE_PALETTE.hairLight),
       clothes: rgb(TEMPLATE_PALETTE.clothes),
       clothesShade: rgb(TEMPLATE_PALETTE.clothesShade),
-      clothesLight: rgb(TEMPLATE_PALETTE.clothesLight),
     });
     const swapped = Object.values(TEMPLATE_PALETTE).map(rgb);
     const fixed = Object.values(FIXED_PALETTE).map(rgb);
     expect(new Set([...swapped, ...fixed]).size).toBe(swapped.length + fixed.length);
-    // Every swapped colour is really in the sheet, so a look changes every shade of every part.
+    // Every swapped colour is really in the sheet, so a look changes every part.
     const painted = paintedColors(paintPlayerSheet());
     for (const color of swapped) expect(painted.has(color)).toBe(true);
     // And nothing is painted in a colour neither palette names.
     for (const color of painted) expect([...swapped, ...fixed]).toContain(color);
-  });
-
-  it('derives the template\'s own shades from its base colours the way the client derives a look\'s', () => {
-    const { highlightOf, shadeOf } = characterSheet;
-    expect(rgb(TEMPLATE_PALETTE.skinShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.skin)));
-    expect(rgb(TEMPLATE_PALETTE.hairShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.hair)));
-    expect(rgb(TEMPLATE_PALETTE.hairLight)).toBe(highlightOf(rgb(TEMPLATE_PALETTE.hair)));
-    expect(rgb(TEMPLATE_PALETTE.clothesShade)).toBe(shadeOf(rgb(TEMPLATE_PALETTE.clothes)));
-    expect(rgb(TEMPLATE_PALETTE.clothesLight)).toBe(highlightOf(rgb(TEMPLATE_PALETTE.clothes)));
   });
 
   it('recolours every pixel of every part in all sixteen frames for every look', () => {
@@ -97,8 +84,9 @@ describe('player sheet generator', () => {
     }
   });
 
-  it('has the committed layer sheets the generator paints today, so a stencil edit cannot ship without its sheets', () => {
+  it('has the committed sheets the generator paints today, so a stencil edit cannot ship without its sheets', () => {
     const committed = (key) => readFileSync(new URL(`../public/sprites/${key}.png`, import.meta.url));
+    expect(committed(PLAYER_SHEET_KEY).equals(Buffer.from(encodePng(paintPlayerSheet()))), PLAYER_SHEET_KEY).toBe(true);
     for (const [gender, key] of Object.entries(generator.LAYER_SHEETS.gender)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('body', { gender })))), key).toBe(true);
     for (const [hairstyle, key] of Object.entries(generator.LAYER_SHEETS.hairstyle)) expect(committed(key).equals(Buffer.from(encodePng(generator.paintLayerSheet('hair', { hairstyle })))), key).toBe(true);
   });
@@ -137,16 +125,15 @@ describe('player sheet generator', () => {
   });
 
   it('keeps every hairstyle on a layer of its own, over a body that carries no hair', () => {
-    const hairColors = new Set([TEMPLATE_PALETTE.hair, TEMPLATE_PALETTE.hairShade, TEMPLATE_PALETTE.hairLight].map(rgb));
+    const hairColor = rgb(TEMPLATE_PALETTE.hair);
     for (const pair of everyPairing()) {
       for (const direction of DIRECTIONS) {
         for (const pose of generator.POSES) {
           const { body, hair } = generator.paintFrameLayers(direction, pose, pair);
           expect(paintedColors(hair).size).toBeGreaterThan(0);
-          for (const color of paintedColors(hair)) expect(hairColors).toContain(color);
-          // The body carries no hair but the eyebrows (in the hair's shade), so taking the hair layer away leaves a bald head.
-          expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hair))).toBe(false);
-          expect(paintedColors(body).has(rgb(TEMPLATE_PALETTE.hairLight))).toBe(false);
+          expect([...paintedColors(hair)]).toEqual([hairColor]);
+          // The body carries no hair, so taking the hair layer away leaves a bald head.
+          expect(paintedColors(body).has(hairColor)).toBe(false);
         }
       }
     }
