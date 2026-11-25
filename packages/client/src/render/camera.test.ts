@@ -124,6 +124,11 @@ describe('boundsAlongAxis', () => {
     expect(Math.abs(start - -(1001 / 2 - 320) / 2)).toBeLessThanOrEqual(0.25);
   });
 
+  it('is the map for a view a rounding error longer than it, as the zoom that fits the map exactly can give', () => {
+    const mapLength = 1000 * PIXELS_PER_METRE;
+    expect(boundsAlongAxis({ mapStart: -37 * PIXELS_PER_METRE, mapLength, viewLength: mapLength * (1 + Number.EPSILON), zoom: 1527 / mapLength })).toEqual({ start: -37 * PIXELS_PER_METRE, length: mapLength });
+  });
+
   it('is the map for a view that makes no sense', () => {
     expect(boundsAlongAxis({ mapStart: 0, mapLength: 1000, viewLength: Number.NaN, zoom: 1 })).toEqual({ start: 0, length: 1000 });
   });

@@ -152,7 +152,8 @@ function snapViewToDevicePixels(scroll: number, size: number, zoom: number): num
  * `zoom`, or the art would straddle two.
  */
 function boundsAlongAxis({ mapStart, mapLength, viewLength, zoom }: { mapStart: number; mapLength: number; viewLength: number; zoom: number }): { start: number; length: number } {
-  if (!(viewLength > mapLength)) return { start: mapStart, length: mapLength };
+  // Longer by a whole device pixel at least: a view that fits the map exactly can come out a rounding error longer, and must not move the map for it.
+  if (!((viewLength - mapLength) * zoom >= 1)) return { start: mapStart, length: mapLength };
   return { start: Math.round((mapStart - (viewLength - mapLength) / 2) * zoom) / zoom, length: viewLength };
 }
 

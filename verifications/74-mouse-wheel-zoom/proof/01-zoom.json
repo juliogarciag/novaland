@@ -414,7 +414,7 @@
     {
       "name": "region: zoomed out, holding D still walks the player east and the camera stays on them",
       "pass": true,
-      "details": "player went 6.0 tiles east at zoom 1-4"
+      "details": "player went 6.1 tiles east at zoom 1-4"
     },
     {
       "name": "region: wheel up returns to the normal view and stops there",
@@ -429,7 +429,7 @@
     {
       "name": "region: zooming back in moved nobody: the player only moved by the walk",
       "pass": true,
-      "details": "player moved 6.0 tiles east, 0.00 south"
+      "details": "player moved 6.1 tiles east, 0.00 south"
     },
     {
       "name": "region: no page errors",
