@@ -1,0 +1,29 @@
+PASS  grass.png is c466e78's, byte for byte
+PASS  water.png is c466e78's, byte for byte
+PASS  shallows.png is c466e78's, byte for byte
+PASS  tree.png is c466e78's, byte for byte
+PASS  rock.png is c466e78's, byte for byte
+PASS  player.png is c466e78's, byte for byte
+PASS  packages/client/src/render/units.ts is c466e78's
+PASS  packages/client/src/render/zoom.ts is c466e78's
+PASS  packages/client/src/render/nameLabel.ts is c466e78's
+PASS  packages/client/src/render/groundTiles.ts is c466e78's
+PASS  packages/client/src/render/terrain.ts is c466e78's
+PASS  packages/sim/src/features/terrain/defs.ts is c466e78's
+PASS  packages/client/tools/generate-grass-sheet.mjs is c466e78's
+PASS  packages/client/tools/generate-water-sheet.mjs is c466e78's
+PASS  packages/client/tools/generate-tree-sheet.mjs is c466e78's
+PASS  packages/client/tools/generate-rock-sheet.mjs is c466e78's
+PASS  player.png is 64x96: 4x4 frames of 16x24
+PASS  player.png is what the generator paints today
+PASS  player-body-male.png is 64x96: 4x4 frames of 16x24
+PASS  player-body-male.png is what the generator paints today
+PASS  player-body-female.png is 64x96: 4x4 frames of 16x24
+PASS  player-body-female.png is what the generator paints today
+PASS  player-hair-short.png is 64x96: 4x4 frames of 16x24
+PASS  player-hair-short.png is what the generator paints today
+PASS  player-hair-long.png is 64x96: 4x4 frames of 16x24
+PASS  player-hair-long.png is what the generator paints today
+PASS  a body sheet per gender and a hair sheet per hairstyle  (player.png, player-body-male.png, player-body-female.png, player-hair-short.png, player-hair-long.png)
+
+ALL 27 CHECKS PASSED

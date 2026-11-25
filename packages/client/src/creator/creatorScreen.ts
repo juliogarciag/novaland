@@ -32,7 +32,7 @@ export interface CreatorScreenOptions {
 }
 
 /** Screen pixels per sheet pixel in the preview. */
-const PREVIEW_SCALE = 3;
+const PREVIEW_SCALE = 6;
 
 const PART_LABELS: Readonly<Record<LookPart, string>> = { skin: 'Skin', hair: 'Hair', clothes: 'Clothes', gender: 'Gender', hairStyle: 'Hairstyle' };
 

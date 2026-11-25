@@ -6,13 +6,13 @@ import { PIXELS_PER_METRE } from './units';
 
 describe('MapCamera.view', () => {
   it('is what Phaser will render before the camera was ever pointed anywhere: the scroll clamped to the map, not the raw (0, 0)', () => {
-    // A 1920 px canvas at zoom 3 shows 640 px of a 960 px map (30 tiles of 32 px); Phaser will clamp the untouched scroll of 0 when it renders.
-    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 3 });
-    const smallMap = generatedWorldMap({ columns: 30, rows: 30 });
+    // A 1920 px canvas at zoom 6 shows 320 px of a 640 px map; Phaser will clamp the untouched scroll of 0 when it renders.
+    const camera = fakeCamera({ width: 1920, height: 1080, zoom: 6 });
+    const smallMap = generatedWorldMap({ columns: 40, rows: 30 });
     const mapCamera = new MapCamera(camera, smallMap);
     const view = mapCamera.view();
     const { bounds } = readMapTiles(smallMap);
-    expect(view.width).toBe(640);
+    expect(view.width).toBe(320);
     expect(view.x).toBeGreaterThanOrEqual(bounds.column * PIXELS_PER_METRE);
     expect(view.x + view.width).toBeLessThanOrEqual((bounds.column + bounds.width) * PIXELS_PER_METRE);
     expect(view.y).toBeGreaterThanOrEqual(bounds.row * PIXELS_PER_METRE);

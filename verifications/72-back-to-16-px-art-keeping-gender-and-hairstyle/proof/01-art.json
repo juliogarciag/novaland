@@ -1,0 +1,135 @@
+{
+  "sheets": {
+    "player.png": {
+      "width": 64,
+      "height": 96
+    },
+    "player-body-male.png": {
+      "width": 64,
+      "height": 96
+    },
+    "player-body-female.png": {
+      "width": 64,
+      "height": 96
+    },
+    "player-hair-short.png": {
+      "width": 64,
+      "height": 96
+    },
+    "player-hair-long.png": {
+      "width": 64,
+      "height": 96
+    }
+  },
+  "results": [
+    {
+      "name": "grass.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "water.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "shallows.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "tree.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "rock.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "player.png is c466e78's, byte for byte",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/render/units.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/render/zoom.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/render/nameLabel.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/render/groundTiles.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/src/render/terrain.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/sim/src/features/terrain/defs.ts is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/tools/generate-grass-sheet.mjs is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/tools/generate-water-sheet.mjs is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/tools/generate-tree-sheet.mjs is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "packages/client/tools/generate-rock-sheet.mjs is c466e78's",
+      "pass": true
+    },
+    {
+      "name": "player.png is 64x96: 4x4 frames of 16x24",
+      "pass": true
+    },
+    {
+      "name": "player.png is what the generator paints today",
+      "pass": true
+    },
+    {
+      "name": "player-body-male.png is 64x96: 4x4 frames of 16x24",
+      "pass": true
+    },
+    {
+      "name": "player-body-male.png is what the generator paints today",
+      "pass": true
+    },
+    {
+      "name": "player-body-female.png is 64x96: 4x4 frames of 16x24",
+      "pass": true
+    },
+    {
+      "name": "player-body-female.png is what the generator paints today",
+      "pass": true
+    },
+    {
+      "name": "player-hair-short.png is 64x96: 4x4 frames of 16x24",
+      "pass": true
+    },
+    {
+      "name": "player-hair-short.png is what the generator paints today",
+      "pass": true
+    },
+    {
+      "name": "player-hair-long.png is 64x96: 4x4 frames of 16x24",
+      "pass": true
+    },
+    {
+      "name": "player-hair-long.png is what the generator paints today",
+      "pass": true
+    },
+    {
+      "name": "a body sheet per gender and a hair sheet per hairstyle",
+      "pass": true,
+      "details": "player.png, player-body-male.png, player-body-female.png, player-hair-short.png, player-hair-long.png"
+    }
+  ]
+}
