@@ -8,22 +8,22 @@
     {
       "name": "the client bundle does not carry the region",
       "pass": true,
-      "details": "4 files, 5202531 bytes"
+      "details": "4 files, 5201988 bytes"
     },
     {
       "name": "the server bundle does not carry the region",
       "pass": true,
-      "details": "2 files, 3829338 bytes"
+      "details": "2 files, 3829239 bytes"
     }
   ],
   "report": {
     "client": {
       "files": 4,
-      "bytes": 5202531
+      "bytes": 5201988
     },
     "server": {
       "files": 2,
-      "bytes": 3829338
+      "bytes": 3829239
     }
   }
 }

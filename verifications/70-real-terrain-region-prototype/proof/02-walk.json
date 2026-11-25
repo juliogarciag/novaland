@@ -310,11 +310,11 @@
         "row": 141
       },
       "kind": "river",
-      "chunksDrawn": 2,
-      "zoom": 1,
+      "chunksDrawn": 1,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     },
     "mont-blanc": {
@@ -327,11 +327,11 @@
         "row": 169
       },
       "kind": "upland",
-      "chunksDrawn": 4,
-      "zoom": 1,
+      "chunksDrawn": 2,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     },
     "aletsch": {
@@ -344,11 +344,11 @@
         "row": 125
       },
       "kind": "upland",
-      "chunksDrawn": 4,
-      "zoom": 1,
+      "chunksDrawn": 2,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     },
     "lake-maggiore": {
@@ -362,10 +362,10 @@
       },
       "kind": "forest",
       "chunksDrawn": 4,
-      "zoom": 1,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     },
     "po-at-piacenza": {
@@ -378,11 +378,11 @@
         "row": 245
       },
       "kind": "grass",
-      "chunksDrawn": 4,
-      "zoom": 1,
+      "chunksDrawn": 2,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     },
     "venice-lagoon": {
@@ -396,10 +396,10 @@
       },
       "kind": "grass",
       "chunksDrawn": 2,
-      "zoom": 1,
+      "zoom": 3,
       "visibleMetres": {
-        "width": 30,
-        "height": 22.5
+        "width": 20,
+        "height": 15
       }
     }
   },
@@ -474,7 +474,7 @@
     "key": "KeyW",
     "atTheWater": {
       "x": 41.5,
-      "y": 125.39986419677734,
+      "y": 125.39994812011719,
       "tile": {
         "column": 41,
         "row": 125
@@ -484,7 +484,7 @@
     },
     "stillAtTheWater": {
       "x": 41.5,
-      "y": 125.39986419677734,
+      "y": 125.39989471435547,
       "tile": {
         "column": 41,
         "row": 125
@@ -506,7 +506,7 @@
     },
     "southBank": {
       "x": 247.5,
-      "y": 266.91943359375,
+      "y": 266.8360595703125,
       "tile": {
         "column": 247,
         "row": 266
@@ -703,37 +703,37 @@
     {
       "name": "the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second",
       "pass": true,
-      "details": "5.4 tiles a second against a speed of 5"
+      "details": "5.3 tiles a second against a speed of 5"
     },
     {
       "name": "?at=46.21,6.16 (geneva) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "1 tiles away on river, 2 chunks drawn, 30x23 tiles on screen"
+      "details": "1 tiles away on river, 1 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "?at=45.92,6.87 (mont-blanc) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on upland, 4 chunks drawn, 30x23 tiles on screen"
+      "details": "0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "?at=46.4,8.13 (aletsch) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on upland, 4 chunks drawn, 30x23 tiles on screen"
+      "details": "0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "?at=45.92,8.55 (lake-maggiore) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "2 tiles away on forest, 4 chunks drawn, 30x23 tiles on screen"
+      "details": "2 tiles away on forest, 4 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "?at=45.1,9.7 (po-at-piacenza) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on grass, 4 chunks drawn, 30x23 tiles on screen"
+      "details": "0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "?at=45.49,12.25 (venice-lagoon) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn",
       "pass": true,
-      "details": "0 tiles away on grass, 2 chunks drawn, 30x23 tiles on screen"
+      "details": "0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen"
     },
     {
       "name": "no page errors",

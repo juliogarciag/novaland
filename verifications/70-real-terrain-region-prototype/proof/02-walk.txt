@@ -34,13 +34,13 @@ PASS  every tile of the map is a tile the game knows  (grass 34327, forest 30091
 PASS  a walker who starts in the middle of Lake Geneva is put on its shore  (tile (41, 125): forest)
 PASS  walking towards the lake (KeyW) ends on dry ground at the water's edge, and pushing on moves nobody  (stopped on (41, 125): forest)
 PASS  walking south from north of Piacenza wades across the Po and carries on  (from row 245 to row 266, over grass, river, forest)
-PASS  the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second  (5.4 tiles a second against a speed of 5)
-PASS  ?at=46.21,6.16 (geneva) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (1 tiles away on river, 2 chunks drawn, 30x23 tiles on screen)
-PASS  ?at=45.92,6.87 (mont-blanc) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on upland, 4 chunks drawn, 30x23 tiles on screen)
-PASS  ?at=46.4,8.13 (aletsch) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on upland, 4 chunks drawn, 30x23 tiles on screen)
-PASS  ?at=45.92,8.55 (lake-maggiore) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (2 tiles away on forest, 4 chunks drawn, 30x23 tiles on screen)
-PASS  ?at=45.1,9.7 (po-at-piacenza) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on grass, 4 chunks drawn, 30x23 tiles on screen)
-PASS  ?at=45.49,12.25 (venice-lagoon) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on grass, 2 chunks drawn, 30x23 tiles on screen)
+PASS  the walk covers ground at the speed of the player def: a tile is 1.2 km, so about 6 km a second  (5.3 tiles a second against a speed of 5)
+PASS  ?at=46.21,6.16 (geneva) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (1 tiles away on river, 1 chunks drawn, 20x15 tiles on screen)
+PASS  ?at=45.92,6.87 (mont-blanc) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen)
+PASS  ?at=46.4,8.13 (aletsch) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on upland, 2 chunks drawn, 20x15 tiles on screen)
+PASS  ?at=45.92,8.55 (lake-maggiore) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (2 tiles away on forest, 4 chunks drawn, 20x15 tiles on screen)
+PASS  ?at=45.1,9.7 (po-at-piacenza) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen)
+PASS  ?at=45.49,12.25 (venice-lagoon) starts the walk within a few tiles of the place, on walkable ground, with terrain drawn  (0 tiles away on grass, 2 chunks drawn, 20x15 tiles on screen)
 PASS  no page errors
 
 ALL 44 CHECKS PASSED
