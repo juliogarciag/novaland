@@ -106,7 +106,7 @@ function playerPreviewSheet(): PreviewSheet {
   const sprite = getDef(DefId.Player).sprite;
   const directions = sprite?.directions;
   const idleFrames = { down: directions?.down.idle ?? 0, up: directions?.up.idle ?? 0, left: directions?.left.idle ?? 0, right: directions?.right.idle ?? 0 };
-  return { frameWidth: sprite?.frameWidth ?? 32, frameHeight: sprite?.frameHeight ?? 48, idleFrames, urlOf: spriteSheetUrl };
+  return { frameWidth: sprite?.frameWidth ?? 16, frameHeight: sprite?.frameHeight ?? 24, idleFrames, urlOf: spriteSheetUrl };
 }
 
 /**

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { __testing__, loadNameFont } from './nameLabel';
-import { PIXELS_PER_METRE } from './units';
 
 describe('the width a name may draw', () => {
   it('leaves a name that fits at its own size', () => {
@@ -18,19 +17,18 @@ describe('the width a name may draw', () => {
 });
 
 describe('the size of one pixel of a letter', () => {
-  it('is a whole number of device pixels at every zoom, never none, and finer than a sixteenth of a metre', () => {
+  it('is a whole number of device pixels at every zoom, never none', () => {
     for (let cameraZoom = 1; cameraZoom <= 16; cameraZoom += 1) {
       const letterPixel = letterPixelFor(cameraZoom);
       expect(Number.isInteger(letterPixel)).toBe(true);
       expect(letterPixel).toBeGreaterThanOrEqual(1);
-      expect(letterPixel).toBeLessThanOrEqual(Math.max(1, (cameraZoom * PIXELS_PER_METRE) / 16));
+      expect(letterPixel).toBeLessThanOrEqual(cameraZoom);
     }
   });
 
-  it('is the same on screen whatever the pixels per metre: as many device pixels as at 16 per metre and twice the zoom', () => {
-    // At 16 pixels per metre, zoom 4 drew a letter pixel 2 device pixels wide and zoom 8 drew it 5.
-    expect(letterPixelFor((4 * 16) / PIXELS_PER_METRE)).toBe(2);
-    expect(letterPixelFor((8 * 16) / PIXELS_PER_METRE)).toBe(5);
+  it('is finer than a pixel of the world once the zoom leaves room', () => {
+    expect(letterPixelFor(8)).toBe(5);
+    expect(letterPixelFor(4)).toBe(2);
   });
 });
 

@@ -133,7 +133,7 @@ export const TerrainDefId = {
  * by colour alone (a minimap) shows where the lakes are.
  */
 export const terrainDefs: readonly TileDef[] = [
-  { id: TerrainDefId.Grass, name: 'grass', shape: 'box', color: 0x5c9e4a, solid: false, groundSprite: { key: 'grass', tilePixels: 32, variantCount: 24 } },
+  { id: TerrainDefId.Grass, name: 'grass', shape: 'box', color: 0x5c9e4a, solid: false, groundSprite: { key: 'grass', tilePixels: 16, variantCount: 24 } },
   { id: TerrainDefId.Dirt, name: 'dirt', shape: 'box', color: 0xb08d5b, solid: false },
   {
     id: TerrainDefId.Tree,
@@ -141,7 +141,7 @@ export const terrainDefs: readonly TileDef[] = [
     shape: 'box',
     color: 0x2f6b3a,
     solid: true,
-    standingSprite: { key: 'tree', frameWidth: 48, frameHeight: 64, pixelsPerMetre: 32, variantCount: 3, groundDefId: TerrainDefId.Grass },
+    standingSprite: { key: 'tree', frameWidth: 24, frameHeight: 32, pixelsPerMetre: 16, variantCount: 3, groundDefId: TerrainDefId.Grass },
   },
   {
     id: TerrainDefId.Rock,
@@ -149,7 +149,7 @@ export const terrainDefs: readonly TileDef[] = [
     shape: 'box',
     color: 0x8a8f99,
     solid: true,
-    standingSprite: { key: 'rock', frameWidth: 32, frameHeight: 40, pixelsPerMetre: 32, variantCount: 4, groundDefId: TerrainDefId.Grass },
+    standingSprite: { key: 'rock', frameWidth: 16, frameHeight: 20, pixelsPerMetre: 16, variantCount: 4, groundDefId: TerrainDefId.Grass },
   },
   {
     id: TerrainDefId.Water,
@@ -157,7 +157,7 @@ export const terrainDefs: readonly TileDef[] = [
     shape: 'box',
     color: 0x3e82d2,
     solid: true,
-    groundSprite: { key: 'water', tilePixels: 32, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Water] } },
+    groundSprite: { key: 'water', tilePixels: 16, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Water] } },
   },
   {
     id: TerrainDefId.Shallows,
@@ -165,7 +165,7 @@ export const terrainDefs: readonly TileDef[] = [
     shape: 'box',
     color: 0x74b8ea,
     solid: true,
-    groundSprite: { key: 'shallows', tilePixels: 32, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Shallows, TerrainDefId.Water] } },
+    groundSprite: { key: 'shallows', tilePixels: 16, variantCount: 8, edgeTiles: { sameSurfaceDefIds: [TerrainDefId.Shallows, TerrainDefId.Water] } },
   },
 ];
 
